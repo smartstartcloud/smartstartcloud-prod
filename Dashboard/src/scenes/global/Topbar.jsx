@@ -11,7 +11,7 @@ import  SearchIcon  from '@mui/icons-material/Search'
 
 
 
-const Topbar = () => {
+const Topbar = ({logOut}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode)
   const colorMode = useContext(ColorModeContext)
@@ -44,7 +44,7 @@ const Topbar = () => {
         <IconButton>
           < SettingsOutlinedIcon/>
         </IconButton>
-        <IconButton>
+        <IconButton onClick={logOut}>
           <PersonOutlinedIcon />
         </IconButton>
       </Box>
