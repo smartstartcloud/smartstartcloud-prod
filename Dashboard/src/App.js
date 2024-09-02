@@ -47,13 +47,12 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar />
+          {isLoggedIn ? <Sidebar /> : undefined}
           <main className="content">
             <Topbar logOut = {handleLogout} />
             <Routes>
-              <Route path="/" element={<Navigate to='/login' />} />
-              {/* <Route path="/" element={<Dashboard />} /> */}
-              <Route path="/login" element={<Login auth = {handleLogin} />} />
+              <Route path="/" element={isLoggedIn ? <Dashboard /> : <Navigate to='/login' />} />
+              <Route path="/login" element={isLoggedIn ? <Navigate to='/' /> : <Login auth = {handleLogin} />} />
               <Route path="/team" element={isLoggedIn ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={isLoggedIn ? <Invoices /> : <Navigate to='/login' /> } />
               <Route path="/contacts" element={isLoggedIn ? <Contacts /> : <Navigate to='/login' /> } />
@@ -64,6 +63,7 @@ function App() {
               <Route path="/faq" element={isLoggedIn ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={isLoggedIn ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={isLoggedIn ? <Calendar /> : <Navigate to='/login' /> } />
+              <Route path="/*" element={<Navigate to='/' />} />
             </Routes>
           </main>
         </div>
