@@ -32,7 +32,7 @@
     "yup": "^1.4.0"
   },
  "scripts": {
-     "start": "serve -s build",
+     "start": "react-scripts build",
      "build": "react-scripts build",
      "dev": "react-scripts start"
    },
