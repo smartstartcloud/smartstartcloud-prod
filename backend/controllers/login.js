@@ -10,6 +10,7 @@ function createToken(username){
 }
 
 app.get("/",async (req,res)=>{
+    /*
     // check if there is a msg query
     let bad_auth = req.query.msg ? true : false;
 
@@ -21,7 +22,8 @@ app.get("/",async (req,res)=>{
     } else {
         // else just render the login
         return res.render("login");
-    }
+    }*/
+        return res.render("login");
 })
 
 app.post('/',async(req,res)=>{
