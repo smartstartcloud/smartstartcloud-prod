@@ -33,7 +33,7 @@ app.post('/',async(req,res)=>{
         await bcrypt.compare( req.body.password, user.password, function(err, result) {
             if (result) {
                 const token = createToken(user.userName);
-                res.cookie('jwt',token,{httpOnly: true, maxAge:5*60*1000}); //in minute
+                res.cookie('jwt',token,{httpOnly: true, maxAge:5*60*1000, secure:true}); //in minute
                 res.sendStatus(200);
                 //Testing UI code
                 //res.render('dashboard',{name: user.userName}) 
