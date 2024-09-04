@@ -2,7 +2,9 @@ import dotenv from 'dotenv'
 import express from 'express'
 import authRoutes from './routes/auth.routes.js'
 import loginRoute from "./controllers/login.js"
+import dummyRequestRoute from "./controllers/dummyRequest.js"
 import connectToMongoDB from './db/connectToMongoDB.js'
+import protect from './middlewares/protect.js'
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -20,6 +22,7 @@ app.use(express.static(__dirname + "/public"));
 
 app.use("/api/auth", authRoutes);
 app.use("/login", loginRoute);
+app.use("/dummyRequest", protect,dummyRequestRoute); //USE POSTMAN TO CHECK
 
 app.listen(process.env.PORT, () => {
     console.log(`listening on port ${process.env.PORT}`);

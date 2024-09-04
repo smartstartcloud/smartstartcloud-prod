@@ -6,24 +6,11 @@ import jwt from 'jsonwebtoken'
 
 
 function createToken(username){
-    return jwt.sign({username},process.env.JWT_KEY,{expiresIn:5*60*1000}); //in minute
+    return jwt.sign({username},process.env.JWT_KEY,{expiresIn:"30s"});
 }
 
 app.get("/",async (req,res)=>{
-    /*
-    // check if there is a msg query
-    let bad_auth = req.query.msg ? true : false;
-
-    // if there exists, send the error.
-    if (bad_auth) {
-        return res.render("login", {
-        error: "Invalid username or password",
-        });
-    } else {
-        // else just render the login
-        return res.render("login");
-    }*/
-        return res.render("login");
+    return res.render("login");
 })
 
 app.post('/',async(req,res)=>{
@@ -35,15 +22,11 @@ app.post('/',async(req,res)=>{
                 const token = createToken(user.userName);
                 res.cookie('jwt',token,{httpOnly: true, maxAge:5*60*1000, secure:true}); //in minute
                 res.sendStatus(200);
-                //Testing UI code
-                //res.render('dashboard',{name: user.userName}) 
                 } else {
-                    //return res.redirect("/login?msg=fail");
                     return res.status(400).json({error: "Invalid Username or Password"});
                 }
         });
     } else {
-        //return res.redirect("/login?msg=fail");
         return res.status(400).json({error: "Invalid Username or Password"});
     }
     } catch (error) {
