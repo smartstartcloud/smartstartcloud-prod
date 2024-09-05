@@ -1,4 +1,4 @@
-import { Box, Button, TextField, IconButton, InputAdornment } from '@mui/material'
+import { Box, Button, TextField, IconButton, InputAdornment, MenuItem, Select, FormControl, InputLabel } from '@mui/material'
 import Header from '../../components/Header'
 import React, { useState } from 'react'
 import { Formik } from 'formik'
@@ -6,24 +6,24 @@ import * as yup from "yup"
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import useSignup from '../../hooks/useSignup'
 
 const userSchema = yup.object().shape({
     firstName: yup.string().required("required"),
     lastName: yup.string().required("required"),
     userName: yup.string().required("required"),
-    lastName: yup.string().required("required"),
     email: yup.string().email("invalid email").required("required"),
     password: yup.string().required('Password is required'),
     passwordConfirmation: yup.string()
         .oneOf([yup.ref('password'), null], 'Passwords must match')
         .required('Confirm Password is required'),
+    gender: yup.string().required("required"),
 })
 
 const initialValues = {
     firstName: "",
     lastName: "",
     email: "",
-    contact: "",
     password: "",
     passwordConfirmation: "",
     gender: ""
@@ -31,11 +31,15 @@ const initialValues = {
 
 const Signup = () => {
 
+    const isNonMobile = useMediaQuery('(min-width: 600px)')
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const {signup} = useSignup()
+
     const handleFormSubmit = (values) => {
-        auth(values);
+        signup(values)
     }
 
     const handleTogglePasswordVisibility = () => {
@@ -48,7 +52,7 @@ const Signup = () => {
 
     return (
         <Box m="20px">
-            <Header title={"Login User"} subtitle={"This is the Login Page"} />
+            <Header title={"Sign Up User"} subtitle={"This is the Sign Up Page"} />
             
             <Formik
                 onSubmit={handleFormSubmit}
@@ -118,6 +122,22 @@ const Signup = () => {
                                     helperText={!!touched.email && !!errors.email}
                                     sx={{gridColumn: "span 4"}}
                                 />
+                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
+                                    <InputLabel id="gender-label">Gender</InputLabel>
+                                    <Select
+                                        labelId="gender-label"
+                                        id="gender"
+                                        name="gender"
+                                        value={values.gender}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        error={!!touched.gender && !!errors.gender}
+                                    >
+                                        <MenuItem value="male">Male</MenuItem>
+                                        <MenuItem value="female">Female</MenuItem>
+                                        <MenuItem value="others">Others</MenuItem>
+                                    </Select>
+                                </FormControl>
                                 <TextField 
                                     fullWidth
                                     variant="filled"
