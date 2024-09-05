@@ -17,6 +17,7 @@ import Geography from "./scenes/geography"
 import Calendar from "./scenes/calendar"
 import Login from "./scenes/login";
 import { useState } from "react";
+// import Signup from "./scenes/signup";
 
 
 function App() {
@@ -52,8 +53,9 @@ function App() {
             <Topbar logOut = {handleLogout} />
             <Routes>
               <Route path="/" element={isLoggedIn ? <Dashboard /> : <Navigate to='/login' />} />
-              <Route path="/login" element={isLoggedIn ? <Navigate to='/' /> : <Login auth = {handleLogin} />} />
-              <Route path="/team" element={isLoggedIn ? <Team /> : <Navigate to='/login' /> } />
+              {/* <Route path="/login" element={isLoggedIn ? <Navigate to='/' /> : <Login auth = {handleLogin} />} /> */}
+              {/* <Route path="/signup" element={<Signup/>} /> */}
+              {/* <Route path="/team" element={isLoggedIn ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={isLoggedIn ? <Invoices /> : <Navigate to='/login' /> } />
               <Route path="/contacts" element={isLoggedIn ? <Contacts /> : <Navigate to='/login' /> } />
               <Route path="/bar" element={isLoggedIn ? <Bar /> : <Navigate to='/login' /> } />
@@ -63,7 +65,7 @@ function App() {
               <Route path="/faq" element={isLoggedIn ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={isLoggedIn ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={isLoggedIn ? <Calendar /> : <Navigate to='/login' /> } />
-              <Route path="/*" element={<Navigate to='/' />} />
+              <Route path="/*" element={<Navigate to='/' />} /> */}
             </Routes>
           </main>
         </div>
