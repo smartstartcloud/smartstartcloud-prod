@@ -1,6 +1,6 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs"
-import generateToken from "../utils/generateToken.js";
+import {generateAccessToken,generateRefreshToken} from "../utils/generateToken.js";
 
 export const loginUser = async (req, res) => {
     try {
@@ -12,11 +12,13 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({error: "Invalid Username"})
         }
         
-        generateToken(user._id, res)
+        generateAccessToken(user._id, res)
+        
 
         res.status(200).json({
             _id: user.id,
-            userName: user.userName
+            userName: user.userName,
+            refreshToken:generateRefreshToken(user._id, res)
         })
 
     } catch (error) {
