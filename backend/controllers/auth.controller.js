@@ -1,8 +1,30 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs"
+import generateToken from "../utils/generateToken.js";
 
-export const loginUser = (req, res) => {
-    console.log("login User");
+export const loginUser = async (req, res) => {
+    try {
+        const {userName, password} = req.body;
+        const user = await User.findOne({userName})
+        const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
+
+        if(!user || !isPasswordCorrect){
+            return res.status(400).json({error: "Invalid Username"})
+        }
+        
+        generateToken(user._id, res)
+
+        res.status(200).json({
+            _id: user.id,
+            userName: user.userName
+        })
+
+    } catch (error) {
+        console.log("Error in login controller", error);
+        
+        res.status(400).json({error: "Internal server error."})
+    }
+
     
 }
 
@@ -31,13 +53,17 @@ export const signupUser = async (req, res) => {
             password: hashPassword
         })
 
-        await newUser.save();
+        if(newUser){
+            generateToken(newUser._id, res);
+            await newUser.save();
 
-        res.status(201).json({
-            _id: newUser._id,
-            email: newUser.email,
-            userName: newUser.userName,
-        })
+            res.status(201).json({
+                _id: newUser._id,
+                email: newUser.email,
+                userName: newUser.userName,
+            })
+        }
+
 
     } catch (error) {
         console.log("Error in sign up controller", error);
@@ -47,7 +73,14 @@ export const signupUser = async (req, res) => {
     
 }
 
-export const logoutUser = (req, res) => {
-    console.log("logout User");
+export const logoutUser = async (req, res) => {
+    try {
+        res.cookie("jwt", "", {maxAge: 0})
+        res.status(200).json({message: "Logged out successfully"})
+    } catch (error) {
+        console.log("Error in sign up controller", error);
+        
+        res.status(500).json({error: "Internal server error"})
+    }
     
 }
