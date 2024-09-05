@@ -1,6 +1,6 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs"
-import {generateAccessToken,generateRefreshToken} from "../utils/generateToken.js";
+import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.js";
 
 export const loginUser = async (req, res) => {
     try {
@@ -56,7 +56,7 @@ export const signupUser = async (req, res) => {
         })
 
         if(newUser){
-            generateToken(newUser._id, res);
+            generateAccessToken(newUser._id, res)
             await newUser.save();
 
             res.status(201).json({

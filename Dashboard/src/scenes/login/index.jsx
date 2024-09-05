@@ -6,42 +6,36 @@ import * as yup from "yup"
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import useLogin from '../../hooks/useLogin.js'
 
 
 const userSchema = yup.object().shape({
-    email: yup.string().email("invalid email").required("required"),
+    // email: yup.string().email("invalid email").required("required"),
+    userName: yup.string().required('User Name is required'),
     password: yup.string().required('Password is required'),
-    passwordConfirmation: yup.string()
-        .oneOf([yup.ref('password'), null], 'Passwords must match')
-        .required('Confirm Password is required'),
 })
 
 const initialValues = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    contact: "",
+    userName: "",
     password: "",
-    passwordConfirmation: "",
 }
 
-const Login = ({auth}) => {
+const Login = () => {
     
     const isNonMobile = useMediaQuery('(min-width: 600px)')
 
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const {login} = useLogin()
 
     const handleFormSubmit = (values) => {
-        auth(values);
+        console.log(values);
+        login(values)
+        
     }
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
-    };
-
-    const handleToggleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword);
     };
 
   return (
@@ -68,13 +62,13 @@ const Login = ({auth}) => {
                                 fullWidth
                                 variant="filled"
                                 type="text"
-                                label="Email"
+                                label="User Name"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
-                                value={values.email}
-                                name="email"
-                                error={!!touched.email && !!errors.email}
-                                helperText={!!touched.email && !!errors.email}
+                                value={values.userName}
+                                name="userName"
+                                error={!!touched.userName && !!errors.userName}
+                                helperText={!!touched.userName && !!errors.userName}
                                 sx={{gridColumn: "span 4"}}
                             />
                             <TextField 
@@ -99,32 +93,10 @@ const Login = ({auth}) => {
                                     ),
                                 }}
                             />
-                            <TextField 
-                                fullWidth
-                                variant="filled"
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                label="Confirm Password"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.passwordConfirmation}
-                                name="passwordConfirmation"
-                                error={!!touched.passwordConfirmation && !!errors.passwordConfirmation}
-                                helperText={!!touched.passwordConfirmation && !!errors.passwordConfirmation}
-                                sx={{gridColumn: "span 4"}}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={handleToggleConfirmPasswordVisibility} edge="end">
-                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
                         </Box>
                         <Box display="flex" justifyContent="end" mt="20px">
                             <Button type="submit" color="secondary" variant="contained">
-                                Create New User
+                                Log in User
                             </Button>
                         </Box>
                     </form>
