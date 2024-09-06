@@ -11,14 +11,12 @@ export const loginUser = async (req, res) => {
         if(!user || !isPasswordCorrect){
             return res.status(400).json({error: "Invalid Username"})
         }
-        
-        generateAccessToken(user._id, res)
-        
+        generateRefreshToken(user._id, res)
 
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
-            refreshToken:generateRefreshToken(user._id, res)
+            accessToken:generateAccessToken(user._id)
         })
 
     } catch (error) {
