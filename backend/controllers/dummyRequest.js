@@ -2,7 +2,7 @@ import express from 'express'
 const app = express.Router()
 
 app.get("/",async (req,res)=>{
-    res.sendStatus(200);
+    res.status(200).json({message: "ashche"});
 })
 
 export default app;

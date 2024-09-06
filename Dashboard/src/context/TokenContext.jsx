@@ -7,8 +7,8 @@ export const useTokenContext = () => {
 }
 
 export const TokenContextProvider = ({children}) => {
-    const [accessToken, setAccessToken] = useState(JSON.parse(localStorage.getItem("access-token")) || null)
-    const [refreshToken, setRefreshToken] = useState(JSON.parse(localStorage.getItem("refresh-token")) || null)
+    const [accessToken, setAccessToken] = useState(localStorage.getItem("access-token"))
+    const [refreshToken, setRefreshToken] = useState(null)
     return <TokenContext.Provider value={{accessToken, setAccessToken, refreshToken, setRefreshToken}}>
         {children}
     </TokenContext.Provider>
