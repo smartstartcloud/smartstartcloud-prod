@@ -22,9 +22,7 @@ import { useAuthContext } from "./context/AuthContext";
 
 function App() {
   const [theme, colorMode] = useMode()
-  const {authUser, setAuthUser} = useAuthContext()
-  console.log(authUser);
-  
+  const {authUser, setAuthUser} = useAuthContext()  
 
   const handleLogout = () => {
     localStorage.removeItem("user-details")

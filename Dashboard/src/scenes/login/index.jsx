@@ -29,9 +29,7 @@ const Login = () => {
     const {login} = useLogin()
 
     const handleFormSubmit = (values) => {
-        console.log(values);
         login(values)
-        
     }
 
     const handleTogglePasswordVisibility = () => {
