@@ -26,6 +26,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("user-details")
+    localStorage.removeItem("access-token")
     setAuthUser(null)
   }
 
