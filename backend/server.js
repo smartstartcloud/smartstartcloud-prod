@@ -19,7 +19,10 @@ dotenv.config()
 app.set('view engine','ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(cors());
+app.use((cors({
+    origin: true,  // Or set to true for dynamic origin
+    credentials: true
+})));
 app.use(express.static(__dirname + "/public"));
 
 app.use("/api/auth", authRoutes);
