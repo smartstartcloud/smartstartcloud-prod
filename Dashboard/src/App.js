@@ -18,11 +18,12 @@ import Calendar from "./scenes/calendar"
 import Login from "./scenes/login";
 import Signup from "./scenes/signup";
 import { useAuthContext } from "./context/AuthContext";
+import MainTask from "./scenes/task";
 
 
 function App() {
   const [theme, colorMode] = useMode()
-  const {authUser, setAuthUser} = useAuthContext()  
+  const {authUser, setAuthUser} = useAuthContext()
 
   const handleLogout = () => {
     localStorage.removeItem("user-details")
@@ -53,6 +54,7 @@ function App() {
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } />
+              <Route path="/task/:taskId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
             </Routes>
           </main>

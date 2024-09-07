@@ -1,4 +1,4 @@
-import { Box, Button, TextField, IconButton, InputAdornment, MenuItem, Select, FormControl, InputLabel } from '@mui/material'
+import { Box, Button, TextField, IconButton, InputAdornment, MenuItem, Select, FormControl, InputLabel, FormHelperText } from '@mui/material'
 import Header from '../../components/Header'
 import React, { useState } from 'react'
 import { Formik } from 'formik'
@@ -51,7 +51,7 @@ const Signup = () => {
     };
 
     return (
-        <Box m="20px">
+        <Box m="30px auto" width="800px">
             <Header title={"Sign Up User"} subtitle={"This is the Sign Up Page"} />
             
             <Formik
@@ -80,7 +80,7 @@ const Signup = () => {
                                     value={values.firstName}
                                     name="firstName"
                                     error={!!touched.firstName && !!errors.firstName}
-                                    helperText={!!touched.firstName && !!errors.firstName}
+                                    helperText={touched.firstName && errors.firstName ? errors.firstName : null}
                                     sx={{gridColumn: "span 2"}}
                                 />
                                 <TextField 
@@ -93,7 +93,7 @@ const Signup = () => {
                                     value={values.lastName}
                                     name="lastName"
                                     error={!!touched.lastName && !!errors.lastName}
-                                    helperText={!!touched.lastName && !!errors.lastName}
+                                    helperText={touched.lastName && errors.lastName ? errors.lastName : null}
                                     sx={{gridColumn: "span 2"}}
                                 />
                                 <TextField 
@@ -106,7 +106,7 @@ const Signup = () => {
                                     value={values.userName}
                                     name="userName"
                                     error={!!touched.userName && !!errors.userName}
-                                    helperText={!!touched.userName && !!errors.userName}
+                                    helperText={touched.userName && errors.userName ? errors.userName : null}
                                     sx={{gridColumn: "span 2"}}
                                 />
                                 <TextField 
@@ -119,8 +119,8 @@ const Signup = () => {
                                     value={values.email}
                                     name="email"
                                     error={!!touched.email && !!errors.email}
-                                    helperText={!!touched.email && !!errors.email}
-                                    sx={{gridColumn: "span 4"}}
+                                    helperText={touched.email && errors.email ? errors.email : null}
+                                    sx={{gridColumn: "span 2"}}
                                 />
                                 <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
                                     <InputLabel id="gender-label">Gender</InputLabel>
@@ -137,6 +137,10 @@ const Signup = () => {
                                         <MenuItem value="female">Female</MenuItem>
                                         <MenuItem value="others">Others</MenuItem>
                                     </Select>
+                                    {/* Display error message below */}
+                                    {touched.gender && errors.gender ? (
+                                        <FormHelperText>{errors.gender}</FormHelperText>
+                                    ) : null}
                                 </FormControl>
                                 <TextField 
                                     fullWidth
@@ -148,8 +152,8 @@ const Signup = () => {
                                     value={values.password}
                                     name="password"
                                     error={!!touched.password && !!errors.password}
-                                    helperText={!!touched.password && !!errors.password}
-                                    sx={{gridColumn: "span 4"}}
+                                    helperText={touched.password && errors.password ? errors.password : null}
+                                    sx={{gridColumn: "span 2"}}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -170,8 +174,8 @@ const Signup = () => {
                                     value={values.passwordConfirmation}
                                     name="passwordConfirmation"
                                     error={!!touched.passwordConfirmation && !!errors.passwordConfirmation}
-                                    helperText={!!touched.passwordConfirmation && !!errors.passwordConfirmation}
-                                    sx={{gridColumn: "span 4"}}
+                                    helperText={touched.passwordConfirmation && errors.passwordConfirmation ? errors.passwordConfirmation : null}
+                                    sx={{gridColumn: "span 2"}}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">

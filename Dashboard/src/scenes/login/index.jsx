@@ -37,7 +37,7 @@ const Login = () => {
     };
 
   return (
-    <Box m="20px">
+    <Box m="30px auto" width="800px">
         <Header title={"Login User"} subtitle={"This is the Login Page"} />
         
         <Formik
@@ -66,7 +66,7 @@ const Login = () => {
                                 value={values.userName}
                                 name="userName"
                                 error={!!touched.userName && !!errors.userName}
-                                helperText={!!touched.userName && !!errors.userName}
+                                helperText={touched.userName && errors.userName ? errors.userName : null}
                                 sx={{gridColumn: "span 4"}}
                             />
                             <TextField 
@@ -79,7 +79,7 @@ const Login = () => {
                                 value={values.password}
                                 name="password"
                                 error={!!touched.password && !!errors.password}
-                                helperText={!!touched.password && !!errors.password}
+                                helperText={touched.password && errors.password ? errors.password : null}
                                 sx={{gridColumn: "span 4"}}
                                 InputProps={{
                                     endAdornment: (
