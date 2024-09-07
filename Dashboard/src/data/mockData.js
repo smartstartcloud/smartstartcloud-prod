@@ -1308,3 +1308,64 @@ export const faqData = [
     details: 'Answer 6'
   },
 ]
+
+export const subTaskData = [
+  {
+    taskName: 'SubTask11',
+    workList: []
+  },
+  {
+    taskName: 'SubTask12',
+    workList: []
+  },
+  {
+    taskName: 'SubTask13',
+    workList: []
+  },
+  {
+    taskName: 'SubTask14',
+    workList: []
+  },
+  {
+    taskName: 'SubTask15',
+    workList: []
+  }
+]
+
+export const subTaskData2 = [
+  {
+    taskName: 'SubTask21',
+    workList: []
+  },
+  {
+    taskName: 'SubTask22',
+    workList: []
+  },
+  {
+    taskName: 'SubTask23',
+    workList: []
+  },
+  {
+    taskName: 'SubTask24',
+    workList: []
+  },
+  {
+    taskName: 'SubTask25',
+    workList: []
+  }
+]
+
+export const taskData = [
+  {
+    taskId: 1,
+    taskName: 'Task1',
+    taskContents: subTaskData,
+    taskDetails: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non numquam repellat, quae tenetur modi iure!"
+  },
+  {
+    taskId: 2,
+    taskName: 'Task2',
+    taskContents: subTaskData2,
+    taskDetails: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non numquam repellat, quae tenetur modi iure!"
+  }
+]
