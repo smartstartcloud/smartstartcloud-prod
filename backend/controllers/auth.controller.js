@@ -15,13 +15,13 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({error: "Default password not changed",useName:user.userName});
         }
         
-        generateAccessToken(user._id, res)
+        generateRefreshToken(user._id, res)
         
 
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
-            refreshToken:generateRefreshToken(user._id, res)
+            accessToken:generateAccessToken(user._id)
         })
 
     } catch (error) {
