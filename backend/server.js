@@ -29,7 +29,6 @@ app.use(express.static(__dirname + "/public"));
 
 app.use("/api/auth", authRoutes);
 app.use("/dummyRequest", protect,dummyRequestRoute); //USE POSTMAN TO CHECK
-app.use("/dummyRequest", protect); //USE POSTMAN TO CHECK
 
 
 app.listen(process.env.PORT, () => {
