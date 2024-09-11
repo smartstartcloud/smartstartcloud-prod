@@ -12,7 +12,7 @@ const useToken = () => {
                 return;
             }
 
-            const res = await fetch('http://localhost:5000/dummyRequest', {
+            const res = await fetch(`${process.env.REACT_APP_LOCALHOST}/dummyRequest`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
@@ -22,7 +22,7 @@ const useToken = () => {
                 console.log(data);
             } else if (res.status === 403 ){
                 // If access token is expired, request a new one using the refresh token
-                const tokenResponse = await fetch('http://localhost:5000/dummyRequest/token', {
+                const tokenResponse = await fetch(`${process.env.REACT_APP_LOCALHOST}/dummyRequest/token`, {
                 method: 'POST',
                 credentials: 'include'
                 });
