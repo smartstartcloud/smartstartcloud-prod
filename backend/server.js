@@ -7,6 +7,8 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
+import './models/year.models.js'
+import './models/user.models.js'
 
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
@@ -38,7 +40,3 @@ if(cluster.isPrimary) {
         console.log(`listening on port ${process.env.PORT}`);
     })
 }
-
-
-
-

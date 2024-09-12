@@ -13,4 +13,17 @@ const connectMongoAuth = async ()=>{
 }
 
 
-export {connectMongoAuth};
+const connectMongoDegree = async ()=>{
+    try {
+        const db = await mongo.createConnection(process.env.MONGO_DB_URI_DEGREE);
+        db.on(`error`, console.error.bind(console, `connection error:`));
+        db.once(`open`, function () {console.log(`MongoDB connected on DEGREE`);});
+        return db;
+        
+    } catch (error) {
+        console.log("Error connecting Database", error);
+    }
+}
+
+
+export {connectMongoAuth,connectMongoDegree};
