@@ -7,7 +7,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
-import './models/year.models.js'
+import './models/degree.models.js'
 import './models/user.models.js'
 
 const totalCPUs = cpu.cpus().length;
