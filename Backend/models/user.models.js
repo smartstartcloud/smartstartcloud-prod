@@ -36,6 +36,6 @@ const userSchema = new mongo.Schema({
     }
 })
 
-const User =db.model("users", userSchema)
+const User =db.model("users", userSchema);
 
 export default User;
