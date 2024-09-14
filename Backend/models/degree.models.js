@@ -1,9 +1,7 @@
 import mongo from 'mongoose';
-import {connectMongoDegree} from '../db/connectMongoDB.js';
+import {connectMongoInformation} from '../db/connectMongoDB.js';
 
-const degrees = process.env.DEGREES.split(',');
-
-const db = await connectMongoDegree();
+const db = await connectMongoInformation();
 
 const degreeSchema = mongo.Schema({
     year: {
@@ -22,10 +20,5 @@ const degreeSchema = mongo.Schema({
         type: Array
     }
 })
-
-let degreeSchemaArray = [];
-for(let i of degrees){
-    degreeSchemaArray.push(db.model(i, degreeSchema, i));
-}
-
+const degreeSchemaArray =db.model("Degree", degreeSchema,"Degree");
 export default degreeSchemaArray;
