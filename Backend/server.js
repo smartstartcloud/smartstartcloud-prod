@@ -7,8 +7,10 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
+import newDegree from './controllers/newDegree.js'
 import './models/degree.models.js'
 import './models/user.models.js'
+
 
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
@@ -23,7 +25,11 @@ if(cluster.isPrimary) {
 
 } else {
     // express app
-    const app = express()
+    const app = express();
+    app.listen(process.env.PORT, () => {
+      console.log(`listening on port ${process.env.PORT}`);
+    })
+
     app.use(cookieParser());
 
     app.set('view engine','ejs');
@@ -35,10 +41,6 @@ if(cluster.isPrimary) {
     })));
 
     app.use("/api/auth", authRoutes);
-    app.use("/dummyRequest", protect,dummyRequestRoute); //USE POSTMAN TO CHECK
-
-
-    app.listen(process.env.PORT, () => {
-        console.log(`listening on port ${process.env.PORT}`);
-    })
+    app.use("/dummyRequest", protect,dummyRequestRoute); 
+    app.use("/api/newDegree",newDegree);
 }
