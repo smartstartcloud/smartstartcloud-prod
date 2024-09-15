@@ -4,11 +4,16 @@ import {connectMongoInformation} from '../db/connectMongoDB.js';
 const db = await connectMongoInformation();
 
 const degreeSchema = mongo.Schema({
-    year: {
+    dID: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    name:{
         type: String,
         required: true
     },
-    student:{
+    year: {
         type: String,
         required: true
     },
@@ -16,9 +21,12 @@ const degreeSchema = mongo.Schema({
         type: String,
         required: true
     },
+    studentList:{
+        type: Array
+    },
     modules:{
         type: Array
     }
 })
-const degreeSchemaArray =db.model("Degree", degreeSchema,"Degree");
-export default degreeSchemaArray;
+const Degree =db.model("Degree", degreeSchema,"Degree");
+export default Degree;
