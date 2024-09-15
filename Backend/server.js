@@ -7,6 +7,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
+import helmet from 'helmet'
 import newDegree from './controllers/newDegree.js'
 import './models/degree.models.js'
 import './models/user.models.js'
@@ -31,10 +32,9 @@ if(cluster.isPrimary) {
     })
 
     app.use(cookieParser());
-
-    app.set('view engine','ejs');
     app.use(express.urlencoded({extended: true}));
     app.use(express.json());
+    app.use(helmet());
     app.use((cors({
         origin: true,  // Or set to true for dynamic origin
         credentials: true
