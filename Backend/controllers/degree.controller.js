@@ -1,8 +1,8 @@
 import express from 'express'
 import Degree from '../models/degree.models.js'
-const app = express.Router()
 
-app.post("/",async (req,res)=>{
+export const newDegree = async (req,res)=>{
+  try{
     const dID = req.body.dID;
     const name = req.body.name;
     const year = req.body.name;
@@ -19,18 +19,15 @@ app.post("/",async (req,res)=>{
     studentList,
     modules
   })
-  try{
-    if(newDegree){
-      await newDegree.save();
-      res.sendStatus(200);
-    }
+  if(newDegree){
+    await newDegree.save();
+    res.sendStatus(200);
+  }
   }catch(error){
     if(error.code==11000){
       res.status(409).json({error:"Degree ID already exists"});
+    }else{
+      res.status(500).json({error:"Internal Server Error"});
     }
-    res.status(500).json({error:"Internal Server Error"});
-   
   }
-  })
-
-export default app;
+}

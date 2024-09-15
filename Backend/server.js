@@ -1,6 +1,7 @@
 import dotenv from './utils/env.js'
 import express from 'express'
 import authRoutes from './routes/auth.routes.js'
+import degreeRoutes from './routes/degree.routes.js'
 import dummyRequestRoute from "./controllers/dummyRequest.js"
 import protect from './middlewares/protect.js'
 import cors from 'cors'
@@ -8,7 +9,6 @@ import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
 import helmet from 'helmet'
-import newDegree from './controllers/newDegree.js'
 import './models/degree.models.js'
 import './models/user.models.js'
 
@@ -41,6 +41,6 @@ if(cluster.isPrimary) {
     })));
 
     app.use("/api/auth", authRoutes);
+    app.use("/api/degree", degreeRoutes);
     app.use("/dummyRequest", protect,dummyRequestRoute); 
-    app.use("/api/newDegree",newDegree);
 }
