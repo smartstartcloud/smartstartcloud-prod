@@ -1,7 +1,7 @@
 import mongo from 'mongoose';
 import {infoDB} from '../db/connectMongoDB.js';
 
-const studentSchema = mongo.Schema({
+const studentSchema = new mongo.Schema({
     studentName: {
         type: String,
         required: true
