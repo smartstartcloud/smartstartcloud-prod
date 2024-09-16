@@ -21,6 +21,7 @@ import { useAuthContext } from "./context/AuthContext";
 import MainTask from "./scenes/task";
 import RenewPassword from "./scenes/renewPassword";
 import Welcome from "./scenes/welcome";
+import DegreeForm from "./components/forms/DegreeForm"
 
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
               <Route path="/contacts" element={authUser ? <Contacts /> : <Navigate to='/login' /> } />
               <Route path="/bar" element={authUser ? <Bar /> : <Navigate to='/login' /> } />
               <Route path="/form" element={authUser ? <Form /> : <Navigate to='/login' /> } />
+              <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               <Route path="/line" element={authUser ? <Line /> : <Navigate to='/login' /> } />
               <Route path="/pie" element={authUser ? <Pie /> : <Navigate to='/login' /> } />
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
