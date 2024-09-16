@@ -59,6 +59,7 @@ function App() {
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } />
               <Route path="/task/:taskId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
+              <Route path="/task/:taskId/:degreeId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
             </Routes>
           </main>

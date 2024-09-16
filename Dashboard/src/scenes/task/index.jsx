@@ -1,26 +1,25 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { taskData } from '../../data/mockData';
+import { degree } from '../../data/mockData';
 import { Box } from '@mui/material';
 import Header from '../../components/Header';
-import SubTaskAccordion from '../../components/SubTaskAccordion';
+import { degreeFilter } from '../../utils/yearFilter';
+import DegreeCard from '../../components/DegreeCard';
 
 const MainTask = () => {
     const { taskId } = useParams();
-    const assignments = taskData
-    const filteredAssignment = assignments.filter((assignment)=>{
-        return assignment.taskId === Number(taskId)
-    })[0]
+    
+    const {filteredDegree, yearName} = degreeFilter(degree, taskId)
     
     return (
     <Box m="20px">
         <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Header title={filteredAssignment.taskName} subtitle={"Here is all the information listed in your Assignment"} />
+            <Header title={`All degrees of ${yearName}`} subtitle={"Here is all the information listed in your Assignment"} />
         </Box>
-        <Box>
-            {filteredAssignment.taskContents && filteredAssignment.taskContents.map((subTask)=>(
-                <SubTaskAccordion taskTable={subTask} />
-            ))}
+        <Box display="flex" gap="20px">
+            { filteredDegree.map((degree) => (
+            <DegreeCard key={degree.degreeID} taskId={taskId} degreeId={degree.degreeID} degreeName={degree.degreeName} totalStudents={degree.degreeStudentList.length} degreeAgent={degree.degreeAgent} />
+            )) }
         </Box>
     </Box>
     )

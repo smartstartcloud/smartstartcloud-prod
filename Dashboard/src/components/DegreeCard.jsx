@@ -7,25 +7,25 @@ import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
 import { useNavigate } from 'react-router-dom';
 
-const TaskCard = ({taskId, taskName, taskDetails, taskAgents, taskAgent}) => {
+const DegreeCard = ({taskId, degreeId, degreeName, totalStudents, degreeAgent}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate()
   const handleClick = () => {
-    navigate(`/task/${taskId}`);
+    navigate(`/task/${taskId}/${degreeId}`);
   };
   return (
     <Card onClick={handleClick} sx={{ maxWidth: 345, background: colors.grey[100] }} >
       <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div" color={colors.grey[900]}>
-            {taskName}
+            {degreeName}
           </Typography>
           <Typography variant="body2" color={colors.grey[900]}>
-            Total number of degrees: {taskDetails}
+            Total number of Students: {totalStudents}
           </Typography>
           <Typography variant="body2" color={colors.grey[900]}>
-            All Agents: {taskAgents?.join(', ')}
+            Agent: {degreeAgent}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -33,4 +33,4 @@ const TaskCard = ({taskId, taskName, taskDetails, taskAgents, taskAgent}) => {
   )
 }
 
-export default TaskCard
+export default DegreeCard
