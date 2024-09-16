@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { Button, TextField, Typography, Box, IconButton, Grid, Select, MenuItem, Tooltip, Snackbar } from '@mui/material';
+import { Button, TextField, Typography, Box, IconButton, Grid, Select, MenuItem, Tooltip, Snackbar, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { v4 as uuidv4 } from 'uuid';
 import MuiAlert from '@mui/material/Alert';
+import { tokens } from '../../theme';
 
 const currentYear = new Date().getFullYear();
 
 const DegreeForm = () => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const [open, setOpen] = useState(false);
 
     const { control, handleSubmit, register } = useForm({
@@ -41,7 +44,22 @@ const DegreeForm = () => {
     };
 
     return (
-        <Box sx={{ p: 3, width: '80%', maxWidth: '80%', margin: '0 auto', mt: 5 }}>
+        <Box sx={{ p: 3, width: '80%', maxWidth: '80%', margin: '0 auto', mt: 5 ,
+            '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                    borderColor: colors.grey[300], // Default border color
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: colors.grey[100], // Border color when focused
+                },
+            },
+            '& .MuiInputLabel-root': {
+                color: colors.grey[300], // Default label color
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+                color: colors.grey[100], // Label color when focused
+            },
+        }}>
             <Typography variant="h4" gutterBottom>Degree Form</Typography>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -225,7 +243,11 @@ const DegreeForm = () => {
 
                 <Button
                     variant="contained"
-                    color="primary"
+                    sx={{
+                        backgroundColor: colors.grey[200],
+                        color: colors.grey[900],
+                        '&:hover': {backgroundColor: colors.grey[100]}
+                    }}
                     onClick={() => appendStudent({ studentID: uuidv4(), studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] })}
                     startIcon={<AddIcon />}
                 >
@@ -291,10 +313,14 @@ const DegreeForm = () => {
                 ))}
 
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4}}>
                     <Button
                         variant="contained"
-                        color="primary"
+                        sx={{
+                            backgroundColor: colors.grey[200],
+                            color: colors.grey[900],
+                            '&:hover': {backgroundColor: colors.grey[100]}
+                        }}
                         onClick={() => appendModule({ moduleName: '', moduleCode: '' })}
                         startIcon={<AddIcon />}
                     >
@@ -302,9 +328,13 @@ const DegreeForm = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        color="primary"
+                        sx={{
+                            width: '200px',
+                            backgroundColor: colors.grey[200],
+                            color: colors.grey[900],
+                            '&:hover': {backgroundColor: colors.grey[100]}
+                        }}
                         type="submit"
-                        sx={{ width: '200px' }}
                     >
                         Submit
                     </Button>

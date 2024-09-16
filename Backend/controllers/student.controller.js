@@ -11,8 +11,8 @@ export async function addNewStudent(studentList) {
           studentName: studentData.studentName,
           studentID: studentData.studentID,
           studentContact: studentData.studentContact,
-          studentLoginUsername: studentData.studentUsername, // Corrected field name
-          studentLoginPassword: studentData.studentPassword, // Corrected field name
+          studentLogin: studentData.studentLogin, // Corrected field name
+          studentPassword: studentData.studentPassword, // Corrected field name
           studentAssignment: studentData.studentAssignment || [] // Default to empty array
         });
 
