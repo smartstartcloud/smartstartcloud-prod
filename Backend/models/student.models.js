@@ -17,11 +17,11 @@ const studentSchema = mongo.Schema({
         type: String,
         required: true
     },
-    studentLoginUsername: {
+    studentLogin: {
         type: String,
         required: true,
     },
-    studentLoginPassword: {
+    studentPassword: {
         type: String,
         required: true
     },

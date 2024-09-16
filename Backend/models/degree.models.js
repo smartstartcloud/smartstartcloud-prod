@@ -21,9 +21,10 @@ const degreeSchema = mongo.Schema({
         type: String,
         required: true
     },
-    studentList:{
-        type: Array
-    },
+    studentList:[{
+        type: mongo.Schema.Types.ObjectId,
+        ref:"Student"
+    }],
     modules:{
         type: Array
     }
