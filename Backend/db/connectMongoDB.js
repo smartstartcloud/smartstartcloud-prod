@@ -1,6 +1,8 @@
 import mongo from 'mongoose';
 
-const connectMongoAuth = async ()=>{
+let authDB,infoDB;
+
+async function connectMongoAuth(){
     try {
         const db = await mongo.createConnection(process.env.MONGO_DB_URI_AUTH);
         db.on(`error`, console.error.bind(console, `connection error:`));
@@ -11,7 +13,7 @@ const connectMongoAuth = async ()=>{
         console.log("Error connecting Database", error);
     }
 }
-const connectMongoInformation = async ()=>{
+async function connectMongoInformation(){
     try {
         const db = await mongo.createConnection(process.env.MONGO_DB_URI_INFORMATION);
         db.on(`error`, console.error.bind(console, `connection error:`));
@@ -22,6 +24,7 @@ const connectMongoInformation = async ()=>{
         console.log("Error connecting Database", error);
     }
 }
+authDB = await connectMongoAuth();
+infoDB = await connectMongoInformation();
 
-
-export {connectMongoAuth,connectMongoInformation};
+export {authDB,infoDB};

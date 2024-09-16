@@ -9,10 +9,8 @@ import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
 import cpu from 'os'
 import helmet from 'helmet'
-import './models/degree.models.js'
-import './models/user.models.js'
-
-
+import './db/connectMongoDB.js'
+/*
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
 
@@ -44,3 +42,22 @@ if(cluster.isPrimary) {
     app.use("/api/degree", degreeRoutes);
     app.use("/dummyRequest", protect,dummyRequestRoute); 
 }
+*/
+// express app
+const app = express();
+app.listen(process.env.PORT, () => {
+  console.log(`listening on port ${process.env.PORT}`);
+})
+
+app.use(cookieParser());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+app.use(helmet());
+app.use((cors({
+    origin: true,  // Or set to true for dynamic origin
+    credentials: true
+})));
+
+app.use("/api/auth", authRoutes);
+app.use("/api/degree", degreeRoutes);
+app.use("/dummyRequest", protect,dummyRequestRoute); 

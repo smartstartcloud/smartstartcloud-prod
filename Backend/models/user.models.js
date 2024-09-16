@@ -1,7 +1,5 @@
 import mongo from 'mongoose';
-import {connectMongoAuth} from '../db/connectMongoDB.js';
-
-const db = await connectMongoAuth();
+import {authDB} from '../db/connectMongoDB.js';
 
 const userSchema = new mongo.Schema({
     email: {
@@ -36,6 +34,7 @@ const userSchema = new mongo.Schema({
     }
 })
 
-const User =db.model("users", userSchema);
+
+const User = authDB.model("users", userSchema);
 
 export default User;
