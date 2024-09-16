@@ -20,7 +20,6 @@ const studentSchema = mongo.Schema({
     studentLoginUsername: {
         type: String,
         required: true,
-        unique: true
     },
     studentLoginPassword: {
         type: String,
