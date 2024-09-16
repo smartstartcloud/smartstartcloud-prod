@@ -3,11 +3,14 @@ import React from 'react'
 import Header from '../../components/Header'
 import useToken from '../../hooks/useToken'
 import TaskCard from '../../components/TaskCard'
-import {taskData } from '../../data/mockData'
+import {degree } from '../../data/mockData'
+import { yearFilter } from '../../utils/yearFilter'
 
 const Dashboard = () => {
-  const assignments = taskData
+  const yearList = yearFilter(degree)  
+  console.log(yearList);
   
+
   const {handleToken} = useToken()
   return (
     <Box m="20px">
@@ -15,8 +18,8 @@ const Dashboard = () => {
         <Header title={"DASHBOARD"} subtitle={"Welcome to Dashboard"} />
       </Box>
       <Box display="flex" gap="20px">
-        { assignments.map((assignment) => (
-          <TaskCard key={assignment.taskId} taskId={assignment.taskId} taskName={assignment.taskName} taskDetails={assignment.taskDetails} />
+        { yearList.map((year, idx) => (
+          <TaskCard key={idx} taskId={year.year_id} taskName={year.yearName} taskDetails={year.degreeList.length} taskAgents={year.agentList} />
         )) }
       </Box>
 
