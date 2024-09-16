@@ -10,7 +10,7 @@ export const newDegree = async (req,res)=>{
     const studentList = req.body.studentList;
     const modules = req.body.modules;
 
-    // Create User
+    // Create Degree
     const newDegree = new Degree({
       dID,
       name,
