@@ -1,7 +1,5 @@
 import mongo from 'mongoose';
-import {connectMongoInformation} from '../db/connectMongoDB.js';
-
-const db = await connectMongoInformation();
+import {infoDB} from '../db/connectMongoDB.js';
 
 const studentSchema = mongo.Schema({
     studentName: {
@@ -31,5 +29,5 @@ const studentSchema = mongo.Schema({
     }
 });
 
-const Student = db.model("Student", studentSchema, "Student");
+const Student = infoDB.model("Student", studentSchema, "Student");
 export default Student;

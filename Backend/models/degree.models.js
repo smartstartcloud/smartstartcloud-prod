@@ -1,7 +1,5 @@
 import mongo from 'mongoose';
-import {connectMongoInformation} from '../db/connectMongoDB.js';
-
-const db = await connectMongoInformation();
+import {infoDB} from '../db/connectMongoDB.js';
 
 const degreeSchema = mongo.Schema({
     dID: {
@@ -29,5 +27,5 @@ const degreeSchema = mongo.Schema({
         type: Array
     }
 })
-const Degree =db.model("Degree", degreeSchema,"Degree");
+const Degree = infoDB.model("Degree", degreeSchema,"Degree");
 export default Degree;
