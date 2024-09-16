@@ -1,4 +1,4 @@
-import Student from '../models/student.models.js'; // Import the Student model
+import Student from '../models/student.models.js';
 
 // Function to add new students and return their MongoDB ObjectIDs
 async function addNewStudent(studentList) {
