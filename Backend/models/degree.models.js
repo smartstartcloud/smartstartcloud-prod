@@ -2,28 +2,28 @@ import mongo from 'mongoose';
 import {infoDB} from '../db/connectMongoDB.js';
 
 const degreeSchema = mongo.Schema({
-    dID: {
+    degreeID : {
         type: String,
         required: true,
         unique: true
     },
-    name:{
+    degreeName:{
         type: String,
         required: true
     },
-    year: {
+    degreeYear: {
         type: String,
         required: true
     },
-    user:{
+    degreeAgent:{
         type: String,
         required: true
     },
-    studentList:[{
+    degreeStudentList:[{
         type: mongo.Schema.Types.ObjectId,
         ref:"Student"
     }],
-    modules:{
+    degreeModules:{
         type: Array
     }
 })
