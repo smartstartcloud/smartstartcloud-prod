@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { v4 as uuidv4 } from 'uuid';
 import MuiAlert from '@mui/material/Alert';
 import { tokens } from '../../theme';
+import useSendDegreeForm from '../../hooks/useSendDegreeForm';
 
 const currentYear = new Date().getFullYear();
 
@@ -13,13 +14,15 @@ const DegreeForm = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [open, setOpen] = useState(false);
+    const [formSaved, setsetFormSaved] = useState(false);
 
-    const { control, handleSubmit, register } = useForm({
+    const { control, handleSubmit } = useForm({
         defaultValues: {
+            degreeID: '',
             degreeYear: '',
             degreeName: '',
             degreeAgent: '',
-            degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] }],
+            degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentLogin: '', studentPassword: '', studentAssignmentList: [] }],
             degreeModules: [{ moduleName: '', moduleCode: '' }]
         }
     });
@@ -34,8 +37,13 @@ const DegreeForm = () => {
         name: 'degreeModules'
     });
 
+    const {sendDegreeForm} = useSendDegreeForm();
+
     const onSubmit = data => {
-        console.log('Form Data:', data);
+        // console.log('Form Data:', data);
+        const hoise = sendDegreeForm(data)
+        console.log(hoise);
+        
         setOpen(true); // Show success toast
     };
 
@@ -65,6 +73,29 @@ const DegreeForm = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
 
                 <Box mb={2}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={2}>
+                            <Tooltip title="Enter the Degree ID">
+                                <Controller
+                                    name="degreeID"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Degree ID"
+                                            variant="outlined"
+                                            fullWidth
+                                            required
+                                        />
+                                    )}
+                                />
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                <Box mb={2}>
+                    
                     <Tooltip title="Select the Degree Year">
                         <Controller
                             name="degreeYear"
@@ -137,12 +168,18 @@ const DegreeForm = () => {
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={4}>
                                         <Tooltip title="Student ID (Auto-generated)">
-                                            <TextField
-                                                value={field.studentID || uuidv4()}
-                                                label="Student ID"
-                                                variant="outlined"
-                                                fullWidth
-                                                disabled
+                                            <Controller
+                                                name={`degreeStudentList[${index}].studentID`}
+                                                control={control}
+                                                // defaultValue={field.studentID || uuidv4()} // Auto-generate UUID
+                                                render={({ field }) => (
+                                                    <TextField
+                                                        {...field}
+                                                        label="Student ID"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                    />
+                                                )}
                                             />
                                         </Tooltip>
                                     </Grid>
@@ -183,7 +220,7 @@ const DegreeForm = () => {
                                     <Grid item xs={12} sm={6}>
                                         <Tooltip title="Enter Student Username">
                                             <Controller
-                                                name={`degreeStudentList[${index}].studentUsername`}
+                                                name={`degreeStudentList[${index}].studentLogin`}
                                                 control={control}
                                                 render={({ field }) => (
                                                     <TextField
@@ -209,7 +246,7 @@ const DegreeForm = () => {
                                                         variant="outlined"
                                                         fullWidth
                                                         required
-                                                        type="password"
+                                                        // type="password"
                                                     />
                                                 )}
                                             />
@@ -248,7 +285,7 @@ const DegreeForm = () => {
                         color: colors.grey[900],
                         '&:hover': {backgroundColor: colors.grey[100]}
                     }}
-                    onClick={() => appendStudent({ studentID: uuidv4(), studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] })}
+                    onClick={() => appendStudent({ studentID: '', studentName: '', studentContact: '', studentLogin: '', studentPassword: '', studentAssignmentList: [] })}
                     startIcon={<AddIcon />}
                 >
                     Add Student
