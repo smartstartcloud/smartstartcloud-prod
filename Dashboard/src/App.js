@@ -49,17 +49,17 @@ function App() {
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
               <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} />
-              <Route path="/team" element={authUser ? <Team /> : <Navigate to='/login' /> } />
+              <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
+              {/* <Route path="/team" element={authUser ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={authUser ? <Invoices /> : <Navigate to='/login' /> } />
               <Route path="/contacts" element={authUser ? <Contacts /> : <Navigate to='/login' /> } />
               <Route path="/bar" element={authUser ? <Bar /> : <Navigate to='/login' /> } />
               <Route path="/form" element={authUser ? <Form /> : <Navigate to='/login' /> } />
-              <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               <Route path="/line" element={authUser ? <Line /> : <Navigate to='/login' /> } />
               <Route path="/pie" element={authUser ? <Pie /> : <Navigate to='/login' /> } />
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
-              <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } />
+              <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } /> */}
               <Route path="/task/:taskId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
               <Route path="/task/:taskId/:degreeId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
