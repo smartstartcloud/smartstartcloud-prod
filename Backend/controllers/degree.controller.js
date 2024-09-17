@@ -3,21 +3,16 @@ import { addNewStudent } from './student.controller.js';
 
 export const newDegree = async (req,res)=>{
   try{
-    const dID = req.body.dID;
-    const name = req.body.name;
-    const year = req.body.name;
-    const user = req.body.user;
-    const studentList = req.body.studentList;
-    const modules = req.body.modules;
+    const {degreeID,degreeName,degreeYear,degreeAgent,degreeStudentList,degreeModules } = req.body
 
     // Create Degree
     const newDegree = new Degree({
-      dID,
-      name,
-      year,
-      user,
-      studentList: await addNewStudent(studentList),
-      modules
+      degreeID,
+      degreeName,
+      degreeYear,
+      degreeAgent,
+      degreeStudentList: await addNewStudent(degreeStudentList),
+      degreeModules
     })
     if(newDegree){
       await newDegree.save();

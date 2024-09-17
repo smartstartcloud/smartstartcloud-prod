@@ -6,8 +6,13 @@ export async function addNewStudent(studentList) {
     // Use Promise.all to save all students concurrently
     const addedStudentIDs = await Promise.all(
       studentList.map(async (studentData) => {
-        // Create a new Student instance
-        const newStudent = new Student({
+        // Finding the current student in database to see if the ID already exists in database;
+        let currentStudent = await Student.findOne({studentID:studentData.studentID});
+        if(currentStudent){
+          return currentStudent._id;
+        }else{
+          // Create a new Student instance
+          const newStudent = new Student({
           studentName: studentData.studentName,
           studentID: studentData.studentID,
           studentContact: studentData.studentContact,
@@ -19,6 +24,7 @@ export async function addNewStudent(studentList) {
         // Save the student to the database and return the saved student's ObjectID
         const savedStudent = await newStudent.save();
         return savedStudent._id;
+        }
       })
     );
 
