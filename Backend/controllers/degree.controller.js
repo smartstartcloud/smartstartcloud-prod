@@ -27,3 +27,12 @@ export const newDegree = async (req,res)=>{
       }
     }
 }
+export const getDegree = async (req,res)=>{
+  try {
+    const degrees = await Degree.find({});
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
