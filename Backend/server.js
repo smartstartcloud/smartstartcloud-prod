@@ -10,7 +10,6 @@ import cluster from 'cluster'
 import cpu from 'os'
 import helmet from 'helmet'
 import './db/connectMongoDB.js'
-import degreeRoutes from './routes/degree.routes.js';
 /*
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
@@ -62,6 +61,3 @@ app.use((cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/degree", degreeRoutes);
 app.use("/dummyRequest", protect,dummyRequestRoute);
-
-// Use the degree routes
-app.use('/api', degreeRoutes);
