@@ -16,7 +16,7 @@ export const newDegree = async (req,res)=>{
     })
     if(newDegree){
       await newDegree.save();
-      res.sendStatus(200);
+      res.sendStatus(200).json({newDegree});
     }
     }catch(error){
       if(error.code==11000){
