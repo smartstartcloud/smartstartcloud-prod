@@ -22,11 +22,23 @@ const useSendDegreeForm = () => {
                 throw new Error(data.error);
             }
             console.log(JSON.stringify(data));
-            console.log('hoise');
-            return true
+            return data
         } catch (error) {
-            console.log("Error in sendDegreeForm hook", error);
-            return false
+            if (error.response) {
+                if (error.response.status === 409) {
+                    console.log("Error: Degree ID already exists");
+                    throw new Error("Degree ID already exists");
+                } else if (error.response.status === 500) {
+                    console.log("Error: Internal Server Error");
+                    throw new Error("Internal Server Error");
+                } else {
+                    console.log("Error: ", error.response.data.error);
+                    throw new Error(error.response.data.error); // Re-throw any other error
+                }
+            } else {
+                console.log("Network or other error", error);
+                throw new Error("Something went wrong");
+            }
         }
     }
 

@@ -7,12 +7,12 @@ import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
 import { useNavigate } from 'react-router-dom';
 
-const DegreeCard = ({taskId, degreeId, degreeName, totalStudents, degreeAgent}) => {
+const DegreeCard = ({degreeYear, degreeId, degreeName, totalStudents, degreeAgent}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate()
   const handleClick = () => {
-    navigate(`/task/${taskId}/${degreeId}`);
+    navigate(`/task/${degreeYear}/${degreeId}`);
   };
   return (
     <Card onClick={handleClick} sx={{ maxWidth: 345, background: colors.grey[100] }} >
