@@ -18,10 +18,11 @@ import Calendar from "./scenes/calendar"
 import Login from "./scenes/login";
 import Signup from "./scenes/signup";
 import { useAuthContext } from "./context/AuthContext";
-import MainTask from "./scenes/task";
 import RenewPassword from "./scenes/renewPassword";
 import Welcome from "./scenes/welcome";
 import DegreeForm from "./components/forms/DegreeForm"
+import DegreeBoard from "./scenes/degree";
+import DegreeProfile from "./scenes/degree/degreeProfile";
 
 
 function App() {
@@ -60,8 +61,8 @@ function App() {
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } /> */}
-              <Route path="/task/:taskId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
-              <Route path="/task/:taskId/:degreeId" element={authUser ? <MainTask /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
             </Routes>
           </main>
