@@ -35,7 +35,12 @@ export const loginUser = async (req, res) => {
 
 export const signupUser = async (req, res) => {
     try {
-        const {email, firstName, lastName, userName, password, gender} = req.body;
+        const {email, firstName, lastName, userName, password, gender, role} = req.body;
+        // Check if the role is valid
+        const validRoles = ["admin", "hr", "agent"];
+        if (!validRoles.includes(role)) {
+        return res.status(400).json({ message: "Invalid role specified" });
+        }
         const userEmail = await User.findOne({email});
         if (userEmail){            
             return res.status(400).json({error: "Email already exists."})
@@ -61,6 +66,7 @@ export const signupUser = async (req, res) => {
             lastName,
             userName,
             gender,
+            role,
             password: hashPassword,
             passRenew: passRenew
         })
