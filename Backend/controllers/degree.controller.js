@@ -29,12 +29,6 @@ export const newDegree = async (req,res)=>{
 }
 export const getAllDegree = async (req,res)=>{
   try {
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    const degrees = await Degree.find({});
-=======
-=======
->>>>>>> main
     const degrees = await Degree.find({})
       .populate('degreeStudentList');
     res.status(200).json(degrees);
@@ -44,12 +38,7 @@ export const getAllDegree = async (req,res)=>{
   }
 }
 
-<<<<<<< HEAD
-export const getDegreeByYear = async (req,res)=>{
-=======
-export const getSelectedDegree = async (req,res)=>{
->>>>>>> main
-  
+const getDegreeByYear = async (req,res)=>{
   const {degreeYear} = req.params
   try {
     const degrees = await Degree.find({degreeYear})
@@ -61,19 +50,12 @@ export const getSelectedDegree = async (req,res)=>{
   }
 }
 
-<<<<<<< HEAD
-export const getDegreeByID = async (req,res)=>{
-=======
-export const getSingleDegree = async (req,res)=>{
->>>>>>> main
-  
+
+const getDegreeByID = async (req,res)=>{
   const {degreeID} = req.params
-  
   try {
     const degrees = await Degree.findOne({degreeID})
       .populate('degreeStudentList');
-<<<<<<< HEAD
->>>>>>> Stashed changes
     res.status(200).json(degrees);
   } catch (error) {
     console.error("Error fetching degrees:", error);
@@ -82,13 +64,10 @@ export const getSingleDegree = async (req,res)=>{
 }
 
 export const getDegreeByAgent = async (req,res)=>{
-  
   const {degreeAgent} = req.params
   try {
     const degrees = await Degree.find({degreeAgent})
       .populate('degreeStudentList');
-=======
->>>>>>> main
     res.status(200).json(degrees);
   } catch (error) {
     console.error("Error fetching degrees:", error);
