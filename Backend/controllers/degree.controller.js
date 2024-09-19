@@ -27,9 +27,54 @@ export const newDegree = async (req,res)=>{
       }
     }
 }
-export const getDegree = async (req,res)=>{
+export const getAllDegree = async (req,res)=>{
   try {
+<<<<<<< Updated upstream
     const degrees = await Degree.find({});
+=======
+    const degrees = await Degree.find({})
+      .populate('degreeStudentList');
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getDegreeByYear = async (req,res)=>{
+  
+  const {degreeYear} = req.params
+  try {
+    const degrees = await Degree.find({degreeYear})
+      .populate('degreeStudentList');
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getDegreeByID = async (req,res)=>{
+  
+  const {degreeID} = req.params
+  
+  try {
+    const degrees = await Degree.findOne({degreeID})
+      .populate('degreeStudentList');
+>>>>>>> Stashed changes
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getDegreeByAgent = async (req,res)=>{
+  
+  const {degreeAgent} = req.params
+  try {
+    const degrees = await Degree.find({degreeAgent})
+      .populate('degreeStudentList');
     res.status(200).json(degrees);
   } catch (error) {
     console.error("Error fetching degrees:", error);
