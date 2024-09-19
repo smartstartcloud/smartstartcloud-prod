@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { Button, TextField, Typography, Box, IconButton, Grid, Select, MenuItem, Tooltip, Snackbar, useTheme } from '@mui/material';
+import {
+    Button,
+    TextField,
+    Typography,
+    Box,
+    IconButton,
+    Grid,
+    Select,
+    MenuItem,
+    Tooltip,
+    Snackbar,
+    useTheme,
+    Alert, CircularProgress
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,11 +23,20 @@ import useSendDegreeForm from '../../hooks/useSendDegreeForm';
 
 const currentYear = new Date().getFullYear();
 
+const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
 const DegreeForm = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [open, setOpen] = useState(false);
-    const [formSaved, setsetFormSaved] = useState(false);
+    const [formSaved, setFormSaved] = useState(false);
+    const [monthYear, setMonthYear] = useState({ month: '', year: '' });
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
 
     const { control, handleSubmit } = useForm({
         defaultValues: {
@@ -22,8 +44,9 @@ const DegreeForm = () => {
             degreeYear: '',
             degreeName: '',
             degreeAgent: '',
-            degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentLogin: '', studentPassword: '', studentAssignmentList: [] }],
+            degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] }],
             degreeModules: [{ moduleName: '', moduleCode: '' }]
+
         }
     });
 
@@ -37,93 +60,134 @@ const DegreeForm = () => {
         name: 'degreeModules'
     });
 
-    const {sendDegreeForm} = useSendDegreeForm();
+    const { sendDegreeForm } = useSendDegreeForm();
 
-    const onSubmit = data => {
-        // console.log('Form Data:', data);
-        const hoise = sendDegreeForm(data)
-        console.log(hoise);
+    const onSubmit = async (data) => {
+        const modules = {};
+        data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;
         
-        setOpen(true); // Show success toast
+        data.degreeModules.forEach((module, index) => {            
+            module.moduleName = `Module ${index + 1}`
+            // modules[`Module ${index + 1}`] = module.moduleCode;
+        });
+        
+
+        // const finalData = {
+        //     ...data,
+        //     degreeModules: modules
+        // }
+
+        setLoading(true);
+        try{
+            const response = await sendDegreeForm(data)
+            console.log('Form Data:', data);
+            console.log('Response Data:', response);
+            setOpen(true);
+            setLoading(false);
+        }catch (e) {
+            setError(true);
+            setLoading(false)
+            setErrorMessage(e.message)
+            console.log("Error submitting form: ", e.message)
+        }
+
     };
 
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleCloseError = () => {
+        setError(false);
+    };
+
     return (
-        <Box sx={{ p: 3, width: '80%', maxWidth: '80%', margin: '0 auto', mt: 5 ,
+        <Box sx={{ p: 3, width: '80%', maxWidth: '80%', margin: '0 auto', mt: 5 , border: '1px solid rgba(102, 106, 108, 0.5)',
+            borderRadius: '8px',
             '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                    borderColor: colors.grey[300], // Default border color
+                    borderColor: colors.grey[300],
                 },
                 '&.Mui-focused fieldset': {
-                    borderColor: colors.grey[100], // Border color when focused
+                    borderColor: colors.grey[100],
                 },
             },
             '& .MuiInputLabel-root': {
-                color: colors.grey[300], // Default label color
+                color: colors.grey[300],
             },
             '& .MuiInputLabel-root.Mui-focused': {
-                color: colors.grey[100], // Label color when focused
+                color: colors.grey[100],
             },
         }}>
             <Typography variant="h4" gutterBottom>Degree Form</Typography>
 
             <form onSubmit={handleSubmit(onSubmit)}>
 
-                <Box mb={2}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={2}>
-                            <Tooltip title="Enter the Degree ID">
-                                <Controller
-                                    name="degreeID"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Degree ID"
-                                            variant="outlined"
-                                            fullWidth
-                                            required
-                                        />
-                                    )}
-                                />
-                            </Tooltip>
-                        </Grid>
-                    </Grid>
-                </Box>
 
-                <Box mb={2}>
-                    
-                    <Tooltip title="Select the Degree Year">
+                <Grid item xs={12} sm={6} sx={{ mt: 4, mb: 3, width: "49.5%" }}>
+                    <Tooltip title="Enter the Degree ID">
                         <Controller
-                            name="degreeYear"
+                            name="degreeID"
                             control={control}
                             render={({ field }) => (
-                                <Select
+                                <TextField
                                     {...field}
+                                    label="Degree ID"
                                     variant="outlined"
                                     fullWidth
-                                    displayEmpty
                                     required
-                                >
-                                    <MenuItem value="" disabled>
-                                        Select Degree Year {/* Placeholder */}
-                                    </MenuItem>
-                                    {Array.from({ length: 30 }, (_, i) => (
-                                        <MenuItem key={i} value={currentYear - i}>
-                                            {currentYear - i}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                />
                             )}
                         />
                     </Tooltip>
-                </Box>
-
+                </Grid>
 
                 <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <Tooltip title="Select the Degree Month">
+                            <Select
+                                value={monthYear.month}
+                                onChange={(e) => setMonthYear({ ...monthYear, month: e.target.value })} // Set month
+                                fullWidth
+                                displayEmpty
+                                required
+                            >
+                                <MenuItem value="" disabled>
+                                    Select Month
+                                </MenuItem>
+                                {months.map((month, index) => (
+                                    <MenuItem key={index} value={month}>
+                                        {month}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Tooltip>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                        <Tooltip title="Select the Degree Year">
+                            <Select
+                                value={monthYear.year}
+                                onChange={(e) => setMonthYear({ ...monthYear, year: e.target.value })} // Set year
+                                fullWidth
+                                displayEmpty
+                                required
+                            >
+                                <MenuItem value="" disabled>
+                                    Select Year
+                                </MenuItem>
+                                {Array.from({ length: 30 }, (_, i) => (
+                                    <MenuItem key={i} value={currentYear - i}>
+                                        {currentYear - i}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
+
+
+                <Grid container spacing={2} sx={{ mt: 1 }}>
                     <Grid item xs={12} sm={6}>
                         <Tooltip title="Enter the Degree Name">
                             <Controller
@@ -160,18 +224,31 @@ const DegreeForm = () => {
                     </Grid>
                 </Grid>
 
-                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Degree Students</Typography>
+                <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>Degree Students</Typography>
                 {studentFields.map((field, index) => (
-                    <Box key={field.id} sx={{ mb: 3, width: '100%' }}> {/* Reduced width by 10% */}
-                        <Grid container spacing={2} alignItems="center"> {/* Align items vertically */}
-                            <Grid item xs={11}> {/* All form fields will take up 11 columns */}
+                    <Box
+                        key={field.id}
+                        sx={{
+                            mb: 3,
+                            width: '100%',
+                            border: '1px solid rgba(102, 106, 108, 0.5)',
+                            borderRadius: '8px',
+                            position: 'relative',
+                            padding: '16px',
+                            transition: 'border-color 0.3s ease',
+                            '&:hover': {
+                                borderColor: 'rgba(102, 106, 108, 0.9)',
+                            },
+                        }}
+                    >
+                        <Grid container spacing={2} alignItems="center">
+                            <Grid item xs={12}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={4}>
                                         <Tooltip title="Student ID (Auto-generated)">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentID`}
                                                 control={control}
-                                                // defaultValue={field.studentID || uuidv4()} // Auto-generate UUID
                                                 render={({ field }) => (
                                                     <TextField
                                                         {...field}
@@ -228,7 +305,6 @@ const DegreeForm = () => {
                                                         label="Student Username"
                                                         variant="outlined"
                                                         fullWidth
-                                                        required
                                                     />
                                                 )}
                                             />
@@ -245,8 +321,6 @@ const DegreeForm = () => {
                                                         label="Student Password"
                                                         variant="outlined"
                                                         fullWidth
-                                                        required
-                                                        // type="password"
                                                     />
                                                 )}
                                             />
@@ -254,29 +328,33 @@ const DegreeForm = () => {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={1} sx={{ alignSelf: 'flex-start' }}>
-                                <Tooltip title="Remove Student">
-                                    <IconButton
-                                        onClick={() => removeStudent(index)}
-                                        sx={{
-                                            backgroundColor: 'grey',
-                                            color: 'white',
-                                            borderRadius: '50%',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: 'grey',
-                                                cursor: 'pointer',
-                                            },
-                                        }}
-                                    >
-                                        <RemoveIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-
                         </Grid>
+
+                        <Tooltip title="Remove Student">
+                            <IconButton
+                                onClick={() => removeStudent(index)}
+                                sx={{
+                                    position: 'absolute',
+                                    top: '-9px',
+                                    right: '-9px',
+                                    backgroundColor: 'grey',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    height: "20px",
+                                    width: "20px",
+                                    '&:hover': {
+                                        backgroundColor: 'white',
+                                        color: 'grey',
+                                        cursor: 'pointer',
+                                    },
+                                }}
+                            >
+                                <RemoveIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Box>
                 ))}
+
 
                 <Button
                     variant="contained"
@@ -291,26 +369,29 @@ const DegreeForm = () => {
                     Add Student
                 </Button>
 
-                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Degree Modules</Typography>
+                <Typography variant="h6" gutterBottom sx={{ mt: 4, mb:2 }}>Degree Modules</Typography>
                 {moduleFields.map((field, index) => (
-                    <Box key={field.id} sx={{ mb: 3 }}>
+                    <Box key={field.id} sx={{
+                        mb: 3,
+                        width: '100%',
+                        border: '1px solid rgba(102, 106, 108, 0.5)',
+                        borderRadius: '8px',
+                        position: 'relative',
+                        padding: '16px',
+                        transition: 'border-color 0.3s ease',
+                        '&:hover': {
+                            borderColor: 'rgba(102, 106, 108, 0.9)',
+                        },
+                    }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <Tooltip title="Enter Module Name">
-                                    <Controller
-                                        name={`degreeModules[${index}].moduleName`}
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Module Name"
-                                                variant="outlined"
-                                                fullWidth
-                                                required
-                                            />
-                                        )}
-                                    />
-                                </Tooltip>
+                                <TextField
+                                    value={`Module ${index + 1}`}
+                                    label="Module Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    disabled
+                                />
                             </Grid>
                             <Grid item xs={12} sm={5}>
                                 <Tooltip title="Enter Module Code">
@@ -332,16 +413,20 @@ const DegreeForm = () => {
                             <Grid item xs={12} sm={1} sx={{ alignSelf: 'flex-start' }}>
                                 <IconButton onClick={() => removeModule(index)}
                                             sx={{
+                                                position: 'absolute',
+                                                top: '-9px',
+                                                right: '-9px',
                                                 backgroundColor: 'grey',
                                                 color: 'white',
                                                 borderRadius: '50%',
+                                                height: "20px",
+                                                width: "20px",
                                                 '&:hover': {
                                                     backgroundColor: 'white',
                                                     color: 'grey',
                                                     cursor: 'pointer',
                                                 },
-                                            }}
-                                >
+                                            }}>
                                     <RemoveIcon />
                                 </IconButton>
                             </Grid>
@@ -372,8 +457,13 @@ const DegreeForm = () => {
                             '&:hover': {backgroundColor: colors.grey[100]}
                         }}
                         type="submit"
+                        disabled={loading}
                     >
-                        Submit
+                        {loading ? (
+                            <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
+                        ) : (
+                            'Submit'
+                        )}
                     </Button>
                 </Box>
 
@@ -383,6 +473,11 @@ const DegreeForm = () => {
                 <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity="success">
                     Form submitted successfully!
                 </MuiAlert>
+            </Snackbar>
+            <Snackbar open={error} autoHideDuration={6000} onClose={handleCloseError}>
+                <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+                    Form submission failed. {errorMessage}. Please try again.
+                </Alert>
             </Snackbar>
         </Box>
     );
