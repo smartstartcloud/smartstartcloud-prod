@@ -16,10 +16,10 @@ export const newDegree = async (req,res)=>{
     })
     if(newDegree){
       await newDegree.save();
-      res.sendStatus(200).json({newDegree});
+      res.status(200).json({newDegree});
     }
     }catch(error){
-      if(error.code==11000){
+      if(error.code==11000){        
         res.status(409).json({error:"Degree ID already exists"});
       }else{
         console.log(error);
@@ -27,9 +27,47 @@ export const newDegree = async (req,res)=>{
       }
     }
 }
-export const getDegree = async (req,res)=>{
+export const getAllDegree = async (req,res)=>{
   try {
-    const degrees = await Degree.find({});
+    const degrees = await Degree.find({})
+      .populate('degreeStudentList');
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getDegreeByYear = async (req,res)=>{
+  const {degreeYear} = req.params
+  try {
+    const degrees = await Degree.find({degreeYear})
+      .populate('degreeStudentList');
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+export const getDegreeByID = async (req,res)=>{
+  const {degreeID} = req.params
+  try {
+    const degrees = await Degree.findOne({degreeID})
+      .populate('degreeStudentList');
+    res.status(200).json(degrees);
+  } catch (error) {
+    console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getDegreeByAgent = async (req,res)=>{
+  const {degreeAgent} = req.params
+  try {
+    const degrees = await Degree.find({degreeAgent})
+      .populate('degreeStudentList');
     res.status(200).json(degrees);
   } catch (error) {
     console.error("Error fetching degrees:", error);

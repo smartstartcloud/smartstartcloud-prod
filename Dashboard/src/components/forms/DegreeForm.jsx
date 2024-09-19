@@ -34,6 +34,7 @@ const DegreeForm = () => {
     const [formSaved, setFormSaved] = useState(false);
     const [monthYear, setMonthYear] = useState({ month: '', year: '' });
     const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
 
@@ -44,7 +45,7 @@ const DegreeForm = () => {
             degreeName: '',
             degreeAgent: '',
             degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] }],
-            degreeModules: [{ moduleCode: '' }]
+            degreeModules: [{ moduleName: '', moduleCode: '' }]
 
         }
     });
@@ -63,27 +64,31 @@ const DegreeForm = () => {
 
     const onSubmit = async (data) => {
         const modules = {};
-        data.degreeYear = `${monthYear.month} ${monthYear.year}`;
-        data.degreeModules.forEach((module, index) => {
-            modules[`Module ${index + 1}`] = module.moduleCode;
+        data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;
+        
+        data.degreeModules.forEach((module, index) => {            
+            module.moduleName = `Module ${index + 1}`
+            // modules[`Module ${index + 1}`] = module.moduleCode;
         });
+        
 
-        const finalData = {
-            ...data,
-            degreeModules: modules
-        }
+        // const finalData = {
+        //     ...data,
+        //     degreeModules: modules
+        // }
 
         setLoading(true);
         try{
             const response = await sendDegreeForm(data)
-            console.log('Form Data:', finalData);
+            console.log('Form Data:', data);
             console.log('Response Data:', response);
             setOpen(true);
             setLoading(false);
         }catch (e) {
             setError(true);
             setLoading(false)
-            console.log("Error submitting form: ", e)
+            setErrorMessage(e.message)
+            console.log("Error submitting form: ", e.message)
         }
 
     };
@@ -93,7 +98,7 @@ const DegreeForm = () => {
     };
 
     const handleCloseError = () => {
-        setOpen(false);
+        setError(false);
     };
 
     return (
@@ -471,7 +476,7 @@ const DegreeForm = () => {
             </Snackbar>
             <Snackbar open={error} autoHideDuration={6000} onClose={handleCloseError}>
                 <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-                    Form submission failed. Please try again.
+                    Form submission failed. {errorMessage}. Please try again.
                 </Alert>
             </Snackbar>
         </Box>
