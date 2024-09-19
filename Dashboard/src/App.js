@@ -23,6 +23,7 @@ import Welcome from "./scenes/welcome";
 import DegreeForm from "./components/forms/DegreeForm"
 import DegreeBoard from "./scenes/degree";
 import DegreeProfile from "./scenes/degree/degreeProfile";
+import SignupForm from "./components/forms/SignupForm";
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
               <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} />
+              {/* <Route path="/signup" element={<SignupForm/>} /> */}
               <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               {/* <Route path="/team" element={authUser ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={authUser ? <Invoices /> : <Navigate to='/login' /> } />
