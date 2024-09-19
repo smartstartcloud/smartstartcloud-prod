@@ -38,7 +38,7 @@ export const getAllDegree = async (req,res)=>{
   }
 }
 
-const getDegreeByYear = async (req,res)=>{
+export const getDegreeByYear = async (req,res)=>{
   const {degreeYear} = req.params
   try {
     const degrees = await Degree.find({degreeYear})
@@ -51,7 +51,7 @@ const getDegreeByYear = async (req,res)=>{
 }
 
 
-const getDegreeByID = async (req,res)=>{
+export const getDegreeByID = async (req,res)=>{
   const {degreeID} = req.params
   try {
     const degrees = await Degree.findOne({degreeID})
