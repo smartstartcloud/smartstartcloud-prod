@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import useLogin from '../../hooks/useLogin.js'
+import { Link } from 'react-router-dom'
 
 
 const userSchema = yup.object().shape({
@@ -19,6 +20,7 @@ const initialValues = {
     userName: "",
     password: "",
 }
+
 
 const Login = () => {
     
@@ -92,10 +94,15 @@ const Login = () => {
                                 }}
                             />
                         </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
+                        <Box display="flex" justifyContent="space-between" mt="20px">
                             <Button type="submit" color="secondary" variant="contained">
                                 Log in User
                             </Button>
+                            <Link to="/signUp" style={{ textDecoration: 'none' }}>
+                                <Button color="secondary" variant="text">
+                                    Sign Up
+                                </Button>
+                            </Link>
                         </Box>
                     </form>
                 )
