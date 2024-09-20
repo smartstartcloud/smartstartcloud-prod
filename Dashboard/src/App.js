@@ -24,6 +24,7 @@ import DegreeForm from "./components/forms/DegreeForm"
 import DegreeBoard from "./scenes/degree";
 import DegreeProfile from "./scenes/degree/degreeProfile";
 import SignupForm from "./components/forms/SignupForm";
+import { AccountInfo } from "./devTest/accountInfo";
 
 
 function App() {
@@ -45,13 +46,17 @@ function App() {
           <main className="content">
             <Topbar logOut = {handleLogout} />
             <Routes>
+
+              <Route path="/testPage" element={ <AccountInfo /> } />
+
+
               <Route path="/" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
               {/* <Route path="/login" element={authUser ? <Navigate to='/' /> : <Login auth = {handleLogin} />} /> */}
               <Route path="/login" element={authUser ? <Navigate to='/' /> : <Login />} />
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
-              <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} />
-              {/* <Route path="/signup" element={<SignupForm/>} /> */}
+              {/* <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} /> */}
+              <Route path="/signup" element={<SignupForm/>} />
               <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               {/* <Route path="/team" element={authUser ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={authUser ? <Invoices /> : <Navigate to='/login' /> } />
