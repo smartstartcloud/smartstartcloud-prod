@@ -29,7 +29,9 @@ const DegreeProfile = () => {
     }
 
     return (
-        <div>DegreeProfile {degreeId} {degree.degreeName}</div>
+        <Box m='20px'>
+            <div>DegreeProfile {degreeId} {degree.degreeName}</div>
+        </Box>
     )
 }
 
