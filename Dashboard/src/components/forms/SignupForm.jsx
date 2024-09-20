@@ -5,6 +5,8 @@ import MuiAlert from '@mui/material/Alert';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { tokens } from '../../theme';
+import useSignup from '../../hooks/useSignup';
+import { Link } from 'react-router-dom';
 
 const SignupForm = () => {
     const theme = useTheme();
@@ -16,6 +18,8 @@ const SignupForm = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const { signup } = useSignup()
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -49,16 +53,14 @@ const SignupForm = () => {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            // const response = await sendSignupForm(data);
-            console.log('Form Data:', data);
-            // console.log('Response Data:', response);
+            const response = await signup(data);
+            console.log('Response Data:', response);
             setformSuccess(true);
             setLoading(false);
         } catch (e) {
-            // setError(true);
+            setFormError(true)
             setLoading(false);
             setErrorMessage(e.message);
-            console.log("Error submitting form: ", e.message);
         }
     }
 
@@ -384,6 +386,11 @@ const SignupForm = () => {
                             'Submit'
                         )}
                     </Button>
+                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                        <Button color="secondary" variant="text">
+                            LOGIN
+                        </Button>
+                    </Link>
                 </Box>
             </form>
             <Snackbar open={formSuccess} autoHideDuration={3000} onClose={handleClose}>
@@ -393,7 +400,7 @@ const SignupForm = () => {
             </Snackbar>
             <Snackbar open={formError} autoHideDuration={6000} onClose={handleCloseError}>
                 <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-                    User Signup failed. {errorMessage}. Please try again.
+                    User Signup failed. {errorMessage}
                 </Alert>
             </Snackbar>
         </Box>

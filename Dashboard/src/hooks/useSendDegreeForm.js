@@ -21,7 +21,6 @@ const useSendDegreeForm = () => {
             if (data.error) {
                 throw new Error(data.error);
             }
-            console.log(JSON.stringify(data));
             return data
         } catch (error) {
             if (error.response) {
