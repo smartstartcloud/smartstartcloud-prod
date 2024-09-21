@@ -15,13 +15,13 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({error: "Default password not changed",useName:user.userName});
         }
         
-        generateRefreshToken(user._id, res)
+        generateRefreshToken(user._id,user.role,res)
         
 
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
-            accessToken:generateAccessToken(user._id)
+            accessToken:generateAccessToken(user._id,user.role)
         })
 
     } catch (error) {
@@ -122,3 +122,22 @@ export const renewPassword = async (req, res) => {
     }
     
 }
+
+export const getAgentList = async (req,res)=>{
+    try {
+        let allAgents=[];
+        const user = await User.find({role:"agent"},{_id:0,firstName:1,lastName:1});
+        if(!user){
+            res.status(400).json({error:'Error finding agent'});
+        }
+        user.map((i)=>{
+            console.log(i);
+            const fullName = i.firstName+" "+i.lastName;
+            allAgents.push(fullName);
+        })
+        res.status(200).json(allAgents);
+    } catch (error) {
+      console.error("Error fetching agents:", error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
