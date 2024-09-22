@@ -59,12 +59,12 @@ const DegreeProfile = () => {
                 >
                 <CardContent>
                     <Typography
-                    variant="h2"
-                    component="div"
-                    sx={{ fontWeight: 'bold', mb: 1 }}
-                    color={colors.grey[900]}
-                    >
-                    Degree Information
+                        variant="h2"
+                        component="div"
+                        sx={{ fontWeight: 'bold', mb: 1 }}
+                        color={colors.grey[900]}
+                        >
+                        Degree Information
                     </Typography>
                     <Box sx={{ mb: 1 }}>
                     <Typography variant="h4" color={colors.grey[900]}>
