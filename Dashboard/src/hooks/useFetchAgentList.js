@@ -1,0 +1,34 @@
+import axios from 'axios'
+import { useEffect, useState } from 'react';
+
+const useFetchAgentList = () => {
+    
+    const [agentList, setAgentList] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+            const fetchAgentList = async () => {
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/agentList`, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+                });
+                setAgentList(res.data); // Update state with the degree data
+                setLoading(false);   // Mark as not loading anymore
+            } catch (error) {
+                console.error("Error fetching agent list: ", error);
+                setError(error);
+                setLoading(false); // Even if there's an error, stop the loading state
+            }
+        };
+
+        fetchAgentList(); // Call the async function within useEffect
+    }, []);
+
+  return {agentList, loading, error}
+
+}
+
+export default useFetchAgentList

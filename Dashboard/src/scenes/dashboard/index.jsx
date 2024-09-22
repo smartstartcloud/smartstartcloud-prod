@@ -8,6 +8,7 @@ import useFetchAllDegreeData from '../../hooks/useFetchAllDegreeData'
 
 // Test
 import { jwtDecode } from 'jwt-decode';
+import DynamicBreadcrumbs from '../../components/DynamicBreadcrumbs'
 // Test
 
 const Dashboard = () => {
@@ -42,7 +43,7 @@ const Dashboard = () => {
   // Test End
 
  // Empty dependency array ensures this runs only once after the first render
- const { degree, error, loading } = useFetchAllDegreeData()
+  const { degree, error, loading } = useFetchAllDegreeData()
     
   const yearList = degree ? yearFilter(degree) : [];  
 
@@ -56,6 +57,7 @@ const Dashboard = () => {
   if (error) {
     return <div>Error loading data...</div>;
   }
+
 
   return (
     <Box m="20px">

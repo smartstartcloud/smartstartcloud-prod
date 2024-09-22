@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import MuiAlert from '@mui/material/Alert';
 import { tokens } from '../../theme';
 import useSendDegreeForm from '../../hooks/useSendDegreeForm';
+import useFetchAgentList from '../../hooks/useFetchAgentList';
 
 const currentYear = new Date().getFullYear();
 
@@ -32,6 +33,7 @@ const DegreeForm = () => {
     const colors = tokens(theme.palette.mode);
     const [open, setOpen] = useState(false);
     const [formSaved, setFormSaved] = useState(false);
+    const [formError, setFormError] = useState(false);
     const [monthYear, setMonthYear] = useState({ month: '', year: '' });
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -60,6 +62,8 @@ const DegreeForm = () => {
         name: 'degreeModules'
     });
 
+    const { agentList } = useFetchAgentList();
+    
     const { sendDegreeForm } = useSendDegreeForm();
 
     const onSubmit = async (data) => {
@@ -81,11 +85,11 @@ const DegreeForm = () => {
         try{
             const response = await sendDegreeForm(data)
             console.log('Form Data:', data);
-            console.log('Response Data:', response);
-            setOpen(true);
+            // console.log('Response Data:', response);
+            setFormSaved(true);
             setLoading(false);
         }catch (e) {
-            setError(true);
+            setFormError(true);
             setLoading(false)
             setErrorMessage(e.message)
             console.log("Error submitting form: ", e.message)
@@ -94,11 +98,11 @@ const DegreeForm = () => {
     };
 
     const handleClose = () => {
-        setOpen(false);
+        setFormSaved(false);
     };
 
     const handleCloseError = () => {
-        setError(false);
+        setFormError(false);
     };
 
     return (
@@ -207,7 +211,7 @@ const DegreeForm = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Tooltip title="Enter the Agent Name">
-                            <Controller
+                            {/* <Controller
                                 name="degreeAgent"
                                 control={control}
                                 render={({ field }) => (
@@ -218,6 +222,27 @@ const DegreeForm = () => {
                                         fullWidth
                                         required
                                     />
+                                )}
+                            /> */}
+                            <Controller
+                                name='degreeAgent'
+                                control={control}
+                                render={({field})=>(
+                                    <Select
+                                        {...field}
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                        displayEmpty
+                                        sx={{ mb: 2 }}
+                                    >
+                                        <MenuItem value="" disabled>Select Agent</MenuItem>
+                                        {agentList?.map((agent) => (
+                                            <MenuItem key={agent._id} value={agent._id}>
+                                                {`${agent.firstName} ${agent.lastName}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
                                 )}
                             />
                         </Tooltip>
@@ -469,12 +494,12 @@ const DegreeForm = () => {
 
             </form>
 
-            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+            <Snackbar open={formSaved} autoHideDuration={3000} onClose={handleClose}>
                 <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity="success">
                     Form submitted successfully!
                 </MuiAlert>
             </Snackbar>
-            <Snackbar open={error} autoHideDuration={6000} onClose={handleCloseError}>
+            <Snackbar open={formError} autoHideDuration={6000} onClose={handleCloseError}>
                 <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
                     Form submission failed. {errorMessage}. Please try again.
                 </Alert>
