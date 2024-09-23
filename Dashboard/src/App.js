@@ -66,9 +66,9 @@ function App() {
               <Route path="/form" element={authUser ? <Form /> : <Navigate to='/login' /> } />
               <Route path="/line" element={authUser ? <Line /> : <Navigate to='/login' /> } />
               <Route path="/pie" element={authUser ? <Pie /> : <Navigate to='/login' /> } />
-              <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } /> */}
+              <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' /> } />
               <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
