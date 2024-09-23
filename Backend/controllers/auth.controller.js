@@ -128,10 +128,9 @@ export const getAgentList = async (req,res)=>{
         let allAgents=[];
         const user = await User.find({role:"agent"},{_id:0,firstName:1,lastName:1});
         if(!user){
-            res.status(400).json({error:'Error finding agent'});
+            res.status(400).json({error:'Error fetching agent'});
         }
-        user.map((i)=>{
-            console.log(i);
+        await user.map((i)=>{
             const fullName = i.firstName+" "+i.lastName;
             allAgents.push(fullName);
         })
