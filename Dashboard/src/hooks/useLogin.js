@@ -15,7 +15,7 @@ const useLogin = () => {
             }, {
                 headers: {"Content-Type": "application/json"}
             })
-            const data = await res.json();
+            const data = await res.data;
             console.log(data);
 
             // If status is 401, navigate to /renew

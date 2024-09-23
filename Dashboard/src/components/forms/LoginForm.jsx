@@ -22,10 +22,6 @@ const LoginForm = () => {
 
     const {login} = useLogin()
 
-    const handleFormSubmit = (values) => {
-        login(values)
-    }
-
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
