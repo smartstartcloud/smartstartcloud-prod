@@ -125,7 +125,6 @@ export const renewPassword = async (req, res) => {
 
 export const getAgentList = async (req,res)=>{
     try {
-        let allAgents=[];
         const user = await User.find({role:"agent"},{_id:1,firstName:1,lastName:1});
         if(!user){
             res.status(400).json({error:'Error fetching agent'});
