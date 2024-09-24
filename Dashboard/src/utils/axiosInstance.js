@@ -2,10 +2,7 @@ import axios from 'axios';
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_LOCALHOST,
-  withCredentials: true,
-  headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    },
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {
@@ -22,7 +19,7 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 403) {            
             try {
                 // Attempt to refresh the access token
-                const { data } = await api.post('/dummyRequest/token');
+                const { data } = await api.post('/newRefreshToken');
                 const newAccessToken = data.accessToken;
                 if (newAccessToken) {
                 localStorage.setItem('access-token', JSON.stringify(newAccessToken));

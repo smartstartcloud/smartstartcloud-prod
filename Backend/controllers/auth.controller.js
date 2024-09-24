@@ -4,7 +4,6 @@ import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.
 
 export const loginUser = async (req, res) => {
     try {
-        console.log(req.headers)
         const {userName, password} = req.body;
         const user = await User.findOne({userName})
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
