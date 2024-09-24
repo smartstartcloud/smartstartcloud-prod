@@ -14,7 +14,6 @@ const useLogin = () => {
                 password, 
             })
             const data = await res.data;
-            console.log(data);
 
             // If status is 401, navigate to /renew
             if (res.status === 401) {
@@ -31,6 +30,8 @@ const useLogin = () => {
             localStorage.setItem("access-token", JSON.stringify(data.accessToken))
             setAccessToken(data.accessToken)            
             setAuthUser(data)
+
+            return data
 
 
         } catch (error) {

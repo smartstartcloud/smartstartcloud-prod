@@ -44,8 +44,6 @@ const Dashboard = () => {
 
  // Empty dependency array ensures this runs only once after the first render
   const { degree, error, loading } = useFetchAllDegreeData()
-  console.log(degree);
-  
     
   const yearList = degree ? yearFilter(degree) : [];  
 

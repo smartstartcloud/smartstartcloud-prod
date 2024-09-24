@@ -11,7 +11,10 @@ const useLogout = () => {
   const logout = async () => {
     try {
       // Send a logout request to the backend
-      await api.post('/api/auth/logout', {}, { withCredentials: true });
+      const res = await api.post('/api/auth/logout', {});
+
+      const data = await res.data;
+      console.log(data);
 
       // Clear user-related information from localStorage and state
       localStorage.removeItem('user-details');

@@ -41,7 +41,7 @@ const DegreeCard = ({degreeYear, degreeId, degreeName, totalStudents, degreeAgen
               Agent:
             </Typography>
             <Typography textAlign='right' variant="h5" color={colors.grey[900]}>
-              {degreeAgent}
+              {`${degreeAgent.firstName} ${degreeAgent.lastName}`}
             </Typography>
           </Box>
         </CardContent>
