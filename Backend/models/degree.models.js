@@ -16,8 +16,7 @@ const degreeSchema = new mongo.Schema({
         required: true
     },
     degreeAgent:{
-        type: String,
-        required: true
+        type: mongo.Schema.Types.ObjectId,
     },
     degreeStudentList:[{
         type: mongo.Schema.Types.ObjectId,

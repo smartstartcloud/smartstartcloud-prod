@@ -1,6 +1,6 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { Routes, Route, Navigate } from "react-router-dom"; 
+import {Routes, Route, Navigate, useLocation} from "react-router-dom";
 
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar"
@@ -23,16 +23,20 @@ import Welcome from "./scenes/welcome";
 import DegreeForm from "./components/forms/DegreeForm"
 import DegreeBoard from "./scenes/degree";
 import DegreeProfile from "./scenes/degree/degreeProfile";
+import SignupForm from "./components/forms/SignupForm";
+import { AccountInfo } from "./devTest/accountInfo";
+import LoginForm from "./components/forms/LoginForm";
+import useLogout from "./hooks/useLogout";
 
 
 function App() {
   const [theme, colorMode] = useMode()
-  const {authUser, setAuthUser} = useAuthContext()
+  const {authUser } = useAuthContext()
+  const { logout } = useLogout()
+  const location = useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem("user-details")
-    localStorage.removeItem("access-token")
-    setAuthUser(null)
+    logout().then(r => console.log("User logged out successfully"))
   }
 
   return (
@@ -40,16 +44,21 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          {authUser ? <Sidebar /> : undefined}
+          {authUser && location.pathname !== '/welcome' ? <Sidebar /> : undefined}
           <main className="content">
-            <Topbar logOut = {handleLogout} />
+            {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
+
+              <Route path="/testPage" element={ <AccountInfo /> } />
+
+
               <Route path="/" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
-              {/* <Route path="/login" element={authUser ? <Navigate to='/' /> : <Login auth = {handleLogin} />} /> */}
-              <Route path="/login" element={authUser ? <Navigate to='/' /> : <Login />} />
+              {/* <Route path="/login" element={authUser ? <Navigate to='/' /> : <Login />} /> */}
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
-              <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} />
+              {/* <Route path="/signup" element={authUser ? <Navigate to='/' /> : <Signup/>} /> */}
+              <Route path="/signup" element={<SignupForm/>} />
+              <Route path="/login" element={authUser ? <Navigate to='/' /> : <LoginForm/>} />
               <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               {/* <Route path="/team" element={authUser ? <Team /> : <Navigate to='/login' /> } />
               <Route path="/invoices" element={authUser ? <Invoices /> : <Navigate to='/login' /> } />
@@ -58,9 +67,9 @@ function App() {
               <Route path="/form" element={authUser ? <Form /> : <Navigate to='/login' /> } />
               <Route path="/line" element={authUser ? <Line /> : <Navigate to='/login' /> } />
               <Route path="/pie" element={authUser ? <Pie /> : <Navigate to='/login' /> } />
-              <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/login' /> } />
               <Route path="/geography" element={authUser ? <Geography /> : <Navigate to='/login' /> } />
               <Route path="/calendar" element={authUser ? <Calendar /> : <Navigate to='/login' /> } /> */}
+              <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' /> } />
               <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />

@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import MuiAlert from '@mui/material/Alert';
 import { tokens } from '../../theme';
 import useSendDegreeForm from '../../hooks/useSendDegreeForm';
+import useFetchAgentList from '../../hooks/useFetchAgentList';
 
 const currentYear = new Date().getFullYear();
 
@@ -32,6 +33,7 @@ const DegreeForm = () => {
     const colors = tokens(theme.palette.mode);
     const [open, setOpen] = useState(false);
     const [formSaved, setFormSaved] = useState(false);
+    const [formError, setFormError] = useState(false);
     const [monthYear, setMonthYear] = useState({ month: '', year: '' });
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -60,6 +62,8 @@ const DegreeForm = () => {
         name: 'degreeModules'
     });
 
+    const { agentList } = useFetchAgentList();
+    
     const { sendDegreeForm } = useSendDegreeForm();
 
     const onSubmit = async (data) => {
@@ -81,11 +85,11 @@ const DegreeForm = () => {
         try{
             const response = await sendDegreeForm(data)
             console.log('Form Data:', data);
-            console.log('Response Data:', response);
-            setOpen(true);
+            // console.log('Response Data:', response);
+            setFormSaved(true);
             setLoading(false);
         }catch (e) {
-            setError(true);
+            setFormError(true);
             setLoading(false)
             setErrorMessage(e.message)
             console.log("Error submitting form: ", e.message)
@@ -94,11 +98,11 @@ const DegreeForm = () => {
     };
 
     const handleClose = () => {
-        setOpen(false);
+        setFormSaved(false);
     };
 
     const handleCloseError = () => {
-        setError(false);
+        setFormError(false);
     };
 
     return (
@@ -125,21 +129,21 @@ const DegreeForm = () => {
 
 
                 <Grid item xs={12} sm={6} sx={{ mt: 4, mb: 3, width: "49.5%" }}>
-                    <Tooltip title="Enter the Degree ID">
                         <Controller
                             name="degreeID"
                             control={control}
                             render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label="Degree ID"
-                                    variant="outlined"
-                                    fullWidth
-                                    required
-                                />
+                                <Tooltip title="Enter the Degree ID">
+                                    <TextField
+                                        {...field}
+                                        label="Degree ID"
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                    />
+                                </Tooltip>
                             )}
                         />
-                    </Tooltip>
                 </Grid>
 
                 <Grid container spacing={2}>
@@ -189,38 +193,46 @@ const DegreeForm = () => {
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
                     <Grid item xs={12} sm={6}>
-                        <Tooltip title="Enter the Degree Name">
                             <Controller
                                 name="degreeName"
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Degree Name"
-                                        variant="outlined"
-                                        fullWidth
-                                        required
-                                    />
+                                    <Tooltip title="Enter the Degree Name">
+                                        <TextField
+                                            {...field}
+                                            label="Degree Name"
+                                            variant="outlined"
+                                            fullWidth
+                                            required
+                                        />
+                                    </Tooltip>
                                 )}
                             />
-                        </Tooltip>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <Tooltip title="Enter the Agent Name">
                             <Controller
-                                name="degreeAgent"
+                                name='degreeAgent'
                                 control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Agent Name"
-                                        variant="outlined"
-                                        fullWidth
-                                        required
-                                    />
+                                render={({field})=>(
+                                    <Tooltip title="Enter the Agent Name">
+                                        <Select
+                                            {...field}
+                                            variant="outlined"
+                                            fullWidth
+                                            required
+                                            displayEmpty
+                                            sx={{ mb: 2 }}
+                                        >
+                                            <MenuItem value="" disabled>Select Agent</MenuItem>
+                                            {agentList?.map((agent, idx) => (
+                                                <MenuItem key={agent._id || idx} value={agent._id}>
+                                                    {`${agent.firstName} ${agent.lastName}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </Tooltip>
                                 )}
                             />
-                        </Tooltip>
                     </Grid>
                 </Grid>
 
@@ -245,86 +257,86 @@ const DegreeForm = () => {
                             <Grid item xs={12}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={4}>
-                                        <Tooltip title="Student ID (Auto-generated)">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentID`}
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Student ID"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                    />
+                                                    <Tooltip title="Student ID (Auto-generated)">
+                                                        <TextField
+                                                            {...field}
+                                                            label="Student ID"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                        />
+                                                    </Tooltip>
                                                 )}
                                             />
-                                        </Tooltip>
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
-                                        <Tooltip title="Enter Student Name">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentName`}
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Student Name"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        required
-                                                    />
+                                                    <Tooltip title="Enter Student Name">
+                                                        <TextField
+                                                            {...field}
+                                                            label="Student Name"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            required
+                                                        />
+                                                    </Tooltip>
                                                 )}
                                             />
-                                        </Tooltip>
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
-                                        <Tooltip title="Enter Student Contact">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentContact`}
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Student Contact"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        required
-                                                    />
+                                                    <Tooltip title="Enter Student Contact">
+                                                        <TextField
+                                                            {...field}
+                                                            label="Student Contact"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            required
+                                                        />
+                                                    </Tooltip>
                                                 )}
                                             />
-                                        </Tooltip>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <Tooltip title="Enter Student Username">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentLogin`}
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Student Username"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                    />
+                                                    <Tooltip title="Enter Student Username">
+                                                        <TextField
+                                                            {...field}
+                                                            label="Student Username"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                        />
+                                                    </Tooltip>
                                                 )}
                                             />
-                                        </Tooltip>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <Tooltip title="Enter Student Password">
                                             <Controller
                                                 name={`degreeStudentList[${index}].studentPassword`}
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Student Password"
-                                                        variant="outlined"
-                                                        fullWidth
-                                                    />
+                                                    <Tooltip title="Enter Student Password">
+                                                        <TextField
+                                                            {...field}
+                                                            label="Student Password"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                        />
+                                                    </Tooltip>
                                                 )}
                                             />
-                                        </Tooltip>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -394,21 +406,21 @@ const DegreeForm = () => {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={5}>
-                                <Tooltip title="Enter Module Code">
                                     <Controller
                                         name={`degreeModules[${index}].moduleCode`}
                                         control={control}
                                         render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Module Code"
-                                                variant="outlined"
-                                                fullWidth
-                                                required
-                                            />
+                                            <Tooltip title="Enter Module Code">
+                                                <TextField
+                                                    {...field}
+                                                    label="Module Code"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    required
+                                                />
+                                            </Tooltip>
                                         )}
                                     />
-                                </Tooltip>
                             </Grid>
                             <Grid item xs={12} sm={1} sx={{ alignSelf: 'flex-start' }}>
                                 <IconButton onClick={() => removeModule(index)}
@@ -469,12 +481,12 @@ const DegreeForm = () => {
 
             </form>
 
-            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+            <Snackbar open={formSaved} autoHideDuration={3000} onClose={handleClose}>
                 <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity="success">
                     Form submitted successfully!
                 </MuiAlert>
             </Snackbar>
-            <Snackbar open={error} autoHideDuration={6000} onClose={handleCloseError}>
+            <Snackbar open={formError} autoHideDuration={6000} onClose={handleCloseError}>
                 <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
                     Form submission failed. {errorMessage}. Please try again.
                 </Alert>

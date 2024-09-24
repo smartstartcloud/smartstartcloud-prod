@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from "../context/TokenContext";
+import { api } from "../utils/axiosInstance";
 
 const useLogin = () => {
     const {setAuthUser} = useAuthContext();
@@ -8,13 +9,11 @@ const useLogin = () => {
     const navigate = useNavigate();
     const login = async({userName, password}) => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_LOCALHOST}/api/auth/login`, {
-                method: "POST",
-                credentials: "include",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({userName, password})
-            });
-            const data = await res.json();
+            const res = await api.post(`/api/auth/login`, {
+                userName, 
+                password, 
+            })
+            const data = await res.data;
             console.log(data);
 
             // If status is 401, navigate to /renew
@@ -35,7 +34,21 @@ const useLogin = () => {
 
 
         } catch (error) {
-            console.log("Error in login hook", error);
+            if (error.response) {
+                if (error.response.status === 400) {
+                    throw new Error(error.response.data.error);
+                } else if (error.response.status === 500) {
+                    console.log("Error: Internal Server Error");
+                    throw new Error("Internal Server Error");
+                } else {
+                    console.log("Error: ", error.response.data.error);
+                    throw new Error(error.response.data.error); // Re-throw any other error
+                }
+            } 
+            else {
+                console.log("Network or other error", error);
+                throw new Error("Something went wrong");
+            }    
             
         }
         

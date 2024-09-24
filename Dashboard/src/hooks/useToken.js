@@ -1,46 +1,21 @@
-import { useTokenContext } from "../context/TokenContext";
-
-
+import { api } from "../utils/axiosInstance";
 
 const useToken = () => {
-    const {accessToken, setAccessToken} = useTokenContext()
-
     const handleToken = async () => {
         try {
-            if (!accessToken) {
-                alert('You need to login first!');
-                return;
+            // Check if access token exists
+            if (!localStorage.getItem('access-token')) {
+            alert('You need to login first!');
+            return;
             }
 
-            const res = await fetch(`${process.env.REACT_APP_LOCALHOST}/dummyRequest`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-
-            if (res.ok ){
-                const data = await res.json();
-                console.log(data);
-            } else if (res.status === 403 ){
-                // If access token is expired, request a new one using the refresh token
-                const tokenResponse = await fetch(`${process.env.REACT_APP_LOCALHOST}/dummyRequest/token`, {
-                method: 'POST',
-                credentials: 'include'
-                });
-                const tokenData = await tokenResponse.json();
-                
-                if (tokenData.error){
-                    throw new Error(tokenData.error);
-                }
-                setAccessToken(tokenData.accessToken);
-                localStorage.setItem("access-token", JSON.stringify(tokenData.accessToken))
-                alert('Access Token refreshed!');
-            }
-            else {
-                alert('Unable to access protected data.');
-            }
+            // Make the GET request
+            const { data } = await api.get('/dummyRequest');
+            console.log(data);
         } catch (error) {
-            console.log("Error in token hook", error);
-        }        
+            console.error('Error in token hook:', error);
+            alert('Unable to access protected data.');
+        }       
     }
 
     return{handleToken}

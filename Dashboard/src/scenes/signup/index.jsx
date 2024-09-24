@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import useSignup from '../../hooks/useSignup'
+import { Link } from 'react-router-dom'
 
 const userSchema = yup.object().shape({
     firstName: yup.string().required("required"),
@@ -18,15 +19,18 @@ const userSchema = yup.object().shape({
         .oneOf([yup.ref('password'), null], 'Passwords must match')
         .required('Confirm Password is required'),
     gender: yup.string().required("required"),
+    role: yup.string().required("required"),
 })
 
 const initialValues = {
     firstName: "",
     lastName: "",
+    userName: "",
     email: "",
     password: "",
     passwordConfirmation: "",
-    gender: ""
+    gender: "male",
+    role: "agent"
 }
 
 const Signup = () => {
@@ -39,7 +43,9 @@ const Signup = () => {
     const {signup} = useSignup()
 
     const handleFormSubmit = (values) => {
-        signup(values)
+        // signup(values)
+        console.log(values);
+        
     }
 
     const handleTogglePasswordVisibility = () => {
@@ -142,6 +148,26 @@ const Signup = () => {
                                         <FormHelperText>{errors.gender}</FormHelperText>
                                     ) : null}
                                 </FormControl>
+                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
+                                    <InputLabel id="role-label">Role</InputLabel>
+                                    <Select
+                                        labelId="role-label"
+                                        id="role"
+                                        name="role"
+                                        value={values.role}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        error={!!touched.role && !!errors.role}
+                                    >
+                                        <MenuItem value="superAdmin">Admin</MenuItem>
+                                        <MenuItem value="hr">HR</MenuItem>
+                                        <MenuItem value="agent">Agent</MenuItem>
+                                    </Select>
+                                    {/* Display error message below */}
+                                    {touched.role && errors.role ? (
+                                        <FormHelperText>{errors.role}</FormHelperText>
+                                    ) : null}
+                                </FormControl>
                                 <TextField 
                                     fullWidth
                                     variant="filled"
@@ -187,10 +213,15 @@ const Signup = () => {
                                     }}
                                 />
                             </Box>
-                            <Box display="flex" justifyContent="end" mt="20px">
+                            <Box display="flex" justifyContent="space-between" mt="20px">
                                 <Button type="submit" color="secondary" variant="contained">
                                     Create New User
                                 </Button>
+                                <Link to="/login" style={{ textDecoration: 'none' }}>
+                                    <Button color="secondary" variant="text">
+                                        Login
+                                    </Button>
+                                </Link>
                             </Box>
                         </form>
                     )

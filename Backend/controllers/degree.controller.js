@@ -1,4 +1,6 @@
+import { mongo } from 'mongoose';
 import Degree from '../models/degree.models.js'
+import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
 
 export const newDegree = async (req,res)=>{
@@ -29,9 +31,17 @@ export const newDegree = async (req,res)=>{
 }
 export const getAllDegree = async (req,res)=>{
   try {
+    let fillAgentDegree=[];
     const degrees = await Degree.find({})
       .populate('degreeStudentList');
-    res.status(200).json(degrees);
+      await Promise.all( degrees.map(async (x)=>{
+        const Agent = await User.find({_id:[x.degreeAgent]});
+        const degreeObject = x.toObject();
+        degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+        fillAgentDegree.push(degreeObject);
+      })
+    )
+    res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -41,9 +51,17 @@ export const getAllDegree = async (req,res)=>{
 export const getDegreeByYear = async (req,res)=>{
   const {degreeYear} = req.params
   try {
+    let fillAgentDegree=[];
     const degrees = await Degree.find({degreeYear})
       .populate('degreeStudentList');
-    res.status(200).json(degrees);
+    await Promise.all( degrees.map(async (x)=>{
+      const Agent = await User.find({_id:[x.degreeAgent]});
+      const degreeObject = x.toObject();
+      degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+      fillAgentDegree.push(degreeObject);
+    })
+  )
+    res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -56,7 +74,10 @@ export const getDegreeByID = async (req,res)=>{
   try {
     const degrees = await Degree.findOne({degreeID})
       .populate('degreeStudentList');
-    res.status(200).json(degrees);
+    const Agent = await User.find({_id:[degrees.degreeAgent]});
+    let degreeObject = degrees.toObject();
+    degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+      res.status(200).json(degreeObject);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -66,11 +87,20 @@ export const getDegreeByID = async (req,res)=>{
 export const getDegreeByAgent = async (req,res)=>{
   const {degreeAgent} = req.params
   try {
-    const degrees = await Degree.find({degreeAgent})
+    let fillAgentDegree=[];
+    const degrees = await Degree.find({degreeAgent:degreeAgent})
       .populate('degreeStudentList');
-    res.status(200).json(degrees);
+    await Promise.all( degrees.map(async (x)=>{
+      const Agent = await User.find({_id:[x.degreeAgent]});
+      const degreeObject = x.toObject();
+      degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+      fillAgentDegree.push(degreeObject);
+    })
+  )     
+    res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
