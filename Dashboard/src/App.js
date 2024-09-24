@@ -26,16 +26,16 @@ import DegreeProfile from "./scenes/degree/degreeProfile";
 import SignupForm from "./components/forms/SignupForm";
 import { AccountInfo } from "./devTest/accountInfo";
 import LoginForm from "./components/forms/LoginForm";
+import useLogout from "./hooks/useLogout";
 
 
 function App() {
   const [theme, colorMode] = useMode()
   const {authUser, setAuthUser} = useAuthContext()
+  const { logout } = useLogout()
 
   const handleLogout = () => {
-    localStorage.removeItem("user-details")
-    localStorage.removeItem("access-token")
-    setAuthUser(null)
+    logout()
   }
 
   return (
