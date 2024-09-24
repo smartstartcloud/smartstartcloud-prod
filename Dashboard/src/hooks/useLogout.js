@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from "./context/AuthContext"; // Adjust the path as needed // Adjust the path as needed
+import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from '../context/TokenContext';
+import { api } from '../utils/axiosInstance';
 
 const useLogout = () => {
   const { setAuthUser } = useAuthContext(); // To update the authenticated user state
