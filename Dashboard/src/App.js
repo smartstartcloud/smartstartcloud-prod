@@ -1,6 +1,6 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { Routes, Route, Navigate } from "react-router-dom"; 
+import {Routes, Route, Navigate, useLocation} from "react-router-dom";
 
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar"
@@ -31,11 +31,12 @@ import useLogout from "./hooks/useLogout";
 
 function App() {
   const [theme, colorMode] = useMode()
-  const {authUser, setAuthUser} = useAuthContext()
+  const {authUser } = useAuthContext()
   const { logout } = useLogout()
+  const location = useLocation();
 
   const handleLogout = () => {
-    logout()
+    logout().then(r => console.log("User logged out successfully"))
   }
 
   return (
@@ -43,9 +44,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          {authUser ? <Sidebar /> : undefined}
+          {authUser && location.pathname !== '/welcome' ? <Sidebar /> : undefined}
           <main className="content">
-            <Topbar logOut = {handleLogout} />
+            {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
 
               <Route path="/testPage" element={ <AccountInfo /> } />

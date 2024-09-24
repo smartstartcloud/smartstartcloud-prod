@@ -6,7 +6,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { tokens } from '../../theme';
 import useSignup from '../../hooks/useSignup';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignupForm = () => {
     const theme = useTheme();
@@ -21,21 +21,23 @@ const SignupForm = () => {
 
     const { signup } = useSignup()
 
-    const handleTogglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+    const navigate = useNavigate();
 
-    const handleToggleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword);
-    };
+   const handleTogglePasswordVisibility = () => {
+       setShowPassword(!showPassword);
+   };
 
-    const handleClose = () => {
-        setformSuccess(false);
-    };
+   const handleToggleConfirmPasswordVisibility = () => {
+       setShowConfirmPassword(!showConfirmPassword);
+   };
 
-    const handleCloseError = () => {
-        setFormError(false);
-    };
+   const handleClose = () => {
+       setformSuccess(false);
+   };
+
+   const handleCloseError = () => {
+       setFormError(false);
+   };
 
     const { control, handleSubmit, getValues, setError, clearErrors, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
@@ -51,17 +53,27 @@ const SignupForm = () => {
     });
 
     const onSubmit = async (data) => {
-        setLoading(true);
-        try {
-            const response = await signup(data);
-            console.log('Response Data:', response);
-            setformSuccess(true);
-            setLoading(false);
-        } catch (e) {
-            setFormError(true)
-            setLoading(false);
-            setErrorMessage(e.message);
-        }
+         setLoading(true);
+            try {
+                const response = await signup(data);
+                console.log('Response Data:', response);
+                setformSuccess(true);
+                setLoading(false);
+
+                if (data.role === 'agent') {
+                    navigate('/welcome', {
+                        state:
+                            { userName: data.userName,
+                                password: data.password
+                            }
+                    });
+                }
+
+            } catch (e) {
+                setFormError(true)
+                setLoading(false);
+                setErrorMessage(e.message);
+            }
     }
 
     return (
@@ -121,12 +133,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.firstName && !!errors.firstName}
                                         helperText={touchedFields.firstName && errors.firstName ? errors.firstName.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("firstName", { type: "manual", message: "First Name is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("firstName");
                                             }
                                         }}
@@ -149,12 +159,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.lastName && !!errors.lastName}
                                         helperText={touchedFields.lastName && errors.lastName ? errors.lastName.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("lastName", { type: "manual", message: "Last Name is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("lastName");
                                             }
                                         }}
@@ -179,12 +187,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.userName && !!errors.userName}
                                         helperText={touchedFields.userName && errors.userName ? errors.userName.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("userName", { type: "manual", message: "User Name is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("userName");
                                             }
                                         }}
@@ -213,12 +219,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.email && !!errors.email}
                                         helperText={touchedFields.email && errors.email ? errors.email.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("email", { type: "manual", message: "Email is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("email");
                                             }
                                         }}
@@ -234,9 +238,9 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <Select
                                         {...field}
-                                        label="gender"
                                         variant="outlined"
                                         fullWidth
+                                        displayEmpty
                                         required
                                         sx={{ mb: 2 }}
                                     >
@@ -289,12 +293,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.password && !!errors.password}
                                         helperText={touchedFields.password && errors.password ? errors.password.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("password", { type: "manual", message: "Password is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("password");
                                             }
                                         }}
@@ -332,12 +334,10 @@ const SignupForm = () => {
                                         error={!!touchedFields.passwordConfirmation && !!errors.passwordConfirmation}
                                         helperText={touchedFields.passwordConfirmation && errors.passwordConfirmation ? errors.passwordConfirmation.message : null}
                                         onBlur={(e) => {
-                                            field.onBlur(); // Call the original onBlur from react-hook-form
+                                            field.onBlur();
                                             if (!field.value) {
-                                                // Manually set an error if the field is empty on blur
                                                 setError("passwordConfirmation", { type: "manual", message: "Password Confirmation is required" });
                                             }else {
-                                                // Clear the error if the field is filled
                                                 clearErrors("passwordConfirmation");
                                             }
                                         }}
@@ -352,10 +352,10 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <Select
                                         {...field}
-                                        label="role"
                                         variant="outlined"
                                         fullWidth
                                         required
+                                        displayEmpty
                                         sx={{ mb: 2 }}
                                     >
                                         <MenuItem value="" disabled>Select Role</MenuItem>
