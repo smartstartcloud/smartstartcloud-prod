@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 
-const useSignup = () => {
+const useSignup = ( ) => {
     const {setAuthUser} = useAuthContext();
-    const navigate = useNavigate()
-    const signup = async({email, firstName, lastName, userName, password, gender, role}) => {
+    // const navigate = useNavigate()
+    const signup = async( {email, firstName, lastName, userName, password, gender, role} ) => {
         try {
             const res = await axios.post(`${process.env.REACT_APP_LOCALHOST}/api/auth/signup`, {
                 email, 
@@ -22,12 +22,10 @@ const useSignup = () => {
             if (data.error){                            
                 throw new Error(data.error);
             }
-            
-            // localStorage
+
             localStorage.setItem("user-details", JSON.stringify(data))
-            // context
             setAuthUser(data)
-            navigate("/welcome")
+            // navigate("/welcome")
 
             return data
 
