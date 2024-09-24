@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from "../context/TokenContext";
-import axios from "axios";
+import { api } from "../utils/axiosInstance";
 
 const useLogin = () => {
     const {setAuthUser} = useAuthContext();
@@ -9,11 +9,9 @@ const useLogin = () => {
     const navigate = useNavigate();
     const login = async({userName, password}) => {
         try {
-            const res = await axios.post(`${process.env.REACT_APP_LOCALHOST}/api/auth/login`, {
+            const res = await api.post(`/api/auth/login`, {
                 userName, 
                 password, 
-            }, {
-                headers: {"Content-Type": "application/json"}
             })
             const data = await res.data;
             console.log(data);

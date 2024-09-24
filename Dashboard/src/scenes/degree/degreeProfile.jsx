@@ -13,10 +13,10 @@ const DegreeProfile = () => {
 
     const { degreeId } = useParams();
     const {degree, loading, error} = useFetchSingleDegreeData(degreeId)
+    
     const {degreeName, degreeAgent, degreeStudentList, degreeModules} = degree || {};
+    
     const studentList = degreeStudentList || []
-    console.log(degree);
-
 
     const columns = [
         {field: "studentID", headerName: "STUDENT ID", flex: .5},
@@ -64,22 +64,22 @@ const DegreeProfile = () => {
                         sx={{ fontWeight: 'bold', mb: 1 }}
                         color={colors.grey[900]}
                         >
-                        Degree Information
+                            Degree Information
                     </Typography>
                     <Box sx={{ mb: 1 }}>
-                    <Typography variant="h4" color={colors.grey[900]}>
-                        <strong>Degree ID:</strong> {degreeId}
-                    </Typography>
+                        <Typography variant="h4" color={colors.grey[900]}>
+                            <strong>Degree ID:</strong> {degreeId}
+                        </Typography>
                     </Box>
                     <Box sx={{ mb: 1 }}>
-                    <Typography variant="h4" color={colors.grey[900]}>
-                        <strong>Degree Name:</strong> {degreeName}
-                    </Typography>
+                        <Typography variant="h4" color={colors.grey[900]}>
+                            <strong>Degree Name:</strong> {degreeName}
+                        </Typography>
                     </Box>
                     <Box>
-                    <Typography variant="h4" color={colors.grey[900]}>
-                        <strong>Agent Enlisted:</strong> {degreeAgent}
-                    </Typography>
+                        <Typography variant="h4" color={colors.grey[900]}>
+                            <strong>Agent Enlisted:</strong> {`${degreeAgent.firstName} ${degreeAgent.lastName}`}
+                        </Typography>
                     </Box>
                 </CardContent>
             </Card>
