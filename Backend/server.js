@@ -55,8 +55,10 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(helmet());
 app.use((cors({
-    origin: true,  // Or set to true for dynamic origin
-    credentials: true
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Ensure the headers you use are allowed
+  credentials: true,  // To allow cookies
 })));
 
 app.use("/api/auth", authRoutes);

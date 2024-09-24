@@ -4,6 +4,7 @@ import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.
 
 export const loginUser = async (req, res) => {
     try {
+        console.log(req.headers)
         const {userName, password} = req.body;
         const user = await User.findOne({userName})
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
@@ -92,7 +93,7 @@ export const signupUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
     try {
-        res.cookie("jwt", "", {maxAge: 0})
+        res.cookie("refreshToken", "", {maxAge: 0})
         res.status(200).json({message: "Logged out successfully"})
     } catch (error) {
         console.log("Error in sign up controller", error);
