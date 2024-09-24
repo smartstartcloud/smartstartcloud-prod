@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-// Create an axios instance
 export const api = axios.create({
   baseURL: process.env.REACT_APP_LOCALHOST,
-  withCredentials: true, // Ensures cookies are sent with requests
+  withCredentials: true,
+  headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    },
 });
 
-// Request interceptor to add Authorization header
 api.interceptors.request.use((config) => {
     const token = JSON.parse(localStorage.getItem('access-token'));
     if (token) {
@@ -15,7 +16,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Response interceptor to handle 403 errors (token expiration)
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
