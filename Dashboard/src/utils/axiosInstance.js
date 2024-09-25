@@ -19,7 +19,7 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 403) {            
             try {
                 // Attempt to refresh the access token
-                const { data } = await api.post('/newRefreshToken');
+                const { data } = await api.post('/newAccessToken');
                 const newAccessToken = data.accessToken;
                 if (newAccessToken) {
                 localStorage.setItem('access-token', JSON.stringify(newAccessToken));

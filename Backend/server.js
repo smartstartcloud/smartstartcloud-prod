@@ -3,7 +3,7 @@ import express from 'express'
 import authRoutes from './routes/auth.routes.js'
 import degreeRoutes from './routes/degree.routes.js'
 import moduleRoutes from './routes/module.routes.js'
-import newRefreshToken from './utils/newRefreshToken.js'
+import { newAccessToken } from './utils/generateToken.js'
 import dummyRequestRoute from "./controllers/dummyRequest.js"
 import protect from './middlewares/protect.js'
 import cors from 'cors'
@@ -63,7 +63,7 @@ app.use((cors({
 })));
 
 app.use("/api/auth", authRoutes);
-app.use("/api/degree", degreeRoutes);
+app.use("/api/degree",degreeRoutes);
 app.use("/api/module", moduleRoutes);
 app.use("/dummyRequest", protect,dummyRequestRoute);
-app.use('/newRefreshToken',newRefreshToken);
+app.use('/newAccessToken',newAccessToken);

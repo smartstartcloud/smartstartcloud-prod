@@ -1,5 +1,4 @@
 import ModuleAssignment from '../models/moduleAssignment.models.js'
-import { forceMongo } from '../utils/forceMongoFieldNotUnique.js';
 export const newAssignment = async (req,res)=>{
   try{
     const {studentID,moduleID,assignmentID} = req.body

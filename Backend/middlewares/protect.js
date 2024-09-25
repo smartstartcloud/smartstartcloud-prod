@@ -1,6 +1,5 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import { generateAccessToken } from '../utils/generateToken.js';
 const app = express.Router()
 
 app.get("/",async (req,res,next)=>{
