@@ -1,8 +1,6 @@
-import express from 'express'
 import jwt from 'jsonwebtoken'
-const app = express.Router()
 
-app.get("/",async (req,res,next)=>{
+export const protectForAdmin = async (req,res,next)=>{
     const testToken = req.headers.authorization;
     
     //Check if token exists
@@ -12,16 +10,16 @@ app.get("/",async (req,res,next)=>{
     if(testToken){
         token = testToken.split(' ')[1];
         jwt.verify(token, process.env.JWT_KEY, (err) => {
-            
-            if (err) {
-                res.status(403).json({"error": "Forbidden in protect route", "message": "You do not have permission to access this resource."});
-            }else{
+            if(err){
+                res.status(403).json({error: "Access Token is not valid to access this resourse"});
+            }else if(jwt.decode(token).userRole !='admin'){
+                res.status(405).json({error: "Role is not valid to access this resourse"});
+            }else{  
                 next();
             }
         });
     }else{
         res.status(400).json({error: "User is not logged in"});
     }
-})
+}
 
-export default app;

@@ -16,13 +16,11 @@ const generateRefreshToken = (userId,userRole,res) => {
 const newAccessToken = app.post("/",async (req,res)=>{
     const refreshToken = req.cookies.refreshToken;
       
-    if (!refreshToken) return res.status(403).json({"error": "Forbidden in token Route", "message": "No Refresh Token"});  
+    if (!refreshToken) return res.status(403).json({error: "Forbidden in token Route", "message": "No Refresh Token"});  
   
     jwt.verify(refreshToken, process.env.JWT_KEY, (err, user) => {
-      if (err) return res.status(403).json({"error": "Forbidden in token Route", "message": "You do not have permission to access this resource."});
-      // `user` contains the decoded data (e.g., userId, roles)
-      const userId = user.userId; // Extract userId from the token
-      const newAccessToken = generateAccessToken(userId);
+      if (err) return res.status(403).json({error: "Refresh Token is not valid access this resourse"});
+      const newAccessToken = generateAccessToken(user.userId,user.userRole);
       res.status(200).json({ accessToken: newAccessToken });
     });
   })

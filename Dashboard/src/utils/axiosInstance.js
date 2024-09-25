@@ -16,7 +16,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response && error.response.status === 403) {            
+        //If Role is role not matched for that specific task, show alert for unauthorized access
+        if(error.response && error.response.status === 405){
+            console.log(error.response);
+        }
+        if (error.response && error.response.status === 403){            
             try {
                 // Attempt to refresh the access token
                 const { data } = await api.post('/newAccessToken');
@@ -31,7 +35,6 @@ api.interceptors.response.use(
                 }
             } catch (refreshError) {
                 console.error('Error refreshing access token:', refreshError);
-                alert('Session expired. Please log in again.');
             }
         }
         return Promise.reject(error);
