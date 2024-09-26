@@ -26,7 +26,8 @@ const useApi = () => {
                 
                 //If Role is role not matched for that specific task, show alert for unauthorized access
                 if(error.response && error.response.status === 405){
-                    console.log(error.response);
+                    alert('Unauthorized access! You do not have permission to perform this task.');
+                    window.history.back();
                 }
                 if(error.response && error.response.status === 401 && originalRequestUrl === '/newAccessToken'){
                     logout();
@@ -43,7 +44,6 @@ const useApi = () => {
                         if (newAccessToken) {
                         localStorage.setItem('access-token', JSON.stringify(newAccessToken));
                         api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
-                        alert('Access Token refreshed!');
                         // Retry the original request
                         error.config.headers.Authorization = `Bearer ${newAccessToken}`;
                         return api.request(error.config);

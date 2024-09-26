@@ -5,7 +5,6 @@ import degreeRoutes from './routes/degree.routes.js'
 import moduleRoutes from './routes/module.routes.js'
 import { newAccessToken } from './utils/generateToken.js'
 import dummyRequestRoute from "./controllers/dummyRequest.js"
-import {protectForAdmin} from './middlewares/protect.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cluster from 'cluster'
@@ -61,7 +60,7 @@ app.use((cors({
 })));
 
 app.use("/api/auth", authRoutes);
-app.use("/api/degree",protectForAdmin, degreeRoutes);
+app.use("/api/degree",degreeRoutes);
 app.use("/api/module", moduleRoutes);
-app.use("/dummyRequest", protectForAdmin,dummyRequestRoute);
+app.use("/dummyRequest", dummyRequestRoute);
 app.use('/newAccessToken',newAccessToken);
