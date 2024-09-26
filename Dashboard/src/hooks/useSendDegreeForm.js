@@ -1,8 +1,10 @@
 import axios from 'axios'
 import React from 'react'
-import { api } from '../utils/axiosInstance';
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
 
 const useSendDegreeForm = () => {
+    const api = useApi()
 
     const sendDegreeForm = async({degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}) => {
         try {

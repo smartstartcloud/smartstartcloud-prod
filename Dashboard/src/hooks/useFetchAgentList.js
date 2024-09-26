@@ -1,9 +1,10 @@
-import axios from 'axios'
+// import axios from 'axios'
 import { useEffect, useState } from 'react';
-import { api } from '../utils/axiosInstance';
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
 
 const useFetchAgentList = () => {
-    
+    const api = useApi()
     const [agentList, setAgentList] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

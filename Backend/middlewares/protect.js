@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 export const protectForAdmin = async (req,res,next)=>{
-    const testToken = req.headers.authorization;
+    const testToken = req.headers.authorization;    
     
     //Check if token exists
     let token;

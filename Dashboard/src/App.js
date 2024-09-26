@@ -27,6 +27,7 @@ import SignupForm from "./components/forms/SignupForm";
 import { AccountInfo } from "./devTest/accountInfo";
 import LoginForm from "./components/forms/LoginForm";
 import useLogout from "./hooks/useLogout";
+import UploadDownload from "./devTest/uploadDownload";
 
 
 function App() {
@@ -49,7 +50,8 @@ function App() {
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
 
-              <Route path="/testPage" element={ <AccountInfo /> } />
+              {/* <Route path="/testPage" element={ <AccountInfo /> } /> */}
+              <Route path="/testPageUD" element={ <UploadDownload /> } />
 
 
               <Route path="/" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />

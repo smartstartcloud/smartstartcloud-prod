@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react';
-import { api } from '../utils/axiosInstance';
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
 
 
 const useFetchSingleDegreeData = (degreeId) => {
+    const api = useApi()
     const [degree, setDegree] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

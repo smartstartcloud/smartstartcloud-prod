@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useLogout from '../hooks/useLogout';
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_LOCALHOST,
@@ -6,6 +7,8 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+    console.log('axios instance e ashche');
+    
     const token = JSON.parse(localStorage.getItem('access-token'));
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -19,6 +22,12 @@ api.interceptors.response.use(
         //If Role is role not matched for that specific task, show alert for unauthorized access
         if(error.response && error.response.status === 405){
             console.log(error.response);
+        }
+        if(error.response && error.response.status === 401){
+            console.log('tata by b ye', error.response);
+        }
+        if(error.response && error.response.status === 500){
+            console.log('bhul', error.response);
         }
         if (error.response && error.response.status === 403){            
             try {

@@ -18,7 +18,6 @@ const Topbar = ({ logOut }) => {
   const colors = tokens(theme.palette.mode)
   const colorMode = useContext(ColorModeContext)
   const { authUser } = useAuthContext()
-  console.log("whats in auth user ? ", authUser)
 
   return (
       <Box display='flex' flexDirection='column'>

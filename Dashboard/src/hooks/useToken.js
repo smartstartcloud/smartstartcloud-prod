@@ -1,6 +1,8 @@
-import { api } from "../utils/axiosInstance";
+// import { api } from "../utils/axiosInstance";
+import useApi from "./useApi";
 
 const useToken = () => {
+    const api = useApi()
     const handleToken = async () => {
         try {
             // Check if access token exists
