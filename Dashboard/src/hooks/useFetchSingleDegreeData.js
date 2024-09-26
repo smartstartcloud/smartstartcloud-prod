@@ -1,15 +1,21 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react';
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
+
 
 const useFetchSingleDegreeData = (degreeId) => {
+    const api = useApi()
     const [degree, setDegree] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
 
     useEffect(() => {
             const fetchDegreeData = async (degreeId) => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/selected/id/${degreeId}`, {
+                // Get degree by DegreeID
+                const res = await api.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/selected/degreeID/${degreeId}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }

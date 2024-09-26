@@ -1,12 +1,15 @@
 import axios from 'axios'
 import React from 'react'
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
 
 const useSendDegreeForm = () => {
+    const api = useApi()
 
     const sendDegreeForm = async({degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}) => {
         try {
             console.log(degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules);
-            const res = await axios.post(`${process.env.REACT_APP_LOCALHOST}/api/degree/new`, {
+            const res = await api.post(`${process.env.REACT_APP_LOCALHOST}/api/degree/new`, {
                 degreeID,
                 degreeYear, 
                 degreeName, 

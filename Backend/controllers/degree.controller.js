@@ -1,4 +1,3 @@
-import { mongo } from 'mongoose';
 import Degree from '../models/degree.models.js'
 import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';

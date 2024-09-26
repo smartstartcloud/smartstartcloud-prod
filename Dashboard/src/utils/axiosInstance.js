@@ -1,13 +1,14 @@
 import axios from 'axios';
+import useLogout from '../hooks/useLogout';
 
-// Create an axios instance
 export const api = axios.create({
   baseURL: process.env.REACT_APP_LOCALHOST,
-  withCredentials: true, // Ensures cookies are sent with requests
+  withCredentials: true
 });
 
-// Request interceptor to add Authorization header
 api.interceptors.request.use((config) => {
+    console.log('axios instance e ashche');
+    
     const token = JSON.parse(localStorage.getItem('access-token'));
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -15,14 +16,23 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Response interceptor to handle 403 errors (token expiration)
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response && error.response.status === 403) {            
+        //If Role is role not matched for that specific task, show alert for unauthorized access
+        if(error.response && error.response.status === 405){
+            console.log(error.response);
+        }
+        if(error.response && error.response.status === 401){
+            console.log('tata by b ye', error.response);
+        }
+        if(error.response && error.response.status === 500){
+            console.log('bhul', error.response);
+        }
+        if (error.response && error.response.status === 403){            
             try {
                 // Attempt to refresh the access token
-                const { data } = await api.post('/dummyRequest/token');
+                const { data } = await api.post('/newAccessToken');
                 const newAccessToken = data.accessToken;
                 if (newAccessToken) {
                 localStorage.setItem('access-token', JSON.stringify(newAccessToken));
@@ -34,7 +44,6 @@ api.interceptors.response.use(
                 }
             } catch (refreshError) {
                 console.error('Error refreshing access token:', refreshError);
-                alert('Session expired. Please log in again.');
             }
         }
         return Promise.reject(error);

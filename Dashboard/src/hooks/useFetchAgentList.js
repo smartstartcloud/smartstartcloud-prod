@@ -1,8 +1,10 @@
-import axios from 'axios'
+// import axios from 'axios'
 import { useEffect, useState } from 'react';
+// import { api } from '../utils/axiosInstance';
+import useApi from './useApi';
 
 const useFetchAgentList = () => {
-    
+    const api = useApi()
     const [agentList, setAgentList] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10,11 +12,7 @@ const useFetchAgentList = () => {
     useEffect(() => {
             const fetchAgentList = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/agentList`, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-                });
+                const res = await api.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/agentList`);
                 setAgentList(res.data); // Update state with the degree data
                 setLoading(false);   // Mark as not loading anymore
             } catch (error) {
