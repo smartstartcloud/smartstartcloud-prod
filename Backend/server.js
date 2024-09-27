@@ -11,6 +11,7 @@ import cluster from 'cluster'
 import cpu from 'os'
 import helmet from 'helmet'
 import './db/connectMongoDB.js'
+import { fileURLToPath } from 'url';
 /*
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
@@ -46,16 +47,22 @@ if(cluster.isPrimary) {
 */
 // express app
 const app = express();
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log(`listening on port ${process.env.PORT}`);
 })
+/*
+// Get the current directory path --- FOR ES6 Syntax, __dirname doesn't work directly. To connect react app
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
+*/
 
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(helmet());
 app.use((cors({
-  origin: true,
+  origin: ["http://localhost:3000", "https://www.smartstart.cloud"] ,
   credentials: true,  // To allow cookies
 })));
 
@@ -64,3 +71,9 @@ app.use("/api/degree",degreeRoutes);
 app.use("/api/module", moduleRoutes);
 app.use("/dummyRequest", dummyRequestRoute);
 app.use('/newAccessToken',newAccessToken);
+
+/*
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
+})
+*/
