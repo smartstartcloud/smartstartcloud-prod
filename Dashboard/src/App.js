@@ -28,6 +28,7 @@ import { AccountInfo } from "./devTest/accountInfo";
 import LoginForm from "./components/forms/LoginForm";
 import useLogout from "./hooks/useLogout";
 import UploadDownload from "./devTest/uploadDownload";
+import StudentProfile from "./components/profilePages/StudentProfile";
 
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' /> } />
               <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear/:degreeId/:studentId" element={authUser ? <StudentProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/' />} />
             </Routes>
           </main>

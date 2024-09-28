@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -12,7 +12,8 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 const DegreeProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { degreeId } = useParams();
+    const navigate = useNavigate(); // useNavigate to handle navigation
+    const { degreeYear, degreeId } = useParams();
     const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
     const [errors, setErrors] = React.useState({});
     const [open, setOpen] = useState(false);
@@ -70,6 +71,15 @@ const DegreeProfile = () => {
         } else {
             setErrors(validationErrors);
         }
+    };
+
+    // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
+    const handleRowClick = (params) => {
+        const studentId = params.row.studentID;
+        // Assuming degreeYear is part of the degree data
+        navigate(`/task/${degreeYear}/${degreeId}/${studentId}`, {
+            state: {degreeModules}
+        }); // Navigate to the student page
     };
 
 
@@ -194,6 +204,7 @@ const DegreeProfile = () => {
                     }}
                     pageSizeOptions={[5, 10, 20]}
                     autoHeight
+                    onRowClick={handleRowClick} // Add onRowClick handler
                 />
                 <Button
                     variant="contained"
