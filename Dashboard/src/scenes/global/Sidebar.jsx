@@ -5,7 +5,7 @@ import { Box, IconButton, Typography, useTheme } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 import { tokens } from '../../theme'
 import "react-pro-sidebar/dist/css/styles.css";
-
+import { useAuthContext } from '../../context/AuthContext'
 import  HomeOutlinedIcon  from '@mui/icons-material/HomeOutlined'
 import  PeopleOutlinedIcon  from '@mui/icons-material/PeopleOutlined'
 import  ContactsOutlinedIcon  from '@mui/icons-material/ContactsOutlined'
@@ -23,6 +23,7 @@ const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)  
   
+
   return (
     <MenuItem 
       active={selected === to.split('/')[1]} 
@@ -45,7 +46,7 @@ const Sidebar = () => {
   const pathnames = location.pathname.split('/').filter((x) => x)[0]
 
   const [selected, setSelected] = useState(pathnames ? pathnames : '')
-
+  const { authUser } = useAuthContext()
 
   
   
@@ -87,10 +88,7 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant='h3' color={colors.grey[100]}>
-                  ADMINIS
-                </Typography>
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+                <IconButton onClick={() => setIsCollapsed(!isCollapsed)} style={{ marginLeft: 'auto' }}>
                   <MenuOutlinedIcon />
                 </IconButton>
               </Box>
@@ -109,8 +107,10 @@ const Sidebar = () => {
                 style={{cursor: "pointer", borderRadius: "50%"}} />
               </Box>
               <Box textAlign="center">
-                <Typography variant='h2' color={colors.grey[100]} fontWeight="bold" sx={{m: "10px 0 0 0"}}>Ed Roh</Typography>
-                <Typography variant='h5' color={colors.greenAccent[500]}>VP Fancy Admin</Typography>
+                <Typography variant='h3' color={colors.grey[100]} fontWeight="bold" sx={{m: "10px 0 0 0"}}>
+                  {authUser.name}
+                </Typography>
+                <Typography variant='h4' color={colors.greenAccent[500]}>{authUser.role.charAt(0).toUpperCase()+authUser.role.slice(1)}</Typography>
               </Box>
             </Box>
           )}
