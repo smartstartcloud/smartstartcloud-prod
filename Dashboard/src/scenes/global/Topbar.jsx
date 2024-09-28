@@ -1,4 +1,3 @@
-//topbar component 
 import React, { useContext } from 'react'
 import { Box, IconButton, Typography, Divider, useTheme } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
@@ -27,23 +26,16 @@ const Topbar = ({ logOut }) => {
             <Box display="flex" alignItems="center">
               Logo
             </Box>
-            {/* Search Bar */}
-            <Box display="flex" backgroundColor={colors.primary[400]} borderRadius="3px">
-              <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
-              <IconButton type='button' sx={{ p: 1 }}>
-                <SearchIcon />
-              </IconButton>
-            </Box>
           </Box>
           <Box display="flex" gap="10px" alignItems="center">
             {/* User Details */}
             {authUser && (
                 <Box display="flex" flexDirection="column" justifyContent="center" alignItems="flex-end">
                   <Typography variant="overline" color={colors.grey[100]} fontWeight="bold" sx={{ lineHeight: '1.5' }}>
-                    {authUser.userName}
+                    {authUser.name}
                   </Typography>
                   <Typography variant="caption" color={colors.grey[100]}>
-                    caption text
+                  {authUser.role}
                   </Typography>
                 </Box>
             )}

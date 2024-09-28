@@ -9,7 +9,7 @@ const useSendDegreeForm = () => {
     const sendDegreeForm = async({degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}) => {
         try {
             console.log(degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules);
-            const res = await api.post(`${process.env.REACT_APP_LOCALHOST}/api/degree/new`, {
+            const res = await api.post(`/api/degree/new`, {
                 degreeID,
                 degreeYear, 
                 degreeName, 

@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from "../context/TokenContext";
-import { api } from "../utils/axiosInstance";
+// import { api } from "../utils/axiosInstance";
+import useApi from "./useApi";
 
 const useLogin = () => {
+    const api = useApi()
     const {setAuthUser} = useAuthContext();
     const {setAccessToken} = useTokenContext()
     const navigate = useNavigate();

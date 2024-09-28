@@ -13,7 +13,7 @@ const useFetchSelectedDegreeData = (degreeYear) => {
             const fetchDegreeData = async (degreeYear) => {
             try {
                 // Get degree by Degree Year
-                const res = await api.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/selected/year/${degreeYear}`);
+                const res = await api.get(`/api/degree/selected/year/${degreeYear}`);
                 setDegree(res.data); // Update state with the degree data
                 setLoading(false);   // Mark as not loading anymore
             } catch (error) {
