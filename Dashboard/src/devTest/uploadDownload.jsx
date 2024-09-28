@@ -2,15 +2,25 @@ import React, { useState } from 'react';
 import { Button, Container, Typography, Box, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Paper from '@mui/material/Paper';
 
 const UploadDownload = () => {
     const [files, setFiles] = useState([]);
+    const [uploadStatus, setUploadStatus] = useState({});  // To track upload status for each file
 
-    // Handle multiple file changes
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files);
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]);
+
+        // Simulate automatic upload success for each file
+        const newUploadStatus = {};
+        selectedFiles.forEach(file => {
+            // Simulate success or failure (here we're assuming success)
+            newUploadStatus[file.name] = true; // Set to true for successful uploads
+        });
+        setUploadStatus(prevStatus => ({ ...prevStatus, ...newUploadStatus }));
     };
 
     const handleDownload = (file) => {
@@ -56,7 +66,7 @@ const UploadDownload = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell align="center">File Name</TableCell>
-                                        <TableCell align="center">Upload</TableCell>
+                                        <TableCell align="center">Upload Successful</TableCell>
                                         <TableCell align="center">Download</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -65,9 +75,11 @@ const UploadDownload = () => {
                                         <TableRow key={index}>
                                             <TableCell align="center">{file.name}</TableCell>
                                             <TableCell align="center">
-                                                <IconButton color="primary">
-                                                    <CloudUploadIcon />
-                                                </IconButton>
+                                                {uploadStatus[file.name] ? (
+                                                    <CheckCircleIcon color="success" />
+                                                ) : (
+                                                    <CancelIcon color="error" />
+                                                )}
                                             </TableCell>
                                             <TableCell align="center">
                                                 <IconButton color="secondary" onClick={() => handleDownload(file)}>
