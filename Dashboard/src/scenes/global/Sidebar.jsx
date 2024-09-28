@@ -168,7 +168,7 @@ const Sidebar = () => {
               />
               <Item 
                 title="Upload Assignnment"
-                to="/testpageUD"
+                to="/uploadPage"
                 icon={<CloudUploadIcon />}
                 selected={selected}
                 setSelected={setSelected}

@@ -10,6 +10,9 @@ import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import './db/connectMongoDB.js'
 import { fileURLToPath } from 'url'
+import multer from 'multer'
+import { GridFsStorage } from 'multer-gridfs-storage';
+import mongoose from 'mongoose'
 // import path from 'path' // You need to import path for static file serving
 /*
 const totalCPUs = cpu.cpus().length;
@@ -46,44 +49,40 @@ if(cluster.isPrimary) {
 */
 // express app
 const app = express();
-const express = require('express');
-const multer = require('multer');
-const { GridFsStorage } = require('multer-gridfs-storage');
-const mongoose = require('mongoose');
 
-// Mongo URI
-const mongoURI = 'mongodb://localhost:27017/mydatabase';
+// // Mongo URI
+// const mongoURI = 'mongodb://localhost:27017/mydatabase';
 
-// Create mongo connection
-const conn = mongoose.createConnection(mongoURI);
+// // Create mongo connection
+// const conn = mongoose.createConnection(mongoURI);
 
-// Create storage engine for GridFS
-const storage = new GridFsStorage({
-    url: mongoURI,
-    file: (req, file) => {
-        return {
-            filename: file.originalname,
-            bucketName: 'uploads' // default bucket name is 'uploads'
-        };
-    }
-});
-const upload = multer({ storage });
+// // Create storage engine for GridFS
+// const storage = new GridFsStorage({
+//     url: mongoURI,
+//     file: (req, file) => {
+//         return {
+//             filename: file.originalname,
+//             bucketName: 'uploads' // default bucket name is 'uploads'
+//         };
+//     }
+// });
+// const upload = multer({ storage });
 
-// File upload route
-app.post('/upload', upload.single('file'), (req, res) => {
-    res.json({ file: req.file });
-});
+// // File upload route
+// app.post('/upload', upload.single('file'), (req, res) => {
+//     res.json({ file: req.file });
+// });
 
-// Retrieve file metadata route
-app.get('/files', (req, res) => {
-    const gfs = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: 'uploads' });
-    gfs.find().toArray((err, files) => {
-        if (!files || files.length === 0) {
-            return res.status(404).json({ err: 'No files exist' });
-        }
-        res.json(files);
-    });
-});
+// // Retrieve file metadata route
+// app.get('/files', (req, res) => {
+//     const gfs = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: 'uploads' });
+//     gfs.find().toArray((err, files) => {
+//         if (!files || files.length === 0) {
+//             return res.status(404).json({ err: 'No files exist' });
+//         }
+//         res.json(files);
+//     });
+// });
 
 app.listen(process.env.PORT || 8080, () => {
   console.log(`listening on port ${process.env.PORT}`);
