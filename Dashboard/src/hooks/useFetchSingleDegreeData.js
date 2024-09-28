@@ -15,7 +15,7 @@ const useFetchSingleDegreeData = (degreeId) => {
             const fetchDegreeData = async (degreeId) => {
             try {
                 // Get degree by DegreeID
-                const res = await api.get(`${process.env.REACT_APP_LOCALHOST}/api/degree/selected/degreeID/${degreeId}`, {
+                const res = await api.get(`/api/degree/selected/degreeID/${degreeId}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }

@@ -46,7 +46,7 @@ if(cluster.isPrimary) {
 */
 // express app
 const app = express();
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 8080, () => {
   console.log(`listening on port ${process.env.PORT}`);
 })
 /*
