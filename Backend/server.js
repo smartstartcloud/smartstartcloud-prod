@@ -7,11 +7,11 @@ import { newAccessToken } from './utils/generateToken.js'
 import dummyRequestRoute from "./controllers/dummyRequest.js"
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import cluster from 'cluster'
-import cpu from 'os'
 import helmet from 'helmet'
 import './db/connectMongoDB.js'
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'
+import path from 'path' // You need to import path for static file serving
+
 /*
 const totalCPUs = cpu.cpus().length;
 const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
@@ -45,11 +45,11 @@ if(cluster.isPrimary) {
     app.use("/dummyRequest", protect,dummyRequestRoute); 
 }
 */
+
 // express app
 const app = express();
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`listening on port ${process.env.PORT}`);
-})
+const PORT = process.env.PORT || 3000;
+
 /*
 // Get the current directory path --- FOR ES6 Syntax, __dirname doesn't work directly. To connect react app
 const __filename = fileURLToPath(import.meta.url);
@@ -57,23 +57,34 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
 */
 
+// Middleware setup
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(helmet());
 app.use((cors({
-  origin: ["http://localhost:3000", "https://www.smartstart.cloud"] ,
-  credentials: true,  // To allow cookies
+  origin: ["http://localhost:3000", "https://www.smartstart.cloud"], 
+  credentials: true, 
 })));
 
+// API routes
 app.use("/api/auth", authRoutes);
-app.use("/api/degree",degreeRoutes);
+app.use("/api/degree", degreeRoutes);
 app.use("/api/module", moduleRoutes);
 app.use("/dummyRequest", dummyRequestRoute);
-app.use('/newAccessToken',newAccessToken);
+app.use('/newAccessToken', newAccessToken);
 
-/*
-app.get('*',(req,res)=>{
-  res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
-})
-*/
+
+// Serve the React app
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// All unknown routes should serve the React app's index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Dashboard/build', 'index.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+});
