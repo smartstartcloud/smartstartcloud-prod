@@ -61,7 +61,6 @@ const DegreeBoard = () => {
         setSuggestions([]);
     };
 
-    // Handle loading and error states
     if (loading) {
         return (
             <Box mt="200px" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -80,7 +79,6 @@ const DegreeBoard = () => {
         <Box m="20px">
             <Header title={`All degrees of ${yearName}`} subtitle="Here is all the information listed in your Assignment" />
 
-            {/* Search Bar */}
             <Box mt={3} display="flex" flexDirection="column" alignItems="center">
                 <Box display="flex" width="100%" maxWidth="600px" gap={2} alignItems="center">
                     <TextField
@@ -112,7 +110,6 @@ const DegreeBoard = () => {
                     )}
                 </Box>
 
-                {/* Search Suggestions */}
                 {suggestions.length > 0 && (
                     <Paper elevation={3} sx={{ width: '100%', maxWidth: '600px', mt: 1 }}>
                         <List>
@@ -130,7 +127,6 @@ const DegreeBoard = () => {
                 )}
             </Box>
 
-            {/* Display Search Result Info */}
             {isSearching && (
                 <Box mt={2}>
                     <Typography variant="subtitle1" color={colors.blueAccent[500]}>
