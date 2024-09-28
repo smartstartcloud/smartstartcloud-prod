@@ -21,6 +21,8 @@ export const loginUser = async (req, res) => {
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
+            role: user.role,
+            name: user.firstName+" "+user.lastName,
             accessToken:generateAccessToken(user._id,user.role)
         })
 

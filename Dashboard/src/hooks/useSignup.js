@@ -2,13 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { api } from "../utils/axiosInstance";
+import useApi from "./useApi";
 
 const useSignup = ( ) => {
     const {setAuthUser} = useAuthContext();
+    const api = useApi()
     // const navigate = useNavigate()
     const signup = async( {email, firstName, lastName, userName, password, gender, role} ) => {
         try {
-            const res = await api.post(`${process.env.REACT_APP_LOCALHOST}/api/auth/signup`, {
+            const res = await api.post(`/api/auth/signup`, {
                 email, 
                 firstName, 
                 lastName, 
