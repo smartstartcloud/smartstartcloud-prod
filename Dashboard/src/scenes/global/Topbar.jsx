@@ -1,4 +1,3 @@
-//topbar component 
 import React, { useContext } from 'react'
 import { Box, IconButton, Typography, Divider, useTheme } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
