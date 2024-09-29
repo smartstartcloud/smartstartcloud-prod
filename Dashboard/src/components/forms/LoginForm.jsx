@@ -90,7 +90,7 @@ const LoginForm = () => {
                             render={({field})=>(
                                 <TextField
                                     {...field}
-                                    label="userName"
+                                    label="Username"
                                     variant="outlined"
                                     fullWidth
                                     required
@@ -120,7 +120,7 @@ const LoginForm = () => {
                             render={({field})=>(
                                 <TextField
                                     {...field}
-                                    label="password"
+                                    label="Password"
                                     variant="outlined"
                                     type={showPassword ? 'text' : 'password'}
                                     fullWidth
@@ -167,7 +167,7 @@ const LoginForm = () => {
                         {loading ? (
                             <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
                         ) : (
-                            'Submit'
+                            'Login'
                         )}
                     </Button>
                     <Link to="/signUp" style={{ textDecoration: 'none' }}>

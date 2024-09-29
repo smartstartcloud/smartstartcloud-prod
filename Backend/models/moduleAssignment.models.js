@@ -6,7 +6,7 @@ const moduleAssignmentSchema = new mongo.Schema({
         type: String,
         required: true
     },
-    assignmentID: [{
+    orderID: [{
         type: String,
         required: true
     }],

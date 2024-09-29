@@ -1,7 +1,8 @@
 import express from "express"
-import {newAssignment} from '../controllers/module.controller.js'
+import {newAssignment,getAssignment} from '../controllers/module.controller.js'
 const router = express.Router();
 
 router.post("/newAssignment",newAssignment);
+router.get("/getAssignment/:moduleID/:studentID",getAssignment);
 
 export default router;
