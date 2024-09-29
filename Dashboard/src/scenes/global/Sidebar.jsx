@@ -112,7 +112,7 @@ const Sidebar = () => {
                 <Typography variant='h3' color={colors.grey[100]} fontWeight="bold" sx={{m: "10px 0 0 0"}}>
                   {authUser.name}
                 </Typography>
-                <Typography variant='h4' color={colors.greenAccent[500]}>{authUser.role.charAt(0).toUpperCase()+authUser.role.slice(1)}</Typography>
+                <Typography variant='h4' color={colors.greenAccent[500]}>{authUser?.role ? authUser.role.charAt(0).toUpperCase() + authUser.role.slice(1) : ''}</Typography>
               </Box>
             </Box>
           )}

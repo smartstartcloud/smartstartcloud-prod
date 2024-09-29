@@ -69,9 +69,6 @@ const Dashboard = () => {
           <TaskCard key={idx} yearId={year.year_id} taskName={year.yearName} taskDetails={year.degreeList.length} taskAgents={year.agentList} />
         )) : undefined}
       </Box>
-
-      <h1>Make a Protected Request</h1>
-      <button onClick={handleToken}>Access Protected Route</button>
     </Box>
   )
 }

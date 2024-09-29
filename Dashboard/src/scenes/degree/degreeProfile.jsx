@@ -147,7 +147,7 @@ const DegreeProfile = () => {
                                                 color={colors.grey[200]}
                                                 sx={{ textAlign: 'center', mb: 1 }}
                                             >
-                                                {module.moduleName}
+                                                {module.moduleName+": "+module.moduleCode}
                                             </Typography>
                                         ))
                                     ) : (

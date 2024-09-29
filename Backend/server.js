@@ -4,7 +4,6 @@ import authRoutes from './routes/auth.routes.js'
 import degreeRoutes from './routes/degree.routes.js'
 import moduleRoutes from './routes/module.routes.js'
 import { newAccessToken } from './utils/generateToken.js'
-import dummyRequestRoute from "./controllers/dummyRequest.js"
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
@@ -122,7 +121,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(helmet());
 app.use((cors({
-  origin: ["http://localhost:3000", "https://www.smartstart.cloud"] ,
+  origin: ["http://localhost:3000", "https://www.smartstart.cloud","https://smartstart.cloud","www.smartstart.cloud"] ,
   credentials: true,  // To allow cookies
 })));
 
@@ -130,7 +129,6 @@ app.use((cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/degree",degreeRoutes);
 app.use("/api/module", moduleRoutes);
-app.use("/dummyRequest", dummyRequestRoute);
 app.use('/newAccessToken',newAccessToken);
 
 /*
