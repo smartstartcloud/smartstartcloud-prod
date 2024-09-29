@@ -7,6 +7,11 @@ const DynamicBreadcrumbs = () => {
 
     const pathnames = location.pathname.split('/').filter((x) => x)
 
+    const excludedRoutes = ["/login", "/signUp"];
+    if (excludedRoutes.includes(location.pathname)) {
+        return null;
+    }
+
     return (
         <Breadcrumbs aria-label="breadcrumb">
             {/* Home Link */}

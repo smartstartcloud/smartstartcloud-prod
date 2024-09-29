@@ -41,11 +41,11 @@ const DegreeProfile = () => {
     };
 
     const columns = [
-        { field: 'studentID', headerName: 'STUDENT ID', flex: 0.5 },
+        { field: 'studentID', headerName: 'Student ID', flex: 0.5 },
         { field: 'studentName', headerName: 'Name', flex: 1 },
-        { field: 'studentLogin', headerName: 'User Name', flex: 1 },
+        { field: 'studentLogin', headerName: 'Username', flex: 1 },
         { field: 'studentPassword', headerName: 'Password', flex: 1 },
-        { field: 'studentContact', headerName: 'Phone Number', flex: 1 },
+        { field: 'studentContact', headerName: 'Contact Number', flex: 1 },
     ];
 
     const handleAddStudent = () => {
@@ -184,6 +184,7 @@ const DegreeProfile = () => {
                         '& .MuiDataGrid-row': {
                             backgroundColor: colors.grey[50],
                             color: colors.black,
+                            cursor:'pointer',
                             '&:hover': {
                                 backgroundColor: colors.blueAccent[50],
                                 transform: 'scale(1.01)',

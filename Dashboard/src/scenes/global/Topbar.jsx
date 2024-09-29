@@ -48,9 +48,6 @@ const Topbar = ({ logOut }) => {
               {authUser && (
                   <>
                     <IconButton>
-                      <NotificationsOutlinedIcon />
-                    </IconButton>
-                    <IconButton>
                       <SettingsOutlinedIcon />
                     </IconButton>
                     {/* User Icon and Name */}
