@@ -50,38 +50,58 @@ if(cluster.isPrimary) {
 // express app
 const app = express();
 
-// // Mongo URI
+// GridFS starts
+// Mongo URI
 // const mongoURI = 'mongodb://localhost:27017/mydatabase';
 
 // // Create mongo connection
 // const conn = mongoose.createConnection(mongoURI);
 
-// // Create storage engine for GridFS
+// Initialize GridFS storage
 // const storage = new GridFsStorage({
-//     url: mongoURI,
-//     file: (req, file) => {
-//         return {
-//             filename: file.originalname,
-//             bucketName: 'uploads' // default bucket name is 'uploads'
-//         };
-//     }
+//   url: mongoURI,
+//   file: (req, file) => {
+//       return new Promise((resolve, reject) => {
+//           crypto.randomBytes(16, (err, buf) => {
+//               if (err) {
+//                   return reject(err);
+//               }
+//               const filename = buf.toString('hex') + path.extname(file.originalname);
+//               const fileInfo = {
+//                   filename: filename,
+//                   bucketName: 'uploads'
+//               };
+//               resolve(fileInfo);
+//           });
+//       });
+//   }
 // });
+
+// // Multer setup
 // const upload = multer({ storage });
 
-// // File upload route
-// app.post('/upload', upload.single('file'), (req, res) => {
-//     res.json({ file: req.file });
+// // Token checking middleware
+// function verifyToken(req, res, next) {
+//   const token = req.query.token || req.headers['x-access-token'];
+//   if (!token) {
+//       return res.status(403).send({ message: 'No token provided. Access allowed without restrictions.' });
+//   }
+//   // Here you can add your actual token verification logic
+//   if (token === 'VALID_SHAREABLE_TOKEN') {
+//       next(); // Token is valid, allow upload
+//   } else {
+//       res.status(401).send({ message: 'Unauthorized: Invalid Token' });
+//   }
+// }
+
+// // File upload route with token restriction
+// app.post('/upload', verifyToken, upload.single('file'), (req, res) => {
+//   res.json({ file: req.file });
 // });
 
-// // Retrieve file metadata route
-// app.get('/files', (req, res) => {
-//     const gfs = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: 'uploads' });
-//     gfs.find().toArray((err, files) => {
-//         if (!files || files.length === 0) {
-//             return res.status(404).json({ err: 'No files exist' });
-//         }
-//         res.json(files);
-//     });
+// Shareable link upload route without token restriction
+// app.post('/share/upload', upload.single('file'), (req, res) => {
+//   res.json({ file: req.file });
 // });
 
 app.listen(process.env.PORT || 8080, () => {
@@ -94,6 +114,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
 */
+//GridFS ends
 
 //Middleware
 app.use(cookieParser());
