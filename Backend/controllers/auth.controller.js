@@ -5,14 +5,22 @@ import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.
 export const loginUser = async (req, res) => {
     try {
         const {userName, password} = req.body;
-        const user = await User.findOne({userName})
-        const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
-
-        if(!user || !isPasswordCorrect){
-            return res.status(400).json({error: "Invalid Username or Password"})
+        const user = await User.findOne({userName});
+        
+        // First check if the user exists
+        if (!user) {
+            return res.status(400).json({error: "Invalid Username or Password"});
         }
-        if(user.passRenew==false){
-            return res.status(401).json({error: "Default password not changed",useName:user.userName});
+
+        // Check if the password is correct
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(400).json({error: "Invalid Username or Password"});
+        }
+
+        // Check if the password needs renewal
+        if (user.passRenew == false) {
+            return res.status(401).json({error: "Default password not changed", userName: user.userName});
         }
         
         generateRefreshToken(user._id,user.role,res)
@@ -28,12 +36,10 @@ export const loginUser = async (req, res) => {
 
     } catch (error) {
         console.log("Error in login controller", error);
-        
-        res.status(400).json({error: "Internal server error."});
+        res.status(500).json({error: "Internal server error."});
     }
-
-    
 }
+
 
 export const signupUser = async (req, res) => {
     try {

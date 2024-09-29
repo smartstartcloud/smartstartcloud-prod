@@ -10,6 +10,9 @@ import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import './db/connectMongoDB.js'
 import { fileURLToPath } from 'url'
+import multer from 'multer'
+import { GridFsStorage } from 'multer-gridfs-storage';
+import mongoose from 'mongoose'
 // import path from 'path' // You need to import path for static file serving
 /*
 const totalCPUs = cpu.cpus().length;
@@ -46,15 +49,72 @@ if(cluster.isPrimary) {
 */
 // express app
 const app = express();
+
+// GridFS starts
+// Mongo URI
+// const mongoURI = 'mongodb://localhost:27017/mydatabase';
+
+// // Create mongo connection
+// const conn = mongoose.createConnection(mongoURI);
+
+// Initialize GridFS storage
+// const storage = new GridFsStorage({
+//   url: mongoURI,
+//   file: (req, file) => {
+//       return new Promise((resolve, reject) => {
+//           crypto.randomBytes(16, (err, buf) => {
+//               if (err) {
+//                   return reject(err);
+//               }
+//               const filename = buf.toString('hex') + path.extname(file.originalname);
+//               const fileInfo = {
+//                   filename: filename,
+//                   bucketName: 'uploads'
+//               };
+//               resolve(fileInfo);
+//           });
+//       });
+//   }
+// });
+
+// // Multer setup
+// const upload = multer({ storage });
+
+// // Token checking middleware
+// function verifyToken(req, res, next) {
+//   const token = req.query.token || req.headers['x-access-token'];
+//   if (!token) {
+//       return res.status(403).send({ message: 'No token provided. Access allowed without restrictions.' });
+//   }
+//   // Here you can add your actual token verification logic
+//   if (token === 'VALID_SHAREABLE_TOKEN') {
+//       next(); // Token is valid, allow upload
+//   } else {
+//       res.status(401).send({ message: 'Unauthorized: Invalid Token' });
+//   }
+// }
+
+// // File upload route with token restriction
+// app.post('/upload', verifyToken, upload.single('file'), (req, res) => {
+//   res.json({ file: req.file });
+// });
+
+// Shareable link upload route without token restriction
+// app.post('/share/upload', upload.single('file'), (req, res) => {
+//   res.json({ file: req.file });
+// });
+
 app.listen(process.env.PORT || 8080, () => {
   console.log(`listening on port ${process.env.PORT}`);
 })
+
 /*
 // Get the current directory path --- FOR ES6 Syntax, __dirname doesn't work directly. To connect react app
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
 */
+//GridFS ends
 
 //Middleware
 app.use(cookieParser());

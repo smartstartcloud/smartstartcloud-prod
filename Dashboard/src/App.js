@@ -52,7 +52,7 @@ function App() {
             <Routes>
 
               {/* <Route path="/testPage" element={ <AccountInfo /> } /> */}
-              <Route path="/testPageUD" element={ <UploadDownload /> } />
+              <Route path="/uploadPage" element={ <UploadDownload /> } />
 
 
               <Route path="/" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
