@@ -1,13 +1,11 @@
 import React, { useContext } from 'react'
 import { Box, IconButton, Typography, Divider, useTheme } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
-import InputBase from '@mui/material/InputBase'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
-import SearchIcon from '@mui/icons-material/Search'
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
 import { useAuthContext } from '../../context/AuthContext'
 import DynamicBreadcrumbs from '../../components/DynamicBreadcrumbs'
@@ -69,9 +67,9 @@ const Topbar = ({ logOut }) => {
             </Box>
           </Box>
         </Box>
-        <Box display="flex" justifyContent="space-between" px={2}>
+        {authUser && <Box display="flex" justifyContent="space-between" px={2}>
           <DynamicBreadcrumbs />
-        </Box>
+        </Box>}
       </Box>
   )
 }
