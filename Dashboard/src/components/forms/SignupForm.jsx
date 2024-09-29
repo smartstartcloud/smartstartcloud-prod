@@ -125,7 +125,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="firstName"
+                                        label="First Name"
                                         variant="outlined"
                                         fullWidth
                                         required
@@ -151,7 +151,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="lastName"
+                                        label="Last Name"
                                         variant="outlined"
                                         fullWidth
                                         required
@@ -179,7 +179,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="userName"
+                                        label="Username"
                                         variant="outlined"
                                         fullWidth
                                         required
@@ -212,7 +212,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="email"
+                                        label="Email"
                                         variant="outlined"
                                         fullWidth
                                         required
@@ -247,7 +247,6 @@ const SignupForm = () => {
                                         <MenuItem value="" disabled>Select Gender</MenuItem>
                                         <MenuItem value="male" >Male</MenuItem>
                                         <MenuItem value="female" >Female</MenuItem>
-                                        <MenuItem value="other" >Other</MenuItem>
                                     </Select>
                                 )}
                             />
@@ -275,7 +274,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="password"
+                                        label="Password"
                                         variant="outlined"
                                         type={showPassword ? 'text' : 'password'}
                                         fullWidth
@@ -316,7 +315,7 @@ const SignupForm = () => {
                                 render={({field})=>(
                                     <TextField
                                         {...field}
-                                        label="passwordConfirmation"
+                                        label="Password Confirmation"
                                         variant="outlined"
                                         type={showConfirmPassword ? 'text' : 'password'}
                                         fullWidth
@@ -360,7 +359,6 @@ const SignupForm = () => {
                                     >
                                         <MenuItem value="" disabled>Select Role</MenuItem>
                                         <MenuItem value="admin" >Admin</MenuItem>
-                                        <MenuItem value="hr" >HR</MenuItem>
                                         <MenuItem value="agent" >Agent</MenuItem>
                                     </Select>
                                 )}
