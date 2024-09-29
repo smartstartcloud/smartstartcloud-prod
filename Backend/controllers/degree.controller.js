@@ -1,4 +1,5 @@
 import Degree from '../models/degree.models.js'
+import Student from '../models/student.models.js';
 import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
 
@@ -99,6 +100,17 @@ export const getDegreeByAgent = async (req,res)=>{
     res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getStudentByID = async (req,res)=>{
+  const {studentID} = req.params
+  try {
+    const student = await Student.findOne({studentID})
+      res.status(200).json(student);
+  } catch (error) {
+    console.error("Error fetching student:", error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }

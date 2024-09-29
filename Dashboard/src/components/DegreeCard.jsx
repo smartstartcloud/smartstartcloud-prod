@@ -18,7 +18,8 @@ const DegreeCard = ({ degreeYear, degreeId, degreeName, totalStudents, degreeAge
             onClick={handleClick}
             sx={{
                 minWidth: '100%',
-                background: colors.grey[100],
+                // background: `linear-gradient(210deg, ${colors.blueAccent[500]}, ${colors.blueAccent[700]})`,
+                background: colors.blueAccent[800],
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 borderRadius: '10px',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -26,30 +27,32 @@ const DegreeCard = ({ degreeYear, degreeId, degreeName, totalStudents, degreeAge
                     transform: 'translateY(-5px)',
                     boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
                 },
-            }}>
+                color: colors.grey[50],
+            }}
+        >
             <CardActionArea>
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="baseline">
-                        <Typography variant="h5" component="div" color={colors.grey[900]}>
+                        <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
                             {degreeName}
                         </Typography>
-                        <Typography variant="subtitle1" component="div" color={colors.grey[600]}>
+                        <Typography variant="subtitle1" component="div">
                             {degreeId}
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="space-between" mt={2}>
-                        <Typography variant="body1" color={colors.grey[700]}>
+                        <Typography variant="body1">
                             Total Students:
                         </Typography>
-                        <Typography variant="h6" color={colors.blueAccent[500]}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                             {totalStudents}
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="space-between" mt={2}>
-                        <Typography variant="body1" color={colors.grey[700]}>
+                        <Typography variant="body1">
                             Agent:
                         </Typography>
-                        <Typography variant="body1" color={colors.grey[800]}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                             {degreeAgent.firstName} {degreeAgent.lastName}
                         </Typography>
                     </Box>
