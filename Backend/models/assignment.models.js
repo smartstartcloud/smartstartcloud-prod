@@ -15,6 +15,10 @@ const AssignmentSchema = new mongo.Schema({
         type: String,
         required: true
     },
+    assignmentDeadline: {
+        type: String,
+        required: true
+    },
     assignmentProgress: {
         type: String,
         required: true
