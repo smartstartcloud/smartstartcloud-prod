@@ -1,28 +1,45 @@
-import React, { useState } from 'react'
+import React, {useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, IconButton, Modal, Typography, useTheme } from '@mui/material';
+import {Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Typography, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
-import CloseIcon from '@mui/icons-material/Close';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-
+import AssignmentForm from '../forms/AssignmentForm';
+import AssignmentList from './AssignmentList';
+import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 
 const StudentProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { studentId } = useParams();
     const location = useLocation(); // Access the passed state
+    const { studentId } = useParams();
     const {student, loading, error} = useFetchSingleStudentData(studentId);
-    const { _id, studentName, studentContact, studentLogin, studentPassword, studentAssignment = [] } = student || {};
+    const {fetchAssignmentList} = useFetchAssignmentList()
+    
+    const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
     const { degreeModules } = location.state || {};
 
     const [open, setOpen] = useState(false);
-    console.log(degreeModules);
     
     const taken = ['Module 1', 'Module 3']
 
-    const handleModuleCLick = (item, isValid) => {
-        console.log(item, isValid, _id);
+    const [assignmentList, setassignmentList] = useState(null);
+    const [listError, setListError] = useState(false);
+    const [listErrorMessage, setListErrorMessage] = useState('');
+    const [listLoading, setListLoading] = useState(false);
+
+    const handleModuleCLick = async (moduleId, isValid) => {
+        setListLoading(true);
+        try {
+            const response = await fetchAssignmentList(moduleId, _id)
+            setassignmentList(response)
+            setListError(false);
+            setListLoading(false);
+        } catch (e) {
+            setListError(true);
+            setListLoading(false)
+            setListErrorMessage(e.message)
+        }
+        
     }
 
     if (loading) {
@@ -144,7 +161,7 @@ const StudentProfile = () => {
                     ))}
                     
                 </Grid>
-                {/* <Button
+                <Button
                     variant="contained"
                     sx={{
                         mt: 3,
@@ -157,9 +174,24 @@ const StudentProfile = () => {
                     }}
                     onClick={() => setOpen(true)}
                 >
-                    Add Student
-                </Button> */}
+                    Add Assignment
+                </Button>
             </Box>
+            {open && <AssignmentForm studentData={student} degreeModulesData={degreeModules} />}
+
+            <Box mt={3}>
+                { listLoading ? (
+                    <Box mt="200px" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CircularProgress size={150} sx={{ color: colors.blueAccent[100] }} />
+                    </Box>
+                    ) : listError ? (
+                        <div>{listErrorMessage}</div>
+                    ) : ( <AssignmentList list={assignmentList} /> )
+                }
+            </Box>
+
+            
+
             {/* <Modal open={open} onClose={() => setOpen(false)}>
                 <Box
                     sx={{
@@ -256,52 +288,7 @@ const StudentProfile = () => {
                     </Button>
                 </Box>
             </Modal> */}
-            <Box mt={3} width='100%'>
-                <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2}}>
-                    Assignment List for Module 1
-                </Typography>
-                <Grid container spacing={2} width='100%' mt={2}>
-                    <Accordion sx={{width: '100%', background: colors.grey[900], color: colors.grey[200]}}>
-                        <AccordionSummary
-                        expandIcon={<ArrowDropDownIcon sx={{color: colors.grey[200]}} />}
-                        aria-controls="panel2-content"
-                        id="panel2-header"
-                        >
-                            <Grid item xs={6} sm={3} >
-                                <Typography>
-                                    Academic Skills for Business Management 
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3} >
-                                <Typography>
-                                    Group Presentation 
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3} >
-                                <Typography>
-                                    27/02/23
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={2} >
-                                <Typography>
-                                    55%
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={1} >
-                                <Typography>
-                                    PAID
-                                </Typography>
-                            </Grid>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{background: colors.grey[800], color: colors.grey[200]}}>
-                        <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                            malesuada lacus ex, sit amet blandit leo lobortis eget.
-                        </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                </Grid>
-            </Box>
+            
         </Box>
         
 
