@@ -2,13 +2,13 @@ import ModuleAssignment from '../models/moduleAssignment.models.js'
 import Assignment from '../models/assignment.models.js';
 export const newAssignment = async (req,res)=>{
   try{
-    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment} = req.body
+    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment} = req.body
     const module = await ModuleAssignment.findOne({moduleID,studentID});
     if (module){
         if(module.orderID.includes(orderID)){
           res.status(400).json({error:"Order ID already exists"});
         }else{
-          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment);
+          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment);
           await ModuleAssignment.findOneAndUpdate({ _id: module._id },{ $push: { orderID: createdAssignment.orderID } } ).then(result => {
             if (result.matchedCount === 0) {
               console.log("No document found with the given _id.");
@@ -22,7 +22,7 @@ export const newAssignment = async (req,res)=>{
         }
     }else{
       try{
-        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment);
+        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment);
         console.log(createdAssignment);
         const newAssignment = new ModuleAssignment({
             studentID,
@@ -68,11 +68,12 @@ export const getAssignment = async (req,res)=>{
 }
 
 
-async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment){
+async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment){
   const newAssignment = new Assignment({
     orderID: orderID,
     assignmentName: assignmentName,
     assignmentType: assignmentType,
+    assignmentDeadline: assignmentDeadline,
     assignmentProgress: assignmentProgress,
     assignmentPayment: assignmentPayment,
     assignmentFile: [] // Default to empty array
