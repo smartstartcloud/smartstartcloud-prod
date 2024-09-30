@@ -8,7 +8,7 @@ const moduleAssignmentSchema = new mongo.Schema({
     },
     orderID: [{
         type: String,
-        required: true
+        ref:"Assignment"
     }],
     studentID: {
         type: String,

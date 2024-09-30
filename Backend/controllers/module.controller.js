@@ -1,13 +1,15 @@
 import ModuleAssignment from '../models/moduleAssignment.models.js'
+import Assignment from '../models/assignment.models.js';
 export const newAssignment = async (req,res)=>{
   try{
-    const {studentID,moduleID,orderID} = req.body
+    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment} = req.body
     const module = await ModuleAssignment.findOne({moduleID,studentID});
     if (module){
         if(module.orderID.includes(orderID)){
-          res.status(400).json({value:"Order ID already exists"});
+          res.status(400).json({error:"Order ID already exists"});
         }else{
-          await ModuleAssignment.findOneAndUpdate({ _id: module._id },{ $push: { orderID: orderID } } ).then(result => {
+          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment);
+          await ModuleAssignment.findOneAndUpdate({ _id: module._id },{ $push: { orderID: createdAssignment.orderID } } ).then(result => {
             if (result.matchedCount === 0) {
               console.log("No document found with the given _id.");
             } else {
@@ -19,15 +21,26 @@ export const newAssignment = async (req,res)=>{
           });
         }
     }else{
+      try{
+        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment);
+        console.log(createdAssignment);
         const newAssignment = new ModuleAssignment({
             studentID,
             moduleID,
-            orderID,
+            orderID:createdAssignment.orderID
           })
           if(newAssignment){
             await newAssignment.save();
             res.status(200).json({value:"Assignment added successfully"});
           }
+        }catch(error){
+          if(error.code==11000){        
+            res.status(400).json({error:"Order ID already exists"});
+          }else{
+            console.log(error);
+            res.status(500).json({error:"Internal Server Error"});
+          }
+        }
     }
     }catch(error){
         console.log(error);
@@ -38,14 +51,32 @@ export const newAssignment = async (req,res)=>{
 export const getAssignment = async (req,res)=>{
   try{
     const {studentID,moduleID} = req.params
-    const module = await ModuleAssignment.findOne({moduleID,studentID});
+    const module = await ModuleAssignment.findOne({moduleID,studentID}).populate({
+      path: 'orderID',  // The field we want to populate
+      model: 'Assignment', // The model to populate from
+      foreignField: 'orderID'  // Match based on orderID
+    });
     if (module){
       res.status(200).json(module.orderID);
     }else{
-        res.status(400).json({value:"No module found"})
+        res.status(400).json({error:"No module found"})
     }
     }catch(error){
         console.log(error);
         res.status(500).json({error:"Internal Server Error"});    
     }
+}
+
+
+async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentProgress,assignmentPayment){
+  const newAssignment = new Assignment({
+    orderID: orderID,
+    assignmentName: assignmentName,
+    assignmentType: assignmentType,
+    assignmentProgress: assignmentProgress,
+    assignmentPayment: assignmentPayment,
+    assignmentFile: [] // Default to empty array
+  });
+  const savedAssignment = await newAssignment.save();
+  return savedAssignment;
 }

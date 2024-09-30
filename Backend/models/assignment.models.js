@@ -4,12 +4,13 @@ import {infoDB} from '../db/connectMongoDB.js';
 const AssignmentSchema = new mongo.Schema({
     orderID:{
         type: String,
+        unique:true,
         required: true
     },
-    assignmentName: [{
+    assignmentName: {
         type: String,
         required: true
-    }],
+    },
     assignmentType: {
         type: String,
         required: true
@@ -28,5 +29,5 @@ const AssignmentSchema = new mongo.Schema({
     },
     
 })
-const Assignment = infoDB.model("Module Assignment", AssignmentSchema,"Assignment");
+const Assignment = infoDB.model("Assignment", AssignmentSchema,"Assignment");
 export default Assignment;
