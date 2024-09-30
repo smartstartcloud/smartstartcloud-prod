@@ -1,17 +1,18 @@
 import { useAuthContext } from "../context/AuthContext";
+import useApi from "./useApi";
 
 const useChangePassword = () => {
     const {setAuthUser} = useAuthContext()
+    const api = useApi()
     
     const changePassword = async({password, userName }) => {
         try {
             console.log(password, userName);
-            const res = await fetch(`${process.env.REACT_APP_LOCALHOST}/api/auth/renew`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({password, userName})
-            });
-            const data = await res.json();
+            const res = await api.post(`/api/auth/renew`, {
+                password, 
+                userName, 
+            })
+            const data = await res.data;
             if (data.error){
                 throw new Error(data.error);
             }
