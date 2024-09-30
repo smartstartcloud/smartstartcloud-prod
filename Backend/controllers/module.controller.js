@@ -3,6 +3,8 @@ import Assignment from '../models/assignment.models.js';
 export const newAssignment = async (req,res)=>{
   try{
     const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment} = req.body
+    console.log('ashche');
+    
     const module = await ModuleAssignment.findOne({moduleID,studentID});
     if (module){
         if(module.orderID.includes(orderID)){
