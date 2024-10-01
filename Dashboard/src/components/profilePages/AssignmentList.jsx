@@ -7,21 +7,25 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 const AssignmentList = ({list}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    
     return (
         <Box>
             {list && <Box mt={3} width='100%'>
                 <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2}}>
-                    Assignment List for Module 1
+                    Assignment List for {(list.find(item => item.moduleName))?.moduleName}
                 </Typography>
                 <Grid container spacing={2} width='100%' mt={2}>
-                    {list.map((assignment) =>(
+                    {list.filter((assignment)=>!assignment.moduleName).map((assignment) =>( 
                         <Accordion sx={{width: '100%', background: colors.grey[900], color: colors.grey[200], marginBottom: '10px'}}>
                             <AccordionSummary
                             expandIcon={<ArrowDropDownIcon sx={{color: colors.grey[200]}} />}
                             aria-controls="panel2-content"
                             id="panel2-header"
                             >
+                                <Grid item xs={6} sm={3} >
+                                    <Typography>
+                                        {assignment.orderID}
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={6} sm={3} >
                                     <Typography>
                                         {assignment.assignmentName}

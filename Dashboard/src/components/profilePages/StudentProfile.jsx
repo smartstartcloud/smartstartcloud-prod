@@ -20,17 +20,16 @@ const StudentProfile = () => {
 
     const [open, setOpen] = useState(false);
     
-    const taken = ['Module 1', 'Module 3']
-
     const [assignmentList, setassignmentList] = useState(null);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
     const [listLoading, setListLoading] = useState(false);
 
-    const handleModuleCLick = async (moduleId, isValid) => {
+    const handleModuleCLick = async (moduleId, moduleName) => {
         setListLoading(true);
         try {
             const response = await fetchAssignmentList(moduleId, _id)
+            response.push({"moduleName":moduleName})
             setassignmentList(response)
             setListError(false);
             setListLoading(false);
@@ -70,61 +69,35 @@ const StudentProfile = () => {
                 }}
             >
                 <CardContent>
-                    <Grid container spacing={2} alignItems='center'>
+                    <Grid container spacing={2} justifyContent="center" alignItems="center">
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
+                            <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2,textAlign: 'center' }}>
                                 Student Information
                             </Typography>
-                            <Box sx={{ mb: 1 }}>
+                            <Box sx={{ mb: 1,textAlign: 'center'}}>
                                 <Typography variant="h5" color={colors.grey[200]}>
                                     <strong>Student ID:</strong> {studentId}
                                 </Typography>
                             </Box>
-                            <Box sx={{ mb: 1 }}>
+                            <Box sx={{ mb: 1,textAlign: 'center' }}>
                                 <Typography variant="h5" color={colors.grey[200]}>
                                     <strong>Student Name:</strong> {studentName}
                                 </Typography>
                             </Box>
-                            <Box sx={{ mb: 1 }}>
+                            <Box sx={{ mb: 1,textAlign: 'center' }}>
                                 <Typography variant="h5" color={colors.grey[200]}>
                                     <strong>Student Contact:</strong> {studentContact}
                                 </Typography>
                             </Box>
-                            <Box sx={{ mb: 1 }}>
+                            <Box sx={{ mb: 1,textAlign: 'center' }}>
                                 <Typography variant="h5" color={colors.grey[200]}>
                                     <strong>Student Login:</strong> {studentLogin}
                                 </Typography>
                             </Box>
-                            <Box sx={{ mb: 1 }}>
+                            <Box sx={{ mb: 1,textAlign: 'center' }}>
                                 <Typography variant="h5" color={colors.grey[200]}>
                                     <strong>Student Password:</strong> {studentPassword}
                                 </Typography>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{ p: 2, backgroundColor: colors.greenAccent[800], borderRadius: 2 }}>
-                                <Typography variant="h4" color={colors.grey[100]} sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                                    Student Modules Taken
-                                </Typography>
-                                <Divider sx={{ my: 1, borderColor: colors.grey[700] }} />
-                                <Box>
-                                    {degreeModules && degreeModules.length > 0 ? (
-                                        degreeModules.map((module, index) => (
-                                            <Typography
-                                                key={index}
-                                                variant="body1"
-                                                color={colors.grey[200]}
-                                                sx={{ textAlign: 'center', mb: 1,  textDecoration: taken.includes(module.moduleName) ? 'none' : 'line-through' }}
-                                            >
-                                                {module.moduleName}
-                                            </Typography>
-                                        ))
-                                    ) : (
-                                        <Typography variant="body1" color={colors.grey[400]} sx={{ textAlign: 'center' }}>
-                                            No modules available.
-                                        </Typography>
-                                    )}
-                                </Box>
                             </Box>
                         </Grid>
                     </Grid>
@@ -142,7 +115,7 @@ const StudentProfile = () => {
                                 sx={{
                                     width: '100%',
                                     p: 5,
-                                    background: `linear-gradient(145deg, ${taken.includes(module.moduleName) ? colors.blueAccent[700] : colors.redAccent[700]}, ${taken.includes(module.moduleName) ? colors.blueAccent[500] : colors.redAccent[500]})`,
+                                    background: `linear-gradient(145deg, ${colors.blueAccent[700]}, ${colors.blueAccent[500]})`,
                                     boxShadow: 6,
                                     cursor: 'pointer',
                                     borderRadius: 4,
@@ -150,7 +123,7 @@ const StudentProfile = () => {
                                         boxShadow: 12,
                                     },
                                 }}
-                                onClick={()=>handleModuleCLick(module._id, taken.includes(module.moduleName))}
+                                onClick={()=>handleModuleCLick(module._id, module.moduleName)}
                             >
                                 <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', textAlign: 'center'}}>
                                     {module.moduleName}
