@@ -1,7 +1,20 @@
-import React, {useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {Box, Button, Card, CardContent, CircularProgress, Divider, IconButton, Grid, Typography, Dialog, useTheme, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Grid,
+    Typography,
+    Dialog,
+    useTheme,
+    DialogTitle,
+    DialogContent,
+    IconButton,
+} from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';
@@ -9,58 +22,57 @@ import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 
-
-// import Dialog from '@mui/material/Dialog';
-// import DialogTitle from '@mui/material/DialogTitle';
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 const StudentProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const location = useLocation(); // Access the passed state
+    const location = useLocation();
     const { studentId } = useParams();
+    const { student, loading, error } = useFetchSingleStudentData(studentId);
+    const { fetchAssignmentList } = useFetchAssignmentList();
 
-
-    
-    const {student, loading, error} = useFetchSingleStudentData(studentId);
-    const {fetchAssignmentList} = useFetchAssignmentList()
-    
     const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
-    const { degreeModules } = location.state || {};
+    const { degreeModules } = location.state || [];
 
     const [open, setOpen] = useState(false);
-
-    // Functions to handle opening and closing the dialog
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-    
-    const [assignmentList, setassignmentList] = useState(null);
+    const [selectedModule, setSelectedModule] = useState(degreeModules[0]?._id || null);
+    const [selectedModuleName, setSelectedModuleName] = useState(degreeModules[0]?.moduleName || "");
+    const [assignmentList, setAssignmentList] = useState([]);
+    const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
-    const [listLoading, setListLoading] = useState(false);
 
-    const handleModuleCLick = async (moduleId, moduleName) => {
+    const handleClickOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleModuleClick = async (moduleId, moduleName) => {
+        setSelectedModule(moduleId);
+        setSelectedModuleName(moduleName);
         setListLoading(true);
+        setListError(false);
+        setAssignmentList([]);
+
         try {
-            const response = await fetchAssignmentList(moduleId, _id)
-            response.push({"moduleName":moduleName})
-            setassignmentList(response)
-            setListError(false);
-            setListLoading(false);
+            const response = await fetchAssignmentList(moduleId, _id);
+            if (Array.isArray(response)) {
+                setAssignmentList([{ moduleName }, ...response]);
+            } else {
+                throw new Error("Invalid response from the server");
+            }
         } catch (e) {
             setListError(true);
-            setListLoading(false)
-            setListErrorMessage(e.message)
+            setListErrorMessage(e.message);
+        } finally {
+            setListLoading(false);
         }
-        
-    }
+    };
+
+    useEffect(() => {
+        if (degreeModules.length > 0 && student) {
+            handleModuleClick(degreeModules[0]._id, degreeModules[0].moduleName);
+        }
+    }, [degreeModules, student]);
 
     if (loading) {
         return (
@@ -75,251 +87,179 @@ const StudentProfile = () => {
     }
 
     return (
-        <Box m="20px auto" display="flex" flexDirection="column" alignItems="center" gap={2} maxWidth='1000px'>
+        <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
+            <Box display="flex" justifyContent="space-between" mb={2}>
             <Card
-                sx={{
-                    width: '100%',
-                    maxWidth: '1000px',
-                    p: 3,
-                    background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
-                    boxShadow: 6,
-                    borderRadius: 4,
-                    '&:hover': {
-                        boxShadow: 12,
-                    },
-                }}
-            >
-                <CardContent>
-                    <Grid container spacing={2} justifyContent="center" alignItems="center">
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2,textAlign: 'center' }}>
-                                Student Information
-                            </Typography>
-                            <Box sx={{ mb: 1,textAlign: 'center'}}>
-                                <Typography variant="h5" color={colors.grey[200]}>
-                                    <strong>Student ID:</strong> {studentId}
-                                </Typography>
-                            </Box>
-                            <Box sx={{ mb: 1,textAlign: 'center' }}>
-                                <Typography variant="h5" color={colors.grey[200]}>
-                                    <strong>Student Name:</strong> {studentName}
-                                </Typography>
-                            </Box>
-                            <Box sx={{ mb: 1,textAlign: 'center' }}>
-                                <Typography variant="h5" color={colors.grey[200]}>
-                                    <strong>Student Contact:</strong> {studentContact}
-                                </Typography>
-                            </Box>
-                            <Box sx={{ mb: 1,textAlign: 'center' }}>
-                                <Typography variant="h5" color={colors.grey[200]}>
-                                    <strong>Student Login:</strong> {studentLogin}
-                                </Typography>
-                            </Box>
-                            <Box sx={{ mb: 1,textAlign: 'center' }}>
-                                <Typography variant="h5" color={colors.grey[200]}>
-                                    <strong>Student Password:</strong> {studentPassword}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-            
-            <Box mt={3}>
-                <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
-                    Module List
+    sx={{
+        width: '30%',
+        p: 2,
+        background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
+        boxShadow: 6,
+        borderRadius: 4,
+    }}
+>
+    <CardContent>
+        <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
+            Student Information
+        </Typography>
+        
+        <Grid container spacing={2}>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                    Student ID:
                 </Typography>
-                <Grid container spacing={2} alignItems='center' width='1000px'>
-                    {degreeModules.map((module)=> (
-                        <Grid key={module._id} item xs={12} sm={3}>
-                            <Card
-                                sx={{
-                                    width: '100%',
-                                    p: 5,
-                                    background: `linear-gradient(145deg, ${colors.blueAccent[700]}, ${colors.blueAccent[500]})`,
-                                    boxShadow: 6,
-                                    cursor: 'pointer',
-                                    borderRadius: 4,
-                                    '&:hover': {
-                                        boxShadow: 12,
-                                    },
-                                }}
-                                onClick={()=>handleModuleCLick(module._id, module.moduleName)}
-                            >
-                                <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', textAlign: 'center'}}>
-                                    {module.moduleName}
-                                </Typography>
-                            </Card>
-                        </Grid>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                    {studentId}
+                </Typography>
+            </Grid>
 
-                    ))}
-                    
-                </Grid>
-                <Button
-                    variant="contained"
-                    sx={{
-                        mt: 3,
-                        display: 'block',
-                        mx: 'auto',
-                        backgroundColor: colors.blueAccent[500],
-                        '&:hover': {
-                            backgroundColor: colors.blueAccent[600],
-                        },
-                    }}
-                    onClick={() => setOpen(true)}
-                >
-                    Add Assignment
-                </Button>
-            </Box>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                fullWidth
-                maxWidth="md"
-                PaperProps={{
-                style: { height: '50vh', overflow: 'hidden' } 
-                }}
-                TransitionComponent={Transition}
-            >
-                <DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={handleClose}
-                    sx={{
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-                </DialogTitle>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                    Name:
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                    {studentName}
+                </Typography>
+            </Grid>
 
-                    <DialogContent sx={{ padding: 0 }}>
-                    <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
-                        <AssignmentForm
-                        studentData={student}
-                        degreeModulesData={degreeModules}
-                        />
-                    </Box>
-                    </DialogContent>
-                </Dialog>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                    Contact:
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                    {studentContact}
+                </Typography>
+            </Grid>
 
-            <Box mt={3}>
-                { listLoading ? (
-                    <Box mt="200px" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <CircularProgress size={150} sx={{ color: colors.blueAccent[100] }} />
-                    </Box>
-                    ) : listError ? (
-                        <div>{listErrorMessage}</div>
-                    ) : ( <AssignmentList list={assignmentList} /> )
-                }
-            </Box>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                    Login:
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                    {studentLogin}
+                </Typography>
+            </Grid>
 
-            
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                    Password:
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                    {studentPassword}
+                </Typography>
+            </Grid>
+        </Grid>
+    </CardContent>
+</Card>
 
-            {/* <Modal open={open} onClose={() => setOpen(false)}>
-                <Box
-                    sx={{
-                        width: '400px',
-                        backgroundColor: colors.grey[900],
-                        padding: 3,
-                        borderRadius: 3,
-                        mx: 'auto',
-                        mt: '10%',
-                        position: 'relative',
-                    }}
-                >
-                    <IconButton
-                        onClick={() => setOpen(false)}
-                        sx={{ position: 'absolute', top: 10, right: 10, color: colors.grey[50] }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h5" color={colors.grey[50]} sx={{ mb: 2 }}>
-                        Add New Student
+
+                <Box sx={{marginLeft:"20px", width: '70%' }}>
+                    <Typography variant="h4" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
+                        Module List
                     </Typography>
-                    <TextField
-                        label="Student ID"
-                        fullWidth
-                        error={!!errors.studentID}
-                        helperText={errors.studentID}
-                        value={newStudent.studentID}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentID: e.target.value });
-                            setErrors({ ...errors, studentID: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Name"
-                        fullWidth
-                        error={!!errors.studentName}
-                        helperText={errors.studentName}
-                        value={newStudent.studentName}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentName: e.target.value });
-                            setErrors({ ...errors, studentName: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Login"
-                        fullWidth
-                        error={!!errors.studentLogin}
-                        helperText={errors.studentLogin}
-                        value={newStudent.studentLogin}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentLogin: e.target.value });
-                            setErrors({ ...errors, studentLogin: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Password"
-                        fullWidth
-                        error={!!errors.studentPassword}
-                        helperText={errors.studentPassword}
-                        value={newStudent.studentPassword}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentPassword: e.target.value });
-                            setErrors({ ...errors, studentPassword: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Contact"
-                        fullWidth
-                        error={!!errors.studentContact}
-                        helperText={errors.studentContact}
-                        value={newStudent.studentContact}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentContact: e.target.value });
-                            setErrors({ ...errors, studentContact: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
+                    <Grid container spacing={2}>
+                        {degreeModules.map((module) => (
+                            <Grid item xs={12} key={module._id}>
+                                <Card
+                                    onClick={() => handleModuleClick(module._id, module.moduleName)}
+                                    sx={{
+                                        p: 3,
+                                        background: selectedModule === module._id ? `rgba(0, 0, 0, 0.1)` : `linear-gradient(145deg, ${colors.blueAccent[700]}, ${colors.blueAccent[500]})`,
+                                        boxShadow: selectedModule === module._id ? 12 : 6,
+                                        cursor: 'pointer',
+                                        borderRadius: 4,
+                                    }}
+                                >
+                                    <Typography variant="h5" color={colors.grey[100]}>{module.moduleName}</Typography>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            </Box>
+
+            <Box sx={{ width: '100%' }}>
+                <Box mt={2} sx={{ position: 'relative' }}>
                     <Button
                         variant="contained"
-                        onClick={handleSubmit}
+                        onClick={handleClickOpen}
                         sx={{
-                            width: '100%',
+                            position: 'absolute',
+                            right: 0,
                             backgroundColor: colors.blueAccent[500],
                             '&:hover': {
                                 backgroundColor: colors.blueAccent[600],
                             },
                         }}
                     >
-                        Add
+                        Add Assignment
                     </Button>
                 </Box>
-            </Modal> */}
-            
+
+                {listLoading ? (
+                    <Box mt={3} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CircularProgress size={150} sx={{ color: colors.blueAccent[100] }} />
+                    </Box>
+                ) : (
+                    <Box mt={2} mb={10}>
+                        <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
+                        Assignments List for {selectedModuleName}
+                        </Typography>
+                        <AssignmentList list={assignmentList} />
+                        {assignmentList.length === 0 && (
+                            <Typography align="center" color={colors.grey[200]}>
+                                No assignments found for this module.
+                            </Typography>
+                        )}
+                        {/* {listError && (
+                            <Typography align="center" color="red">
+                                {listErrorMessage}
+                            </Typography>
+                        )} */}
+                    </Box>
+                )}
+            </Box>
+
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{ style: { height: '50vh', overflow: 'hidden' } }}
+                TransitionComponent={Transition}
+            >
+                <DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ padding: 0 }}>
+                    <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} />
+                    </Box>
+                </DialogContent>
+            </Dialog>
         </Box>
-        
+    );
+};
 
-    )
-}
-
-export default StudentProfile
+export default StudentProfile;
