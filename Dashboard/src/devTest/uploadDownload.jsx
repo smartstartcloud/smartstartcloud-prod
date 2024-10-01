@@ -28,9 +28,9 @@ const UploadDownload = () => {
         formData.append('file', selectedFiles[0]);
 
         try {
-            let url = '/upload';
+            let url = '/upload';  // Default restricted route
             if (token) {
-                url = `/share/upload?token=${token}`;
+                url = `/share/upload?token=${token}`;  // Unrestricted if token is available
             }
             const response = await axios.post(url, formData, {
                 headers: {
@@ -38,26 +38,37 @@ const UploadDownload = () => {
                 }
             });
             console.log('File uploaded successfully', response.data);
+            alert('File uploaded successfully');
         } catch (error) {
             console.error('Error uploading file', error);
+            alert('Error uploading file');
         }
     };
 
     // Function to generate a shareable link
-    const handleGenerateShareableLink = () => {
-        const currentUrl = window.location.href.split('?')[0]; // Remove any existing query parameters
-        const newToken = 'GENERATED_SHAREABLE_TOKEN'; // Replace with actual token generation logic
-        const newLink = `${currentUrl}?token=${newToken}`;
-        setShareableLink(newLink);
-
-        // Optionally, copy the shareable link to the clipboard
-        navigator.clipboard.writeText(newLink)
-            .then(() => {
-                alert('Shareable link copied to clipboard!');
-            })
-            .catch(err => {
-                console.error('Failed to copy link: ', err);
-            });
+    const handleGenerateShareableLink = async () => {
+        try {
+            // You may want to pass a fileId or any identifier to the backend
+            const response = await axios.post('/generate-share-token', { fileId: '12345' });
+            const { shareableToken } = response.data;
+    
+            // Generate the shareable link with the token
+            const currentUrl = window.location.href.split('?')[0]; // Remove any existing query parameters
+            const newLink = `${currentUrl}?token=${shareableToken}`;
+            setShareableLink(newLink);
+    
+            // Copy the shareable link to the clipboard
+            navigator.clipboard.writeText(newLink)
+                .then(() => {
+                    alert('Shareable link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy link: ', err);
+                });
+        } catch (error) {
+            console.error('Error generating shareable link:', error);
+            alert('Failed to generate shareable link.');
+        }
     };
 
     return (

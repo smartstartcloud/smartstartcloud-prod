@@ -48,60 +48,63 @@ if(cluster.isPrimary) {
 */
 // express app
 const app = express();
+const router = express.Router();
 
 // GridFS starts
-// Mongo URI
-// const mongoURI = 'mongodb://localhost:27017/mydatabase';
-
-// // Create mongo connection
-// const conn = mongoose.createConnection(mongoURI);
+// MongoDB URI (from your environment variable)
+const mongoURI = process.env.MONGO_DB_URI_INFORMATION;
 
 // Initialize GridFS storage
-// const storage = new GridFsStorage({
-//   url: mongoURI,
-//   file: (req, file) => {
-//       return new Promise((resolve, reject) => {
-//           crypto.randomBytes(16, (err, buf) => {
-//               if (err) {
-//                   return reject(err);
-//               }
-//               const filename = buf.toString('hex') + path.extname(file.originalname);
-//               const fileInfo = {
-//                   filename: filename,
-//                   bucketName: 'uploads'
-//               };
-//               resolve(fileInfo);
-//           });
-//       });
-//   }
-// });
+const storage = new GridFsStorage({
+    url: mongoURI,
+    file: (req, file) => {
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(16, (err, buf) => {
+                if (err) {
+                    return reject(err);
+                }
+                const filename = buf.toString('hex') + path.extname(file.originalname);
+                const fileInfo = {
+                    filename: filename,
+                    bucketName: 'uploads' // GridFS bucket name
+                };
+                resolve(fileInfo);
+            });
+        });
+    }
+});
 
-// // Multer setup
-// const upload = multer({ storage });
+// Multer setup
+const upload = multer({ storage });
 
-// // Token checking middleware
-// function verifyToken(req, res, next) {
-//   const token = req.query.token || req.headers['x-access-token'];
-//   if (!token) {
-//       return res.status(403).send({ message: 'No token provided. Access allowed without restrictions.' });
-//   }
-//   // Here you can add your actual token verification logic
-//   if (token === 'VALID_SHAREABLE_TOKEN') {
-//       next(); // Token is valid, allow upload
-//   } else {
-//       res.status(401).send({ message: 'Unauthorized: Invalid Token' });
-//   }
-// }
+// Token checking middleware for restricted uploads
+const verifyShareableToken = (req, res, next) => {
+    const token = req.query.token || req.headers['x-access-token'];
+    if (!token) {
+        return res.status(403).send({ message: 'No token provided. Access denied.' });
+    }
 
-// // File upload route with token restriction
-// app.post('/upload', verifyToken, upload.single('file'), (req, res) => {
-//   res.json({ file: req.file });
-// });
+    // Verify the token
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: 'Invalid or expired token.' });
+        }
 
-// Shareable link upload route without token restriction
-// app.post('/share/upload', upload.single('file'), (req, res) => {
-//   res.json({ file: req.file });
-// });
+        // Token is valid, continue to next middleware
+        req.fileId = decoded.fileId; // Optionally pass the fileId
+        next();
+    });
+};
+
+// File upload route with token restriction
+router.post('/upload', verifyShareableToken, upload.single('file'), (req, res) => {
+    res.json({ file: req.file });
+});
+
+// Shareable link upload route (no token restriction)
+router.post('/share/upload', upload.single('file'), (req, res) => {
+    res.json({ file: req.file });
+});
 
 app.listen(process.env.PORT || 8080, () => {
   console.log(`listening on port ${process.env.PORT}`);
@@ -136,3 +139,4 @@ app.get('*',(req,res)=>{
   res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
 })
 */
+export default router;
