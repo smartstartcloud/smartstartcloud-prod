@@ -75,7 +75,7 @@ const AssignmentForm = ({studentData, degreeModulesData}) => {
     return (
         <Box
             mt={3}
-            sx={{p: 3, width: '80%', maxWidth: '80%', margin: '0 auto', mt: 5 , border: '1px solid rgba(102, 106, 108, 0.5)', borderRadius: '8px',
+            sx={{p: 3, width: '95%', maxWidth: '100%', margin: '0 auto', mt: 5 ,
                 '& .MuiOutlinedInput-root': {
                     '& fieldset': {
                         borderColor: colors.grey[300],
@@ -299,17 +299,21 @@ const AssignmentForm = ({studentData, degreeModulesData}) => {
                         width: '200px',
                         backgroundColor: colors.grey[200],
                         color: colors.grey[900],
-                        '&:hover': {backgroundColor: colors.grey[100]}
+                        '&:hover': { backgroundColor: colors.grey[100] },
+                        mt: 2, // Adds margin-top to create spacing from the form elements
+                        ml: 'auto', // Automatically adds left margin to push the button to the right
+                        display: 'block' // Ensures the button behaves like a block element
                     }}
                     type="submit"
                     disabled={formLoading}
-                >   
+                >
                     {formLoading ? (
                         <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
                     ) : (
                         'Submit'
                     )}
                 </Button>
+
             </form>
 
             <Snackbar open={formSaved} autoHideDuration={3000} onClose={handleAssignmentClose}>
