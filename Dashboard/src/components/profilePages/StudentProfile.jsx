@@ -1,17 +1,29 @@
 import React, {useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Typography, useTheme } from '@mui/material';
+import {Box, Button, Card, CardContent, CircularProgress, Divider, IconButton, Grid, Typography, Dialog, useTheme, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';
 import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+
+
+// import Dialog from '@mui/material/Dialog';
+// import DialogTitle from '@mui/material/DialogTitle';
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const StudentProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const location = useLocation(); // Access the passed state
     const { studentId } = useParams();
+
+
+    
     const {student, loading, error} = useFetchSingleStudentData(studentId);
     const {fetchAssignmentList} = useFetchAssignmentList()
     
@@ -19,6 +31,15 @@ const StudentProfile = () => {
     const { degreeModules } = location.state || {};
 
     const [open, setOpen] = useState(false);
+
+    // Functions to handle opening and closing the dialog
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     
     const [assignmentList, setassignmentList] = useState(null);
     const [listError, setListError] = useState(false);
@@ -150,7 +171,40 @@ const StudentProfile = () => {
                     Add Assignment
                 </Button>
             </Box>
-            {open && <AssignmentForm studentData={student} degreeModulesData={degreeModules} />}
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{
+                style: { height: '50vh', overflow: 'hidden' } 
+                }}
+                TransitionComponent={Transition}
+            >
+                <DialogTitle>
+                <IconButton
+                    aria-label="close"
+                    onClick={handleClose}
+                    sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+                </DialogTitle>
+
+                    <DialogContent sx={{ padding: 0 }}>
+                    <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+                        <AssignmentForm
+                        studentData={student}
+                        degreeModulesData={degreeModules}
+                        />
+                    </Box>
+                    </DialogContent>
+                </Dialog>
 
             <Box mt={3}>
                 { listLoading ? (
