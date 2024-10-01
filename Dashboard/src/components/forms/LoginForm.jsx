@@ -5,11 +5,12 @@ import MuiAlert from '@mui/material/Alert';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { tokens } from '../../theme';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useLogin from '../../hooks/useLogin';
 
 const LoginForm = () => {
     const isNonMobile = useMediaQuery('(min-width: 600px)')
+    const navigate = useNavigate();
 
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -42,6 +43,8 @@ const LoginForm = () => {
     });
 
     const onSubmit = async (data) => {
+        console.log("data ? ", data);
+        
         setLoading(true);
         try {
             const response = await login(data);
@@ -49,9 +52,15 @@ const LoginForm = () => {
             setformSuccess(true);
             setLoading(false);
         } catch (e) {
+            console.log("e.message 123123", e.message)
             setFormError(true)
             setLoading(false);
             setErrorMessage(e.message);
+        
+            if (e.message === "Default password not changed") {
+                navigate('/renew', { state: { userName: data.userName } }); 
+            }
+            
         }
     }
 
