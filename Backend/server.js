@@ -20,26 +20,26 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Token checking middleware for restricted uploads
-const verifyShareableToken = (req, res, next) => {
-  const token = req.query.token || req.headers['x-access-token'];
-  if (!token) {
-    return res.status(403).send({ message: 'No token provided. Access denied.' });
-  }
+// const verifyShareableToken = (req, res, next) => {
+//   const token = req.query.token || req.headers['x-access-token'];
+//   if (!token) {
+//     return res.status(403).send({ message: 'No token provided. Access denied.' });
+//   }
 
-  // Verify the token (replace JWT_SECRET with your secret)
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: 'Invalid or expired token.' });
-    }
+//   // Verify the token (replace JWT_SECRET with your secret)
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).send({ message: 'Invalid or expired token.' });
+//     }
 
-    // Token is valid, continue to next middleware
-    req.fileId = decoded.fileId; // Optionally pass the fileId
-    next();
-  });
-};
+//     // Token is valid, continue to next middleware
+//     req.fileId = decoded.fileId; // Optionally pass the fileId
+//     next();
+//   });
+// };
 
 // File upload route with token restriction (BSON)
-app.post('/upload', verifyShareableToken, upload.single('file'), async (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     // Save the file as BSON (binary data) in MongoDB
     const newFile = new File({
@@ -101,6 +101,8 @@ app.use(cors({
   origin: ["http://localhost:3000", "https://www.smartstart.cloud", "https://smartstart.cloud", "www.smartstart.cloud"],
   credentials: true,
 }));
+
+
 
 // API Routes
 app.use("/api/auth", authRoutes);
