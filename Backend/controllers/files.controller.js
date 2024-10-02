@@ -3,12 +3,19 @@ import File from '../models/files.model.js';
 // Controller to handle file upload
 export const uploadFile = async (req, res) => {
   try {
+    const { orderID } = req.body;
+
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
+    if (!orderID) {
+      return res.status(400).json({ message: 'Order ID is required' });
+    }
+
     // Save the file data to MongoDB
     const newFile = new File({
+      orderID: orderID,  // Include orderID in the file schema
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
       fileData: req.file.buffer,
