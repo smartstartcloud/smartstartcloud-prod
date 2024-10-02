@@ -25,12 +25,12 @@ const UploadDownload = () => {
 
         // Prepare form data for upload
         const formData = new FormData();
-        formData.append('file', selectedFiles[0]);
+        formData.append('file', selectedFiles[0]); // BSON handling occurs in the backend
 
         try {
             let url = '/upload';  // Default restricted route
             if (token) {
-                url = `/share/upload?token=${token}`;  // Unrestricted if token is available
+                url = `/share/upload?token=${token}`;  // Unrestricted route if token is available
             }
             const response = await axios.post(url, formData, {
                 headers: {
@@ -49,7 +49,7 @@ const UploadDownload = () => {
     const handleGenerateShareableLink = async () => {
         try {
             // You may want to pass a fileId or any identifier to the backend
-            const response = await axios.post('/generate-share-token', { fileId: '12345' });
+            const response = await axios.post('/generate-share-token', { fileId: '12345' }); // Replace with actual fileId
             const { shareableToken } = response.data;
     
             // Generate the shareable link with the token

@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import './db/connectMongoDB.js'; // MongoDB connection file
 import mongoose from 'mongoose'; // For MongoDB operations
 import multer from 'multer'; // For file handling
-import File from './models/file.model.js'; // Import the File model to store binary data in MongoDB
+import File from './models/files.model.js'; // Import the File model to store binary data in MongoDB
 
 // Initialize express app
 const app = express();
