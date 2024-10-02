@@ -179,11 +179,11 @@ const LoginForm = () => {
                             'Login'
                         )}
                     </Button>
-                    <Link to="/signUp" style={{ textDecoration: 'none' }}>
+                    {/* <Link to="/signUp" style={{ textDecoration: 'none' }}>
                         <Button color='secondary' variant="text">
                             SIGNUP
                         </Button>
-                    </Link>
+                    </Link> */}
                 </Box>
             </form>
 

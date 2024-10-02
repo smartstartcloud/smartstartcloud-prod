@@ -384,11 +384,11 @@ const SignupForm = () => {
                             'Submit'
                         )}
                     </Button>
-                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                    {/* <Link to="/login" style={{ textDecoration: 'none' }}>
                         <Button color="secondary" variant="text">
                             LOGIN
                         </Button>
-                    </Link>
+                    </Link> */}
                 </Box>
             </form>
             <Snackbar open={formSuccess} autoHideDuration={3000} onClose={handleClose}>

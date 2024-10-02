@@ -98,11 +98,11 @@ const Login = () => {
                             <Button type="submit" color="secondary" variant="contained">
                                 Log in User
                             </Button>
-                            <Link to="/signUp" style={{ textDecoration: 'none' }}>
+                            {/* <Link to="/signUp" style={{ textDecoration: 'none' }}>
                                 <Button color="secondary" variant="text">
                                     Sign Up
                                 </Button>
-                            </Link>
+                            </Link> */}
                         </Box>
                     </form>
                 )

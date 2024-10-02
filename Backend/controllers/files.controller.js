@@ -13,6 +13,11 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'Order ID is required' });
     }
 
+    const orderID_exist = await File.findOne({orderID});
+    if (orderID_exist){            
+      return res.status(409).json({message: "orderID already exists."})
+    }
+
     // Save the file data to MongoDB
     const newFile = new File({
       orderID: orderID,  // Include orderID in the file schema
