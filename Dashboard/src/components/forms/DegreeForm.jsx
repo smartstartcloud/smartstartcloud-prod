@@ -385,7 +385,7 @@ const DegreeForm = () => {
                 {moduleFields.map((field, index) => (
                     <Box key={field.id} sx={{
                         mb: 3,
-                        width: '100%',
+                        width: '50%',
                         border: '1px solid rgba(102, 106, 108, 0.5)',
                         borderRadius: '8px',
                         position: 'relative',
@@ -396,7 +396,7 @@ const DegreeForm = () => {
                         },
                     }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={12}>
                                 <TextField
                                     value={`Module ${index + 1}`}
                                     label="Module Name"
@@ -404,23 +404,6 @@ const DegreeForm = () => {
                                     fullWidth
                                     disabled
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={5}>
-                                    <Controller
-                                        name={`degreeModules[${index}].moduleCode`}
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Tooltip title="Enter Module Code">
-                                                <TextField
-                                                    {...field}
-                                                    label="Module Code"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    required
-                                                />
-                                            </Tooltip>
-                                        )}
-                                    />
                             </Grid>
                             <Grid item xs={12} sm={1} sx={{ alignSelf: 'flex-start' }}>
                                 <IconButton onClick={() => removeModule(index)}

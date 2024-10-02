@@ -15,8 +15,8 @@ const useFetchAssignmentList = () => {
         } catch (error) {
             if (error.response) {
                 if (error.response.status === 400) {
-                    console.log("Error: No module found");
-                    throw new Error("No module found");
+                    console.log("Error: No assignment found");
+                    throw new Error("No assignment found");
                 } else {
                     console.log("Error: ", error.response.data.error);
                     throw new Error(error.response.data.error); // Re-throw any other error
