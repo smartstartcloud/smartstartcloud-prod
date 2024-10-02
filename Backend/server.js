@@ -1,142 +1,116 @@
-import dotenv from './utils/env.js'
-import express from 'express'
-import authRoutes from './routes/auth.routes.js'
-import degreeRoutes from './routes/degree.routes.js'
-import moduleRoutes from './routes/module.routes.js'
-import { newAccessToken } from './utils/generateToken.js'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import helmet from 'helmet'
-import './db/connectMongoDB.js'
-import { fileURLToPath } from 'url'
-import multer from 'multer'
-import { GridFsStorage } from 'multer-gridfs-storage';
-import mongoose from 'mongoose'
-// import path from 'path' // You need to import path for static file serving
-/*
-const totalCPUs = cpu.cpus().length;
-const numWorkers = process.env.WEB_CONCURRENCY || totalCPUs ;
+import dotenv from './utils/env.js';
+import express from 'express';
+import authRoutes from './routes/auth.routes.js';
+import degreeRoutes from './routes/degree.routes.js';
+import moduleRoutes from './routes/module.routes.js';
+import { newAccessToken } from './utils/generateToken.js';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import './db/connectMongoDB.js'; // MongoDB connection file
+import mongoose from 'mongoose'; // For MongoDB operations
+import multer from 'multer'; // For file handling
+import File from './models/file.model.js'; // Import the File model to store binary data in MongoDB
 
-if(cluster.isPrimary) {
-  for (var i = 0; i < numWorkers; i++) {
-    cluster.fork();
-  }
-  cluster.on('exit', function() {
-    cluster.fork();
-  });
-
-} else {
-    // express app
-    const app = express();
-    app.listen(process.env.PORT, () => {
-      console.log(`listening on port ${process.env.PORT}`);
-    })
-
-    app.use(cookieParser());
-    app.use(express.urlencoded({extended: true}));
-    app.use(express.json());
-    app.use(helmet());
-    app.use((cors({
-        origin: true,  // Or set to true for dynamic origin
-        credentials: true
-    })));
-
-    app.use("/api/auth", authRoutes);
-    app.use("/api/degree", degreeRoutes);
-    app.use("/dummyRequest", protect,dummyRequestRoute); 
-}
-*/
-// express app
+// Initialize express app
 const app = express();
-const router = express.Router();
 
-// GridFS starts
-// MongoDB URI (from your environment variable)
-const mongoURI = process.env.MONGO_DB_URI_INFORMATION;
-
-// Initialize GridFS storage
-const storage = new GridFsStorage({
-    url: mongoURI,
-    file: (req, file) => {
-        return new Promise((resolve, reject) => {
-            crypto.randomBytes(16, (err, buf) => {
-                if (err) {
-                    return reject(err);
-                }
-                const filename = buf.toString('hex') + path.extname(file.originalname);
-                const fileInfo = {
-                    filename: filename,
-                    bucketName: 'uploads' // GridFS bucket name
-                };
-                resolve(fileInfo);
-            });
-        });
-    }
-});
-
-// Multer setup
+// Set up multer for file uploads (store files in memory as a buffer)
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Token checking middleware for restricted uploads
 const verifyShareableToken = (req, res, next) => {
-    const token = req.query.token || req.headers['x-access-token'];
-    if (!token) {
-        return res.status(403).send({ message: 'No token provided. Access denied.' });
+  const token = req.query.token || req.headers['x-access-token'];
+  if (!token) {
+    return res.status(403).send({ message: 'No token provided. Access denied.' });
+  }
+
+  // Verify the token (replace JWT_SECRET with your secret)
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: 'Invalid or expired token.' });
     }
 
-    // Verify the token
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).send({ message: 'Invalid or expired token.' });
-        }
-
-        // Token is valid, continue to next middleware
-        req.fileId = decoded.fileId; // Optionally pass the fileId
-        next();
-    });
+    // Token is valid, continue to next middleware
+    req.fileId = decoded.fileId; // Optionally pass the fileId
+    next();
+  });
 };
 
-// File upload route with token restriction
-router.post('/upload', verifyShareableToken, upload.single('file'), (req, res) => {
-    res.json({ file: req.file });
+// File upload route with token restriction (BSON)
+app.post('/upload', verifyShareableToken, upload.single('file'), async (req, res) => {
+  try {
+    // Save the file as BSON (binary data) in MongoDB
+    const newFile = new File({
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype,
+      fileData: req.file.buffer
+    });
+
+    await newFile.save();
+    res.json({ message: 'File uploaded successfully', file: newFile });
+  } catch (err) {
+    res.status(500).send({ message: 'Error uploading file', error: err.message });
+  }
 });
 
 // Shareable link upload route (no token restriction)
-router.post('/share/upload', upload.single('file'), (req, res) => {
-    res.json({ file: req.file });
+app.post('/share/upload', upload.single('file'), async (req, res) => {
+  try {
+    // Save the file as BSON (binary data) in MongoDB
+    const newFile = new File({
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype,
+      fileData: req.file.buffer
+    });
+
+    await newFile.save();
+    res.json({ message: 'File uploaded successfully', file: newFile });
+  } catch (err) {
+    res.status(500).send({ message: 'Error uploading file', error: err.message });
+  }
 });
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log(`listening on port ${process.env.PORT}`);
-})
+// File download route (retrieve from MongoDB)
+app.get('/download/:id', async (req, res) => {
+  try {
+    const file = await File.findById(req.params.id);
+    if (!file) {
+      return res.status(404).send('File not found');
+    }
 
-/*
-// Get the current directory path --- FOR ES6 Syntax, __dirname doesn't work directly. To connect react app
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
-*/
-//GridFS ends
+    // Set headers for file download
+    res.set({
+      'Content-Type': file.fileType,
+      'Content-Disposition': `attachment; filename="${file.fileName}"`,
+    });
 
-//Middleware
+    res.send(file.fileData); // Send the binary data
+  } catch (err) {
+    res.status(500).send('Error downloading file');
+  }
+});
+
+// Middleware
 app.use(cookieParser());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(helmet());
-app.use((cors({
-  origin: ["http://localhost:3000", "https://www.smartstart.cloud","https://smartstart.cloud","www.smartstart.cloud"] ,
-  credentials: true,  // To allow cookies
-})));
+app.use(cors({
+  origin: ["http://localhost:3000", "https://www.smartstart.cloud", "https://smartstart.cloud", "www.smartstart.cloud"],
+  credentials: true,
+}));
 
-//API
+// API Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/degree",degreeRoutes);
+app.use("/api/degree", degreeRoutes);
 app.use("/api/module", moduleRoutes);
-app.use('/newAccessToken',newAccessToken);
+app.use('/newAccessToken', newAccessToken);
 
-/*
-app.get('*',(req,res)=>{
-  res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
-})
-*/
-export default router;
+// Start the server
+app.listen(process.env.PORT || 8080, () => {
+  console.log(`Listening on port ${process.env.PORT}`);
+});
+
+export default app;
