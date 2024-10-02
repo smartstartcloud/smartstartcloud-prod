@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import './db/connectMongoDB.js'; // MongoDB connection file
 import mongoose from 'mongoose'; // For MongoDB operations
 import multer from 'multer'; // For file handling
-import File from './models/files.model.js'; // Import the File model to store binary data in MongoDB
+import fileRoutes from './routes/files.routes.js';
 
 // Initialize express app
 const app = express();
@@ -38,60 +38,6 @@ const upload = multer({ storage });
 //   });
 // };
 
-// File upload route with token restriction (BSON)
-app.post('/upload', upload.single('file'), async (req, res) => {
-  try {
-    // Save the file as BSON (binary data) in MongoDB
-    const newFile = new File({
-      fileName: req.file.originalname,
-      fileType: req.file.mimetype,
-      fileData: req.file.buffer
-    });
-
-    await newFile.save();
-    res.json({ message: 'File uploaded successfully', file: newFile });
-  } catch (err) {
-    res.status(500).send({ message: 'Error uploading file', error: err.message });
-  }
-});
-
-// Shareable link upload route (no token restriction)
-app.post('/share/upload', upload.single('file'), async (req, res) => {
-  try {
-    // Save the file as BSON (binary data) in MongoDB
-    const newFile = new File({
-      fileName: req.file.originalname,
-      fileType: req.file.mimetype,
-      fileData: req.file.buffer
-    });
-
-    await newFile.save();
-    res.json({ message: 'File uploaded successfully', file: newFile });
-  } catch (err) {
-    res.status(500).send({ message: 'Error uploading file', error: err.message });
-  }
-});
-
-// File download route (retrieve from MongoDB)
-app.get('/download/:id', async (req, res) => {
-  try {
-    const file = await File.findById(req.params.id);
-    if (!file) {
-      return res.status(404).send('File not found');
-    }
-
-    // Set headers for file download
-    res.set({
-      'Content-Type': file.fileType,
-      'Content-Disposition': `attachment; filename="${file.fileName}"`,
-    });
-
-    res.send(file.fileData); // Send the binary data
-  } catch (err) {
-    res.status(500).send('Error downloading file');
-  }
-});
-
 // Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -109,6 +55,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/degree", degreeRoutes);
 app.use("/api/module", moduleRoutes);
 app.use('/newAccessToken', newAccessToken);
+app.use('/api/files', fileRoutes);
 
 // Start the server
 app.listen(process.env.PORT || 8080, () => {
