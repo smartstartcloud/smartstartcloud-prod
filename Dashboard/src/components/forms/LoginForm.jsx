@@ -164,12 +164,12 @@ const LoginForm = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4}}>
                     <Button
                         variant="contained"
-                        sx={{
-                            width: '200px',
+                        sx={{  
                             backgroundColor: colors.grey[200],
                             color: colors.grey[900],
                             '&:hover': {backgroundColor: colors.grey[100]}
                         }}
+                        fullWidth
                         type="submit"
                         disabled={loading}
                     >

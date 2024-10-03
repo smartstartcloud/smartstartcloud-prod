@@ -9,8 +9,8 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.get('/agentlist',adminAllowed,getAgentList) ;
-router.post("/new",adminAllowed,newDegree);
+router.get('/agentlist',getAgentList) ;
+router.post("/new",newDegree);
 
 router.get('/all',getAllDegree) ;
 router.get('/selected/year/:degreeYear',getDegreeByYear) ;
