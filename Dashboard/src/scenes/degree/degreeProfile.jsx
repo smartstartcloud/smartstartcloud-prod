@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { tokens } from '../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-
+import StudentForm from '../../components/forms/StudentForm';
 
 const DegreeProfile = () => {
     const theme = useTheme();
@@ -15,30 +15,12 @@ const DegreeProfile = () => {
     const navigate = useNavigate(); // useNavigate to handle navigation
     const { degreeYear, degreeId } = useParams();
     const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
-    const [errors, setErrors] = React.useState({});
     const [open, setOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [newStudent, setNewStudent] = useState({
-        studentID: '',
-        studentName: '',
-        studentLogin: '',
-        studentPassword: '',
-        studentContact: ''
-    });
 
     const { degreeName, degreeAgent, degreeStudentList = [], degreeModules } = degree || {};
 
     const studentList = [...degreeStudentList];
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!newStudent.studentID) newErrors.studentID = 'Student ID is required';
-        if (!newStudent.studentName) newErrors.studentName = 'Student Name is required';
-        if (!newStudent.studentLogin) newErrors.studentLogin = 'User Name is required';
-        if (!newStudent.studentPassword) newErrors.studentPassword = 'Password is required';
-        if (!newStudent.studentContact) newErrors.studentContact = 'Phone Number is required';
-        return newErrors;
-    };
 
     const columns = [
         { field: 'studentID', headerName: 'Student ID', flex: 0.5 },
@@ -47,31 +29,6 @@ const DegreeProfile = () => {
         { field: 'studentPassword', headerName: 'Password', flex: 1 },
         { field: 'studentContact', headerName: 'Contact Number', flex: 1 },
     ];
-
-    const handleAddStudent = () => {
-        const updatedStudentList = [...studentList, newStudent];
-        degreeStudentList.push(newStudent);
-
-        setSnackbarOpen(true);
-        setOpen(false);
-        setNewStudent({
-            studentID: '',
-            studentName: '',
-            studentLogin: '',
-            studentPassword: '',
-            studentContact: ''
-        });
-    };
-
-    const handleSubmit = () => {
-        const validationErrors = validateForm();
-        if (Object.keys(validationErrors).length === 0) {
-            handleAddStudent();
-            setSnackbarOpen(true);
-        } else {
-            setErrors(validationErrors);
-        }
-    };
 
     // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
     const handleRowClick = (params) => {
@@ -225,108 +182,15 @@ const DegreeProfile = () => {
             </Box>
 
             <Modal open={open} onClose={() => setOpen(false)}>
-                <Box
-                    sx={{
-                        width: '400px',
-                        backgroundColor: colors.grey[900],
-                        padding: 3,
-                        borderRadius: 3,
-                        mx: 'auto',
-                        mt: '10%',
-                        position: 'relative',
-                    }}
-                >
-                    <IconButton
-                        onClick={() => setOpen(false)}
-                        sx={{ position: 'absolute', top: 10, right: 10, color: colors.grey[50] }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h5" color={colors.grey[50]} sx={{ mb: 2 }}>
-                        Add New Student
-                    </Typography>
-                    <TextField
-                        label="Student ID"
-                        fullWidth
-                        error={!!errors.studentID}
-                        helperText={errors.studentID}
-                        value={newStudent.studentID}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentID: e.target.value });
-                            setErrors({ ...errors, studentID: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Name"
-                        fullWidth
-                        error={!!errors.studentName}
-                        helperText={errors.studentName}
-                        value={newStudent.studentName}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentName: e.target.value });
-                            setErrors({ ...errors, studentName: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Login"
-                        fullWidth
-                        error={!!errors.studentLogin}
-                        helperText={errors.studentLogin}
-                        value={newStudent.studentLogin}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentLogin: e.target.value });
-                            setErrors({ ...errors, studentLogin: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Password"
-                        fullWidth
-                        error={!!errors.studentPassword}
-                        helperText={errors.studentPassword}
-                        value={newStudent.studentPassword}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentPassword: e.target.value });
-                            setErrors({ ...errors, studentPassword: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Student Contact"
-                        fullWidth
-                        error={!!errors.studentContact}
-                        helperText={errors.studentContact}
-                        value={newStudent.studentContact}
-                        onChange={(e) => {
-                            setNewStudent({ ...newStudent, studentContact: e.target.value });
-                            setErrors({ ...errors, studentContact: '' });
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={handleSubmit}
-                        sx={{
-                            width: '100%',
-                            backgroundColor: colors.blueAccent[500],
-                            '&:hover': {
-                                backgroundColor: colors.blueAccent[600],
-                            },
-                        }}
-                    >
-                        Add
-                    </Button>
-                </Box>
+                <StudentForm setOpen={setOpen} degreeID={degreeId} />
             </Modal>
 
-            <Snackbar
+            {/* <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}
                 onClose={() => setSnackbarOpen(false)}
                 message="New student added successfully!"
-            />
+            /> */}
         </Box>
     );
 };
