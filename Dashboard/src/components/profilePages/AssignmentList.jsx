@@ -86,7 +86,7 @@ const AssignmentList = ({ list }) => {
           p: 2,
           borderRadius: 1,
           boxShadow: 3,
-          width: 300,
+          width: 250,
         }}
       >
         <LinearProgress 
@@ -120,6 +120,7 @@ const AssignmentList = ({ list }) => {
             value={searchTerm}
             onChange={handleSearch}
             sx={{ mb: 2 }}
+            
           />
           <Button variant="contained" color="primary" onClick={handleDownloadCSV} sx={{ mb: 2 }}>
             Download CSV

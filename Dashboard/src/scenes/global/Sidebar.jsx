@@ -12,7 +12,7 @@ import  HelpOutlinedIcon  from '@mui/icons-material/HelpOutlined'
 import  MenuOutlinedIcon  from '@mui/icons-material/MenuOutlined'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
-
+import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -130,6 +130,13 @@ const Sidebar = () => {
                 title="Upload Assignnment"
                 to="/uploadPage"
                 icon={<CloudUploadIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item 
+                title="All Degrees"
+                to="/"
+                icon={<StorageOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />

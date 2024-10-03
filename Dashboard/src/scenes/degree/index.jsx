@@ -77,7 +77,7 @@ const DegreeBoard = () => {
 
     return (
         <Box m="20px">
-            <Header title={`All degrees of ${yearName}`} subtitle="Here is all the information listed in your Assignment" />
+            <Header title={`All degrees of ${yearName}`} subtitle="Here are all the degrees for the session" />
 
             <Box mt={3} display="flex" flexDirection="column" alignItems="center">
                 <Box display="flex" width="100%" maxWidth="600px" gap={2} alignItems="center">

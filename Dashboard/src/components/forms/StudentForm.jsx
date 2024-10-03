@@ -180,12 +180,12 @@ const StudentForm = ({setOpen, degreeID}) => {
 
             <Snackbar open={formSaved} autoHideDuration={3000} onClose={handleSnackbarClose}>
                 <MuiAlert elevation={6} variant="filled" onClose={handleSnackbarClose} severity="success">
-                    Assignment Form submitted successfully!
+                    Student added successfully!
                 </MuiAlert>
             </Snackbar>
             <Snackbar open={formError} autoHideDuration={6000} onClose={handleSnackbarCloseError}>
                 <Alert onClose={handleSnackbarCloseError} severity="error" sx={{ width: '100%' }}>
-                    Assignment Form submission failed. {formErrorMessage}. Please try again.
+                    Failed adding student. {formErrorMessage}. Please try again.
                 </Alert>
             </Snackbar>
         </Box>
