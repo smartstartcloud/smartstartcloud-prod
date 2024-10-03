@@ -69,7 +69,6 @@ const StudentForm = ({setOpen, degreeID}) => {
             setFormErrorMessage(e.message)
             console.log("Error submitting form: ", e.message)
         }
-        setOpen(false);
         setNewStudent({
             studentID: '',
             studentName: '',
