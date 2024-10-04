@@ -3,24 +3,24 @@ import File from '../models/files.model.js';
 // Controller to handle file upload
 export const uploadFile = async (req, res) => {
   try {
-    const { orderID } = req.body;
+    const { orderID } = req.params;  // Use orderID from params (token in shareable link)
 
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
     if (!orderID) {
-      return res.status(400).json({ message: 'Order ID is required' });
+      return res.status(400).json({ message: 'Order ID (token) is required' });
     }
 
     const orderID_exist = await File.findOne({orderID});
     if (orderID_exist){            
-      return res.status(409).json({message: "orderID already exists."})
+      return res.status(409).json({message: "OrderID already exists."})
     }
 
     // Save the file data to MongoDB
     const newFile = new File({
-      orderID: orderID,  // Include orderID in the file schema
+      orderID: orderID,  // Use orderID as token
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
       fileData: req.file.buffer,
@@ -33,12 +33,12 @@ export const uploadFile = async (req, res) => {
   }
 };
 
-// Controller to handle file download by ID
+// Controller to handle file download by orderID (as token)
 export const downloadFile = async (req, res) => {
   try {
-    const { orderID } = req.body;
+    const { orderID } = req.params;  // Get orderID from URL parameters
 
-    // Find the file by its ID
+    // Find the file by orderID (token)
     const file = await File.findOne({orderID});
     if (!file) {
       return res.status(404).json({ message: 'File not found' });

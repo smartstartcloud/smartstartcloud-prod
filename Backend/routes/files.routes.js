@@ -9,14 +9,14 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Route to upload a file
-router.post('/upload', upload.single('file'), uploadFile);
+// Route to upload a file using orderID as token in the URL
+router.post('/upload/:orderID', upload.single('file'), uploadFile);
 
-// Route to download a file by ID
-router.post('/download', downloadFile);
+// Route to download a file using orderID as token in the URL
+router.get('/download/:orderID', downloadFile);
 
-// Route to get a file list by ID
-router.post('/list/singleFile', listFilesByOrderID);
+// Route to get a file list by orderID
+router.get('/list/:orderID', listFilesByOrderID);
 
 // Route to delete a file by ID
 router.delete('/delete/:id', deleteFile);
