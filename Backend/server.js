@@ -58,7 +58,7 @@ app.use('/newAccessToken', newAccessToken);
 app.use('/api/files', fileRoutes);
 
 // Start the server
-app.listen(process.env.PORT || 8080, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}`);
 });
 

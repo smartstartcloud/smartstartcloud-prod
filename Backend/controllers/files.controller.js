@@ -1,5 +1,6 @@
 import Assignment from '../models/assignment.models.js';
 import File from '../models/files.model.js';
+import { forceMongo } from '../utils/forceMongoFieldNotUnique.js';
 
 // Controller to handle file upload
 export const uploadFile = async (req, res) => {
@@ -21,7 +22,7 @@ export const uploadFile = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-
+    forceMongo(File,"orderID");
     // Save the file data to MongoDB
     const newFile = new File({
       orderID: orderID, // Use orderID as token
@@ -29,7 +30,7 @@ export const uploadFile = async (req, res) => {
       fileType: req.file.mimetype,
       fileData: req.file.buffer,
     });
-
+    
     await newFile.save();
     // Add the new file ID to the assignment's `assignmentFile` array
     assignment.assignmentFile.push(newFile._id);
@@ -40,6 +41,7 @@ export const uploadFile = async (req, res) => {
       .status(201)
       .json({ message: "File uploaded successfully", fileId: newFile._id });
   } catch (error) {    
+    console.log(error)
     res.status(500).json({ message: 'Error uploading file', error: error.message });
   }
 };

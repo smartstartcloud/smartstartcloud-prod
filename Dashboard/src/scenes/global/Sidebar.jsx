@@ -135,7 +135,7 @@ const Sidebar = () => {
               />
               <Item 
                 title="All Degrees"
-                to="/"
+                to=""
                 icon={<StorageOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}

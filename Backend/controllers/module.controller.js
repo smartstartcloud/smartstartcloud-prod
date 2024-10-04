@@ -24,7 +24,6 @@ export const newAssignment = async (req,res)=>{
     }else{
       try{
         const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment);
-        console.log(createdAssignment);
         const newAssignment = new ModuleAssignment({
             studentID,
             moduleID,
