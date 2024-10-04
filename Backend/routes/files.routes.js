@@ -10,10 +10,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Route to upload a file using orderID as token in the URL
-router.post('/upload/:orderID', upload.single('file'), uploadFile);
+router.post('/upload', upload.single('file'), uploadFile);
 
 // Route to download a file using orderID as token in the URL
-router.get('/download/:orderID', downloadFile);
+router.get('/download/:fileID', downloadFile);
 
 // Route to get a file list by orderID
 router.get('/list/:orderID', listFilesByOrderID);

@@ -14,7 +14,6 @@ import {
   Tooltip,
   LinearProgress,
   IconButton,
-  Modal,
 } from '@mui/material';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -118,10 +117,9 @@ const AssignmentList = ({ list }) => {
 
   // File Modal Work
 
-  const handleFileOpen = (orderID) => {
+  const handleFileOpen = (orderID) => {    
     setOrderIdToPass(orderID);
     setOpen(true);
-    
   }
 
   return (
@@ -247,10 +245,7 @@ const AssignmentList = ({ list }) => {
           />
         </Box>
       )}
-
-      <Modal open={open} onClose={() => setOpen(false)}>
-          <FileUpload setOpen={setOpen} orderID={orderIdToPass} />
-      </Modal>      
+        {open && <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />}
     </Box>
   );
 };

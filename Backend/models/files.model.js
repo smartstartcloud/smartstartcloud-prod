@@ -16,7 +16,7 @@ const fileSchema = new mongoose.Schema({
     
   orderID:{
     type: String,
-    unique:true,
+    // unique:true,
     required: true
 },
 });

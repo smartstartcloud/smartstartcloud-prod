@@ -41,7 +41,41 @@ const useUploadFiles = () => {
         }
     }
 
-    return {uploadFiles}
+    const downloadFiles = async(file, download) => {        
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_LOCALHOST}/api/files/download/${file._id}?download=${download}`,
+            {
+              responseType: "blob", // Important to get the file as a blob
+            }
+          );
+
+          // Get the content type from the response headers
+          const contentType = response.headers["content-type"];
+          console.log("File Content-Type:", contentType); // This will show something like 'application/pdf'
+
+          // Create a blob link for the file and trigger the download
+          const url = window.URL.createObjectURL(
+            new Blob([response.data], { type: contentType })
+          );
+
+          const a = document.createElement("a");
+          a.href = url;
+          if (download) {
+            a.setAttribute("download", file.fileName);
+          } // Set the file name for download
+          else {
+            a.target = "_blank"; // Open in a new tab
+          }
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } catch (error) {
+          console.error("Error downloading the file:", error);
+        }
+    }
+
+    return {uploadFiles, downloadFiles}
 }
 
 export default useUploadFiles

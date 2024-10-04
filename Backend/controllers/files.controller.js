@@ -1,34 +1,45 @@
+import Assignment from '../models/assignment.models.js';
 import File from '../models/files.model.js';
 
 // Controller to handle file upload
 export const uploadFile = async (req, res) => {
   try {
-    const { orderID } = req.params;  // Use orderID from params (token in shareable link)
-
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
+    const { orderID } = req.body; // Use orderID from params (token in shareable link)
 
     if (!orderID) {
-      return res.status(400).json({ message: 'Order ID (token) is required' });
+      return res.status(400).json({ message: "Order ID (token) is required" });
     }
 
-    const orderID_exist = await File.findOne({orderID});
-    if (orderID_exist){            
-      return res.status(409).json({message: "OrderID already exists."})
+    // Find the assignment with the given orderID
+    const assignment = await Assignment.findOne({ orderID });
+
+    // Check if the assignment exists
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
     // Save the file data to MongoDB
     const newFile = new File({
-      orderID: orderID,  // Use orderID as token
+      orderID: orderID, // Use orderID as token
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
       fileData: req.file.buffer,
     });
 
     await newFile.save();
-    res.status(201).json({ message: 'File uploaded successfully', fileId: newFile._id });
-  } catch (error) {
+    // Add the new file ID to the assignment's `assignmentFile` array
+    assignment.assignmentFile.push(newFile._id);
+    // Save the updated assignment
+    await assignment.save();
+
+    res
+      .status(201)
+      .json({ message: "File uploaded successfully", fileId: newFile._id });
+  } catch (error) {    
     res.status(500).json({ message: 'Error uploading file', error: error.message });
   }
 };
@@ -36,18 +47,21 @@ export const uploadFile = async (req, res) => {
 // Controller to handle file download by orderID (as token)
 export const downloadFile = async (req, res) => {
   try {
-    const { orderID } = req.params;  // Get orderID from URL parameters
+    const { fileID } = req.params;  // Get fileID from URL parameters
 
+    const download = req.query.download
     // Find the file by orderID (token)
-    const file = await File.findOne({orderID});
+    const file = await File.findById(fileID);
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
-
+    
     // Set headers for file download
     res.set({
-      'Content-Type': file.fileType,
-      'Content-Disposition': `attachment; filename="${file.fileName}"`,
+      "Content-Type": file.fileType,
+      "Content-Disposition": download
+        ? `attachment; filename="${file.fileName}"` // Trigger file download
+        : "inline", // Open file in browser
     });
 
     // Send the file binary data
@@ -87,7 +101,7 @@ export const listFiles = async (req, res) => {
 // Controller to list all files
 export const listFilesByOrderID = async (req, res) => {  
   try {
-    const { orderID } = req.body;
+    const {orderID} = req.params;    
     
     const files = await File.find({orderID}, 'fileName fileType createdAt');
     
