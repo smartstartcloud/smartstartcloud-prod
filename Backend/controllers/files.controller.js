@@ -36,10 +36,10 @@ export const uploadFile = async (req, res) => {
 // Controller to handle file download by ID
 export const downloadFile = async (req, res) => {
   try {
-    const fileId = req.params.id;
+    const { orderID } = req.body;
 
     // Find the file by its ID
-    const file = await File.findById(fileId);
+    const file = await File.findOne({orderID});
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
@@ -79,6 +79,19 @@ export const listFiles = async (req, res) => {
   try {
     const files = await File.find({}, 'fileName fileType createdAt');
     res.json({ files });
+  } catch (error) {
+    res.status(500).json({ message: 'Error listing files', error: error.message });
+  }
+};
+
+// Controller to list all files
+export const listFilesByOrderID = async (req, res) => {  
+  try {
+    const { orderID } = req.body;
+    
+    const files = await File.find({orderID}, 'fileName fileType createdAt');
+    
+    res.json(files || [] );
   } catch (error) {
     res.status(500).json({ message: 'Error listing files', error: error.message });
   }

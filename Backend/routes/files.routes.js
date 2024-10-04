@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { uploadFile, downloadFile, deleteFile, listFiles } from '../controllers/files.controller.js';
+import { uploadFile, downloadFile, deleteFile, listFiles, listFilesByOrderID } from '../controllers/files.controller.js';
 
 // Initialize express router
 const router = express.Router();
@@ -13,7 +13,10 @@ const upload = multer({ storage });
 router.post('/upload', upload.single('file'), uploadFile);
 
 // Route to download a file by ID
-router.get('/download/:id', downloadFile);
+router.post('/download', downloadFile);
+
+// Route to get a file list by ID
+router.post('/list/singleFile', listFilesByOrderID);
 
 // Route to delete a file by ID
 router.delete('/delete/:id', deleteFile);

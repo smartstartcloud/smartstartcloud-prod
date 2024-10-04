@@ -13,7 +13,12 @@ import {
   TextField,
   Tooltip,
   LinearProgress,
+  IconButton,
+  Modal,
 } from '@mui/material';
+import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import FileUpload from '../FileUpload';
 
 const AssignmentList = ({ list }) => {
   const [order, setOrder] = useState('asc');
@@ -21,6 +26,9 @@ const AssignmentList = ({ list }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
+  const [open, setOpen] = useState(false);
+  const [orderIdToPass, setOrderIdToPass] = useState('');
+
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -108,6 +116,14 @@ const AssignmentList = ({ list }) => {
     );
   };
 
+  // File Modal Work
+
+  const handleFileOpen = (orderID) => {
+    setOrderIdToPass(orderID);
+    setOpen(true);
+    
+  }
+
   return (
     <Box>
       {list && (
@@ -182,11 +198,14 @@ const AssignmentList = ({ list }) => {
                       Payment Status
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell>
+                      Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {sortedList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment) => (
-                  <TableRow key={assignment.orderID}>
+                  <TableRow key={assignment.orderID}  >
                     {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment'].map((key) => (
                       <TableCell key={key}>
                         <Tooltip
@@ -198,6 +217,19 @@ const AssignmentList = ({ list }) => {
                         </Tooltip>
                       </TableCell>
                     ))}
+                    {/* Add buttons here */}
+                    <TableCell>
+                      <Tooltip title="Open Files">
+                        <IconButton onClick={() => handleFileOpen(assignment.orderID)} >
+                          <FolderOpenOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton>
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -214,6 +246,10 @@ const AssignmentList = ({ list }) => {
           />
         </Box>
       )}
+
+      <Modal open={open} onClose={() => setOpen(false)}>
+          <FileUpload setOpen={setOpen} orderID={orderIdToPass} />
+      </Modal>      
     </Box>
   );
 };
