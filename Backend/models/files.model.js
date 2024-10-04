@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { infoDB } from "../db/connectMongoDB.js";
+import { fileDB } from "../db/connectMongoDB.js";
 
 const fileSchema = new mongoose.Schema({
   fileName: { 
@@ -20,6 +20,6 @@ const fileSchema = new mongoose.Schema({
 },
 });
 
-const File = infoDB.model("File", fileSchema);
+const File = fileDB.model("File", fileSchema,"File");
 
 export default File;
