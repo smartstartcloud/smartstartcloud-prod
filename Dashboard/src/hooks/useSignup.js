@@ -26,8 +26,8 @@ const useSignup = ( ) => {
                 throw new Error(data.error);
             }
 
-            localStorage.setItem("user-details", JSON.stringify(data))
-            setAuthUser(data)
+            // localStorage.setItem("user-details", JSON.stringify(data))
+            // setAuthUser(data)
             // navigate("/welcome")
 
             return data

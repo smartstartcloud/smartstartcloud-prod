@@ -63,7 +63,8 @@ const SignupForm = () => {
                 if (data.role === 'agent') {
                     navigate('/welcome', {
                         state:
-                            { userName: data.userName,
+                            { 
+                                userName: data.userName,
                                 password: data.password
                             }
                     });

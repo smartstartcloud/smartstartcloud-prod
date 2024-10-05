@@ -3,30 +3,28 @@ import { Box, Button, Card, CardContent, Typography, Snackbar, Dialog, DialogAct
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckIcon from '@mui/icons-material/Check';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const jsonData = {
-  name: "Some mediocre guy",
-  age: 28,
-  email: "actinghr@mediocre.com",
-  address: {
-    street: "123 Main St",
-    city: "New York",
-    state: "NY",
-    zip: "10001"
-  },
-  preferences: {
-    theme: "dark",
-    notifications: true
-  }
-};
 
 const Welcome = ( ) => {
   const [copied, setCopied] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-   const [modalOpen, setModalOpen] = useState(true);
-   const location = useLocation();
+  const [modalOpen, setModalOpen] = useState(true);
+  const [isCopied, setIsCopied] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const { userName, password } = location.state || {};
+
+
+  useEffect(() => {
+    // Logic to check if the page is refreshed
+    // You can modify the logic based on your use case (e.g., based on localStorage, state, etc.)
+    if (performance.getEntriesByType("navigation")[0].type === "reload" && isCopied) {
+      // Navigate to another page after refresh
+      navigate("/");
+    }
+  }, [navigate, isCopied]);
 
   const userInfo = {
     userName,
@@ -40,6 +38,7 @@ const Welcome = ( ) => {
           setCopied(true);
           setSnackbarOpen(true);
           setTimeout(() => setCopied(false), 2000);
+          setIsCopied(true)
         })
         .catch(err => {
           console.error('Failed to copy: ', err);
