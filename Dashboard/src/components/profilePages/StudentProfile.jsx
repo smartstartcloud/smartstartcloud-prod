@@ -89,81 +89,80 @@ const StudentProfile = () => {
     return (
         <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
             <Box display="flex" justifyContent="space-between" mb={2}>
-            <Card
-    sx={{
-        width: '30%',
-        p: 2,
-        background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
-        boxShadow: 6,
-        borderRadius: 4,
-    }}
->
-    <CardContent>
-        <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
-            Student Information
-        </Typography>
-        
-        <Grid container spacing={2}>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
-                    Student ID:
-                </Typography>
-            </Grid>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]}>
-                    {studentId}
-                </Typography>
-            </Grid>
+                <Card
+                    sx={{
+                        width: '50%',
+                        p: 2,
+                        background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
+                        boxShadow: 6,
+                        borderRadius: 4,
+                    }}
+                >
+                    <CardContent>
+                        <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
+                            Student Information
+                        </Typography>
+                        
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                                    Student ID:
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]}>
+                                    {studentId}
+                                </Typography>
+                            </Grid>
 
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
-                    Name:
-                </Typography>
-            </Grid>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]}>
-                    {studentName}
-                </Typography>
-            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                                    Name:
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]}>
+                                    {studentName}
+                                </Typography>
+                            </Grid>
 
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
-                    Contact:
-                </Typography>
-            </Grid>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]}>
-                    {studentContact}
-                </Typography>
-            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                                    Contact:
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]}>
+                                    {studentContact}
+                                </Typography>
+                            </Grid>
 
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
-                    Login:
-                </Typography>
-            </Grid>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]}>
-                    {studentLogin}
-                </Typography>
-            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                                    Login:
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]}>
+                                    {studentLogin}
+                                </Typography>
+                            </Grid>
 
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
-                    Password:
-                </Typography>
-            </Grid>
-            <Grid item xs={6}>
-                <Typography variant="h6" color={colors.grey[100]}>
-                    {studentPassword}
-                </Typography>
-            </Grid>
-        </Grid>
-    </CardContent>
-</Card>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]} sx={{ fontWeight: 'bold' }}>
+                                    Password:
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="h6" color={colors.grey[100]}>
+                                    {studentPassword}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
 
-
-                <Box sx={{marginLeft:"20px", width: '70%' }}>
+                <Box sx={{marginLeft:"20px", width: '50%' }}>
                     <Typography variant="h4" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
                         Module List
                     </Typography>
