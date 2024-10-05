@@ -52,7 +52,7 @@ const LoginForm = () => {
             setformSuccess(true);
             setLoading(false);
         } catch (e) {
-            console.log("e.message 123123", e.message)
+            console.log(e.message)
             setFormError(true)
             setLoading(false);
             setErrorMessage(e.message);

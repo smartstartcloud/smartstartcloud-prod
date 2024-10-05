@@ -1,13 +1,14 @@
 import { useAuthContext } from "../context/AuthContext";
 import useApi from "./useApi";
+import { useTokenContext } from "../context/TokenContext";
 
 const useChangePassword = () => {
     const {setAuthUser} = useAuthContext()
+    const {setAccessToken} = useTokenContext()
     const api = useApi()
     
     const changePassword = async({password, userName }) => {
         try {
-            console.log(password, userName);
             const res = await api.post(`/api/auth/renew`, {
                 password, 
                 userName, 
@@ -16,12 +17,13 @@ const useChangePassword = () => {
             if (data.error){
                 throw new Error(data.error);
             }
-            console.log(JSON.stringify(data));
-            console.log('hoise');
             
             // localStorage
             localStorage.setItem("user-details", JSON.stringify(data))
+            localStorage.setItem("access-token", JSON.stringify(data.accessToken))
+            
             // context
+            setAccessToken(data.accessToken)
             setAuthUser(data)
             
         } catch (error) {

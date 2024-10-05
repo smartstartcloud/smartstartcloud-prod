@@ -45,7 +45,7 @@ export const signupUser = async (req, res) => {
     try {
         const {email, firstName, lastName, userName, password, gender, role} = req.body;
         // Check if the role is valid
-        const validRoles = ["admin", "hr", "agent"];
+        const validRoles = ["admin", "agent"];
         if (!validRoles.includes(role)) {
         return res.status(400).json({ message: "Invalid role specified" });
         }
@@ -82,10 +82,11 @@ export const signupUser = async (req, res) => {
         if(newUser){
             await newUser.save();
 
-            res.status(201).json({
+            res.status(200).json({
                 _id: newUser._id,
                 email: newUser.email,
                 userName: newUser.userName,
+                role: newUser.role
             })
         }
 
@@ -120,7 +121,14 @@ export const renewPassword = async (req, res) => {
 
         const user = await User.findOneAndUpdate({userName},{$set: { password: hashPassword,passRenew:true }});
         if(user){
-            res.status(200).json({value:"Password updated"});
+            generateRefreshToken(user._id,user.role,res)
+            res.status(200).json({
+                _id: user.id,
+                userName: user.userName,
+                role: user.role,
+                name: user.firstName+" "+user.lastName,
+                accessToken:generateAccessToken(user._id,user.role)
+            })
         }else{
             res.status(400).json({value:"Password update failed"});
         }
