@@ -100,7 +100,7 @@ export const listFiles = async (req, res) => {
   }
 };
 
-// Controller to list all files
+// Controller to list all files by order ID
 export const listFilesByOrderID = async (req, res) => {  
   try {
     const {orderID} = req.params;    
@@ -112,8 +112,6 @@ export const listFilesByOrderID = async (req, res) => {
     res.status(500).json({ message: 'Error listing files', error: error.message });
   }
 };
-
-// Controller to generate a shareable link
 
 // Controller to generate a shareable link
 export const generateShareableLink = (req, res) => {

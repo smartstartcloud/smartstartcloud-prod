@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { uploadFile, downloadFile, deleteFile, listFiles, listFilesByOrderID, accessFileViaShareableLink } from '../controllers/files.controller.js';
+import { uploadFile, downloadFile, deleteFile, listFiles, listFilesByOrderID, generateShareableLink } from '../controllers/files.controller.js';
 
 // Initialize express router
 const router = express.Router();
