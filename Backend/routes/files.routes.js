@@ -25,7 +25,7 @@ router.delete('/delete/:id', deleteFile);
 router.get('/list', listFiles);
 
 // Route to generate a shareable link for a file by orderID
-router.post("/shareable-link", accessFileViaShareableLink);
+router.post('/shareable-link', generateShareableLink);
 
 // Route to access file via shareable link (upload or download)
 // router.get('/access/:orderID', accessFileViaShareableLink);
