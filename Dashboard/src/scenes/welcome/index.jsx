@@ -16,7 +16,6 @@ const Welcome = ( ) => {
 
   const { userName, password } = location.state || {};
 
-
   useEffect(() => {
     // Logic to check if the page is refreshed
     // You can modify the logic based on your use case (e.g., based on localStorage, state, etc.)

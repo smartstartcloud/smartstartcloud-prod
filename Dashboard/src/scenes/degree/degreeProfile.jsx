@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
-import CloseIcon from '@mui/icons-material/Close';
 import {
-    Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button, Modal, TextField, Snackbar, IconButton,
+    Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button
 } from '@mui/material';
 import { tokens } from '../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -181,9 +180,7 @@ const DegreeProfile = () => {
                 </Button>
             </Box>
 
-            <Modal open={open} onClose={() => setOpen(false)}>
-                <StudentForm setOpen={setOpen} degreeID={degreeId} />
-            </Modal>
+            <StudentForm open={open} setOpen={setOpen} degreeID={degreeId} />
 
             {/* <Snackbar
                 open={snackbarOpen}

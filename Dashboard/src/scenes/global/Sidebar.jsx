@@ -38,9 +38,9 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode)
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
-  const pathnames = location.pathname.split('/').filter((x) => x)[0]
+  const pathnames = location.pathname.split('/').filter((x) => x)[0]  
 
-  const [selected, setSelected] = useState(pathnames ? pathnames : '')
+  const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
   const { authUser } = useAuthContext()
 
   
@@ -114,7 +114,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
               <Item 
                 title="Dashboard"
-                to="/"
+                to="/task"
                 icon={<HomeOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
@@ -135,7 +135,7 @@ const Sidebar = () => {
               />
               <Item 
                 title="All Degrees"
-                to=""
+                to="/allDegrees"
                 icon={<StorageOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}

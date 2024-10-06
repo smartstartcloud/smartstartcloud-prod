@@ -86,6 +86,7 @@ export const getDegreeByID = async (req,res)=>{
 
 export const getDegreeByAgent = async (req,res)=>{
   const {degreeAgent} = req.params
+  
   try {
     let fillAgentDegree=[];
     const degrees = await Degree.find({degreeAgent:degreeAgent})

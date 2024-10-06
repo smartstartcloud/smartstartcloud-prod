@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, CircularProgress, Grid, TextField, Button, useTheme, Typography, InputAdornment, IconButton, List, ListItem, ListItemText, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../components/Header';
-import { degreeFilter } from '../../utils/yearFilter';
+import { degreeFilter, formatDateString } from '../../utils/yearFilter';
 import DegreeCard from '../../components/DegreeCard';
 import { tokens } from '../../theme';
 import useFetchSelectedDegreeData from '../../hooks/useFetchSelectedDegreeData';
@@ -77,7 +77,7 @@ const DegreeBoard = () => {
 
     return (
         <Box m="20px">
-            <Header title={`All degrees of ${yearName}`} subtitle="Here are all the degrees for the session" />
+            <Header title={`All degrees of ${formatDateString(yearName)}`} subtitle="Here are all the degrees for the session" />
 
             <Box mt={3} display="flex" flexDirection="column" alignItems="center">
                 <Box display="flex" width="100%" maxWidth="600px" gap={2} alignItems="center">
