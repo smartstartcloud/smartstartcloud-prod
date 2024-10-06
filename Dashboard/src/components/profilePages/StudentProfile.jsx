@@ -30,9 +30,12 @@ const StudentProfile = () => {
     const location = useLocation();
     const { studentId } = useParams();
     const { student, loading, error } = useFetchSingleStudentData(studentId);
+
     const { fetchAssignmentList } = useFetchAssignmentList();
 
     const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
+    console.log("student :::", student);
+    
     const { degreeModules } = location.state || [];
 
     const [open, setOpen] = useState(false);
@@ -214,7 +217,7 @@ const StudentProfile = () => {
                         <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
                         Assignments List for {selectedModuleName}
                         </Typography>
-                        <AssignmentList list={assignmentList} />
+                        <AssignmentList list={assignmentList} degreeModules={degreeModules} student={student} />
                         {assignmentList.length === 0 && (
                             <Typography align="center" color={colors.grey[200]}>
                                 No assignments found for this module.
@@ -253,7 +256,7 @@ const StudentProfile = () => {
                 </DialogTitle>
                 <DialogContent sx={{ padding: 0 }}>
                     <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
-                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} />
+                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} editMode={false} />
                     </Box>
                 </DialogContent>
             </Dialog>
