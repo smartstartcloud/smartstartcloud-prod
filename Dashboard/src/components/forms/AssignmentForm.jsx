@@ -57,7 +57,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                 assignmentProgress: '',
                 assignmentPayment: 0,
                 assignmentDeadline: '',
-                assignmentGrade
+                assignmentGrade: '',
             });
             }
         }
