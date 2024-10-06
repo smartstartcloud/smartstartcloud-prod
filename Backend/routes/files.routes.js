@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { uploadFile, downloadFile, deleteFile, listFiles, listFilesByOrderID, generateShareableLink, accessFileViaShareableLink } from '../controllers/files.controller.js';
+import { uploadFile, downloadFile, deleteFile, listFiles, listFilesByOrderID, accessFileViaShareableLink } from '../controllers/files.controller.js';
 
 // Initialize express router
 const router = express.Router();
@@ -25,7 +25,7 @@ router.delete('/delete/:id', deleteFile);
 router.get('/list', listFiles);
 
 // Route to generate a shareable link for a file by orderID
-router.post('/shareable-link', generateShareableLink);
+router.post("/shareable-link", accessFileViaShareableLink);
 
 // Route to access file via shareable link (upload or download)
 // router.get('/access/:orderID', accessFileViaShareableLink);
