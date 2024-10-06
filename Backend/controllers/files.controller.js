@@ -116,13 +116,16 @@ export const listFilesByOrderID = async (req, res) => {
 // Controller to generate a shareable link
 export const generateShareableLink = (req, res) => {
   try {
-    const { orderID } = req.body;
+    const { orderID } = req.body;    
 
     if (!orderID) {
       return res.status(400).json({ message: 'Order ID is required' });
     }
 
-    const shareableLink = `${req.protocol}://${req.get('host')}/api/files/access/${orderID}`;
+    // const shareableLink = `${req.protocol}://${req.get('host')}/api/files/access/${orderID}`;
+    const shareableLink = `${orderID}`;
+
+    
     res.status(200).json({ message: 'Shareable link generated successfully', shareableLink });
   } catch (error) {
     res.status(500).json({ message: 'Error generating shareable link', error: error.message });

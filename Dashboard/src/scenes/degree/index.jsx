@@ -16,7 +16,9 @@ const DegreeBoard = () => {
     const {authUser} = useAuthContext()
 
     const { degree, loading, error } = useFetchSelectedDegreeData(degreeYear);
-    const { filteredDegree, yearName } = degree ? degreeFilterByAgent(degree, degreeYear, authUser._id) : {};
+    const { filteredDegree, yearName } = degree
+      ? degreeFilter(degree, degreeYear)
+      : {};
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);

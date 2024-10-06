@@ -75,7 +75,37 @@ const useUploadFiles = () => {
         }
     }
 
-    return {uploadFiles, downloadFiles}
+    const handleGenerateShareableLink = async (orderID) => {
+        try {
+            // You may want to pass a fileId or any identifier to the backend
+            const response = await axios.post(
+              `${process.env.REACT_APP_LOCALHOST}/api/files/shareable-link`,
+              { orderID }
+            ); // Replace with actual fileId
+            const data = response.data;
+            // Generate the shareable link with the token
+            const currentUrl = window.location.href.split('?')[0]; // Remove any existing query parameters
+            const url = new URL(currentUrl);
+            const baseURL = `${url.protocol}//${url.host}/globalLink`;
+            const newLink = `${baseURL}?token=${data.shareableLink}`;  
+            data.shareableLink = newLink          
+    
+            // // Copy the shareable link to the clipboard
+            // navigator.clipboard.writeText(newLink)
+            //     .then(() => {
+            //         alert('Shareable link copied to clipboard!');
+            //     })
+            //     .catch(err => {
+            //         console.error('Failed to copy link: ', err);
+            //     });
+            return data
+        } catch (error) {
+            console.error('Error generating shareable link:', error);
+            throw new Error(error.message);
+        }
+    };
+
+    return {uploadFiles, downloadFiles, handleGenerateShareableLink}
 }
 
 export default useUploadFiles
