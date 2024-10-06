@@ -29,3 +29,11 @@ export const degreeFilter = (degree, degreeYear) => {
     })
     return {filteredDegree, yearName}
 }
+
+export const degreeFilterByAgent = (degree, degreeYear, id) => {
+    const yearName = degreeYear
+    const filteredDegree = degree.filter((degree)=>{
+        return (degree.degreeYear === yearName && degree.degreeAgent._id === id)
+    })
+    return {filteredDegree, yearName}
+}

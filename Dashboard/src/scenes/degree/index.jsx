@@ -1,25 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, CircularProgress, Grid, TextField, Button, useTheme, Typography, InputAdornment, IconButton, List, ListItem, ListItemText, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../components/Header';
-import { degreeFilter, formatDateString } from '../../utils/yearFilter';
+import { degreeFilter, degreeFilterByAgent, formatDateString } from '../../utils/yearFilter';
 import DegreeCard from '../../components/DegreeCard';
 import { tokens } from '../../theme';
 import useFetchSelectedDegreeData from '../../hooks/useFetchSelectedDegreeData';
+import { useAuthContext } from '../../context/AuthContext';
 
 const DegreeBoard = () => {
     const { degreeYear } = useParams();
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const {authUser} = useAuthContext()
 
     const { degree, loading, error } = useFetchSelectedDegreeData(degreeYear);
-    const { filteredDegree, yearName } = degree ? degreeFilter(degree, degreeYear) : {};
+    const { filteredDegree, yearName } = degree ? degreeFilterByAgent(degree, degreeYear, authUser._id) : {};
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [searchResult, setSearchResult] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
+
+    useEffect(
+        () => {
+            if (filteredDegree) {
+                console.log(filteredDegree);                
+            } 
+        }, [filteredDegree]
+    )
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
