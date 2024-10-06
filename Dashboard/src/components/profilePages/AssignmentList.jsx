@@ -14,12 +14,21 @@ import {
   Tooltip,
   LinearProgress,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import FileUpload from '../FileUpload';
+import CloseIcon from '@mui/icons-material/Close';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import AssignmentForm from '../forms/AssignmentForm';
+import Slide from '@mui/material/Slide';
 
-const AssignmentList = ({ list }) => {
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
+
+const AssignmentList = ({ list, degreeModules, student }) => {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('orderID');
   const [page, setPage] = useState(0);
@@ -27,7 +36,13 @@ const AssignmentList = ({ list }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [open, setOpen] = useState(false);
   const [orderIdToPass, setOrderIdToPass] = useState('');
-
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentAssignment, setCurrentAssignment] = useState(null);
+  console.log("students from parent ::::", student)
+  const handleEditAssignment = (assignment) => {
+    setCurrentAssignment(assignment);
+    setOpenDialog(true);
+  };
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -61,7 +76,7 @@ const AssignmentList = ({ list }) => {
 
   const handleDownloadCSV = () => {
     const csvContent = [
-      ['Order ID', 'Assignment Name', 'Assignment Type', 'Deadline', 'Progress', 'Payment'],
+      ['Order ID', 'Assignment Name', 'Assignment Type', 'Deadline', 'Progress', 'Payment', 'Grade'],
       ...sortedList.map(assignment => [
         assignment.orderID,
         assignment.assignmentName,
@@ -69,6 +84,7 @@ const AssignmentList = ({ list }) => {
         assignment.assignmentDeadline,
         assignment.assignmentProgress,
         assignment.assignmentPayment,
+        assignment.assignmentGrade
       ])
     ]
       .map(e => e.join(","))
@@ -84,6 +100,11 @@ const AssignmentList = ({ list }) => {
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCurrentAssignment(null);
+  }
 
   const renderTooltipContent = (assignment) => {
     return (
@@ -115,12 +136,12 @@ const AssignmentList = ({ list }) => {
     );
   };
 
-  // File Modal Work
-
   const handleFileOpen = (orderID) => {    
     setOrderIdToPass(orderID);
     setOpen(true);
   }
+
+  
 
   return (
     <Box>
@@ -198,6 +219,15 @@ const AssignmentList = ({ list }) => {
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
+                    <TableSortLabel
+                      active={orderBy === 'assignmentGrade'}
+                      direction={orderBy === 'assignmentGrade' ? order : 'asc'}
+                      onClick={() => handleRequestSort('assignmentGrade')}
+                    >
+                      Grade
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
                       Actions
                   </TableCell>
                 </TableRow>
@@ -205,7 +235,7 @@ const AssignmentList = ({ list }) => {
               <TableBody>
                 {sortedList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment) => (
                   <TableRow key={assignment.orderID}  >
-                    {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment'].map((key) => (
+                    {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment', 'assignmentGrade'].map((key) => (
                       <TableCell key={key}>
                         <Tooltip
                           title={renderTooltipContent(assignment)}
@@ -216,18 +246,27 @@ const AssignmentList = ({ list }) => {
                         </Tooltip>
                       </TableCell>
                     ))}
-                    {/* Add buttons here */}
                     <TableCell>
-                      <Tooltip title="Open Files">
-                        <IconButton onClick={() => handleFileOpen(assignment.orderID)} >
-                          <FolderOpenOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton>
-                          <DeleteOutlineOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
+                    <TableCell>
+                      <div style={{ display: 'flex', gap: 1 }}>
+                        <Tooltip title="Open Files">
+                          <IconButton onClick={() => handleFileOpen(assignment.orderID)}>
+                            <FolderOpenOutlinedIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                          <IconButton onClick={() => handleEditAssignment(assignment)}>
+                            <EditOutlinedIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton>
+                            <DeleteOutlineOutlinedIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+
                     </TableCell>
                   </TableRow>
                 ))}
@@ -246,6 +285,34 @@ const AssignmentList = ({ list }) => {
         </Box>
       )}
         {open && <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />}
+        <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{ style: { height: '50vh', overflow: 'hidden' } }}
+                TransitionComponent={Transition}
+            >
+                <DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleCloseDialog}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ padding: 0 }}>
+                    <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} editMode={true} assignmentData={currentAssignment} />
+                    </Box>
+                </DialogContent>
+            </Dialog>
     </Box>
   );
 };

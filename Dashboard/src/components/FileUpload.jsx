@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'; // For accessing query params
+import { useLocation } from 'react-router-dom';
 import {
   Button, Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
   Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal
@@ -10,9 +10,16 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from 'react-hook-form';
 import Paper from '@mui/material/Paper';
-import axios from 'axios';
 import useUploadFiles from '../hooks/useUploadFiles';
 import useFetchFileList from '../hooks/useFetchFileList';
+
+const customScrollbarStyles = {
+  '&::-webkit-scrollbar': {
+    display: 'none', 
+  },
+  '-ms-overflow-style': 'none', 
+  'scrollbar-width': 'none', 
+};
 
 const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const theme = useTheme();
@@ -43,7 +50,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
     setFiles([...selectedFiles]);
-    setUploadStatus({}); // Reset the upload status when new files are selected
+    setUploadStatus({});
   };
 
   const handleDragOver = (event) => {
@@ -71,10 +78,9 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     formData.append("orderID", orderID);
     try {
       const response = await uploadFiles(formData);
-      console.log("Response Data:", response);
       setUploadStatus((prevStatus) => ({
         ...prevStatus,
-        [file.name]: true, // Mark this specific file as uploaded
+        [file.name]: true,
       }));
     } catch (error) {
       console.log("Error submitting form: ", error.message);
@@ -99,25 +105,33 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
         <Card
           raised
           sx={{
+            maxHeight: '90vh',
+            overflowY: 'auto',
             padding: "20px",
             borderRadius: "15px",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
             position: "relative",
-            backgroundColor: theme.palette.background.paper
+            backgroundColor: theme.palette.background.paper,
+            ...customScrollbarStyles
           }}
         >
-          {/* Close Button */}
           <IconButton
             sx={{
-              position: 'absolute',
-              top: 15,
-              right: 15,
-              color: theme.palette.grey[700]
+              position: 'absolute',  
+              top: 10,  
+              right: 10, 
+              zIndex: 10,
+              color: theme.palette.grey[700],
+              backgroundColor: theme.palette.background.default,
+              borderRadius: '50%',
+              padding: '10px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             }}
             onClick={handleCloseModal}
           >
             <CloseIcon />
           </IconButton>
+
 
           <CardContent>
             <Grid container spacing={2}>
@@ -161,7 +175,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       color: theme.palette.text.secondary,
                       '&:hover': {
                         borderColor: theme.palette.primary.main,
-                      }
+                      },
                     }}
                   >
                     <Typography>Drag and drop a file here or click to upload</Typography>
@@ -171,7 +185,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
             </Grid>
 
             {files.length > 0 && (
-              <TableContainer component={Paper} sx={{ marginTop: "20px", marginBottom: "20px" }}>
+              <TableContainer component={Paper} sx={{ marginTop: "20px", marginBottom: "20px", ...customScrollbarStyles }}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -212,7 +226,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                 <Typography variant="h5" gutterBottom align="center" sx={{ color: "#1976d2" }}>
                   Current Files
                 </Typography>
-                <TableContainer component={Paper} sx={{ marginTop: "20px" }}>
+                <TableContainer component={Paper} sx={{ marginTop: "20px", ...customScrollbarStyles }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -249,6 +263,6 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
       </Container>
     </Modal>
   );
-}
+};
 
 export default FileUpload;
