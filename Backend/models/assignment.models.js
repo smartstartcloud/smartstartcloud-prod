@@ -21,15 +21,12 @@ const AssignmentSchema = new mongo.Schema({
     },
     assignmentProgress: {
         type: String,
-        required: true
     },
     assignmentPayment: {
         type: String,
-        required: true
     },
     assignmentGrade: {
         type: String,
-        required: true
     },
     assignmentFile: {
         type: Array,
