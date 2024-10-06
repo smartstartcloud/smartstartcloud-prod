@@ -2,14 +2,14 @@ import ModuleAssignment from '../models/moduleAssignment.models.js'
 import Assignment from '../models/assignment.models.js';
 export const newAssignment = async (req,res)=>{
   try{
-    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment} = req.body
+    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade} = req.body
     
     const module = await ModuleAssignment.findOne({moduleID,studentID});
     if (module){
         if(module.orderID.includes(orderID)){
           res.status(400).json({error:"Order ID already exists"});
         }else{
-          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment);
+          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade);
           await ModuleAssignment.findOneAndUpdate({ _id: module._id },{ $push: { orderID: createdAssignment.orderID } } ).then(result => {
             if (result.matchedCount === 0) {
               console.log("No document found with the given _id.");
@@ -23,7 +23,7 @@ export const newAssignment = async (req,res)=>{
         }
     }else{
       try{
-        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment);
+        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade);
         const newAssignment = new ModuleAssignment({
             studentID,
             moduleID,
@@ -69,7 +69,7 @@ export const getAssignment = async (req,res)=>{
 }
 
 
-async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment){
+async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade){
   const newAssignment = new Assignment({
     orderID: orderID,
     assignmentName: assignmentName,
@@ -77,6 +77,7 @@ async function createNewAssignment(orderID,assignmentName,assignmentType,assignm
     assignmentDeadline: assignmentDeadline,
     assignmentProgress: assignmentProgress,
     assignmentPayment: assignmentPayment,
+    assignmentGrade: assignmentGrade,
     assignmentFile: [] // Default to empty array
   });
   const savedAssignment = await newAssignment.save();
