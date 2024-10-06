@@ -27,6 +27,10 @@ const AssignmentSchema = new mongo.Schema({
         type: String,
         required: true
     },
+    assignmentGrade: {
+        type: String,
+        required: true
+    },
     assignmentFile: {
         type: Array,
         default: []
