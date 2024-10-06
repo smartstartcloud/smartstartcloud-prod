@@ -114,22 +114,6 @@ export const listFilesByOrderID = async (req, res) => {
 };
 
 // Controller to generate a shareable link
-export const generateShareableLink = (req, res) => {
-  try {
-    const { orderID } = req.body;
-
-    if (!orderID) {
-      return res.status(400).json({ message: 'Order ID is required' });
-    }
-
-    const shareableLink = `${req.protocol}://${req.get('host')}/api/files/access/${orderID}`;
-    res.status(200).json({ message: 'Shareable link generated successfully', shareableLink });
-  } catch (error) {
-    res.status(500).json({ message: 'Error generating shareable link', error: error.message });
-  }
-};
-
-// Controller to access a file via shareable link (for both upload and download)
 export const accessFileViaShareableLink = async (req, res) => {
   try {
     const { orderID } = req.params;
@@ -139,23 +123,35 @@ export const accessFileViaShareableLink = async (req, res) => {
       return res.status(400).json({ message: 'Order ID is required' });
     }
 
-    const file = await File.findOne({ orderID });
-    if (!file && action === 'download') {
-      return res.status(404).json({ message: 'File not found' });
+    // Find all files related to the given orderID
+    const files = await File.find({ orderID });
+
+    // Check if no files are found for the given orderID, and handle the download action
+    if (files.length === 0 && action === 'download') {
+      return res.status(404).json({ message: 'No files found for this orderID' });
     }
 
+    // Handle file download action
     if (action === 'download') {
+      // Assuming you're allowing multiple files, you may return a specific file
+      // or loop through the files array to send them one by one
+      const file = files[0]; // In this example, we use the first file
+
       // Set headers for file download
       res.set({
         'Content-Type': file.fileType,
         'Content-Disposition': `attachment; filename="${file.fileName}"`,
       });
-      res.send(file.fileData);
-    } else if (action === 'upload') {
+      return res.send(file.fileData);
+    }
+
+    // Handle file upload action
+    else if (action === 'upload') {
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
-      // Update or create new file with the provided orderID
+
+      // Update or insert new file
       const newFile = await File.findOneAndUpdate(
         { orderID },
         {
@@ -166,11 +162,14 @@ export const accessFileViaShareableLink = async (req, res) => {
         { new: true, upsert: true }
       );
       await newFile.save();
-      res.status(201).json({ message: 'File uploaded successfully', fileId: newFile._id });
-    } else {
-      res.status(400).json({ message: 'Invalid action. Use ?action=upload or ?action=download' });
+      return res.status(201).json({ message: 'File uploaded successfully', fileId: newFile._id });
+    }
+
+    // Handle invalid action
+    else {
+      return res.status(400).json({ message: 'Invalid action. Use ?action=upload or ?action=download' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error accessing file via shareable link', error: error.message });
+    return res.status(500).json({ message: 'Error accessing file via shareable link', error: error.message });
   }
 };

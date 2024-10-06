@@ -28,6 +28,6 @@ router.get('/list', listFiles);
 router.post('/shareable-link', generateShareableLink);
 
 // Route to access file via shareable link (upload or download)
-router.post('/access/:orderID', upload.single('file'), accessFileViaShareableLink);
+router.get('/access/:orderID', accessFileViaShareableLink);
 
 export default router;
