@@ -11,6 +11,8 @@ import './db/connectMongoDB.js'; // MongoDB connection file
 import multer from 'multer'; // For file handling
 import fileRoutes from './routes/files.routes.js';
 import { fileUpload, fileDownload } from './controllers/firebaseFile.controller.js';
+import { fileURLToPath} from 'url';
+import path from 'path';
 
 // Initialize express app
 const app = express();
@@ -68,6 +70,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 app.post('/fileUpload',upload.single("file"),fileUpload)
 app.get('/fileDownload',fileDownload)
+
+/*
+//To deploy Frontend and Backend in save Heroku App
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
+})
+*/
 
 
 // Start the server

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "heroku-postbuild": "cd Dashboard && npm install && npm run build"
   },
   "type": "module",
   "keywords": [],
