@@ -38,7 +38,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [orderIdToPass, setOrderIdToPass] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
-  console.log("students from parent ::::", student)
+  // console.log("students from parent ::::", student)
   const handleEditAssignment = (assignment) => {
     setCurrentAssignment(assignment);
     setOpenDialog(true);
@@ -119,7 +119,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
       >
         <LinearProgress 
           variant="determinate" 
-          value={assignment.assignmentProgress} 
+          value={Number(assignment.assignmentProgress)} 
           sx={{
             height: 10,
             borderRadius: 5,
@@ -237,13 +237,22 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                   <TableRow key={assignment.orderID}  >
                     {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment', 'assignmentGrade'].map((key) => (
                       <TableCell key={key}>
-                        <Tooltip
-                          title={renderTooltipContent(assignment)}
-                          arrow
-                          interactive
-                        >
-                          <span>{assignment[key]}</span>
-                        </Tooltip>
+                         <Tooltip
+                            title={key === 'assignmentProgress' ? renderTooltipContent(assignment) : ''}  // Conditionally render the tooltip content
+                            arrow
+                            interactive = {key === 'assignmentProgress'}
+                          >
+                            {/* Ensure that assignment[key] is rendered properly */}
+                            <span>
+                              {assignment[key] !== undefined
+                                ? key === 'assignmentPayment'
+                                  ? assignment[key] === 0
+                                    ? 'NOT PAID'
+                                    : 'PAID'
+                                  : assignment[key]
+                                : 'N/A'}
+                            </span>
+                          </Tooltip>
                       </TableCell>
                     ))}
                     <TableCell>

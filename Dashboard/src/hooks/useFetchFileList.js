@@ -10,7 +10,9 @@ const useFetchFileList = (orderID) => {
     useEffect(() => {
             const fetchFileList = async (orderID) => {                            
             try {
-                const res = await api.get(`/api/files/list/${orderID}`);
+                const res = await api.get(
+                  `/api/files/list/singleFile/${orderID}`
+                );
                 setFileList(res.data); // Update state with the degree data
                 setLoading(false);   // Mark as not loading anymore
             } catch (error) {

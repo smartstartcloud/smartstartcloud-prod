@@ -2,21 +2,22 @@ import useApi from "./useApi"
 
 const useSendAssignmentData = () => {
     const api = useApi()
-    const sendAssignment = async({studentID, moduleID, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline}) => {
-        console.log(studentID, moduleID, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline);
+    const sendAssignment = async({studentID, moduleID, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline, assignmentGrade}) => {
         try {
-            const res = await api.post(`/api/module/newAssignment`, {
-                studentID, 
-                moduleID, 
-                orderID, 
-                assignmentName, 
-                assignmentType, 
-                assignmentProgress, 
-                assignmentPayment, 
-                assignmentDeadline
-            }, {
-                headers: {"Content-Type": "application/json"}
-            })
+            const res = await api.post(
+              `/api/module/newAssignment`,
+              {
+                studentID,
+                moduleID,
+                orderID,
+                assignmentName,
+                assignmentType,
+                assignmentProgress,
+                assignmentPayment,
+                assignmentDeadline,
+                assignmentGrade,
+              }
+            );
 
             const data = await res.data;
             if (data.error) {

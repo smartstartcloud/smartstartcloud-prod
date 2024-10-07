@@ -4,6 +4,7 @@ import useApi from './useApi'
 const useSendStudentData = () => {
     const api = useApi()
     const sendStudent = async({degreeID, studentID, studentName, studentLogin, studentPassword, studentContact}) => {
+        
         try {
             const res = await api.post(`/api/degree/addStudentInDegree`, {
                 degreeID, studentID, studentName, studentLogin, studentPassword, studentContact

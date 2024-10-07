@@ -18,6 +18,7 @@ import useLogout from "./hooks/useLogout";
 import UploadDownload from "./devTest/uploadDownload";
 import StudentProfile from "./components/profilePages/StudentProfile";
 import AllDegree from "./scenes/dashboard/AllDegree";
+import GlobalUploadPage from "./devTest/GlobalUploadPage";
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
               <Route path="/allDegrees" element={authUser ? <AllDegree /> : <Navigate to='/login' />} />
 
               <Route path="/uploadPage" element={ <UploadDownload /> } />
+              <Route path="/globalLink" element={ <GlobalUploadPage /> } />
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
               <Route path="/signup" element={<SignupForm/>} />

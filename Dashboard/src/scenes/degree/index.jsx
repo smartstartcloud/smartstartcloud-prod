@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Box, CircularProgress, Grid, TextField, Button, useTheme, Typography, InputAdornment, IconButton, List, ListItem, ListItemText, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../components/Header';
@@ -14,9 +14,17 @@ const DegreeBoard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const {authUser} = useAuthContext()
+    const location = useLocation();
+    const state = location.state;    
+    console.log(state);
+    
 
     const { degree, loading, error } = useFetchSelectedDegreeData(degreeYear);
-    const { filteredDegree, yearName } = degree ? degreeFilterByAgent(degree, degreeYear, authUser._id) : {};
+    const { filteredDegree, yearName } = degree
+      ? state
+        ? degreeFilterByAgent(degree, degreeYear, authUser._id)
+        : degreeFilter(degree, degreeYear)
+      : {};
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);

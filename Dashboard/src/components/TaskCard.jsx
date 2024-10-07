@@ -7,15 +7,16 @@ import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
 import { useNavigate } from 'react-router-dom';
 
-const TaskCard = ({yearId, taskName, taskDetails, taskAgents}) => {
+const TaskCard = ({yearId, taskName, taskDetails, taskAgents, filterByAgent=null}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate()  
   const handleClick = () => {
-    navigate(`/task/${yearId}`);
+    navigate(`/task/${yearId}`, {state: filterByAgent});
   };
 
   const agentList = [...new Set(taskAgents.map((agent) => (`${agent.firstName} ${agent.lastName}`)))]
+  
   return (
     <Card onClick={handleClick} sx={{ maxWidth: 345, background: colors.grey[100] }} >
       <CardActionArea>

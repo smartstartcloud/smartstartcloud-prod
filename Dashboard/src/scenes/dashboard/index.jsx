@@ -81,6 +81,7 @@ const Dashboard = () => {
                 taskName={year.yearName}
                 taskDetails={year.degreeList.length}
                 taskAgents={year.agentList}
+                filterByAgent={true}
               />
             ))
         ) : (

@@ -1,55 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
-  Button, Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
-  Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal,
-  InputAdornment
-} from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+  Button,
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  TableContainer,
+  Table,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+  Grid,
+  TextField,
+  useTheme,
+  Modal,
+  InputAdornment,
+} from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DoneIcon from '@mui/icons-material/Done';
-import CloseIcon from '@mui/icons-material/Close';
-import { Controller, useForm } from 'react-hook-form';
-import Paper from '@mui/material/Paper';
-import useUploadFiles from '../hooks/useUploadFiles';
-import useFetchFileList from '../hooks/useFetchFileList';
+import DoneIcon from "@mui/icons-material/Done";
+import CloseIcon from "@mui/icons-material/Close";
+import { Controller, useForm } from "react-hook-form";
+import Paper from "@mui/material/Paper";
+import useUploadFiles from "../hooks/useUploadFiles";
+import useFetchFileList from "../hooks/useFetchFileList";
 
 const customScrollbarStyles = {
-  '&::-webkit-scrollbar': {
-    display: 'none', 
+  "&::-webkit-scrollbar": {
+    display: "none",
   },
-  '-ms-overflow-style': 'none', 
-  'scrollbar-width': 'none', 
+  "-ms-overflow-style": "none",
+  "scrollbar-width": "none",
 };
 
-const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
+const GlobalUploadPage = () => {
   const theme = useTheme();
+  const [orderID, setOrderID] = useState('');
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
   const [token, setToken] = useState(null);
-  const [orderID, setOrderID] = useState(orderIDFromParent);
-  const [shareLink, setShareLink] = useState('');
+  const [shareLink, setShareLink] = useState("");
   const [uploadStatus, setUploadStatus] = useState({});
-  const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
-  const { fileList } = useFetchFileList(orderID);
+  const { uploadFiles, downloadFiles } = useUploadFiles();
+//   const { fileList } = useFetchFileList(orderID);
 
   const { control } = useForm({});
 
-  useEffect(() => {
-    if (fileList) {
-      setExistingFiles(fileList);
-    }
-  }, [fileList]);
+//   useEffect(() => {
+//     if (fileList) {
+//       setExistingFiles(fileList);
+//     }
+//   }, [fileList]);
 
   const location = useLocation();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tokenFromURL = params.get("token");
-    setToken(tokenFromURL);
+    setOrderID(tokenFromURL);
   }, [location]);
+
+  console.log(orderID);
+  
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -95,34 +112,23 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     downloadFiles(file, true);
   };
 
-  const handleView = async (file) => {
-    downloadFiles(file, false);
-  };
-
-  const handleDelete = async (file) => {
-    try {
-      const response = await deleteFiles(file._id)
-      console.log(response.message);
-      
-    } catch (error) {
-      console.log(error);
-      
-    }
-  };
+//   const handleView = async (file) => {
+//     downloadFiles(file, false);
+//   };
 
   const handleCloseModal = () => {
-    setOpen(false);
+    // setOpen(false);
   };
 
-  const handleSharableLink = async () => {
-    try {
-      const response = await handleGenerateShareableLink(orderID);
-      setShareLink(response.shareableLink)
-      console.log(response);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+//   const handleSharableLink = async () => {
+//     try {
+//       const response = await handleGenerateShareableLink(orderID);
+//       setShareLink(response.shareableLink);
+//       console.log(response);
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   };
 
   const handleLinkCopy = () => {
     if (shareLink) {
@@ -138,7 +144,6 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   };
 
   return (
-    <Modal open={open} onClose={handleCloseModal}>
       <Container maxWidth="md" sx={{ marginTop: "50px" }}>
         <Card
           raised
@@ -189,7 +194,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              {/* <Grid item xs={12} sm={4}>
                 <Button
                   variant="contained"
                   onClick={handleSharableLink}
@@ -201,9 +206,9 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                 >
                   Generate Link
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
-            <Grid container spacing={2}>
+            {/* <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Controller
                   name="shareLink"
@@ -230,7 +235,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Box>
@@ -315,7 +320,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
               </TableContainer>
             )}
 
-            {existingFiles.length > 0 && (
+            {/* {existingFiles.length > 0 && (
               <Box mt={3}>
                 <Typography
                   variant="h5"
@@ -334,7 +339,6 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       <TableRow>
                         <TableCell align="center">File Name</TableCell>
                         <TableCell align="center">Download</TableCell>
-                        <TableCell align="center">Delete</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -360,26 +364,17 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                               <CloudDownloadIcon />
                             </IconButton>
                           </TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              color="error"
-                              onClick={() => handleDelete(file)}
-                            >
-                              <DeleteOutlineOutlinedIcon />
-                            </IconButton>
-                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
               </Box>
-            )}
+            )} */}
           </CardContent>
         </Card>
       </Container>
-    </Modal>
   );
 };
 
-export default FileUpload;
+export default GlobalUploadPage;
