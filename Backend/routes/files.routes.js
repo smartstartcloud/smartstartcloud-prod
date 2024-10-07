@@ -13,7 +13,7 @@ const upload = multer({ storage });
 router.post('/upload', upload.single('file'), uploadFile);
 
 // Route to download a file by ID
-router.post('/download', downloadFile);
+router.get('/download/:fileID', downloadFile);
 
 // Route to get a file list by ID
 router.get('/list/singleFile/:orderID', listFilesByOrderID);
