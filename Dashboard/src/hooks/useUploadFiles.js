@@ -11,10 +11,10 @@ const useUploadFiles = () => {
             //     url = `/share/upload?token=${token}`;  // Unrestricted route if token is available
             // }
             const res = await axios.post(`${process.env.REACT_APP_LOCALHOST}/api/files/upload`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+              headers: { 'Content-Type': 'multipart/form-data' },
+              maxContentLength: Infinity,
+              maxBodyLength: Infinity,
+          });
             const data = await res.data
             if (data.error) {
                 throw new Error(data.error);

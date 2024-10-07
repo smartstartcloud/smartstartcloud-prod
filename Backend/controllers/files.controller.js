@@ -22,7 +22,6 @@ export const uploadFile = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    forceMongo(File,"orderID");
     // Save the file data to MongoDB
     const newFile = new File({
       orderID: orderID, // Use orderID as token
