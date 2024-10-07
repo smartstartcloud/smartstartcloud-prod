@@ -2,12 +2,13 @@ import React from 'react';
 import { Card, CardContent, Typography, CardActionArea, Box } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const DegreeCard = ({ degreeYear, degreeId, degreeName, totalStudents, degreeAgent }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
+
 
     const handleClick = () => {
         navigate(`/task/${degreeYear}/${degreeId}`);

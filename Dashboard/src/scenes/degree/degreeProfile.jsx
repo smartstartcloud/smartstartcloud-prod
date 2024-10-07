@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 import {
-    Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button
+    Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button,
+    IconButton
 } from '@mui/material';
 import { tokens } from '../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import StudentForm from '../../components/forms/StudentForm';
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+
 
 const DegreeProfile = () => {
     const theme = useTheme();
@@ -22,11 +26,36 @@ const DegreeProfile = () => {
     const studentList = [...degreeStudentList];
 
     const columns = [
-        { field: 'studentID', headerName: 'Student ID', flex: 0.5 },
-        { field: 'studentName', headerName: 'Name', flex: 1 },
-        { field: 'studentLogin', headerName: 'Username', flex: 1 },
-        { field: 'studentPassword', headerName: 'Password', flex: 1 },
-        { field: 'studentContact', headerName: 'Contact Number', flex: 1 },
+      { field: "studentID", headerName: "Student ID", flex: 0.5 },
+      { field: "studentName", headerName: "Name", flex: 1 },
+      { field: "studentLogin", headerName: "Username", flex: 1 },
+      { field: "studentPassword", headerName: "Password", flex: 1 },
+      { field: "studentContact", headerName: "Contact Number", flex: 1 },
+      {
+        field: "actions",
+        headerName: "Actions",
+        flex: 1,
+        renderCell: (params) => (
+          <div>
+            <IconButton
+              onClick={(event) => {
+                event.stopPropagation(); // Prevents the row click event
+                handleDelete(params.row);
+              }}
+            >
+              <EditOutlinedIcon />
+            </IconButton>
+            <IconButton
+              onClick={(event) => {
+                event.stopPropagation(); // Prevents the row click event
+                handleEdit(params.row);
+              }}
+            >
+              <DeleteOutlineOutlinedIcon />
+            </IconButton>
+          </div>
+        ),
+      },
     ];
 
     // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
@@ -36,6 +65,14 @@ const DegreeProfile = () => {
         navigate(`/task/${degreeYear}/${degreeId}/${studentId}`, {
             state: {degreeModules}
         }); // Navigate to the student page
+    };
+
+    const handleEdit = (data) => {
+        console.log(data); 
+    }
+
+    const handleDelete = (data) => {
+      console.log(data);
     };
 
 

@@ -37,7 +37,7 @@ export async function addNewStudent(studentList) {
 export const addStudentInDegree = async (req,res)=>{
   try{
     const {degreeID,studentName,studentID,studentContact,studentLogin,studentPassword} = req.body
-
+    
     let currentStudent = await Student.findOne({studentID});
     if(currentStudent){
       return res.status(400).json({error:"Student ID already exists"});

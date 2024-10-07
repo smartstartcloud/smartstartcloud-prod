@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React from 'react'
+import useApi from './useApi';
 
 const useUploadFiles = () => {
+  const api = useApi()
     const uploadFiles = async(formData) => {
         try {            
             // let url = '/upload';  // Default restricted route
@@ -104,8 +106,43 @@ const useUploadFiles = () => {
             throw new Error(error.message);
         }
     };
+    const deleteFiles = async (fileID) => {
+      try {
+        // let url = '/upload';  // Default restricted route
+        // if (token) {
+        //     url = `/share/upload?token=${token}`;  // Unrestricted route if token is available
+        // }
+        const res = await api.delete(`/api/files/delete/${fileID}`);
+        const data = await res.data;
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        console.log("File Deleted successfully", data);
+        return data;
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 404) {
+            console.log(error.response.data.message);
+            throw new Error("File Does not exist.");
+          } else if (error.response.status === 400) {
+            console.log("Error: Order ID does not exists");
+            throw new Error("Order ID does not exist");
+          } else if (error.response.status === 500) {
+            console.log("Error: Internal Server Error");
+            throw new Error("Internal Server Error");
+          } else {
+            console.log("Error: ", error.response.data.error);
+            throw new Error(error.response.data.error); // Re-throw any other error
+          }
+        } else {
+          console.log("Network or other error", error);
+          throw new Error("Something went wrong");
+        }
+      }
+    };
 
-    return {uploadFiles, downloadFiles, handleGenerateShareableLink}
+
+    return {uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles}
 }
 
 export default useUploadFiles

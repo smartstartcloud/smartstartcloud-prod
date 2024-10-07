@@ -34,7 +34,7 @@ const StudentProfile = () => {
     const { fetchAssignmentList } = useFetchAssignmentList();
 
     const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
-    console.log("student :::", student);
+    // console.log("student :::", student);
     
     const { degreeModules } = location.state || [];
 
@@ -67,6 +67,8 @@ const StudentProfile = () => {
             setListError(true);
             setListErrorMessage(e.message);
         } finally {
+            console.log(assignmentList);
+            
             setListLoading(false);
         }
     };
@@ -256,7 +258,7 @@ const StudentProfile = () => {
                 </DialogTitle>
                 <DialogContent sx={{ padding: 0 }}>
                     <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
-                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} editMode={false} />
+                        <AssignmentForm studentData={student._id} degreeModulesData={degreeModules} editMode={false} />
                     </Box>
                 </DialogContent>
             </Dialog>

@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,7 +32,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const [orderID, setOrderID] = useState(orderIDFromParent);
   const [shareLink, setShareLink] = useState('');
   const [uploadStatus, setUploadStatus] = useState({});
-  const { uploadFiles, downloadFiles, handleGenerateShareableLink } = useUploadFiles();
+  const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
   const { fileList } = useFetchFileList(orderID);
 
   const { control } = useForm({});
@@ -96,6 +97,17 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
   const handleView = async (file) => {
     downloadFiles(file, false);
+  };
+
+  const handleDelete = async (file) => {
+    try {
+      const response = await deleteFiles(file._id)
+      console.log(response.message);
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
   };
 
   const handleCloseModal = () => {
@@ -208,10 +220,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <IconButton
-                              onClick={handleLinkCopy}
-                              edge="end"
-                            >
+                            <IconButton onClick={handleLinkCopy} edge="end">
                               <ContentCopyIcon />
                             </IconButton>
                           </InputAdornment>
@@ -325,6 +334,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       <TableRow>
                         <TableCell align="center">File Name</TableCell>
                         <TableCell align="center">Download</TableCell>
+                        <TableCell align="center">Delete</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -348,6 +358,14 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                               onClick={() => handleDownload(file)}
                             >
                               <CloudDownloadIcon />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              color="error"
+                              onClick={() => handleDelete(file)}
+                            >
+                              <DeleteOutlineOutlinedIcon />
                             </IconButton>
                           </TableCell>
                         </TableRow>

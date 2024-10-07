@@ -13,15 +13,15 @@ const studentSchema = new mongo.Schema({
     },
     studentContact: {
         type: String,
-        required: true
+        // required: true
     },
     studentLogin: {
         type: String,
-        required: true,
+        // required: true,
     },
     studentPassword: {
         type: String,
-        required: true
+        // required: true
     },
     studentAssignment: {
         type: Array,

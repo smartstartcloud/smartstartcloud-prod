@@ -31,9 +31,9 @@ const StudentForm = ({open, setOpen, degreeID}) => {
         const newErrors = {};
         if (!newStudent.studentID) newErrors.studentID = 'Student ID is required';
         if (!newStudent.studentName) newErrors.studentName = 'Student Name is required';
-        if (!newStudent.studentLogin) newErrors.studentLogin = 'User Name is required';
-        if (!newStudent.studentPassword) newErrors.studentPassword = 'Password is required';
-        if (!newStudent.studentContact) newErrors.studentContact = 'Phone Number is required';
+        // if (!newStudent.studentLogin) newErrors.studentLogin = 'User Name is required';
+        // if (!newStudent.studentPassword) newErrors.studentPassword = 'Password is required';
+        // if (!newStudent.studentContact) newErrors.studentContact = 'Phone Number is required';
         return newErrors;
     };
 
@@ -68,6 +68,7 @@ const StudentForm = ({open, setOpen, degreeID}) => {
             setformLoading(false)
             setFormErrorMessage(e.message)
             console.log("Error submitting form: ", e.message)
+            setOpen(false)
         }
         setNewStudent({
             studentID: '',

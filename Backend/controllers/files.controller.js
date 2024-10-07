@@ -77,6 +77,9 @@ export const downloadFile = async (req, res) => {
 export const deleteFile = async (req, res) => {
   try {
     const fileId = req.params.id;
+    if (!fileId) {
+      return res.status(400).json({ message: "File ID not found" });
+    }
 
     // Find the file by ID and delete it
     const deletedFile = await File.findByIdAndDelete(fileId);
@@ -84,7 +87,7 @@ export const deleteFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    res.json({ message: 'File deleted successfully' });
+    res.status(200).json({ message: 'File deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting file', error: error.message });
   }
