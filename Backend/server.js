@@ -8,12 +8,16 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import './db/connectMongoDB.js'; // MongoDB connection file
+import mongoose from 'mongoose'; // For MongoDB operations
 import multer from 'multer'; // For file handling
 import fileRoutes from './routes/files.routes.js';
-import { fileUpload, fileDownload } from './controllers/firebaseFile.controller.js';
 
 // Initialize express app
 const app = express();
+
+// Set up multer for file uploads (store files in memory as a buffer)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Token checking middleware for restricted uploads
 // const verifyShareableToken = (req, res, next) => {
@@ -52,14 +56,6 @@ app.use("/api/degree", degreeRoutes);
 app.use("/api/module", moduleRoutes);
 app.use('/newAccessToken', newAccessToken);
 app.use('/api/files', fileRoutes);
-
-
-//Test File Firebase
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-app.post('/fileUpload',upload.single("file"),fileUpload)
-app.get('/fileDownload',fileDownload)
-
 
 // Start the server
 app.listen(process.env.PORT, () => {
