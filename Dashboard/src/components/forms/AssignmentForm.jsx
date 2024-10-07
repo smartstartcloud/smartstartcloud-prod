@@ -10,23 +10,23 @@ import useSendAssignmentData from '../../hooks/useSendAssignmentData';
 import MuiAlert from '@mui/material/Alert';
 
 const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const [formSaved, setFormSaved] = useState(false);
-    const [formError, setFormError] = useState(false);
-    const [formErrorMessage, setFormErrorMessage] = useState('');
-    const [formLoading, setformLoading] = useState(false);
+ const theme = useTheme();
+ const colors = tokens(theme.palette.mode);
+ const [formSaved, setFormSaved] = useState(false);
+ const [formError, setFormError] = useState(false);
+ const [formErrorMessage, setFormErrorMessage] = useState('');
+ const [formLoading, setformLoading] = useState(false);
 
-    const { sendAssignment } = useSendAssignmentData()
+ const { sendAssignment } = useSendAssignmentData()
 
-    const { control, handleSubmit, setError, clearErrors, reset, formState: { errors, touchedFields } } = useForm({
+ const { control, handleSubmit, setError, clearErrors, reset, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
             studentID: studentData,
             moduleID: '',
             orderID: '',
             assignmentName: '',
             assignmentType: '',
-            assignmentProgress: '',
+            assignmentProgress: 'IN PROGRESS',
             assignmentPayment: 0,
             assignmentDeadline: '',
             assignmentGrade: ''
@@ -42,7 +42,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                     orderID: studentData?.orderID || '',
                     assignmentName: studentData?.assignmentName || '',
                     assignmentType: studentData?.assignmentType || '',
-                    assignmentProgress: studentData?.assignmentProgress || '',
+                    assignmentProgress: studentData?.assignmentProgress || 'IN PROGRESS',
                     assignmentPayment: studentData?.assignmentPayment || 0,
                     assignmentDeadline: studentData?.assignmentDeadline || '',
                     assignmentGrade: studentData?.assignmentGrade || ''
@@ -54,7 +54,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                 orderID: '',
                 assignmentName: '',
                 assignmentType: '',
-                assignmentProgress: '',
+                assignmentProgress: 'IN PROGRESS',
                 assignmentPayment: 0,
                 assignmentDeadline: '',
                 assignmentGrade: '',
@@ -63,29 +63,29 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
         }
     }, [studentData, studentData, reset, editMode]);
 
-    const onSubmitAssignment = async (data) => {
-        setformLoading(true);
-        try{
-            const response = await sendAssignment(data)
-            console.log('Form Data:', data);
-            console.log('Response Data:', response);
-            setFormSaved(true);
-            setformLoading(false);
-        }catch (e) {
-            setFormError(true);
-            setformLoading(false)
-            setFormErrorMessage(e.message)
-            console.log("Error submitting form: ", e.message)
+        const onSubmitAssignment = async (data) => {
+            setformLoading(true);
+            try{
+                const response = await sendAssignment(data)
+                console.log('Form Data:', data);
+                console.log('Response Data:', response);
+                setFormSaved(true);
+                setformLoading(false);
+            }catch (e) {
+                setFormError(true);
+                setformLoading(false)
+                setFormErrorMessage(e.message)
+                console.log("Error submitting form: ", e.message)
+            }
         }
-    }
 
-    const handleAssignmentClose = () => {
-        setFormSaved(false);
-    };
+        const handleAssignmentClose = () => {
+            setFormSaved(false);
+        };
 
-    const handleAssignmentCloseError = () => {
-        setFormError(false);
-    };
+        const handleAssignmentCloseError = () => {
+            setFormError(false);
+        };
 
     return (
       <Box
@@ -286,45 +286,34 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <Controller
-                name="assignmentProgress"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Assignment Progress"
-                    variant="outlined"
-                    fullWidth
-                    // required
-                    type="number"
-                    sx={{ mb: 2 }}
-                    // error={
-                    //   !!touchedFields.assignmentProgress &&
-                    //   !!errors.assignmentProgress
-                    // }
-                    // helperText={
-                    //   touchedFields.assignmentProgress &&
-                    //   errors.assignmentProgress
-                    //     ? errors.assignmentProgress.message
-                    //     : null
-                    // }
-                    // onBlur={(e) => {
-                    //   field.onBlur();
-                    //   if (!field.value) {
-                    //     setError("assignmentProgress", {
-                    //       type: "manual",
-                    //       message: "Assignment Progress is required",
-                    //     });
-                    //   } else {
-                    //     clearErrors("assignmentProgress");
-                    //   }
-                    // }}
+              <Grid item xs={12} sm={3}>
+                  <Controller
+                      name="assignmentProgress"
+                      control={control}
+                      render={({ field }) => (
+                          <Select
+                              {...field}
+                              variant="outlined"
+                              fullWidth
+                              sx={{ mb: 2 }}
+                              error={!!touchedFields.assignmentProgress && !!errors.assignmentProgress}
+                              helperText={
+                                  touchedFields.assignmentProgress &&
+                                  errors.assignmentProgress
+                                      ? errors.assignmentProgress.message
+                                      : null
+                              }
+                          >
+                              <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
+                              <MenuItem value="COMPLETE">COMPLETE</MenuItem>
+                          </Select>
+                      )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
+              </Grid>
+
+
+
+              <Grid item xs={12} sm={3}>
               <Controller
                 name="assignmentPayment"
                 control={control}
