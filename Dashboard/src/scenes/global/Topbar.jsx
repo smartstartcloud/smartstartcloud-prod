@@ -9,6 +9,7 @@ import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
 import { useAuthContext } from '../../context/AuthContext'
 import DynamicBreadcrumbs from '../../components/DynamicBreadcrumbs'
+// import Logo from '../global/'
 
 const Topbar = ({ logOut }) => {
   const theme = useTheme();
@@ -22,7 +23,7 @@ const Topbar = ({ logOut }) => {
           <Box display="flex" gap="20px">
             {/* Logo */}
             <Box display="flex" alignItems="center">
-              Logo
+            {/* <img src={Logo} alt="SmartStart Logo" style={{ height: '40px' }} /> */}
             </Box>
           </Box>
           <Box display="flex" gap="10px" alignItems="center">
