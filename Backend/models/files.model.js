@@ -16,8 +16,12 @@ const fileSchema = new mongoose.Schema({
     
   orderID:{
     type: String,
-    required: true
-},
+    required: true},
+    
+  fileUrl: { 
+    type: String }
+    //required: true },
+   
 });
 
 const File = fileDB.model("File", fileSchema,"File");
