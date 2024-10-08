@@ -44,6 +44,15 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
 */
 
+//CSP Configuration
+app.use(helmet({
+  contentSecurityPolicy: {
+      directives: {
+          defaultSrc: ["'self'"],
+          connectSrc: ["'self'", "https://www.smartstart.cloud"]
+      }
+  }
+}));
 
 // Middleware
 app.use(cookieParser());
