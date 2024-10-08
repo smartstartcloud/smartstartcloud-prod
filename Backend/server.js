@@ -49,7 +49,7 @@ app.use(helmet({
   contentSecurityPolicy: {
       directives: {
           defaultSrc: ["'self'"],
-          connectSrc: ["'self'", "https://www.smartstart.cloud"]
+          connectSrc: ["'self'", "https://www.smartstart.cloud", "https://smartstart.cloud", "www.smartstart.cloud"]
       }
   }
 }));
