@@ -1,5 +1,6 @@
 import ModuleAssignment from '../models/moduleAssignment.models.js';
 import Assignment from '../models/assignment.models.js';
+import Degree from '../models/degree.models.js';
 import Module from '../models/module.models.js'; // Import the new Module model
 
 export const newAssignment = async (req, res) => {
@@ -16,51 +17,45 @@ export const newAssignment = async (req, res) => {
       assignmentGrade
     } = req.body;
 
-    const module = await ModuleAssignment.findOne({ moduleID, studentID });
-    if (module) {
-      if (module.orderID.includes(orderID)) {
-        res.status(400).json({ error: "Order ID already exists" });
-      } else {
-        const createdAssignment = await createNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade);
+    // Step 1: Fetch the degree associated with the moduleID
+    const degree = await Degree.findOne({ degreeModules: { $elemMatch: { moduleCode: moduleID } } });
+    
+    if (!degree) {
+      return res.status(404).json({ error: "Degree not found" });
+    }
 
-        await ModuleAssignment.findOneAndUpdate(
-          { _id: module._id },
-          { $push: { orderID: createdAssignment.orderID } }
-        ).then(result => {
-          if (result.matchedCount === 0) {
-            console.log("No document found with the given _id.");
-          } else {
-            // Add assignment to the Module model
-            await addAssignmentToModule(moduleID, createdAssignment);
-            res.status(200).json({ value: "Assignment added successfully" });
-          }
-        }).catch(err => {
-          console.error("Error updating the document:", err);
-        });
-      }
-    } else {
-      try {
-        const createdAssignment = await createNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade);
-        const newAssignment = new ModuleAssignment({
+    const studentList = degree.degreeStudentList; // Array of student IDs
+
+    // Step 2: Create the new assignment
+    const createdAssignment = await createNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade);
+
+    // Step 3: Update ModuleAssignment for each student in the degree
+    await Promise.all(studentList.map(async (studentID) => {
+      let moduleAssignment = await ModuleAssignment.findOne({ moduleID, studentID });
+
+      if (moduleAssignment) {
+        // If student already has the module, add the new assignment
+        if (!moduleAssignment.orderID.includes(orderID)) {
+          await ModuleAssignment.findOneAndUpdate(
+            { _id: moduleAssignment._id },
+            { $push: { orderID: createdAssignment.orderID } }
+          );
+        }
+      } else {
+        // Create a new ModuleAssignment if it doesn't exist for the student
+        const newModuleAssignment = new ModuleAssignment({
           studentID,
           moduleID,
           orderID: createdAssignment.orderID
         });
-        if (newAssignment) {
-          await newAssignment.save();
-          // Add assignment to the Module model
-          await addAssignmentToModule(moduleID, createdAssignment);
-          res.status(200).json({ value: "Assignment added successfully" });
-        }
-      } catch (error) {
-        if (error.code == 11000) {
-          res.status(400).json({ error: "Order ID already exists" });
-        } else {
-          console.log(error);
-          res.status(500).json({ error: "Internal Server Error" });
-        }
+        await newModuleAssignment.save();
       }
-    }
+    }));
+
+    // Step 4: Also add the assignment to the Module model (existing functionality)
+    await addAssignmentToModule(moduleID, createdAssignment);
+
+    res.status(200).json({ message: "Assignment added and propagated to all students in the degree successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
