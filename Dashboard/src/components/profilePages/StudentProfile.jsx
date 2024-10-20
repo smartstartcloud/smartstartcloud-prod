@@ -29,6 +29,7 @@ const StudentProfile = () => {
     const colors = tokens(theme.palette.mode);
     const location = useLocation();
     const { studentId } = useParams();
+    
     const { student, loading, error } = useFetchSingleStudentData(studentId);
 
     const { fetchAssignmentList } = useFetchAssignmentList();

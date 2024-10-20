@@ -19,6 +19,7 @@ import UploadDownload from "./devTest/uploadDownload";
 import StudentProfile from "./components/profilePages/StudentProfile";
 import AllDegree from "./scenes/dashboard/AllDegree";
 import GlobalUploadPage from "./devTest/GlobalUploadPage";
+import ModuleProfile from "./components/profilePages/ModuleProfile";
 
 
 function App() {
@@ -54,7 +55,8 @@ function App() {
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' /> } />
               <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
-              <Route path="/task/:degreeYear/:degreeId/:studentId" element={authUser ? <StudentProfile /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser ? <StudentProfile /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear/:degreeId/module/:moduleId" element={authUser ? <ModuleProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/task' />} />
 
             </Routes>
