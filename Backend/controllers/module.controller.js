@@ -6,6 +6,7 @@ import Module from '../models/module.models.js'; // Import the new Module model
 export const newAssignment = async (req, res) => {
   try {
     const {
+      degreeID, // Accepting degreeID from the form
       studentID, 
       moduleID, 
       orderID, 
@@ -17,8 +18,8 @@ export const newAssignment = async (req, res) => {
       assignmentGrade
     } = req.body;
 
-    // Step 1: Fetch the degree associated with the moduleID
-    const degree = await Degree.findOne({ degreeModules: { $elemMatch: { moduleCode: moduleID } } });
+    // Step 1: Fetch the degree based on degreeID or degreeModules
+    const degree = await Degree.findOne({ _id: degreeID });
     
     if (!degree) {
       return res.status(404).json({ error: "Degree not found" });
