@@ -1,6 +1,6 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import {Routes, Route, Navigate, useLocation} from "react-router-dom";
+import {Routes, Route, Navigate, useLocation, useNavigate} from "react-router-dom";
 
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar"
@@ -20,13 +20,25 @@ import StudentProfile from "./components/profilePages/StudentProfile";
 import AllDegree from "./scenes/dashboard/AllDegree";
 import GlobalUploadPage from "./devTest/GlobalUploadPage";
 import ModuleProfile from "./components/profilePages/ModuleProfile";
+import { useEffect, useState } from "react";
 
 
 function App() {
   const [theme, colorMode] = useMode()
-  const {authUser } = useAuthContext()
+  const {authUser, isAdmin } = useAuthContext()
   const { logout } = useLogout()
   const location = useLocation();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const hostname = window.location.hostname;
+  
+    if (hostname === "portal.abc.com" || hostname === "portal.localhost") {
+      // Redirect to the /portal route for both production and development subdomains
+      navigate("/portal");
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     logout().then(r => console.log("User logged out successfully"))
@@ -49,7 +61,7 @@ function App() {
               <Route path="/globalLink" element={ <GlobalUploadPage /> } />
               <Route path="/welcome" element={authUser ? <Welcome />: <Navigate to='/login' />} />
               <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword/>} />
-              <Route path="/signup" element={<SignupForm/>} />
+              <Route path="/signup" element={isAdmin ? <SignupForm/> : <Navigate to='/' />} />
               <Route path="/login" element={authUser ? <Navigate to='/' /> : <LoginForm/>} />
               <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' /> } />
               <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' /> } />

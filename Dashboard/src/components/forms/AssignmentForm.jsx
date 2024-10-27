@@ -61,7 +61,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
             });
             }
         }
-    }, [studentData, studentData, reset, editMode]);
+    }, [studentData, reset, editMode]);
 
         const onSubmitAssignment = async (data) => {
             setformLoading(true);
@@ -189,7 +189,6 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                     label="Order ID"
                     variant="outlined"
                     fullWidth
-                    required
                     sx={{ mb: 2 }}
                     error={!!touchedFields.orderID && !!errors.orderID}
                     helperText={
@@ -197,17 +196,17 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                         ? errors.orderID.message
                         : null
                     }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("orderID", {
-                          type: "manual",
-                          message: "Order ID is required",
-                        });
-                      } else {
-                        clearErrors("orderID");
-                      }
-                    }}
+                    // onBlur={(e) => {
+                    //   field.onBlur();
+                    //   if (!field.value) {
+                    //     setError("orderID", {
+                    //       type: "manual",
+                    //       message: "Order ID is required",
+                    //     });
+                    //   } else {
+                    //     clearErrors("orderID");
+                    //   }
+                    // }}
                   />
                 )}
               />
