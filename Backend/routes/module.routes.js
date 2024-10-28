@@ -1,7 +1,7 @@
 import express from "express"
 import {newAssignment,getAssignment} from '../controllers/module.controller.js'
 const router = express.Router();
-import {authenticate,adminAllowed} from '../middlewares/protect.js'
+import {authenticate} from '../middlewares/protect.js'
 
 router.use(authenticate);
 router.post("/newAssignment",newAssignment);

@@ -2,11 +2,12 @@ import ModuleAssignment from '../models/moduleAssignment.models.js';
 import Assignment from '../models/assignment.models.js';
 import Degree from '../models/degree.models.js';
 import Module from '../models/module.models.js'; // Import the new Module model
+import mongoose from 'mongoose';
+
 
 export const newAssignment = async (req, res) => {
   try {
-    const {
-      studentID, 
+    const { 
       moduleID, 
       orderID, 
       assignmentName, 
@@ -24,7 +25,7 @@ export const newAssignment = async (req, res) => {
       return res.status(404).json({ error: "Degree not found" });
     }
 
-    const studentList = degree.degreeStudentList; // Array of student IDs
+    const studentList = degree.degreeStudentList;
 
     // Step 2: Create the new assignment
     const createdAssignment = await createNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade);
@@ -34,11 +35,20 @@ export const newAssignment = async (req, res) => {
       let moduleAssignment = await ModuleAssignment.findOne({ moduleID, studentID });
 
       if (moduleAssignment) {
-        // If student already has the module, add the new assignment
-        if (!moduleAssignment.orderID.includes(orderID)) {
+        // If student already has the module, add the new assignment with additional fields
+        if (!moduleAssignment.assignments.some(assignment => assignment.orderID === orderID)) {
           await ModuleAssignment.findOneAndUpdate(
             { _id: moduleAssignment._id },
-            { $push: { orderID: createdAssignment.orderID } }
+            { 
+              $push: { 
+                assignments: {
+                  orderID: createdAssignment.orderID,
+                  assignmentName: createdAssignment.assignmentName,
+                  assignmentType: createdAssignment.assignmentType,
+                  assignmentDeadline: createdAssignment.assignmentDeadline,
+                }
+              } 
+            }
           );
         }
       } else {
@@ -46,7 +56,14 @@ export const newAssignment = async (req, res) => {
         const newModuleAssignment = new ModuleAssignment({
           studentID,
           moduleID,
-          orderID: createdAssignment.orderID
+          assignments: [
+            {
+              orderID: createdAssignment.orderID,
+              assignmentName: createdAssignment.assignmentName,
+              assignmentType: createdAssignment.assignmentType,
+              assignmentDeadline: createdAssignment.assignmentDeadline,
+            }
+          ]
         });
         await newModuleAssignment.save();
       }
@@ -57,30 +74,37 @@ export const newAssignment = async (req, res) => {
 
     res.status(200).json({ message: "Assignment added and propagated to all students in the degree successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("Error in newAssignment:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const getAssignment = async (req, res) => {
   try {
     const { studentID, moduleID } = req.params;
 
-    const module = await ModuleAssignment.findOne({ moduleID, studentID }).populate({
+    // Ensure studentID and moduleID are ObjectId if required
+    const moduleAssignment = await ModuleAssignment.findOne({
+      moduleID: new mongoose.Types.ObjectId(moduleID),
+      studentID: new mongoose.Types.ObjectId(studentID)
+    }).populate({
       path: 'orderID',
       model: 'Assignment',
       foreignField: 'orderID'
     });
-    if (module) {
-      res.status(200).json(module.orderID);
+
+    if (moduleAssignment) {
+      res.status(200).json(moduleAssignment.orderID);
     } else {
-      res.status(400).json({ error: "No module found" });
+      res.status(400).json({ error: "No module found for the provided student and module" });
     }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Helper function to create a new assignment
 async function createNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade) {

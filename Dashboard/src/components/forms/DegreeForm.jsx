@@ -114,18 +114,18 @@ const DegreeForm = () => {
       console.log("Form Data:", data);
 
     setLoading(true);
-    // try {
-    //   const response = await sendDegreeForm(data);
-    //   console.log("Form Data:", data);
-    //   // console.log('Response Data:', response);
-    //   setFormSaved(true);
-    //   setLoading(false);
-    // } catch (e) {
-    //   setFormError(true);
-    //   setLoading(false);
-    //   setErrorMessage(e.message);
-    //   console.log("Error submitting form: ", e.message);
-    // }
+    try {
+      const response = await sendDegreeForm(data);
+      console.log("Form Data:", data);
+      // console.log('Response Data:', response);
+      setFormSaved(true);
+      setLoading(false);
+    } catch (e) {
+      setFormError(true);
+      setLoading(false);
+      setErrorMessage(e.message);
+      console.log("Error submitting form: ", e.message);
+    }
   };
 
   const handleClose = () => {
