@@ -5,12 +5,12 @@ const orderSchema = new mongoose.Schema({
   orderID: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
-  referenceNo: {
+  referenceNumber: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const Order = fileDB.model('Order', orderSchema);

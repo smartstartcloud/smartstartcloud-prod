@@ -16,13 +16,13 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    const { userId, role } = extractDataFromToken(token);
-    // Update authUser with the extracted data
-    if (role === "admin") {
-      setIsAdmin(true);
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   const { userId = null, role = null } = extractDataFromToken(token) || {};
+  //   // Update authUser with the extracted data
+  //   if (role === "admin") {
+  //     setIsAdmin(true);
+  //   }
+  // }, [token]);
   return (
     <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin }}>
       {children}

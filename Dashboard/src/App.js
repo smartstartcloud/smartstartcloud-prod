@@ -21,6 +21,7 @@ import AllDegree from "./scenes/dashboard/AllDegree";
 import GlobalUploadPage from "./devTest/GlobalUploadPage";
 import ModuleProfile from "./components/profilePages/ModuleProfile";
 import { useEffect, useState } from "react";
+import PortalIndex from "./components/profilePages/PortalIndex";
 
 
 function App() {
@@ -34,7 +35,10 @@ function App() {
   useEffect(() => {
     const hostname = window.location.hostname;
   
-    if (hostname === "portal.abc.com" || hostname === "portal.localhost") {
+    if (
+      (hostname === "portal.startstart.cloud" || hostname === "portal.localhost") &&
+      !location.pathname.startsWith("/portal")
+    ) {
       // Redirect to the /portal route for both production and development subdomains
       navigate("/portal");
     }
@@ -53,6 +57,7 @@ function App() {
           <main className="content">
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
+              <Route path="/portal" element={authUser ? <PortalIndex /> : <Navigate to='/login' />} />
 
               <Route path="/task" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser ? <AllDegree /> : <Navigate to='/login' />} />

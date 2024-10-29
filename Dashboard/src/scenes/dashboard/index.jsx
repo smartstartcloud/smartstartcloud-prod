@@ -1,16 +1,11 @@
 import { Box, Typography } from '@mui/material'
 import Header from '../../components/Header'
-import useToken from '../../hooks/useToken'
 import TaskCard from '../../components/TaskCard'
 // import {degree } from '../../data/mockData'
 import { yearFilter } from '../../utils/yearFilter'
-import useFetchAllDegreeData from '../../hooks/useFetchAllDegreeData'
 
 // Test
-import { jwtDecode } from 'jwt-decode';
-import DynamicBreadcrumbs from '../../components/DynamicBreadcrumbs'
 import { useAuthContext } from '../../context/AuthContext'
-import { useEffect } from 'react'
 import useFetchAgentFilteredDegreeData from '../../hooks/useFetchAgentFilteredDegreeData'
 // Test
 
