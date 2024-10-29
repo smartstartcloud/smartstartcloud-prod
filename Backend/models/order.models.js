@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {infoDB} from '../db/connectMongoDB.js';
+import {fileDB} from '../db/connectMongoDB.js';
 
 const orderSchema = new mongoose.Schema({
   orderID: {
@@ -13,5 +13,5 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = fileDB.model('Order', orderSchema);
 export default Order;
