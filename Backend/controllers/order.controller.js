@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Create a new order with orderID and referenceNo
+// Create a new order with orderID and referenceNumber
 export const newOrder = async (req, res) => {
   const {orderIDList} = req.body
   const orderLog = {
@@ -51,9 +51,18 @@ export const newOrder = async (req, res) => {
 // Retrieve all orders and allow file upload under each orderID
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}, 'orderID referenceNo'); // Fetch all orders with only orderID and referenceNo fields
+    const { refNo } = req.query; // Get refNo from query parameters
+    // If refNo is provided, filter by referenceNumber; otherwise, fetch all orders
+    const orders = refNo
+      ? await Order.find({ referenceNumber: refNo }, "orderID referenceNumber")
+      : await Order.find({}, "orderID referenceNumber");
 
-    res.status(200).json({ orders });
+    // If refNo is provided but no matching order is found, send a 404 response
+    if (refNo && orders.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });

@@ -21,7 +21,8 @@ import AllDegree from "./scenes/dashboard/AllDegree";
 import GlobalUploadPage from "./devTest/GlobalUploadPage";
 import ModuleProfile from "./components/profilePages/ModuleProfile";
 import { useEffect, useState } from "react";
-import PortalIndex from "./components/profilePages/PortalIndex";
+import PortalIndex from "./components/Portal/PortalIndex";
+import PortalAll from "./components/Portal/PortalAll";
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
               <Route path="/portal" element={authUser ? <PortalIndex /> : <Navigate to='/login' />} />
+              <Route path="/portal/all" element={authUser ? <PortalAll /> : <Navigate to='/login' />} />
 
               <Route path="/task" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser ? <AllDegree /> : <Navigate to='/login' />} />

@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import Header from "../Header";
 // import {degree } from '../../data/mockData'
 import { yearFilter } from "../../utils/yearFilter";
 
