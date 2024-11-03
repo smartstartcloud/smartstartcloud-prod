@@ -3,6 +3,41 @@ import Assignment from '../models/assignment.models.js';
 import Degree from '../models/degree.models.js';
 import Module from '../models/module.models.js';
 import mongoose from 'mongoose';
+import { newAssignmentDynamic } from './assignment.controllers.js';
+
+// New helper function to add the assignment to the Module model
+export const addNewModule = async(moduleList) =>  {
+  try {
+    // Use Promise.all to save all Module concurrently    
+    const addedModuleIDs = await Promise.all(
+      moduleList.map(async (moduleData) => {
+        // Finding the current Module in database to see if the ID already exists in database;
+        let currentModule = await Module.findOne({
+          moduleCode: moduleData.moduleCode,
+        });
+        if (currentModule) {          
+          return currentModule._id;
+        } else {
+          // Create a new Student instance
+          const newModule = new Module({
+            moduleName: moduleData.moduleName,
+            moduleCode: moduleData.moduleCode,
+            moduleAssignments: await newAssignmentDynamic(moduleData.assignmentList),
+          });
+
+          // Save the student to the database and return the saved module's ObjectID
+          const savedModule = await newModule.save();
+          return savedModule._id;
+          
+        }
+      })
+    );    
+    return addedModuleIDs; // Return the array of added student IDs
+  } catch (error) {
+    console.error("Error adding Modules:", error);
+    throw new Error("Failed to add Modules");
+  }
+}
 
 // Helper function to create a new assignment
 async function moduleCreateNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade) {
@@ -49,13 +84,9 @@ async function moduleAddAssignmentToModule(moduleID, assignment) {
 export const newAssignment = async (req, res) => {
   try {
     const newAssignment = new Assignment({
-      orderID,
       assignmentName,
       assignmentType,
       assignmentDeadline,
-      assignmentProgress,
-      assignmentPayment,
-      assignmentGrade,
       assignmentFile: [] // Default to an empty array
     });
 

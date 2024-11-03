@@ -11,23 +11,9 @@ const moduleSchema = new mongo.Schema({
         required: true 
     },
     moduleAssignments: [{
-        assignmentID: {
-            type: mongo.Schema.Types.ObjectId,
-            ref: "Assignment",
-            required: true
-        },
-        assignmentName: {
-            type: String,
-            required: true
-        },
-        assignmentType: {
-            type: String,
-            required: true
-        },
-        assignmentDeadline: {
-            type: String,
-            required: true
-        }
+        type: mongo.Schema.Types.ObjectId,
+        ref: "Assignment",
+        required: true
     }]
 });
 

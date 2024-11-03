@@ -2,12 +2,12 @@ import Degree from '../models/degree.models.js';
 import Student from '../models/student.models.js';
 import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
-import { newAssignment } from './module.controller.js'; // Import newAssignment
+import { addNewModule, newAssignment } from './module.controller.js'; // Import newAssignment
 
 export const newDegree = async (req, res) => {
   try {
     const { degreeID, degreeName, degreeYear, degreeAgent, degreeStudentList, degreeModules } = req.body;
-
+  
     // Step 1: Create Degree
     const newDegree = new Degree({
       degreeID,
@@ -15,27 +15,28 @@ export const newDegree = async (req, res) => {
       degreeYear,
       degreeAgent,
       degreeStudentList: await addNewStudent(degreeStudentList),
-      degreeModules
+      degreeModules: await addNewModule(degreeModules)
     });
-
+    console.log(newDegree);
+    
     // Step 2: Save Degree and Create Assignment
     if (newDegree) {
-      await newDegree.save();
+      // await newDegree.save();
 
       // Define the data for newAssignment
-      const assignmentData = {
-        moduleID: degreeModules[0].moduleCode, // Replace with appropriate data
-        orderID: "ORD123", // Replace with generated or actual order ID
-        assignmentName: "Intro Assignment",
-        assignmentType: "Exam",
-        assignmentDeadline: "2024-12-31",
-        assignmentProgress: "0%",
-        assignmentPayment: "Pending",
-        assignmentGrade: "N/A"
-      };
+      // const assignmentData = {
+      //   moduleID: degreeModules[0].moduleCode, // Replace with appropriate data
+      //   orderID: "ORD123", // Replace with generated or actual order ID
+      //   assignmentName: "Intro Assignment",
+      //   assignmentType: "Exam",
+      //   assignmentDeadline: "2024-12-31",
+      //   assignmentProgress: "0%",
+      //   assignmentPayment: "Pending",
+      //   assignmentGrade: "N/A"
+      // };
 
       // Call newAssignment with data
-      await newAssignment(assignmentData);
+      // await newAssignment(assignmentData);
 
       res.status(200).json({ newDegree });
     }

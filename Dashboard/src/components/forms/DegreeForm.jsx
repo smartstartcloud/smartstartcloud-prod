@@ -537,6 +537,10 @@ const DegreeForm = () => {
                         variant="outlined"
                         fullWidth
                         disabled
+                        value={
+                          field.value ||
+                          `${refDegreeID ? `${refDegreeID}_M` : ""}${index + 1}`
+                        }
                       />
                     </Tooltip>
                   )}
