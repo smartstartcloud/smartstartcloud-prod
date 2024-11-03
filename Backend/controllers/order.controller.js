@@ -16,6 +16,8 @@ const upload = multer({ storage });
 // Create a new order with orderID and referenceNumber
 export const newOrder = async (req, res) => {
   const {orderIDList} = req.body
+  console.log(orderIDList);
+  
   const orderLog = {
     acceptedOrders: [],
     unacceptedOrders: [],
@@ -29,14 +31,14 @@ export const newOrder = async (req, res) => {
         const { orderID, referenceNumber } = order;
         // Check if the orderID already exists
         const existingOrder = await Order.findOne({ orderID });
-        if (existingOrder) {
+        if (existingOrder) {          
           // return res.status(400).json({ error: "Order ID already exists" });
-          orderLog.unacceptedOrders = [...unacceptedOrders, order];
+          orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
         } else {
           // Create a new order document
           const order = new Order({ orderID, referenceNumber });
           await order.save();
-          orderLog.acceptedOrders = [...acceptedOrders, order];
+          orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
         }
       }
       
