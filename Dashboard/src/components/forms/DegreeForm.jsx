@@ -100,19 +100,14 @@ const DegreeForm = () => {
 
   const onSubmit = async (data) => {
     const modules = {};
-    data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;
+    data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;    
 
     data.degreeModules.forEach((module, index) => {
       module.moduleName = `Module ${index + 1}`;
-      // modules[`Module ${index + 1}`] = module.moduleCode;
+      module.moduleCode = `${refDegreeID ? `${refDegreeID}_M` : ""}${
+        index + 1
+      }`;
     });
-
-    // const finalData = {
-    //     ...data,
-    //     degreeModules: modules
-    // }
-      console.log("Form Data:", data);
-
     setLoading(true);
     try {
       const response = await sendDegreeForm(data);
@@ -509,21 +504,42 @@ const DegreeForm = () => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  value={`Module ${index + 1}`}
-                  label="Module Name"
-                  variant="outlined"
-                  fullWidth
-                  disabled
+                <Controller
+                  name={`degreeModules[${index}].moduleName`}
+                  control={control}
+                  defaultValue={`Module ${index + 1}`}
+                  render={({ field }) => (
+                    <Tooltip title="Module Name">
+                      <TextField
+                        {...field}
+                        label="Module Name"
+                        variant="outlined"
+                        fullWidth
+                        disabled
+                        value={field.value || `Module ${index + 1}`}
+                      />
+                    </Tooltip>
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  value={`${refDegreeID ? `${refDegreeID}_M` : ""}${index + 1}`}
-                  label="Module Code"
-                  variant="outlined"
-                  fullWidth
-                  disabled
+                <Controller
+                  name={`degreeModules[${index}].moduleCode`}
+                  control={control}
+                  defaultValue={`${refDegreeID ? `${refDegreeID}_M` : ""}${
+                    index + 1
+                  }`}
+                  render={({ field }) => (
+                    <Tooltip title="Module Code">
+                      <TextField
+                        {...field}
+                        label="Module Code"
+                        variant="outlined"
+                        fullWidth
+                        disabled
+                      />
+                    </Tooltip>
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
