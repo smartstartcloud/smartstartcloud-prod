@@ -6,8 +6,8 @@ import { addNewModule, newAssignment } from './module.controller.js'; // Import 
 
 export const newDegree = async (req, res) => {
   try {
-    const { degreeID, degreeName, degreeYear, degreeAgent, degreeStudentList, degreeModules } = req.body;
-  
+    const { degreeID, degreeName, degreeYear, degreeAgent, degreeStudentList, degreeModules, assignmentData } = req.body; // Expect assignmentData in the request body
+
     // Step 1: Create Degree
     const newDegree = new Degree({
       degreeID,
@@ -18,28 +18,35 @@ export const newDegree = async (req, res) => {
       degreeModules: await addNewModule(degreeModules)
     });
     console.log(newDegree);
-    
-    // Step 2: Save Degree and Create Assignment
-    if (newDegree) {
-      // await newDegree.save();
 
-      // Define the data for newAssignment
-      // const assignmentData = {
-      //   moduleID: degreeModules[0].moduleCode, // Replace with appropriate data
-      //   orderID: "ORD123", // Replace with generated or actual order ID
-      //   assignmentName: "Intro Assignment",
-      //   assignmentType: "Exam",
-      //   assignmentDeadline: "2024-12-31",
-      //   assignmentProgress: "0%",
-      //   assignmentPayment: "Pending",
-      //   assignmentGrade: "N/A"
-      // };
+    // Step 2: Save Degree
+    await newDegree.save();
 
-      // Call newAssignment with data
-      // await newAssignment(assignmentData);
+    // Step 3: Create the assignment
+    const createdAssignment = await newAssignment(assignmentData); // Assuming newAssignment returns the created assignment
 
-      res.status(200).json({ newDegree });
-    }
+    // Step 4: Add the assignment to all students in the module
+    const studentList = newDegree.degreeStudentList; // Get the student IDs from the degree
+    const moduleID = newDegree.degreeModules[0]; // Assuming you want to populate assignments for the first module
+
+    await Promise.all(studentList.map(async (studentID) => {
+      await ModuleAssignment.findOneAndUpdate(
+        { moduleID, studentID },
+        {
+          $addToSet: {
+            assignments: {
+              orderID: createdAssignment.orderID,
+              assignmentName: createdAssignment.assignmentName,
+              assignmentType: createdAssignment.assignmentType,
+              assignmentDeadline: createdAssignment.assignmentDeadline,
+            }
+          }
+        },
+        { upsert: true }
+      );
+    }));
+
+    res.status(200).json({ newDegree, createdAssignment });
   } catch (error) {
     if (error.code === 11000) {
       res.status(409).json({ error: "Degree ID already exists" });
@@ -63,7 +70,7 @@ export const getAllDegree = async (req,res)=>{
         fillAgentDegree.push(degreeObject);
       })
     )
-    res.status(200).json(fillAgentDegree);
+    res.status(200)  .json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });

@@ -83,10 +83,19 @@ async function moduleAddAssignmentToModule(moduleID, assignment) {
 // Function to create a new assignment and update relevant records
 export const newAssignment = async (req, res) => {
   try {
+    const { assignmentName, assignmentType, assignmentDeadline, orderID, moduleID, assignmentProgress, assignmentPayment, assignmentGrade } = req.body;
+
+    // Check if required fields are provided
+    if (!assignmentName || !assignmentType || !assignmentDeadline) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
     const newAssignment = new Assignment({
       assignmentName,
       assignmentType,
       assignmentDeadline,
+      assignmentProgress,
+      assignmentPayment,
+      assignmentGrade,
       assignmentFile: [] // Default to an empty array
     });
 
