@@ -2,11 +2,21 @@ import Degree from '../models/degree.models.js';
 import Student from '../models/student.models.js';
 import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
-import { addNewModule, newAssignment } from './module.controller.js'; // Import newAssignment
+import { addNewModule } from './module.controller.js'; // Import newAssignment
 
 export const newDegree = async (req, res) => {
   try {
-    const { degreeID, degreeName, degreeYear, degreeAgent, degreeStudentList, degreeModules, assignmentData } = req.body; // Expect assignmentData in the request body
+    const {
+      degreeID,
+      degreeName,
+      degreeYear,
+      degreeAgent,
+      degreeStudentList,
+      degreeModules,
+    } = req.body; // Expect assignmentData in the request body
+
+    const populatedStudentList = await addNewStudent(degreeStudentList);
+    const populatedModules = await addNewModule(degreeModules, populatedStudentList);
 
     // Step 1: Create Degree
     const newDegree = new Degree({
@@ -14,39 +24,14 @@ export const newDegree = async (req, res) => {
       degreeName,
       degreeYear,
       degreeAgent,
-      degreeStudentList: await addNewStudent(degreeStudentList),
-      degreeModules: await addNewModule(degreeModules)
+      degreeStudentList: populatedStudentList,
+      degreeModules: populatedModules,
     });
     console.log(newDegree);
 
-    // Step 2: Save Degree
-    await newDegree.save();
+    await newDegree.save()
 
-    // Step 3: Create the assignment
-    const createdAssignment = await newAssignment(assignmentData); // Assuming newAssignment returns the created assignment
-
-    // Step 4: Add the assignment to all students in the module
-    const studentList = newDegree.degreeStudentList; // Get the student IDs from the degree
-    const moduleID = newDegree.degreeModules[0]; // Assuming you want to populate assignments for the first module
-
-    await Promise.all(studentList.map(async (studentID) => {
-      await ModuleAssignment.findOneAndUpdate(
-        { moduleID, studentID },
-        {
-          $addToSet: {
-            assignments: {
-              orderID: createdAssignment.orderID,
-              assignmentName: createdAssignment.assignmentName,
-              assignmentType: createdAssignment.assignmentType,
-              assignmentDeadline: createdAssignment.assignmentDeadline,
-            }
-          }
-        },
-        { upsert: true }
-      );
-    }));
-
-    res.status(200).json({ newDegree, createdAssignment });
+    res.status(200).json({ newDegree });
   } catch (error) {
     if (error.code === 11000) {
       res.status(409).json({ error: "Degree ID already exists" });
