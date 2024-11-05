@@ -81,64 +81,50 @@ async function moduleAddAssignmentToModule(moduleID, assignment) {
 }
 
 // Function to create a new assignment and update relevant records
-export const newAssignment = async (req, res) => {
+// Assume `newAssignment` is only working with data passed to it directly
+export const newAssignment = async (assignmentName, assignmentType, assignmentDeadline, moduleID, studentList) => {
   try {
-    const { assignmentName, assignmentType, assignmentDeadline, orderID, moduleID, assignmentProgress, assignmentPayment, assignmentGrade } = req.body;
-
-    // Check if required fields are provided
-    if (!assignmentName || !assignmentType || !assignmentDeadline) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-    const newAssignment = new Assignment({
+    // Create a new assignment record
+    const createdAssignment = new Assignment({
       assignmentName,
       assignmentType,
       assignmentDeadline,
-      assignmentProgress,
-      assignmentPayment,
-      assignmentGrade,
-      assignmentFile: [] // Default to an empty array
+      assignmentFile: []
     });
 
-    // Step 1: Fetch the degree associated with the moduleID
-    const degree = await Degree.findOne({ degreeModules: { $elemMatch: { moduleCode: moduleCode } } });
+    await createdAssignment.save();
 
-    if (!degree) {
-      return res.status(404).json({ error: "Degree not found" });
-    }
-
-    const studentList = degree.degreeStudentList;
-
-    // Step 2: Create the new assignment
-    const createdAssignment = await moduleCreateNewAssignment(orderID, assignmentName, assignmentType, assignmentDeadline, assignmentProgress, assignmentPayment, assignmentGrade);
-
-    // Step 3: Update ModuleAssignment for each student in the degree
-    await Promise.all(studentList.map(async (studentID) => {
-      await ModuleAssignment.findOneAndUpdate(
-        { moduleID, studentID },
-        {
-          $setOnInsert: { studentID, moduleID },
-          $addToSet: {
-            assignments: {
-              orderID: createdAssignment.orderID,
-              assignmentName: createdAssignment.assignmentName,
-              assignmentType: createdAssignment.assignmentType,
-              assignmentDeadline: createdAssignment.assignmentDeadline,
+    // Propagate assignment to students within the specified module
+    await Promise.all(
+      studentList.map(async (studentID) => {
+        await ModuleAssignment.findOneAndUpdate(
+          { moduleID, studentID },
+          {
+            $setOnInsert: { studentID, moduleID },
+            $addToSet: {
+              assignments: {
+                orderID: createdAssignment.orderID,
+                assignmentName: createdAssignment.assignmentName,
+                assignmentType: createdAssignment.assignmentType,
+                assignmentDeadline: createdAssignment.assignmentDeadline,
+              }
             }
-          }
-        },
-        { upsert: true }
-      );
-    }));
+          },
+          { upsert: true }
+        );
+      })
+    );
 
-    // Step 4: Also add the assignment to the Module model
+    // Link assignment with the module itself
     await moduleAddAssignmentToModule(moduleID, createdAssignment);
 
-    res.status(200).json({ message: "Assignment added and propagated to all students in the degree successfully" });
+    console.log("Assignment added and propagated successfully");
   } catch (error) {
     console.error("Error in newAssignment:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    throw new Error("Failed to add assignment");
   }
 };
+
 
 export const getAssignment = async (req, res) => {
   try {
