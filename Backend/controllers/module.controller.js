@@ -62,17 +62,15 @@ async function moduleCreateNewAssignment(orderID, assignmentName, assignmentType
 // New helper function to add the assignment to the Module model
 async function moduleAddAssignmentToModule(moduleID, assignment) {
   try {
+    console.log(`Attempting to find and update module with ID: ${moduleID}`);
     const module = await Module.findOne({ _id: moduleID });
     if (module) {
-      module.moduleAssignments.push({
-        assignmentID: assignment._id,
-        assignmentName: assignment.assignmentName,
-        assignmentType: assignment.assignmentType,
-        assignmentDeadline: assignment.assignmentDeadline
-      });
+      module.moduleAssignments.push(assignment._id);
       await module.save();
+      console.log(`Assignment added to module ID: ${moduleID}`);
     } else {
-      console.error("Module not found with the provided moduleID");
+      console.error("Module not found with the provided moduleID:", moduleID);
+      throw new Error("Module not found");
     }
   } catch (error) {
     console.error("Error adding assignment to module:", error);
@@ -80,11 +78,12 @@ async function moduleAddAssignmentToModule(moduleID, assignment) {
   }
 }
 
+
 // Function to create a new assignment and update relevant records
-// Assume `newAssignment` is only working with data passed to it directly
 export const newAssignment = async (assignmentName, assignmentType, assignmentDeadline, moduleID, studentList) => {
   try {
     // Create a new assignment record
+    console.log("Creating assignment...");
     const createdAssignment = new Assignment({
       assignmentName,
       assignmentType,
@@ -93,37 +92,53 @@ export const newAssignment = async (assignmentName, assignmentType, assignmentDe
     });
 
     await createdAssignment.save();
+    console.log("Assignment created successfully with ID:", createdAssignment._id);
 
-    // Propagate assignment to students within the specified module
+    // Propagate assignment to each student in the module
+    console.log("Propagating assignment to students...");
     await Promise.all(
       studentList.map(async (studentID) => {
-        await ModuleAssignment.findOneAndUpdate(
-          { moduleID, studentID },
-          {
-            $setOnInsert: { studentID, moduleID },
-            $addToSet: {
-              assignments: {
-                orderID: createdAssignment.orderID,
-                assignmentName: createdAssignment.assignmentName,
-                assignmentType: createdAssignment.assignmentType,
-                assignmentDeadline: createdAssignment.assignmentDeadline,
+        try {
+          await ModuleAssignment.findOneAndUpdate(
+            { moduleID, studentID },
+            {
+              $setOnInsert: { studentID, moduleID },
+              $addToSet: {
+                assignments: {
+                  orderID: createdAssignment.orderID,
+                  assignmentName: createdAssignment.assignmentName,
+                  assignmentType: createdAssignment.assignmentType,
+                  assignmentDeadline: createdAssignment.assignmentDeadline,
+                }
               }
-            }
-          },
-          { upsert: true }
-        );
+            },
+            { upsert: true }
+          );
+          console.log(`Assignment added for student ID: ${studentID}`);
+        } catch (error) {
+          console.error(`Error updating ModuleAssignment for student ID ${studentID}:`, error);
+          throw new Error("Failed to update ModuleAssignment for student");
+        }
       })
     );
 
-    // Link assignment with the module itself
-    await moduleAddAssignmentToModule(moduleID, createdAssignment);
+    // Link the assignment to the module
+    console.log("Linking assignment to module...");
+    try {
+      await moduleAddAssignmentToModule(moduleID, createdAssignment);
+      console.log("Assignment linked to module successfully.");
+    } catch (error) {
+      console.error("Error linking assignment to module:", error);
+      throw new Error("Failed to link assignment to module");
+    }
 
-    console.log("Assignment added and propagated successfully");
+    console.log("Assignment added and propagated successfully.");
   } catch (error) {
     console.error("Error in newAssignment:", error);
     throw new Error("Failed to add assignment");
   }
 };
+
 
 
 export const getAssignment = async (req, res) => {
