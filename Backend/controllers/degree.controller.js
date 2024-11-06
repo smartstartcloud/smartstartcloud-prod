@@ -27,7 +27,7 @@ export const newDegree = async (req, res) => {
       degreeStudentList: populatedStudentList,
       degreeModules: populatedModules,
     });
-    console.log(newDegree);
+    // console.log(newDegree);
 
     await newDegree.save()
 

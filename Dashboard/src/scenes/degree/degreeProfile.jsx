@@ -64,11 +64,11 @@ const DegreeProfile = () => {
   ];
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  const handleModuleClick = (module) => {
-    // Assuming degreeYear is part of the degree data    
-    navigate(`/task/${degreeYear}/${degreeId}/module/${module._id}`);
+  // const handleModuleClick = (module) => {
+  //   // Assuming degreeYear is part of the degree data    
+  //   navigate(`/task/${degreeYear}/${degreeId}/module/${module._id}`);
 
-  };
+  // };
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleRowClick = (params) => {
@@ -174,7 +174,7 @@ const DegreeProfile = () => {
                         variant="body1"
                         color={colors.grey[200]}
                         sx={{ textAlign: "center", mb: 1 }}
-                        onClick={() => handleModuleClick(module)}
+                        // onClick={() => handleModuleClick(module)}
                       >
                         {module.moduleName}
                       </Typography>
