@@ -155,9 +155,13 @@ const AssignmentList = ({ list, degreeModules, student }) => {
             value={searchTerm}
             onChange={handleSearch}
             sx={{ mb: 2 }}
-            
           />
-          <Button variant="contained" color="primary" onClick={handleDownloadCSV} sx={{ mb: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleDownloadCSV}
+            sx={{ mb: 2 }}
+          >
             Download CSV
           </Button>
           <TableContainer>
@@ -166,119 +170,138 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                 <TableRow>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'orderID'}
-                      direction={orderBy === 'orderID' ? order : 'asc'}
-                      onClick={() => handleRequestSort('orderID')}
+                      active={orderBy === "orderID"}
+                      direction={orderBy === "orderID" ? order : "asc"}
+                      onClick={() => handleRequestSort("orderID")}
                     >
                       Order ID
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentName'}
-                      direction={orderBy === 'assignmentName' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentName')}
+                      active={orderBy === "assignmentName"}
+                      direction={orderBy === "assignmentName" ? order : "asc"}
+                      onClick={() => handleRequestSort("assignmentName")}
                     >
                       Assignment Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentType'}
-                      direction={orderBy === 'assignmentType' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentType')}
+                      active={orderBy === "assignmentType"}
+                      direction={orderBy === "assignmentType" ? order : "asc"}
+                      onClick={() => handleRequestSort("assignmentType")}
                     >
                       Assignment Type
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentDeadline'}
-                      direction={orderBy === 'assignmentDeadline' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentDeadline')}
+                      active={orderBy === "assignmentDeadline"}
+                      direction={
+                        orderBy === "assignmentDeadline" ? order : "asc"
+                      }
+                      onClick={() => handleRequestSort("assignmentDeadline")}
                     >
                       Deadline
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentProgress'}
-                      direction={orderBy === 'assignmentProgress' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentProgress')}
+                      active={orderBy === "assignmentProgress"}
+                      direction={
+                        orderBy === "assignmentProgress" ? order : "asc"
+                      }
+                      onClick={() => handleRequestSort("assignmentProgress")}
                     >
                       Progress
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentPayment'}
-                      direction={orderBy === 'assignmentPayment' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentPayment')}
+                      active={orderBy === "assignmentPayment"}
+                      direction={
+                        orderBy === "assignmentPayment" ? order : "asc"
+                      }
+                      onClick={() => handleRequestSort("assignmentPayment")}
                     >
                       Payment Status
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === 'assignmentGrade'}
-                      direction={orderBy === 'assignmentGrade' ? order : 'asc'}
-                      onClick={() => handleRequestSort('assignmentGrade')}
+                      active={orderBy === "assignmentGrade"}
+                      direction={orderBy === "assignmentGrade" ? order : "asc"}
+                      onClick={() => handleRequestSort("assignmentGrade")}
                     >
                       Grade
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell>
-                      Actions
-                  </TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment, index) => (
-                  <TableRow key={index}  >
-                    {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment', 'assignmentGrade'].map((key) => (
-                      <TableCell key={key}>
-                         <Tooltip
-                            title={key === 'assignmentProgress' ? renderTooltipContent(assignment) : ''}  // Conditionally render the tooltip content
+                {sortedList
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((assignment, index) => (
+                    <TableRow key={index}>
+                      {[
+                        "orderID",
+                        "assignmentName",
+                        "assignmentType",
+                        "assignmentDeadline",
+                        "assignmentProgress",
+                        "assignmentPayment",
+                        "assignmentGrade",
+                      ].map((key) => (
+                        <TableCell key={key}>
+                          <Tooltip
+                            title={
+                              key === "assignmentProgress"
+                                ? renderTooltipContent(assignment)
+                                : ""
+                            } // Conditionally render the tooltip content
                             arrow
-                            interactive = {key === 'assignmentProgress'}
+                            interactive={key === "assignmentProgress"}
                           >
                             {/* Ensure that assignment[key] is rendered properly */}
                             <span>
                               {assignment[key] !== undefined
-                                ? key === 'assignmentPayment'
+                                ? key === "assignmentPayment"
                                   ? assignment[key] === 0
-                                    ? 'NOT PAID'
-                                    : 'PAID'
+                                    ? "NOT PAID"
+                                    : "PAID"
                                   : assignment[key]
-                                : 'N/A'}
+                                : "N/A"}
                             </span>
                           </Tooltip>
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <Tooltip title="Open Files">
+                            <IconButton
+                              onClick={() => handleFileOpen(assignment.orderID)}
+                            >
+                              <FolderOpenOutlinedIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              onClick={() => handleEditAssignment(assignment)}
+                            >
+                              <EditOutlinedIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton>
+                              <DeleteOutlineOutlinedIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
                       </TableCell>
-                    ))}
-                    <TableCell>
-                    <TableCell>
-                      <div style={{ display: 'flex', gap: 1 }}>
-                        <Tooltip title="Open Files">
-                          <IconButton onClick={() => handleFileOpen(assignment.orderID)}>
-                            <FolderOpenOutlinedIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Edit">
-                          <IconButton onClick={() => handleEditAssignment(assignment)}>
-                            <EditOutlinedIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton>
-                            <DeleteOutlineOutlinedIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-
-                    </TableCell>
-                  </TableRow>
-                ))}
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -293,35 +316,42 @@ const AssignmentList = ({ list, degreeModules, student }) => {
           />
         </Box>
       )}
-        {open && <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />}
-        <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                fullWidth
-                maxWidth="md"
-                PaperProps={{ style: { height: '50vh', overflow: 'hidden' } }}
-                TransitionComponent={Transition}
-            >
-                <DialogTitle>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleCloseDialog}
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent sx={{ padding: 0 }}>
-                    <Box sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
-                        <AssignmentForm studentData={student} degreeModulesData={degreeModules} editMode={true} assignmentData={currentAssignment} />
-                    </Box>
-                </DialogContent>
-            </Dialog>
+      {open && (
+        <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />
+      )}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{ style: { height: "50vh", overflow: "hidden" } }}
+        TransitionComponent={Transition}
+      >
+        <DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDialog}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ padding: 0 }}>
+          <Box sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
+            <AssignmentForm
+              studentData={student}
+              degreeModulesData={degreeModules}
+              editMode={true}
+              assignmentData={currentAssignment}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

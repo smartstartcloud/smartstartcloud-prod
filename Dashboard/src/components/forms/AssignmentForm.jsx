@@ -9,7 +9,9 @@ import { format } from 'date-fns';
 import useSendAssignmentData from '../../hooks/useSendAssignmentData';
 import MuiAlert from '@mui/material/Alert';
 
-const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
+const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMode}) => {
+  console.log(studentData._id);
+  
  const theme = useTheme();
  const colors = tokens(theme.palette.mode);
  const [formSaved, setFormSaved] = useState(false);
@@ -47,7 +49,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                     assignmentDeadline: studentData?.assignmentDeadline || '',
                     assignmentGrade: studentData?.assignmentGrade || ''
                 });
-            } else {
+            } else {              
                 reset({
                 studentID: studentData, 
                 moduleID: '',
@@ -136,7 +138,7 @@ const AssignmentForm = ({studentData, degreeModulesData, editMode}) => {
                       Select Module
                     </MenuItem>
                     {degreeModulesData.map((module, index) => (
-                      <MenuItem key={index} value={module._id}>
+                      <MenuItem key={index} value={module.moduleCode}>
                         {module.moduleName}
                       </MenuItem>
                     ))}
