@@ -233,8 +233,8 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment) => (
-                  <TableRow key={assignment.orderID}  >
+                {sortedList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment, index) => (
+                  <TableRow key={index}  >
                     {['orderID', 'assignmentName', 'assignmentType', 'assignmentDeadline', 'assignmentProgress', 'assignmentPayment', 'assignmentGrade'].map((key) => (
                       <TableCell key={key}>
                          <Tooltip

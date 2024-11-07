@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 import {
@@ -21,12 +21,13 @@ const DegreeProfile = () => {
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const {
-    degreeName,
-    degreeAgent,
-    degreeStudentList = [],
-    degreeModules,
-  } = degree || {};
+  const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
+
+  // useEffect(() => {
+  //   if (degree){
+  //     console.log(degree);   
+  //   }
+  // }, [degree])
 
   const studentList = [...degreeStudentList];
 
@@ -64,11 +65,11 @@ const DegreeProfile = () => {
   ];
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  // const handleModuleClick = (module) => {
-  //   // Assuming degreeYear is part of the degree data    
-  //   navigate(`/task/${degreeYear}/${degreeId}/module/${module._id}`);
+  const handleModuleClick = (module) => {
+    // Assuming degreeYear is part of the degree data    
+    navigate(`/task/${degreeYear}/${degreeId}/module/${module._id}`);
 
-  // };
+  };
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleRowClick = (params) => {
@@ -170,11 +171,11 @@ const DegreeProfile = () => {
                   {degreeModules && degreeModules.length > 0 ? (
                     degreeModules.map((module, index) => (
                       <Typography
-                        key={module._id}
+                        key={index}
                         variant="body1"
                         color={colors.grey[200]}
                         sx={{ textAlign: "center", mb: 1 }}
-                        // onClick={() => handleModuleClick(module)}
+                        onClick={() => handleModuleClick(module)}
                       >
                         {module.moduleName}
                       </Typography>

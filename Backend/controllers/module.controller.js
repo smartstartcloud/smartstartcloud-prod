@@ -64,18 +64,14 @@ export const newAssignment = async (degreeModules, studentList) => {
 export const getAssignment = async (req, res) => {
   try {
     const { studentID, moduleID } = req.params;
-
+    
     const moduleAssignment = await ModuleAssignment.findOne({
       moduleID: new mongoose.Types.ObjectId(moduleID),
-      studentID: new mongoose.Types.ObjectId(studentID)
-    }).populate({
-      path: 'orderID',
-      model: 'Assignment',
-      foreignField: 'orderID'
-    });
+      studentID: new mongoose.Types.ObjectId(studentID),
+    }).populate("assignments");
 
     if (moduleAssignment) {
-      res.status(200).json(moduleAssignment.orderID);
+      res.status(200).json(moduleAssignment);
     } else {
       res.status(404).json({ error: "No module found for the provided student and module" });
     }

@@ -86,8 +86,9 @@ export const getDegreeByYear = async (req,res)=>{
 export const getDegreeByID = async (req,res)=>{
   const {degreeID} = req.params
   try {
-    const degrees = await Degree.findOne({degreeID})
-      .populate('degreeStudentList');
+    const degrees = await Degree.findOne({ degreeID })
+      .populate("degreeStudentList")
+      .populate("degreeModules");
     const Agent = await User.find({_id:[degrees.degreeAgent]});
     let degreeObject = degrees.toObject();
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
