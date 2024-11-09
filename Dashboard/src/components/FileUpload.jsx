@@ -42,8 +42,43 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
   const { control } = useForm({});
 
+  const dummyData = [
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv1.pdf",
+      fileType: "application/pdf",
+      category: "assignment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv2.pdf",
+      fileType: "application/pdf",
+      category: "payment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv3.pdf",
+      fileType: "application/pdf",
+      category: "payment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv4.pdf",
+      fileType: "application/pdf",
+      category: "grade",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv5.pdf",
+      fileType: "application/pdf",
+      category: "assignment",
+    },
+  ];
+
   useEffect(() => {
     if (fileList) {
+      console.log(fileList);
+      
       setExistingFiles(fileList);
     }
   }, [fileList]);
@@ -142,6 +177,15 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
         });
     }
   };
+
+  const handleCategoryChange = (category) => {
+    console.log(category);
+    const filteredFiles = dummyData.filter(
+      (file) => file.category === category
+    );
+    setExistingFiles(filteredFiles);
+    
+  }
 
   return (
     <Modal open={open} onClose={handleCloseModal}>
@@ -350,14 +394,42 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
             {existingFiles.length > 0 && (
               <Box mt={3}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2" }}
-                >
-                  Current Files
-                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("assignment")}
+                    >
+                      Assignment Files
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("payment")}
+                    >
+                      Payment Files
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("grade")}
+                    >
+                      Grade Files
+                    </Typography>
+                  </Grid>
+                </Grid>
+
                 <TableContainer
                   component={Paper}
                   sx={{ marginTop: "20px", ...customScrollbarStyles }}
