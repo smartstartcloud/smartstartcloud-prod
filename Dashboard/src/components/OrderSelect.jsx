@@ -32,7 +32,7 @@ const OrderSelect = ({ control, editMode }) => {
   return (
     <Grid item xs={12} sm={12}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           {/* Select dropdown for order IDs */}
           <Controller
             name="orderID"
@@ -65,31 +65,33 @@ const OrderSelect = ({ control, editMode }) => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           {/* RefNo input field */}
           <TextField
             label="Reference Number"
             variant="outlined"
             fullWidth
             value={refNo}
+            onBlur={handleFetchOrderIds} // Call handleBlur on losing focus
             onChange={(e) => setRefNo(e.target.value)} // Update refNo state on change
             // disabled={editMode}
             sx={{ mb: 2 }}
           />
         </Grid>
-        <Grid item xs={12} sm={2}>
-          {/* Button to fetch order IDs */}
+        {/* <Grid item xs={12} sm={2}>
+          {/* Button to fetch order IDs
           <Button
             variant="contained"
             color="primary"
             fullWidth
             onClick={handleFetchOrderIds}
+            onBlur={handleBlur} // Call handleBlur on losing focus
             disabled={!refNo} // Disable button if editMode is true or refNo is empty
-            sx={{ mb: 2}}
+            sx={{ mb: 2 }}
           >
             Fetch
           </Button>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Grid>
   );

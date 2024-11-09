@@ -19,12 +19,7 @@ const useGetOrderIdList = () => {
         if (error.response.status === 400) {
             console.log("Error: Reference number (refNo) is required");
             throw new Error("Reference number (refNo) is required");
-        } else if (error.response.status === 404) {
-            console.log(
-              "Error: No orders found for the provided reference number"
-            );
-            throw new Error("No orders found for the provided reference number");
-        } else if (error.response.status === 500) {
+        }else if (error.response.status === 500) {
             console.log("Error: Internal Server Error");
             throw new Error("Internal Server Error");
         } else {

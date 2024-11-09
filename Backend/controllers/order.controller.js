@@ -112,12 +112,12 @@ export const getAllOrderList = async (req, res) => {
       "orderID" // Only retrieve the orderID field
     );
 
-    // If no orders are found for the provided reference number, send a 404 response
-    if (orders.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No orders found for the provided reference number" });
-    }
+    // // If no orders are found for the provided reference number, send a 404 response
+    // if (orders.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({ message: "No orders found for the provided reference number" });
+    // }
 
     // Return a list of order IDs in an array
     const orderIDs = orders.map((order) => order.orderID);
