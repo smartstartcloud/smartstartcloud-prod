@@ -95,3 +95,36 @@ export const uploadFile = [
     }
   }
 ];
+
+export const getAllOrderList = async (req, res) => {
+  try {
+    const {refNo} = req.params; // Get refNo from query parameters    
+    // Ensure refNo is provided, if not return a 400 error
+    if (!refNo) {
+      return res
+        .status(400)
+        .json({ message: "Reference number (refNo) is required" });
+    }
+
+    // Retrieve all order IDs associated with the provided reference number
+    const orders = await Order.find(
+      { referenceNumber: refNo },
+      "orderID" // Only retrieve the orderID field
+    );
+
+    // If no orders are found for the provided reference number, send a 404 response
+    if (orders.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No orders found for the provided reference number" });
+    }
+
+    // Return a list of order IDs in an array
+    const orderIDs = orders.map((order) => order.orderID);
+    res.status(200).json({ referenceNumber: refNo, orderIDs });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+

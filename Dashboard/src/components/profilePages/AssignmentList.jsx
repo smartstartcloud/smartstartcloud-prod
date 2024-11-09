@@ -40,7 +40,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [currentAssignment, setCurrentAssignment] = useState(null);
   // console.log("students from parent ::::", student)
   const handleEditAssignment = (assignment) => {
-    setCurrentAssignment(assignment);
+    setCurrentAssignment(assignment);    
     setOpenDialog(true);
   };
 
@@ -323,7 +323,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
         open={openDialog}
         onClose={handleCloseDialog}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
         PaperProps={{ style: { height: "50vh", overflow: "hidden" } }}
         TransitionComponent={Transition}
       >
@@ -344,7 +344,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
         <DialogContent sx={{ padding: 0 }}>
           <Box sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
             <AssignmentForm
-              studentData={student}
+              studentData={student._id}
               degreeModulesData={degreeModules}
               editMode={true}
               assignmentData={currentAssignment}

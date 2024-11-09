@@ -31,6 +31,9 @@ const AssignmentSchema = new mongo.Schema({
   assignmentNature: {
     type: String,
   },
+  moduleCode: {
+    type: String,
+  },
 });
 
 // Create a unique sparse index on `orderID`

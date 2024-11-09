@@ -2,7 +2,7 @@ import Assignment from "../models/assignment.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 // Function to create a new assignment and update relevant records
-export const newAssignmentDynamic = async (assignmentList, studentList) => {        
+export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
     try {
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(
@@ -16,6 +16,7 @@ export const newAssignmentDynamic = async (assignmentList, studentList) => {
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
                     assignmentNature: "dynamic",
+                    moduleCode: moduleCode
                 });
 
                 // Save the assignment to the database and collect its ObjectID
@@ -62,3 +63,54 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
         }
     }
 }
+
+export const updateAssignment = async (req, res) => {
+  try {
+    const { assignmentID } = req.params;
+
+    const {
+      moduleCode,
+      orderID,
+      assignmentName,
+      assignmentType,
+      assignmentProgress,
+      assignmentPayment,
+      assignmentDeadline,
+      assignmentGrade,
+      assignmentFile,
+      assignmentNature,
+    } = req.body;
+
+    // Replace empty string fields with "N/A"
+    const updatedFields = {
+      moduleCode: moduleCode || "N/A",
+      orderID: orderID || "N/A",
+      assignmentName: assignmentName || "N/A",
+      assignmentType: assignmentType || "N/A",
+      assignmentProgress: assignmentProgress || "N/A",
+      assignmentPayment: assignmentPayment || "N/A",
+      assignmentDeadline: assignmentDeadline || "N/A",
+      assignmentGrade: assignmentGrade || "N/A",
+      assignmentFile: assignmentFile || [], // Use empty array if assignmentFile is not provided
+      assignmentNature: assignmentNature || "N/A",
+    };
+
+    // Find the specific assignment by its ID and update it
+    const assignment = await Assignment.findByIdAndUpdate(
+      assignmentID,
+      { $set: updatedFields },
+      { new: true } // Return the updated document
+    );
+
+    if (assignment) {
+      res.status(200).json(assignment);
+    } else {
+      res
+        .status(404)
+        .json({ error: "No assignment found for the provided assignment ID" });
+    }
+  } catch (error) {
+    console.error("Error updating assignment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

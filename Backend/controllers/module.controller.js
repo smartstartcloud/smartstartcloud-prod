@@ -19,7 +19,11 @@ export const addNewModule = async(moduleList, studentList) =>  {
           const newModule = new Module({
             moduleName: moduleData.moduleName,
             moduleCode: moduleData.moduleCode,
-            moduleAssignments: await newAssignmentDynamic(moduleData.assignmentList, studentList),
+            moduleAssignments: await newAssignmentDynamic(
+              moduleData.assignmentList,
+              studentList,
+              moduleData.moduleCode
+            ),
           });
 
           const savedModule = await newModule.save();

@@ -15,9 +15,7 @@ const DegreeBoard = () => {
     const colors = tokens(theme.palette.mode);
     const {authUser} = useAuthContext()
     const location = useLocation();
-    const state = location.state;    
-    console.log(state);
-    
+    const state = location.state;        
 
     const { degree, loading, error } = useFetchSelectedDegreeData(degreeYear);
     const { filteredDegree, yearName } = degree

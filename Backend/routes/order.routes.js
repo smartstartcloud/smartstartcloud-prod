@@ -1,5 +1,5 @@
 import express from 'express';
-import { newOrder, getAllOrders, uploadFile } from '../controllers/order.controller.js';
+import { newOrder, getAllOrders, uploadFile, getAllOrderList } from '../controllers/order.controller.js';
 
 const router = express.Router();
 
@@ -8,6 +8,9 @@ router.post('/new', newOrder);
 
 // Route to get all orders
 router.get('/all', getAllOrders);
+
+// Route to get all orders by ref
+router.get("/orderList/:refNo", getAllOrderList);
 
 // Route to upload a file under a specific orderID
 router.post('/:orderID/upload', uploadFile);

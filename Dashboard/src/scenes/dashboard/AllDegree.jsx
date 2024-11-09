@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import Header from "../../components/Header";
 import useToken from "../../hooks/useToken";
 import TaskCard from "../../components/TaskCard";
@@ -62,7 +62,7 @@ const AllDegree = () => {
           subtitle={"All existing years are displayed."}
         />
       </Box>
-      <Box display="flex" gap="20px">
+      <Grid container spacing={2}>
         {degree
           ? yearList
               .sort((a, b) => {
@@ -71,16 +71,18 @@ const AllDegree = () => {
                 return dateA - dateB;
               })
               .map((year, idx) => (
-                <TaskCard
-                  key={idx}
-                  yearId={year.year_id}
-                  taskName={year.yearName}
-                  taskDetails={year.degreeList.length}
-                  taskAgents={year.agentList}
-                />
+                <Grid item xs={12} sm={6} md={4} lg={2} key={idx}>
+                  <TaskCard
+                    key={idx}
+                    yearId={year.year_id}
+                    taskName={year.yearName}
+                    taskDetails={year.degreeList.length}
+                    taskAgents={year.agentList}
+                  />
+                </Grid>
               ))
           : undefined}
-      </Box>
+      </Grid>
     </Box>
   );
 };

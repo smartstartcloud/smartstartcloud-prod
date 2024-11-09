@@ -8,9 +8,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { format } from 'date-fns';
 import useSendAssignmentData from '../../hooks/useSendAssignmentData';
 import MuiAlert from '@mui/material/Alert';
+import OrderSelect from '../OrderSelect';
 
 const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMode}) => {
-  console.log(studentData._id);
   
  const theme = useTheme();
  const colors = tokens(theme.palette.mode);
@@ -24,7 +24,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
  const { control, handleSubmit, setError, clearErrors, reset, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
             studentID: studentData,
-            moduleID: '',
+            moduleCode: '',
             orderID: '',
             assignmentName: '',
             assignmentType: '',
@@ -39,20 +39,21 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
         if (studentData && studentData) {
             if (editMode) {
                 reset({
-                    studentID: studentData?._id,
-                    moduleID: studentData?.moduleID || '',
-                    orderID: studentData?.orderID || '',
-                    assignmentName: studentData?.assignmentName || '',
-                    assignmentType: studentData?.assignmentType || '',
-                    assignmentProgress: studentData?.assignmentProgress || 'IN PROGRESS',
-                    assignmentPayment: studentData?.assignmentPayment || 0,
-                    assignmentDeadline: studentData?.assignmentDeadline || '',
-                    assignmentGrade: studentData?.assignmentGrade || ''
+                    assignmentID: assignmentData?._id || '',  // Adding assignmentID when editMode is true
+                    studentID: studentData,
+                    moduleCode: assignmentData?.moduleCode || '',
+                    orderID: assignmentData?.orderID || '',
+                    assignmentName: assignmentData?.assignmentName || '',
+                    assignmentType: assignmentData?.assignmentType || '',
+                    assignmentProgress: assignmentData?.assignmentProgress || 'IN PROGRESS',
+                    assignmentPayment: assignmentData?.assignmentPayment || 0,
+                    assignmentDeadline: assignmentData?.assignmentDeadline || '',
+                    assignmentGrade: assignmentData?.assignmentGrade || ''
                 });
             } else {              
                 reset({
                 studentID: studentData, 
-                moduleID: '',
+                moduleCode: '',
                 orderID: '',
                 assignmentName: '',
                 assignmentType: '',
@@ -68,11 +69,12 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
         const onSubmitAssignment = async (data) => {
             setformLoading(true);
             try{
-                const response = await sendAssignment(data)
-                console.log('Form Data:', data);
-                console.log('Response Data:', response);
-                setFormSaved(true);
-                setformLoading(false);
+              const response = await sendAssignment(data, editMode)
+              // const response = "await sendAssignment(data)";
+              console.log("Form Data:", data);
+              console.log("Response Data:", response);
+              setFormSaved(true);
+              setformLoading(false);
             }catch (e) {
                 setFormError(true);
                 setformLoading(false)
@@ -122,7 +124,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <Controller
-                name="moduleID"
+                name="moduleCode"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -139,7 +141,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     </MenuItem>
                     {degreeModulesData.map((module, index) => (
                       <MenuItem key={index} value={module.moduleCode}>
-                        {module.moduleName}
+                        {module.moduleCode}
                       </MenuItem>
                     ))}
                   </Select>
@@ -182,36 +184,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Controller
-                name="orderID"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Order ID"
-                    variant="outlined"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    error={!!touchedFields.orderID && !!errors.orderID}
-                    helperText={
-                      touchedFields.orderID && errors.orderID
-                        ? errors.orderID.message
-                        : null
-                    }
-                    // onBlur={(e) => {
-                    //   field.onBlur();
-                    //   if (!field.value) {
-                    //     setError("orderID", {
-                    //       type: "manual",
-                    //       message: "Order ID is required",
-                    //     });
-                    //   } else {
-                    //     clearErrors("orderID");
-                    //   }
-                    // }}
-                  />
-                )}
-              />
+              <OrderSelect control={control} editMode={editMode} />
             </Grid>
           </Grid>
           <Grid container spacing={2}>
@@ -287,34 +260,35 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 )}
               />
             </Grid>
-              <Grid item xs={12} sm={3}>
-                  <Controller
-                      name="assignmentProgress"
-                      control={control}
-                      render={({ field }) => (
-                          <Select
-                              {...field}
-                              variant="outlined"
-                              fullWidth
-                              sx={{ mb: 2 }}
-                              error={!!touchedFields.assignmentProgress && !!errors.assignmentProgress}
-                              helperText={
-                                  touchedFields.assignmentProgress &&
-                                  errors.assignmentProgress
-                                      ? errors.assignmentProgress.message
-                                      : null
-                              }
-                          >
-                              <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
-                              <MenuItem value="COMPLETE">COMPLETE</MenuItem>
-                          </Select>
-                      )}
-                  />
-              </Grid>
+            <Grid item xs={12} sm={3}>
+              <Controller
+                name="assignmentProgress"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    error={
+                      !!touchedFields.assignmentProgress &&
+                      !!errors.assignmentProgress
+                    }
+                    helperText={
+                      touchedFields.assignmentProgress &&
+                      errors.assignmentProgress
+                        ? errors.assignmentProgress.message
+                        : null
+                    }
+                  >
+                    <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
+                    <MenuItem value="COMPLETE">COMPLETE</MenuItem>
+                  </Select>
+                )}
+              />
+            </Grid>
 
-
-
-              <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={3}>
               <Controller
                 name="assignmentPayment"
                 control={control}
@@ -367,7 +341,11 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                       label="Assignment Deadline"
                       inputFormat="MM/dd/yyyy" // Custom date format
                       value={field.value ? new Date(field.value) : null} // Ensure the value is a Date object
-                      onChange={(newValue) => {field.onChange(newValue ? format(newValue, 'MM/dd/yyyy') : '')}}
+                      onChange={(newValue) => {
+                        field.onChange(
+                          newValue ? format(newValue, "MM/dd/yyyy") : ""
+                        );
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}

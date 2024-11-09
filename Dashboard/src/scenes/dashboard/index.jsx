@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import Header from '../../components/Header'
 import TaskCard from '../../components/TaskCard'
 // import {degree } from '../../data/mockData'
@@ -32,7 +32,7 @@ const Dashboard = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title={"DASHBOARD"} subtitle={"Welcome to Dashboard"} />
       </Box>
-      <Box display="flex" gap="20px">
+      <Grid container spacing={2}>
         {yearList.length > 0 ? (
           yearList
             .sort((a, b) => {
@@ -41,19 +41,22 @@ const Dashboard = () => {
               return dateA - dateB;
             })
             .map((year, idx) => (
-              <TaskCard
-                key={idx}
-                yearId={year.year_id}
-                taskName={year.yearName}
-                taskDetails={year.degreeList.length}
-                taskAgents={year.agentList}
-                filterByAgent={true}
-              />
+              <Grid item xs={12} sm={6} md={4} lg={2} key={idx}>
+                <TaskCard
+                  yearId={year.year_id}
+                  taskName={year.yearName}
+                  taskDetails={year.degreeList.length}
+                  taskAgents={year.agentList}
+                  filterByAgent={true}
+                />
+              </Grid>
             ))
         ) : (
-          <Typography variant="h3">No Degree to Display</Typography>
+          <Grid item xs={12}>
+            <Typography variant="h3">No Degree to Display</Typography>
+          </Grid>
         )}
-      </Box>
+      </Grid>
     </Box>
   );
 }

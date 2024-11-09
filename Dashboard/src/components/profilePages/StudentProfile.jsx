@@ -172,7 +172,7 @@ const StudentProfile = () => {
                                         borderRadius: 4,
                                     }}
                                 >
-                                    <Typography variant="h5" color={colors.grey[100]}>{module.moduleName}</Typography>
+                                    <Typography variant="h5" color={colors.grey[100]}>{module.moduleName} - {module.moduleCode}</Typography>
                                 </Card>
                             </Grid>
                         ))}
