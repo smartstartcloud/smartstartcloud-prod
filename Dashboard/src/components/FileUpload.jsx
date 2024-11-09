@@ -189,7 +189,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              {/* <Grid item xs={12} sm={4}>
                 <Button
                   variant="contained"
                   onClick={handleSharableLink}
@@ -201,9 +201,9 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                 >
                   Generate Link
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
-            <Grid container spacing={2}>
+            {/* <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Controller
                   name="shareLink"
@@ -230,7 +230,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Box>
