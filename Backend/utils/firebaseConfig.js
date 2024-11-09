@@ -7,9 +7,7 @@ const firebaseConfig = {
   storageBucket: "smartsmartcloudfile.appspot.com",
   messagingSenderId: "1034373079760",
   appId: "1:1034373079760:web:35aa501536d300177a34d5",
-  measurementId: "G-244Q2V5NWW"
+  measurementId: "G-244Q2V5NWW",
 };
 
-initializeApp(firebaseConfig);
-
-export default true;
+export const app = initializeApp(firebaseConfig);
