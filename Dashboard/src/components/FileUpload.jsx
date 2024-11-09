@@ -3,7 +3,11 @@ import { useLocation } from 'react-router-dom';
 import {
   Button, Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
   Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal,
-  InputAdornment
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
@@ -30,6 +34,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const [existingFiles, setExistingFiles] = useState([]);
   const [token, setToken] = useState(null);
   const [orderID, setOrderID] = useState(orderIDFromParent);
+  const [category, setCategory] = useState("assignment");
   const [shareLink, setShareLink] = useState('');
   const [uploadStatus, setUploadStatus] = useState({});
   const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
@@ -80,6 +85,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("orderID", orderID);
+    formData.append("category", category);
     try {
       const response = await uploadFiles(formData);
       setUploadStatus((prevStatus) => ({
@@ -186,6 +192,33 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       required
                       disabled
                     />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {/* Select dropdown for order IDs */}
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                      <InputLabel>Select File Category</InputLabel>
+                      <Select
+                        {...field}
+                        label="Select File Category"
+                        variant="outlined"
+                        value={category} // Set value from state
+                        onChange={(e) => {
+                          setCategory(e.target.value); // Update state when value changes
+                          field.onChange(e); // Update react-hook-form value
+                        }}
+                        fullWidth
+                      >
+                        <MenuItem value="assignment">Assignment</MenuItem>
+                        <MenuItem value="payment">Payment</MenuItem>
+                        <MenuItem value="grades">Grades</MenuItem>
+                      </Select>
+                    </FormControl>
                   )}
                 />
               </Grid>
