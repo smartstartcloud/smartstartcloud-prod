@@ -293,40 +293,36 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 name="assignmentPayment"
                 control={control}
                 render={({ field }) => (
-                  <Select
+                  <TextField
                     {...field}
+                    type="number"
                     variant="outlined"
                     fullWidth
                     required
-                    sx={{ mb: 2 }}
-                    error={
-                      !!touchedFields.assignmentPayment &&
-                      !!errors.assignmentPayment
-                    }
+                    inputProps={{ min: 1 }}
+                    error={!!touchedFields.assignmentPayment && !!errors.assignmentPayment}
                     helperText={
-                      touchedFields.assignmentPayment &&
-                      errors.assignmentPayment
+                      touchedFields.assignmentPayment && errors.assignmentPayment
                         ? errors.assignmentPayment.message
                         : null
                     }
                     onBlur={(e) => {
                       field.onBlur();
-                      if (!field.value) {
+                      const value = parseFloat(e.target.value);
+                      if (isNaN(value) || value <= 0) {
                         setError("assignmentPayment", {
                           type: "manual",
-                          message: "Assignment Payment is required",
+                          message: "Please enter a positive number greater than 0",
                         });
                       } else {
                         clearErrors("assignmentPayment");
                       }
                     }}
-                  >
-                    <MenuItem value={0}>NOT PAID</MenuItem>
-                    <MenuItem value={1}>PAID</MenuItem>
-                  </Select>
+                  />
                 )}
               />
             </Grid>
+
             <Grid item xs={12} sm={3}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Controller
