@@ -19,7 +19,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
  const [formErrorMessage, setFormErrorMessage] = useState('');
  const [formLoading, setformLoading] = useState(false);
 
- const { sendAssignment } = useSendAssignmentData()
+ const { sendAssignment } = useSendAssignmentData() 
 
  const { control, handleSubmit, setError, clearErrors, reset, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
@@ -66,32 +66,32 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
         }
     }, [studentData, reset, editMode]);
 
-        const onSubmitAssignment = async (data) => {
-            setformLoading(true);
-            try{
-              const response = await sendAssignment(data, editMode)
-              // const response = "await sendAssignment(data)";
-              console.log("Form Data:", data);
-              console.log("Response Data:", response);
-              setFormSaved(true);
-              setformLoading(false);
+    const onSubmitAssignment = async (data) => {
+        setformLoading(true);
+        try{
+          const response = await sendAssignment(data, editMode)
+          // const response = "await sendAssignment(data)";
+          console.log("Form Data:", data);
+          console.log("Response Data:", response);
+          setFormSaved(true);
+          setformLoading(false);
 
-              window.location.reload();
-            }catch (e) {
-                setFormError(true);
-                setformLoading(false)
-                setFormErrorMessage(e.message)
-                console.log("Error submitting form: ", e.message)
-            }
+          window.location.reload();
+        }catch (e) {
+            setFormError(true);
+            setformLoading(false)
+            setFormErrorMessage(e.message)
+            console.log("Error submitting form: ", e.message)
         }
+    }
 
-        const handleAssignmentClose = () => {
-            setFormSaved(false);
-        };
+    const handleAssignmentClose = () => {
+        setFormSaved(false);
+    };
 
-        const handleAssignmentCloseError = () => {
-            setFormError(false);
-        };
+    const handleAssignmentCloseError = () => {
+        setFormError(false);
+    };
 
     return (
       <Box
@@ -272,16 +272,16 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     variant="outlined"
                     fullWidth
                     sx={{ mb: 2 }}
-                    error={
-                      !!touchedFields.assignmentProgress &&
-                      !!errors.assignmentProgress
-                    }
-                    helperText={
-                      touchedFields.assignmentProgress &&
-                      errors.assignmentProgress
-                        ? errors.assignmentProgress.message
-                        : null
-                    }
+                    // error={
+                    //   !!touchedFields.assignmentProgress &&
+                    //   !!errors.assignmentProgress
+                    // }
+                    // helperText={
+                    //   touchedFields.assignmentProgress &&
+                    //   errors.assignmentProgress
+                    //     ? errors.assignmentProgress.message
+                    //     : null
+                    // }
                   >
                     <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
                     <MenuItem value="COMPLETE">COMPLETE</MenuItem>

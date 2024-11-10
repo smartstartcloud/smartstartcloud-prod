@@ -1,4 +1,5 @@
 import Assignment from "../models/assignment.models.js";
+import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 // Function to create a new assignment and update relevant records
@@ -114,3 +115,106 @@ export const updateAssignment = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+async function createNewAssignmentManual(
+  orderID,
+  assignmentName,
+  assignmentType,
+  assignmentDeadline,
+  assignmentProgress,
+  assignmentPayment,
+  assignmentGrade,
+  moduleCode
+) {
+  const newAssignment = new Assignment({
+    orderID: orderID,
+    assignmentName: assignmentName,
+    assignmentType: assignmentType,
+    assignmentDeadline: assignmentDeadline,
+    assignmentProgress: assignmentProgress,
+    assignmentPayment: assignmentPayment,
+    assignmentGrade: assignmentGrade,
+    assignmentFile: [], // Default to empty array
+    assignmentNature: "manual",
+    moduleCode: moduleCode,
+  });
+  const savedAssignment = await newAssignment.save();
+  return savedAssignment;
+}
+
+async function findModuleIdByCode(moduleCode) {
+  try {
+    const module = await Module.findOne({ moduleCode: moduleCode }).select("_id");
+    return module?._id;
+  } catch (error) {
+    console.error("Error finding module:", error);
+  }
+}
+
+export const newAssignmentManual = async (req, res) => {  
+  try {
+    const {
+      studentID,
+      moduleCode,
+      orderID,
+      assignmentName,
+      assignmentType,
+      assignmentDeadline,
+      assignmentProgress,
+      assignmentPayment,
+      assignmentGrade,
+    } = req.body;
+    const moduleID = await findModuleIdByCode(moduleCode);
+    const module = await ModuleAssignment.findOne({ moduleID, studentID });
+    const createdAssignment = await createNewAssignmentManual(
+      orderID,
+      assignmentName,
+      assignmentType,
+      assignmentDeadline,
+      assignmentProgress,
+      assignmentPayment,
+      assignmentGrade,
+      moduleCode
+    );
+    await ModuleAssignment.findOneAndUpdate(
+      { _id: module._id },
+      { $push: { assignments: createdAssignment._id } }
+    )
+      .then((result) => {
+        if (result.matchedCount === 0) {
+          console.log("No document found with the given _id.");
+        } else {
+          res.status(200).json({ value: "Assignment added successfully" });
+        }
+      })
+      .catch((err) => {
+        console.error("Error updating the document:", err);
+      });
+} catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const deleteAssignment = async (req, res) => {
+  const { assignmentID } = req.params;
+
+  try {
+    // Delete the assignment from the Assignment collection
+    const deletedAssignment = await Assignment.findByIdAndDelete(assignmentID);
+    if (!deletedAssignment) {
+      return res.status(404).json({ error: "Assignment not found" });
+    }
+
+    // Remove the assignment reference from any ModuleAssignment document that contains it
+    await ModuleAssignment.updateMany(
+      { assignments: assignmentID },
+      { $pull: { assignments: assignmentID } }
+    );
+
+    res.status(200).json({ message: "Assignment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting assignment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}

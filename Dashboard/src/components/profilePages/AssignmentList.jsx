@@ -25,6 +25,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AssignmentForm from '../forms/AssignmentForm';
 import Slide from '@mui/material/Slide';
+import useDeleteObjects from '../../hooks/useDeleteObjects';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -38,11 +39,22 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [orderIdToPass, setOrderIdToPass] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
+  const {deleteAssignment} = useDeleteObjects()
   // console.log("students from parent ::::", student)
   const handleEditAssignment = (assignment) => {
     setCurrentAssignment(assignment);    
     setOpenDialog(true);
   };
+
+  const handleDeleteAssignment = async (assignment) => {
+    try{
+      const response = await deleteAssignment(assignment._id)
+      console.log("Response Data:", response);
+      window.location.reload();
+    }catch (e) {
+        console.log("Error submitting form: ", e.message)
+    }
+  }
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -294,7 +306,9 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete">
-                            <IconButton>
+                            <IconButton
+                              onClick={() => handleDeleteAssignment(assignment)}
+                            >
                               <DeleteOutlineOutlinedIcon />
                             </IconButton>
                           </Tooltip>
