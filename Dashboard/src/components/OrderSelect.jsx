@@ -7,50 +7,75 @@ import {
   Button,
   InputLabel,
   FormControl,
+  FormHelperText,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
 
 const OrderSelect = ({ control, editMode }) => {
-  const [refNo, setRefNo] = useState(""); // RefNo input field state
-  const [orderIds, setOrderIds] = useState([]); // Order IDs list state
+  const [refNo, setRefNo] = useState(""); 
+  const [orderIds, setOrderIds] = useState([]);
+  const [selectError, setSelectError] = useState(false);
 
-  const {getOrderIdList} = useGetOrderIdList()
+  const { getOrderIdList } = useGetOrderIdList();
 
-  // Function to handle API call and populate the select dropdown
   const handleFetchOrderIds = async () => {
     try {        
-      // Make an API call to fetch order IDs by refNo
       const response = await getOrderIdList(refNo);
-      setOrderIds(response.orderIDs); // Update order IDs based on API response
-
+      setOrderIds(response.orderIDs);
+      setSelectError(false); // Clear error when order IDs are fetched
     } catch (error) {
       console.error("Error fetching order IDs:", error);
+    }
+  };
+
+  const handleSelectClick = () => {
+    if (!refNo) {
+      setSelectError(true);
     }
   };
 
   return (
     <Grid item xs={12} sm={12}>
       <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+          <TextField
+            label="Reference Number"
+            variant="outlined"
+            fullWidth
+            value={refNo}
+            onBlur={handleFetchOrderIds} 
+            onChange={(e) => {
+              setRefNo(e.target.value);
+              setSelectError(false); // Clear error on reference number change
+            }}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
         <Grid item xs={12} sm={6}>
-          {/* Select dropdown for order IDs */}
           <Controller
             name="orderID"
             control={control}
             render={({ field }) => (
-              <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+              <FormControl 
+                fullWidth 
+                variant="outlined" 
+                sx={{ mb: 2 }}
+                error={selectError}
+              >
                 <InputLabel>Select Order ID</InputLabel>
                 <Select
                   {...field}
-                  label="Select Order ID"
+                  // label="Select Order ID"
                   variant="outlined"
                   fullWidth
                   displayEmpty
-                  disabled={orderIds.length === 0} // Disable if no order IDs or editMode is true
+                  disabled={!refNo || orderIds.length === 0} // Disable when no refNo
+                  onClick={handleSelectClick} // Show error when clicked without refNo
                 >
                   {orderIds.length === 0 ? (
                     <MenuItem value="" disabled>
-                      No Order IDs available
+                      
                     </MenuItem>
                   ) : (
                     orderIds.map((orderID, index) => (
@@ -60,38 +85,17 @@ const OrderSelect = ({ control, editMode }) => {
                     ))
                   )}
                 </Select>
+                {selectError && (
+                  <FormHelperText>
+                    Please enter a reference number first to select an order ID.
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          {/* RefNo input field */}
-          <TextField
-            label="Reference Number"
-            variant="outlined"
-            fullWidth
-            value={refNo}
-            onBlur={handleFetchOrderIds} // Call handleBlur on losing focus
-            onChange={(e) => setRefNo(e.target.value)} // Update refNo state on change
-            // disabled={editMode}
-            sx={{ mb: 2 }}
-          />
-        </Grid>
-        {/* <Grid item xs={12} sm={2}>
-          {/* Button to fetch order IDs
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleFetchOrderIds}
-            onBlur={handleBlur} // Call handleBlur on losing focus
-            disabled={!refNo} // Disable button if editMode is true or refNo is empty
-            sx={{ mb: 2 }}
-          >
-            Fetch
-          </Button>
-        </Grid> */}
+        
       </Grid>
     </Grid>
   );

@@ -46,7 +46,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     assignmentName: assignmentData?.assignmentName || '',
                     assignmentType: assignmentData?.assignmentType || '',
                     assignmentProgress: assignmentData?.assignmentProgress || 'IN PROGRESS',
-                    assignmentPayment: assignmentData?.assignmentPayment || 0,
+                    assignmentPayment: assignmentData?.assignmentPayment || '',
                     assignmentDeadline: assignmentData?.assignmentDeadline || '',
                     assignmentGrade: assignmentData?.assignmentGrade || ''
                 });
@@ -58,7 +58,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 assignmentName: '',
                 assignmentType: '',
                 assignmentProgress: 'IN PROGRESS',
-                assignmentPayment: 0,
+                assignmentPayment: '',
                 assignmentDeadline: '',
                 assignmentGrade: '',
             });
@@ -299,6 +299,8 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     variant="outlined"
                     fullWidth
                     required
+                    label="Payment Amount"
+                    sx={{ mb: 2 }}
                     inputProps={{ min: 1 }}
                     error={!!touchedFields.assignmentPayment && !!errors.assignmentPayment}
                     helperText={
@@ -312,7 +314,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                       if (isNaN(value) || value <= 0) {
                         setError("assignmentPayment", {
                           type: "manual",
-                          message: "Please enter a positive number greater than 0",
+                          message: "Please enter a number greater than 0",
                         });
                       } else {
                         clearErrors("assignmentPayment");
