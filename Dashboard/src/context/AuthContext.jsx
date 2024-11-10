@@ -16,13 +16,14 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // useEffect(() => {
-  //   const { userId = null, role = null } = extractDataFromToken(token) || {};
-  //   // Update authUser with the extracted data
-  //   if (role === "admin") {
-  //     setIsAdmin(true);
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    const { userId = null, userRole = null } = extractDataFromToken(token) || {};
+    // Update authUser with the extracted data
+    
+    if (userRole === "admin") {
+      setIsAdmin(true);
+    }
+  }, [token]);
   return (
     <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin }}>
       {children}
@@ -32,9 +33,7 @@ export const AuthContextProvider = ({ children }) => {
 
 // Sample function to decode JWT token
 const extractDataFromToken = (token) => {
-  try {
-    console.log(token);
-    
+  try {    
     if (token === "" || token === null){        
         throw new Error("Empty Token"); 
     }    
@@ -42,15 +41,15 @@ const extractDataFromToken = (token) => {
     const decodedToken = jwtDecode(token);
 
     // Access data from the decoded token
-    console.log("Decoded Token:", decodedToken);
+    // console.log("Decoded Token:", decodedToken);
 
     // Extract specific data like user info, roles, etc.
     const userId = decodedToken.userId; // example
     // const email = decodedToken.email;   // example
-    const role = decodedToken.role; // example
+    const userRole = decodedToken.userRole; // example
 
     // Return or use the extracted data as needed
-    return { userId, role };
+    return { userId, userRole };
   } catch (error) {
     console.error("Invalid JWT Token:", error);
     return null;

@@ -42,8 +42,6 @@ const Sidebar = () => {
 
   const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
   const { authUser, isAdmin } = useAuthContext()
-
-  
   
   return (
     <Box
