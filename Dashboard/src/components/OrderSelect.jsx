@@ -66,7 +66,7 @@ const OrderSelect = ({ control, editMode }) => {
                 <InputLabel>Select Order ID</InputLabel>
                 <Select
                   {...field}
-                  // label="Select Order ID"
+                  label="Select Order ID"
                   variant="outlined"
                   fullWidth
                   displayEmpty

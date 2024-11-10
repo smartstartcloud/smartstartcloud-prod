@@ -76,9 +76,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   ];
 
   useEffect(() => {
-    if (fileList) {
-      console.log(fileList);
-      
+    if (fileList) {      
       setExistingFiles(fileList);
     }
   }, [fileList]);
@@ -116,7 +114,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     }
   };
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file) => {    
     const formData = new FormData();
     formData.append("file", file);
     formData.append("orderID", orderID);
@@ -127,6 +125,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
         ...prevStatus,
         [file.name]: true,
       }));
+      window.location.reload();
     } catch (error) {
       console.log("Error submitting form: ", error.message);
     }

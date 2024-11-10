@@ -300,7 +300,6 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     type="number"
                     variant="outlined"
                     fullWidth
-                    required
                     label="Payment Amount"
                     sx={{ mb: 2 }}
                     inputProps={{ min: 1 }}
