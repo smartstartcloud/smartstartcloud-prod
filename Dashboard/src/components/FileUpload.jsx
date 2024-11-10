@@ -77,6 +77,8 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
   useEffect(() => {
     if (fileList) {      
+      console.log(fileList);
+      
       setExistingFiles(fileList);
     }
   }, [fileList]);

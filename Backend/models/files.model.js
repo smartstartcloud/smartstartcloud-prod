@@ -21,6 +21,10 @@ const fileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
 });
 
 const File = fileDB.model("File", fileSchema, "File");
