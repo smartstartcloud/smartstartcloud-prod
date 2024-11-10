@@ -75,6 +75,8 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
               console.log("Response Data:", response);
               setFormSaved(true);
               setformLoading(false);
+
+              window.location.reload();
             }catch (e) {
                 setFormError(true);
                 setformLoading(false)

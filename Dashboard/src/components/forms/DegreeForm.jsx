@@ -113,6 +113,7 @@ const DegreeForm = () => {
       const response = await sendDegreeForm(data);
       console.log("Form Data:", data);
       // console.log('Response Data:', response);
+      window.location.reload();
       setFormSaved(true);
       setLoading(false);
     } catch (e) {
