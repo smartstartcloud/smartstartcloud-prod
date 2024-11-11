@@ -1,85 +1,86 @@
-import ModuleAssignment from '../models/moduleAssignment.models.js'
-import Assignment from '../models/assignment.models.js';
-export const newAssignment = async (req,res)=>{
-  try{
-    const {studentID,moduleID,orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade} = req.body
-    
-    const module = await ModuleAssignment.findOne({moduleID,studentID});
-    if (module){
-        if(module.orderID.includes(orderID)){
-          res.status(400).json({error:"Order ID already exists"});
-        }else{
-          const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade);
-          await ModuleAssignment.findOneAndUpdate({ _id: module._id },{ $push: { orderID: createdAssignment.orderID } } ).then(result => {
-            if (result.matchedCount === 0) {
-              console.log("No document found with the given _id.");
-            } else {
-              res.status(200).json({value:"Assignment added successfully"});
-            }
-          })
-          .catch(err => {
-            console.error("Error updating the document:", err);
+import ModuleAssignment from '../models/moduleAssignment.models.js';
+import Module from '../models/module.models.js';
+import mongoose from 'mongoose';
+import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assignment.controllers.js';
+
+// New helper function to add the assignment to the Module model
+export const addNewModule = async(moduleList, studentList) =>  {
+  try {
+    // Use Promise.all to save all Module concurrently    
+    const addedModuleIDs = await Promise.all(
+      moduleList.map(async (moduleData) => {
+        // Finding the current Module in database to see if the ID already exists in database;
+        let currentModule = await Module.findOne({
+          moduleCode: moduleData.moduleCode,
+        });
+        if (currentModule) {          
+          return currentModule._id;
+        } else {
+          const newModule = new Module({
+            moduleName: moduleData.moduleName,
+            moduleCode: moduleData.moduleCode,
+            moduleAssignments: await newAssignmentDynamic(
+              moduleData.assignmentList,
+              studentList,
+              moduleData.moduleCode
+            ),
           });
+
+          const savedModule = await newModule.save();
+          createNewModuleStudentAssignment(
+            savedModule._id,
+            studentList,
+            savedModule.moduleAssignments
+          );
+          return savedModule._id;
+          
         }
-    }else{
-      try{
-        const createdAssignment = await createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade);
-        const newAssignment = new ModuleAssignment({
-            studentID,
-            moduleID,
-            orderID:createdAssignment.orderID
-          })
-          if(newAssignment){
-            await newAssignment.save();
-            res.status(200).json({value:"Assignment added successfully"});
-          }
-        }catch(error){
-          if(error.code==11000){        
-            res.status(400).json({error:"Order ID already exists"});
-          }else{
-            console.log(error);
-            res.status(500).json({error:"Internal Server Error"});
-          }
-        }
-    }
-    }catch(error){
-        console.log(error);
-        res.status(500).json({error:"Internal Server Error"});    
-    }
+      })
+    );    
+    return addedModuleIDs; // Return the array of added student IDs
+  } catch (error) {
+    console.error("Error adding Modules:", error);
+    throw new Error("Failed to add Modules");
+  }
 }
 
-export const getAssignment = async (req,res)=>{
-  try{
-    const {studentID,moduleID} = req.params
+// Function to create a new assignment and update relevant records
+export const newAssignment = async (degreeModules, studentList) => {
+  //   // Link the assignment to the module
+  //   console.log("Linking assignment to module...");
+  //   try {
+  //     await moduleAddAssignmentToModule(moduleID, createdAssignment);
+  //     console.log("Assignment linked to module successfully.");
+  //   } catch (error) {
+  //     console.error("Error linking assignment to module:", error);
+  //     throw new Error("Failed to link assignment to module");
+  //   }
+
+  //   console.log("Assignment added and propagated successfully.");
+  // } catch (error) {
+  //   console.error("Error in newAssignment:", error);
+  //   throw new Error("Failed to add assignment");
+  // }
+};
+
+
+
+export const getAssignment = async (req, res) => {
+  try {
+    const { studentID, moduleID } = req.params;
     
-    const module = await ModuleAssignment.findOne({moduleID,studentID}).populate({
-      path: 'orderID',  // The field we want to populate
-      model: 'Assignment', // The model to populate from
-      foreignField: 'orderID'  // Match based on orderID
-    });
-    if (module){
-      res.status(200).json(module.orderID);
-    }else{
-        res.status(400).json({error:"No module found"})
-    }
-    }catch(error){
-        console.log(error);
-        res.status(500).json({error:"Internal Server Error"});    
-    }
-}
+    const moduleAssignment = await ModuleAssignment.findOne({
+      moduleID: new mongoose.Types.ObjectId(moduleID),
+      studentID: new mongoose.Types.ObjectId(studentID),
+    }).populate("assignments");
 
-
-async function createNewAssignment(orderID,assignmentName,assignmentType,assignmentDeadline,assignmentProgress,assignmentPayment,assignmentGrade){
-  const newAssignment = new Assignment({
-    orderID: orderID,
-    assignmentName: assignmentName,
-    assignmentType: assignmentType,
-    assignmentDeadline: assignmentDeadline,
-    assignmentProgress: assignmentProgress,
-    assignmentPayment: assignmentPayment,
-    assignmentGrade: assignmentGrade,
-    assignmentFile: [] // Default to empty array
-  });
-  const savedAssignment = await newAssignment.save();
-  return savedAssignment;
-}
+    if (moduleAssignment) {
+      res.status(200).json(moduleAssignment);
+    } else {
+      res.status(404).json({ error: "No module found for the provided student and module" });
+    }
+  } catch (error) {
+    console.error("Error fetching assignment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

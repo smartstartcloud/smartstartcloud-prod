@@ -3,7 +3,11 @@ import { useLocation } from 'react-router-dom';
 import {
   Button, Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
   Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal,
-  InputAdornment
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
@@ -30,6 +34,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const [existingFiles, setExistingFiles] = useState([]);
   const [token, setToken] = useState(null);
   const [orderID, setOrderID] = useState(orderIDFromParent);
+  const [category, setCategory] = useState("assignment");
   const [shareLink, setShareLink] = useState('');
   const [uploadStatus, setUploadStatus] = useState({});
   const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
@@ -37,8 +42,43 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
   const { control } = useForm({});
 
+  const dummyData = [
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv1.pdf",
+      fileType: "application/pdf",
+      category: "assignment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv2.pdf",
+      fileType: "application/pdf",
+      category: "payment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv3.pdf",
+      fileType: "application/pdf",
+      category: "payment",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv4.pdf",
+      fileType: "application/pdf",
+      category: "grade",
+    },
+    {
+      _id: "672fea726125fcfbf5798867",
+      fileName: "Farhan cv5.pdf",
+      fileType: "application/pdf",
+      category: "assignment",
+    },
+  ];
+
   useEffect(() => {
-    if (fileList) {
+    if (fileList) {      
+      console.log(fileList);
+      
       setExistingFiles(fileList);
     }
   }, [fileList]);
@@ -76,16 +116,18 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     }
   };
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file) => {    
     const formData = new FormData();
     formData.append("file", file);
     formData.append("orderID", orderID);
+    formData.append("category", category);
     try {
       const response = await uploadFiles(formData);
       setUploadStatus((prevStatus) => ({
         ...prevStatus,
         [file.name]: true,
       }));
+      window.location.reload();
     } catch (error) {
       console.log("Error submitting form: ", error.message);
     }
@@ -136,6 +178,15 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
         });
     }
   };
+
+  const handleCategoryChange = (category) => {
+    console.log(category);
+    const filteredFiles = dummyData.filter(
+      (file) => file.category === category
+    );
+    setExistingFiles(filteredFiles);
+    
+  }
 
   return (
     <Modal open={open} onClose={handleCloseModal}>
@@ -189,7 +240,34 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
+                {/* Select dropdown for order IDs */}
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                      <InputLabel>Select File Category</InputLabel>
+                      <Select
+                        {...field}
+                        label="Select File Category"
+                        variant="outlined"
+                        value={category} // Set value from state
+                        onChange={(e) => {
+                          setCategory(e.target.value); // Update state when value changes
+                          field.onChange(e); // Update react-hook-form value
+                        }}
+                        fullWidth
+                      >
+                        <MenuItem value="assignment">Assignment</MenuItem>
+                        <MenuItem value="payment">Payment</MenuItem>
+                        <MenuItem value="grades">Grades</MenuItem>
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+              {/* <Grid item xs={12} sm={4}>
                 <Button
                   variant="contained"
                   onClick={handleSharableLink}
@@ -201,9 +279,9 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                 >
                   Generate Link
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
-            <Grid container spacing={2}>
+            {/* <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Controller
                   name="shareLink"
@@ -230,7 +308,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   )}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Box>
@@ -317,14 +395,42 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
             {existingFiles.length > 0 && (
               <Box mt={3}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2" }}
-                >
-                  Current Files
-                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("assignment")}
+                    >
+                      Assignment Files
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("payment")}
+                    >
+                      Payment Files
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      align="center"
+                      sx={{ color: "#1976d2", cursor: "pointer" }}
+                      onClick={() => handleCategoryChange("grade")}
+                    >
+                      Grade Files
+                    </Typography>
+                  </Grid>
+                </Grid>
+
                 <TableContainer
                   component={Paper}
                   sx={{ marginTop: "20px", ...customScrollbarStyles }}

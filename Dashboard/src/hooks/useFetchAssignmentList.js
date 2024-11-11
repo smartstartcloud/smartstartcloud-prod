@@ -2,12 +2,12 @@ import useApi from "./useApi"
 
 const useFetchAssignmentList = () => {
     const api = useApi()
-    const fetchAssignmentList = async (moduleID, studentID) => {
-        
+    const fetchAssignmentList = async (moduleID, studentID) => {        
         try {
             const res = await api.get(`/api/module/getAssignment/${moduleID}/${studentID}`)
 
-            const data = await res.data;
+            const data = await res.data.assignments;        
+                
             if (data.error) {
                 throw new Error(data.error);
             }

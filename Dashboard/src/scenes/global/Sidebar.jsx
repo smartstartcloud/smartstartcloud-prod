@@ -41,9 +41,7 @@ const Sidebar = () => {
   const pathnames = location.pathname.split('/').filter((x) => x)[0]  
 
   const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
-  const { authUser } = useAuthContext()
-
-  
+  const { authUser, isAdmin } = useAuthContext()
   
   return (
     <Box
@@ -140,13 +138,13 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              <Item 
+              {isAdmin && <Item 
                 title="Signup User"
                 to="/signup"
                 icon={<PersonOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
-              />
+              />}
               <Item
                 title="FAQ Page"
                 to="/faq"
