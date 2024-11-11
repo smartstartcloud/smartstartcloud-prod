@@ -181,7 +181,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
 
   const handleCategoryChange = (category) => {
     console.log(category);
-    const filteredFiles = dummyData.filter(
+    const filteredFiles = existingFiles.filter(
       (file) => file.category === category
     );
     setExistingFiles(filteredFiles);

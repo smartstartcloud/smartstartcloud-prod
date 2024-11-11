@@ -5,10 +5,14 @@ import { forceMongo } from "../utils/forceMongoFieldNotUnique.js";
 // Controller to handle file upload
 export const uploadFile = async (req, res) => {
   try {
-    const { orderID } = req.body; // Use orderID from params (token in shareable link)
+    const { orderID, category } = req.body; // Use orderID from params (token in shareable link)
 
     if (!orderID) {
       return res.status(400).json({ message: "Order ID (token) is required" });
+    }
+
+    if (!category) {
+      return res.status(400).json({ message: "Category is required" });
     }
 
     // Find the assignment with the given orderID
@@ -28,6 +32,7 @@ export const uploadFile = async (req, res) => {
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
       fileData: req.file.buffer,
+      category: category, // Set the category
     });
 
     await newFile.save();

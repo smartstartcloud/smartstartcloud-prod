@@ -12,7 +12,7 @@ const storage = getStorage(app);
 
 export const fileUpload = async (req, res) => {
   try {
-    const { orderID } = req.body;
+    const { orderID, category } = req.body;
     const storageRef = ref(storage, req.file.originalname);
 
     const metadata = {
@@ -25,14 +25,15 @@ export const fileUpload = async (req, res) => {
       metadata
     );
 
-    const donwloadURL = await getDownloadURL(uploadTask.ref);
+    const downloadURL = await getDownloadURL(uploadTask.ref);
 
     // Save the file data to MongoDB
     const newFile = new File({
       orderID: orderID, // Use orderID as token
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
-      fileUrl: donwloadURL,
+      fileUrl: downloadURL,
+      category: category, // Set the category
     });
 
     await newFile.save();
