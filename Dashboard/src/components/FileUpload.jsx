@@ -146,7 +146,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     try {
       const response = await deleteFiles(file._id)
       console.log(response.message);
-      
+      window.location.reload();
     } catch (error) {
       console.log(error);
       
