@@ -76,9 +76,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   ];
 
   useEffect(() => {
-    if (fileList) {    
-      console.log('ashce');
-              
+    if (fileList) {                  
       setExistingFiles(fileList);
       setExistingFilteredFiles(fileList)
     }
@@ -426,7 +424,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   gutterBottom
                   align="center"
                   sx={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => handleCategoryChange("grade")}
+                  onClick={() => handleCategoryChange("grades")}
                 >
                   Grade Files
                 </Typography>
