@@ -282,7 +282,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                                 ? key === "assignmentPayment"
                                   ? assignment[key] === 0
                                     ? "NOT PAID"
-                                    : "PAID"
+                                    : assignment[key]
                                   : assignment[key]
                                 : "N/A"}
                             </span>

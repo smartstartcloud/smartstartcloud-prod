@@ -302,7 +302,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     fullWidth
                     label="Payment Amount"
                     sx={{ mb: 2 }}
-                    inputProps={{ min: 1 }}
+                    inputProps={{ min: 0 }}
                     error={!!touchedFields.assignmentPayment && !!errors.assignmentPayment}
                     helperText={
                       touchedFields.assignmentPayment && errors.assignmentPayment
@@ -312,7 +312,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     onBlur={(e) => {
                       field.onBlur();
                       const value = parseFloat(e.target.value);
-                      if (isNaN(value) || value <= 0) {
+                      if (isNaN(value) || value < 0) {
                         setError("assignmentPayment", {
                           type: "manual",
                           message: "Please enter a number greater than 0",
