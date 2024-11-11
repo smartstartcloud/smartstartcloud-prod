@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Button, Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
+  Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
   Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal,
-  InputAdornment,
   Select,
   MenuItem,
   FormControl,
@@ -32,10 +31,11 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
-  const [token, setToken] = useState(null);
+  const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
+  // const [token, setToken] = useState(null);
   const [orderID, setOrderID] = useState(orderIDFromParent);
   const [category, setCategory] = useState("assignment");
-  const [shareLink, setShareLink] = useState('');
+  // const [shareLink, setShareLink] = useState('');
   const [uploadStatus, setUploadStatus] = useState({});
   const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
   const { fileList } = useFetchFileList(orderID);
@@ -76,20 +76,23 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
   ];
 
   useEffect(() => {
-    if (fileList) {      
-      console.log(fileList);
-      
+    if (fileList) {    
+      console.log('ashce');
+              
       setExistingFiles(fileList);
+      setExistingFilteredFiles(fileList)
     }
+    console.log(existingFilteredFiles);
+    
   }, [fileList]);
 
-  const location = useLocation();
+  // const location = useLocation();
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tokenFromURL = params.get("token");
-    setToken(tokenFromURL);
-  }, [location]);
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const tokenFromURL = params.get("token");
+  //   setToken(tokenFromURL);
+  // }, [location]);
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -156,35 +159,36 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
     setOpen(false);
   };
 
-  const handleSharableLink = async () => {
-    try {
-      const response = await handleGenerateShareableLink(orderID);
-      setShareLink(response.shareableLink)
-      console.log(response);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  // const handleSharableLink = async () => {
+  //   try {
+  //     const response = await handleGenerateShareableLink(orderID);
+  //     setShareLink(response.shareableLink)
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
 
-  const handleLinkCopy = () => {
-    if (shareLink) {
-      navigator.clipboard
-        .writeText(shareLink)
-        .then(() => {
-          alert("Share link copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy the link: ", err);
-        });
-    }
-  };
+  // const handleLinkCopy = () => {
+  //   if (shareLink) {
+  //     navigator.clipboard
+  //       .writeText(shareLink)
+  //       .then(() => {
+  //         alert("Share link copied to clipboard!");
+  //       })
+  //       .catch((err) => {
+  //         console.error("Failed to copy the link: ", err);
+  //       });
+  //   }
+  // };
 
   const handleCategoryChange = (category) => {
-    console.log(category);
     const filteredFiles = existingFiles.filter(
       (file) => file.category === category
     );
-    setExistingFiles(filteredFiles);
+    console.log(filteredFiles);
+    
+    setExistingFilteredFiles(filteredFiles);
     
   }
 
@@ -393,44 +397,44 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
               </TableContainer>
             )}
 
-            {existingFiles.length > 0 && (
-              <Box mt={3}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="h5"
-                      gutterBottom
-                      align="center"
-                      sx={{ color: "#1976d2", cursor: "pointer" }}
-                      onClick={() => handleCategoryChange("assignment")}
-                    >
-                      Assignment Files
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="h5"
-                      gutterBottom
-                      align="center"
-                      sx={{ color: "#1976d2", cursor: "pointer" }}
-                      onClick={() => handleCategoryChange("payment")}
-                    >
-                      Payment Files
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="h5"
-                      gutterBottom
-                      align="center"
-                      sx={{ color: "#1976d2", cursor: "pointer" }}
-                      onClick={() => handleCategoryChange("grade")}
-                    >
-                      Grade Files
-                    </Typography>
-                  </Grid>
-                </Grid>
+            <Grid container spacing={2} mt={3}>
+              <Grid item xs={4}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  align="center"
+                  sx={{ color: "#1976d2", cursor: "pointer" }}
+                  onClick={() => handleCategoryChange("assignment")}
+                >
+                  Assignment Files
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  align="center"
+                  sx={{ color: "#1976d2", cursor: "pointer" }}
+                  onClick={() => handleCategoryChange("payment")}
+                >
+                  Payment Files
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  align="center"
+                  sx={{ color: "#1976d2", cursor: "pointer" }}
+                  onClick={() => handleCategoryChange("grade")}
+                >
+                  Grade Files
+                </Typography>
+              </Grid>
+            </Grid>
 
+            {existingFilteredFiles.length > 0 && (
+              <Box mt={3}>
                 <TableContainer
                   component={Paper}
                   sx={{ marginTop: "20px", ...customScrollbarStyles }}
@@ -444,7 +448,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {existingFiles.map((file, index) => (
+                      {existingFilteredFiles.map((file, index) => (
                         <TableRow key={index}>
                           <TableCell align="center">
                             <Typography
