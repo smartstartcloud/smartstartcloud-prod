@@ -2,23 +2,37 @@ import useApi from "./useApi"
 
 const useSendAssignmentData = () => {
     const api = useApi()
-    const sendAssignment = async({studentID, moduleID, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline, assignmentGrade}) => {
+    let res;
+    const sendAssignment = async({assignmentID, studentID, moduleCode, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline, assignmentGrade}, editMode) => {        
         try {
-            const res = await api.post(
-              `/api/module/newAssignment`,
-              {
-                studentID,
-                moduleID,
-                orderID,
-                assignmentName,
-                assignmentType,
-                assignmentProgress,
-                assignmentPayment,
-                assignmentDeadline,
-                assignmentGrade,
-              }
-            );
+            if (editMode) {
+                res = await api.put(
+                  `/api/module/updateAssignment/${assignmentID}`,
+                  {
+                    moduleCode,
+                    orderID,
+                    assignmentName,
+                    assignmentType,
+                    assignmentProgress,
+                    assignmentPayment,
+                    assignmentDeadline,
+                    assignmentGrade,
+                  }
+                );
 
+            } else {
+                res = await api.post(`/api/module/newAssignment`, {
+                  studentID,
+                  moduleCode,
+                  orderID,
+                  assignmentName,
+                  assignmentType,
+                  assignmentProgress,
+                  assignmentPayment,
+                  assignmentDeadline,
+                  assignmentGrade,
+                });
+            }
             const data = await res.data;
             if (data.error) {
                 throw new Error(data.error);

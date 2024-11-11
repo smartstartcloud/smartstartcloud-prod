@@ -1,20 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CircularProgress,
-    Grid,
-    Typography,
-    Dialog,
-    useTheme,
-    DialogTitle,
-    DialogContent,
-    IconButton,
-} from '@mui/material';
+import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton,} from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';
@@ -29,6 +16,7 @@ const StudentProfile = () => {
     const colors = tokens(theme.palette.mode);
     const location = useLocation();
     const { studentId } = useParams();
+    
     const { student, loading, error } = useFetchSingleStudentData(studentId);
 
     const { fetchAssignmentList } = useFetchAssignmentList();
@@ -36,7 +24,7 @@ const StudentProfile = () => {
     const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
     // console.log("student :::", student);
     
-    const { degreeModules } = location.state || [];
+    const { degreeModules } = location.state || [];    
 
     const [open, setOpen] = useState(false);
     const [selectedModule, setSelectedModule] = useState(degreeModules[0]?._id || null);
@@ -59,7 +47,7 @@ const StudentProfile = () => {
         try {
             const response = await fetchAssignmentList(moduleId, _id);
             if (Array.isArray(response)) {
-                setAssignmentList([{ moduleName }, ...response]);
+                setAssignmentList([{ moduleName }, ...response]);                
             } else {
                 throw new Error("Invalid response from the server");
             }
@@ -184,7 +172,7 @@ const StudentProfile = () => {
                                         borderRadius: 4,
                                     }}
                                 >
-                                    <Typography variant="h5" color={colors.grey[100]}>{module.moduleName}</Typography>
+                                    <Typography variant="h5" color={colors.grey[100]}>{module.moduleName} - {module.moduleCode}</Typography>
                                 </Card>
                             </Grid>
                         ))}
