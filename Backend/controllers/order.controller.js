@@ -76,12 +76,16 @@ export const uploadFile = [
   upload.single('file'), // Middleware to handle single file upload
   async (req, res) => {
     try {
-      const { orderID } = req.params;
+      const { orderID, category } = req.params;
 
       // Check if the orderID exists
       const order = await Order.findOne({ orderID });
       if (!order) {
         return res.status(404).json({ error: "Order not found" });
+      }
+
+      if (!category) {
+        return res.status(400).json({ message: "Category is required" });
       }
 
       // If file is uploaded successfully
