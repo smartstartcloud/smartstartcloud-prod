@@ -237,7 +237,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                       }
                       onClick={() => handleRequestSort("assignmentPayment")}
                     >
-                      Payment Status
+                      Payment Status (GBP)
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
