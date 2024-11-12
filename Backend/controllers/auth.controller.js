@@ -58,7 +58,7 @@ export const signupUser = async (req, res) => {
             return res.status(400).json({error: "Username already exists."})
         }
         let passRenew;
-        if(password=='000000'){
+        if(password==process.env.AGENTPASSWORD){
             passRenew = false;
         }
         else{
