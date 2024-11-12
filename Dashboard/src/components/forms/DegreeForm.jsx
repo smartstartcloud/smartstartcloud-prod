@@ -314,6 +314,8 @@ const DegreeForm = () => {
 
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Degree Students
+        </Typography><Typography variant="p" gutterBottom sx={{ mt: 4, mb: 2 }}>
+        Please use this <a href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/edit?usp=sharing" target="_blank">template</a> when uploading students in bulk using a CSV file.
         </Typography>
         <Grid item xs={12} sm={4}>
           <Button

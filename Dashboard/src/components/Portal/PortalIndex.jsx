@@ -113,7 +113,7 @@ const PortalIndex = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title={"PORTAL"} subtitle={"Welcome to Portal for Irder ID"} />
+        <Header title={"PORTAL"} subtitle={"Welcome to Portal for Order ID"} />
       </Box>
       <Box display="flex" gap="20px">
         <Box
@@ -143,6 +143,10 @@ const PortalIndex = () => {
         >
           <Typography variant="h4" gutterBottom>
             Order ID
+          </Typography>
+          
+          <Typography variant="p" component="div">
+            Please use this <a href="https://docs.google.com/spreadsheets/d/1Sn6U4RF7iIQzrvk3KGQH7X_RAfiD7ZcgFtaeZUDkcnU/edit?usp=sharing" target="_blank">template</a> when uploading orders in bulk using a CSV file.
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)}>
