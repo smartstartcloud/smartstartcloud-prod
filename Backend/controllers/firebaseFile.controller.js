@@ -8,6 +8,8 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
+import axios from "axios";
+
 const storage = getStorage(app);
 
 export const fileUpload = async (req, res) => {
@@ -60,10 +62,25 @@ export const fileDownload = async (req, res) => {
     if (!file) {
       return res.status(404).json({ message: "File not found" });
     }
-    res.redirect(file.fileUrl);
+    // Fetch the file from Firebase using axios
+    const firebaseResponse = await axios.get(file.fileUrl, 
+      { responseType: 'stream', 
+      onDownloadProgress: (progressEvent) => {
+      const { loaded, total } = progressEvent;
+      const progress = (loaded / total) * 100;
+      console.log(`Download progress: ${progress.toFixed(2)}%`);
+    } });
+
+    // Set headers for download
+    res.setHeader('Content-Disposition', `attachment; filename="${file.fileName}"`);
+    res.setHeader('Content-Type', file.fileType);
+
+    // Stream the file content to the client
+    firebaseResponse.data.pipe(res);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error downloading file", error: error.message });
   }
 };
+
