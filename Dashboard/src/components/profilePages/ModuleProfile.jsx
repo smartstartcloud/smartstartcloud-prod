@@ -88,10 +88,13 @@ const ModuleProfile = () => {
                   color={colors.grey[100]}
                   sx={{ fontWeight: "bold" }}
                 >
-                  Module Type:
+                  Module Assignments:
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={6} display='flex' gap={2}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                  {"Essay"}
+                </Typography>
                 <Typography variant="h6" color={colors.grey[100]}>
                   {"Essay"}
                 </Typography>
