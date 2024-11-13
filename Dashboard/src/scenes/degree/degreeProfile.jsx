@@ -67,7 +67,7 @@ const DegreeProfile = () => {
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleModuleClick = (module) => {
     // Assuming degreeYear is part of the degree data    
-    navigate(`/task/${degreeYear}/${degreeId}/module/${module._id}`);
+    navigate(`/task/${degreeYear}/${degreeId}/module/${module.moduleCode}`);
 
   };
 
@@ -174,7 +174,15 @@ const DegreeProfile = () => {
                         key={index}
                         variant="body1"
                         color={colors.grey[200]}
-                        sx={{ textAlign: "center", mb: 1 }}
+                        sx={{
+                          textAlign: "center",
+                          mb: 1,
+                          cursor: "pointer",
+                          transition: "transform 0.3s ease", // smooth transition
+                          "&:hover": {
+                            transform: "scale(1.3)", // scale to 1.5 on hover
+                          },
+                        }}
                         onClick={() => handleModuleClick(module)}
                       >
                         {module.moduleName}
