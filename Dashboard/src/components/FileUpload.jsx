@@ -27,14 +27,14 @@ const customScrollbarStyles = {
   'scrollbar-width': 'none', 
 };
 
-const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
+const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false }) => {  
   const theme = useTheme();
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
   const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
   // const [token, setToken] = useState(null);
   const [orderID, setOrderID] = useState(orderIDFromParent);
-  const [category, setCategory] = useState("assignment");
+  const [category, setCategory] = useState(isModule ? "module" : "assignment");
   // const [shareLink, setShareLink] = useState('');
   const [uploadStatus, setUploadStatus] = useState({});
   const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
@@ -235,9 +235,21 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                         }}
                         fullWidth
                       >
-                        <MenuItem value="assignment">Assignment</MenuItem>
-                        <MenuItem value="payment">Payment</MenuItem>
-                        <MenuItem value="grades">Grades</MenuItem>
+                        {isModule ? (
+                          [<MenuItem value="module">Module</MenuItem>]
+                        ) : (
+                          [
+                            <MenuItem key="assignment" value="assignment">
+                              Assignment
+                            </MenuItem>,
+                            <MenuItem key="payment" value="payment">
+                              Payment
+                            </MenuItem>,
+                            <MenuItem key="grades" value="grades">
+                              Grades
+                            </MenuItem>,
+                          ]
+                        )}
                       </Select>
                     </FormControl>
                   )}
@@ -369,7 +381,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
               </TableContainer>
             )}
 
-            <Grid container spacing={2} mt={3}>
+            {!isModule && <Grid container spacing={2} mt={3}>
               <Grid item xs={4}>
                 <Typography
                   variant="h5"
@@ -403,7 +415,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open }) => {
                   Grade Files
                 </Typography>
               </Grid>
-            </Grid>
+            </Grid>}
 
             {existingFilteredFiles.length > 0 && (
               <Box mt={3}>

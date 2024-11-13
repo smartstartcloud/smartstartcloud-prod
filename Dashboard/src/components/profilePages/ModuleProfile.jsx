@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { tokens } from '../../theme'
 import {
@@ -15,12 +15,20 @@ import {
   DialogContent,
   IconButton,
 } from "@mui/material";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import FileUpload from '../FileUpload';
+
 
 const ModuleProfile = () => {
-  const { moduleId } = useParams()
+  const { degreeId, moduleCode } = useParams()
+  const [orderIdToPass, setOrderIdToPass] = useState(moduleCode);
+  const [open, setOpen] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  console.log(moduleId);
+  console.log(degreeId, moduleCode);
+  const handleFileOpen = () => {
+    setOpen(true);
+  };
   
   return (
     <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
@@ -55,7 +63,7 @@ const ModuleProfile = () => {
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6" color={colors.grey[100]}>
-                  {1}
+                  {moduleCode}
                 </Typography>
               </Grid>
 
@@ -80,10 +88,13 @@ const ModuleProfile = () => {
                   color={colors.grey[100]}
                   sx={{ fontWeight: "bold" }}
                 >
-                  Module Type:
+                  Module Assignments:
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={6} display='flex' gap={2}>
+                <Typography variant="h6" color={colors.grey[100]}>
+                  {"Essay"}
+                </Typography>
                 <Typography variant="h6" color={colors.grey[100]}>
                   {"Essay"}
                 </Typography>
@@ -115,9 +126,36 @@ const ModuleProfile = () => {
                   Repellendus, qui nobis?
                 </Typography>
               </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item>
+                  <Button
+                    onClick={handleFileOpen}
+                    startIcon={<FolderOpenOutlinedIcon />}
+                    sx={{
+                      backgroundColor: colors.grey[100], // Set background color
+                      color: colors.grey[900], // Set text color
+                      "&:hover": {
+                        backgroundColor: colors.grey[200], // Set hover color
+                      },
+                    }}
+                    variant="contained" // or "outlined" based on your styling preference
+                  >
+                    Open Folder
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </CardContent>
         </Card>
+
+        {open && (
+          <FileUpload
+            setOpen={setOpen}
+            open={open}
+            orderID={orderIdToPass}
+            isModule={true}
+          />
+        )}
       </Box>
     </Box>
   );

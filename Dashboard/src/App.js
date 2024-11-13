@@ -75,7 +75,7 @@ function App() {
               <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' /> } />
               <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser ? <StudentProfile /> : <Navigate to='/login' /> } />
-              <Route path="/task/:degreeYear/:degreeId/module/:moduleId" element={authUser ? <ModuleProfile /> : <Navigate to='/login' /> } />
+              <Route path="/task/:degreeYear/:degreeId/module/:moduleCode" element={authUser ? <ModuleProfile /> : <Navigate to='/login' /> } />
               <Route path="/*" element={<Navigate to='/task' />} />
 
             </Routes>
