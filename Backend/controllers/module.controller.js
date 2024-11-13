@@ -65,23 +65,58 @@ export const getAssignment = async (req, res) => {
   }
 };
 
-export const getAssignmentForModule = async (studentID, moduleID) => {
+export const getAssignmentNew = async (moduleID, degreeID) => {
   try {
-    // Find the module assignment by moduleID and studentID
-    const moduleAssignment = await ModuleAssignment.findOne({
-      moduleID: new mongoose.Types.ObjectId(moduleID),
-      studentID: new mongoose.Types.ObjectId(studentID),
-    }).populate("assignments");
-
-    if (moduleAssignment) {
-      // Extract assignments list to return to the caller
-      const assignmentsList = moduleAssignment.assignments || [];
-      return { success: true, assignments: assignmentsList };
-    } else {
-      return { success: false, error: "No module found for the provided student and module" };
+    // Step 1: Retrieve the module details by moduleID
+    const module = await Module.findById(moduleID);
+    if (!module) {
+      return { success: false, error: "Module not found" };
     }
+
+    const { moduleName, moduleCode } = module;
+
+    // Step 2: Retrieve the student list for the given degree
+    const degree = await Degree.findOne({ degreeID }).populate("degreeStudentList");
+    if (!degree) {
+      return { success: false, error: "Degree not found" };
+    }
+
+    const studentList = degree.degreeStudentList || [];
+    const populatedStudentList = [];
+
+    // Step 3: Iterate over each student in the list
+    for (let i = 0; i <= studentList.length; i++) {
+      const student = studentList[i];
+      const tempStudent = {
+        id: student._id,
+        name: student.studentName,
+        assignmentList: []
+      };
+
+      // Step 4: Fetch assignments for each student for the specified module
+      const assignmentResult = await getAssignmentForModule(student._id, moduleID);
+
+      if (assignmentResult.success) {
+        tempStudent.assignmentList = assignmentResult.assignments;
+      } else {
+        console.log(`No assignments found for student ${student._id} in module ${moduleID}`);
+      }
+
+      // Step 5: Add the temp student object to the populated student list
+      populatedStudentList.push(tempStudent);
+    }
+
+    // Step 6: Return the module data with populated student list
+    return {
+      success: true,
+      moduleName,
+      moduleCode,
+      moduleData: {
+        studentList: populatedStudentList
+      }
+    };
   } catch (error) {
-    console.error("Error fetching assignment:", error);
+    console.error("Error in getAssignmentNew:", error);
     return { success: false, error: "Internal Server Error" };
   }
 };
