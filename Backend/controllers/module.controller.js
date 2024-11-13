@@ -1,7 +1,7 @@
 import ModuleAssignment from '../models/moduleAssignment.models.js';
 import Module from '../models/module.models.js';
 import mongoose from 'mongoose';
-import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assignment.controllers.js';
+import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assignment.controller.js';
 
 // New helper function to add the assignment to the Module model
 export const addNewModule = async(moduleList, studentList) =>  {
