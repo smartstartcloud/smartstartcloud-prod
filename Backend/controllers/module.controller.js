@@ -106,17 +106,39 @@ export const getAssignmentNew = async (moduleID, degreeID) => {
       populatedStudentList.push(tempStudent);
     }
 
-    // Step 6: Return the module data with populated student list
-    return {
-      success: true,
+     // Step 6: Send JSON response with module details and populated student list
+     res.status(200).json({
       moduleName,
       moduleCode,
       moduleData: {
         studentList: populatedStudentList
       }
-    };
+    });
   } catch (error) {
     console.error("Error in getAssignmentNew:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAssignmentForModule = async (studentID, moduleID) => {
+  try {
+    // Find the module assignment by moduleID and studentID
+    const moduleAssignment = await ModuleAssignment.findOne({
+      moduleID: new mongoose.Types.ObjectId(moduleID),
+      studentID: new mongoose.Types.ObjectId(studentID),
+    }).populate("assignments");
+
+    if (moduleAssignment) {
+      // Extract assignments list to return to the caller
+      const assignmentsList = moduleAssignment.assignments || [];
+      return { success: true, assignments: assignmentsList };
+    } else {
+      return { success: false, error: "No module found for the provided student and module" };
+    }
+  } catch (error) {
+    console.error("Error fetching assignment:", error);
     return { success: false, error: "Internal Server Error" };
   }
 };
+
+
