@@ -3,7 +3,7 @@ import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 // Function to create a new assignment and update relevant records
-export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
+export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode, referenceNumber) => {        
     try {
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(
@@ -17,7 +17,8 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
                     assignmentNature: "dynamic",
-                    moduleCode: moduleCode
+                    moduleCode: moduleCode,
+                    referenceNumber: referenceNumber
                 });
 
                 // Save the assignment to the database and collect its ObjectID
@@ -124,7 +125,8 @@ async function createNewAssignmentManual(
   assignmentProgress,
   assignmentPayment,
   assignmentGrade,
-  moduleCode
+  moduleCode,
+  referenceNumber
 ) {
   const newAssignment = new Assignment({
     orderID: orderID,
@@ -137,6 +139,7 @@ async function createNewAssignmentManual(
     assignmentFile: [], // Default to empty array
     assignmentNature: "manual",
     moduleCode: moduleCode,
+    referenceNumber: referenceNumber
   });
   const savedAssignment = await newAssignment.save();
   return savedAssignment;

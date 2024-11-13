@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {Alert, Box, Button,CircularProgress, Grid, MenuItem, Select, Snackbar, TextField, Typography, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
+import { useNavigate } from 'react-router-dom';
 
 import { Controller, useForm } from 'react-hook-form';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -18,6 +19,9 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
  const [formError, setFormError] = useState(false);
  const [formErrorMessage, setFormErrorMessage] = useState('');
  const [formLoading, setformLoading] = useState(false);
+
+ 
+ const navigate = useNavigate(); 
 
  const { sendAssignment } = useSendAssignmentData() 
 
@@ -76,7 +80,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
           setFormSaved(true);
           setformLoading(false);
 
-          window.location.reload();
+          navigate(0);
         }catch (e) {
             setFormError(true);
             setformLoading(false)
@@ -302,7 +306,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     fullWidth
                     label="Payment Amount"
                     sx={{ mb: 2 }}
-                    inputProps={{ min: 1 }}
+                    inputProps={{ min: 0 }}
                     error={!!touchedFields.assignmentPayment && !!errors.assignmentPayment}
                     helperText={
                       touchedFields.assignmentPayment && errors.assignmentPayment
@@ -312,7 +316,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     onBlur={(e) => {
                       field.onBlur();
                       const value = parseFloat(e.target.value);
-                      if (isNaN(value) || value <= 0) {
+                      if (isNaN(value) || value < 0) {
                         setError("assignmentPayment", {
                           type: "manual",
                           message: "Please enter a number greater than 0",
