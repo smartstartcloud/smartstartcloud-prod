@@ -11,6 +11,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  group: {
+    type:String,
+    required: true,
+  }
 });
 
 const Order = fileDB.model('Order', orderSchema);

@@ -27,7 +27,7 @@ export const newOrder = async (req, res) => {
         return res.status(404).json({ error: "Order ID list empty" });
       }
       for (let order of orderIDList) {
-        const { orderID, referenceNumber } = order;
+        const { orderID, referenceNumber, group } = order;
         // Check if the orderID already exists
         const existingOrder = await Order.findOne({ orderID });
         if (existingOrder) {          
@@ -35,7 +35,7 @@ export const newOrder = async (req, res) => {
           orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
         } else {
           // Create a new order document
-          const order = new Order({ orderID, referenceNumber });
+          const order = new Order({ orderID, referenceNumber, group });
           await order.save();
           orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
         }
@@ -55,8 +55,8 @@ export const getAllOrders = async (req, res) => {
     const { refNo } = req.query; // Get refNo from query parameters
     // If refNo is provided, filter by referenceNumber; otherwise, fetch all orders
     const orders = refNo
-      ? await Order.find({ referenceNumber: refNo }, "orderID referenceNumber")
-      : await Order.find({}, "orderID referenceNumber");
+      ? await Order.find({ referenceNumber: refNo }, "orderID referenceNumber group") // Include group in the fields to return
+      : await Order.find({}, "orderID referenceNumber group"); // Include group for all orders
 
     // If refNo is provided but no matching order is found, send a 404 response
     if (refNo && orders.length === 0) {
@@ -69,6 +69,7 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Middleware for handling file uploads for a specific orderID
 export const uploadFile = [

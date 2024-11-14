@@ -345,11 +345,11 @@ const SignupForm = () => {
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4} >
+                        <Grid item xs={12} sm={4}>
                             <Controller
                                 name='role'
                                 control={control}
-                                render={({field})=>(
+                                render={({ field }) => (
                                     <Select
                                         {...field}
                                         variant="outlined"
@@ -359,12 +359,15 @@ const SignupForm = () => {
                                         sx={{ mb: 2 }}
                                     >
                                         <MenuItem value="" disabled>Select Role</MenuItem>
-                                        <MenuItem value="admin" >Admin</MenuItem>
-                                        <MenuItem value="agent" >Agent</MenuItem>
+                                        <MenuItem value="admin">Admin</MenuItem>
+                                        <MenuItem value="agent">Agent</MenuItem>
+                                        <MenuItem value="edu">EDU</MenuItem>
+                                        <MenuItem value="pen">PEN</MenuItem>
                                     </Select>
                                 )}
                             />
                         </Grid>
+
                     </Grid>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4}}>
