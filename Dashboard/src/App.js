@@ -26,7 +26,7 @@ import PortalSidebar from "./components/Portal/PortalSidebar";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
-  const { authUser, isAdmin } = useAuthContext();
+  const { authUser, isAdmin, isPortal } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,20 +56,20 @@ export const App = () => {
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
               {/* Main app routes */}
-              <Route path="/task" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
-              <Route path="/allDegrees" element={authUser ? <AllDegree /> : <Navigate to='/login' />} />
+              <Route path="/login" element={authUser && !isPortal ? <Navigate to='/task' /> : <LoginForm />} />
+              <Route path="/task" element={authUser && !isPortal ? <Dashboard /> : <Navigate to='/login' />} />
+              <Route path="/allDegrees" element={authUser && !isPortal ? <AllDegree /> : <Navigate to='/login' />} />
               <Route path="/uploadPage" element={<UploadDownload />} />
               <Route path="/globalLink" element={<GlobalUploadPage />} />
-              <Route path="/welcome" element={authUser ? <Welcome /> : <Navigate to='/login' />} />
-              <Route path="/renew" element={authUser ? <Navigate to='/' /> : <RenewPassword />} />
+              <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />
+              <Route path="/renew" element={authUser && !isPortal ? <Navigate to='/' /> : <RenewPassword />} />
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
-              <Route path="/login" element={authUser ? <Navigate to='/' /> : <LoginForm />} />
-              <Route path="/add-degree" element={authUser ? <DegreeForm /> : <Navigate to='/login' />} />
-              <Route path="/faq" element={authUser ? <FAQ /> : <Navigate to='/' />} />
-              <Route path="/task/:degreeYear" element={authUser ? <DegreeBoard /> : <Navigate to='/login' />} />
-              <Route path="/task/:degreeYear/:degreeId" element={authUser ? <DegreeProfile /> : <Navigate to='/login' />} />
-              <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser ? <StudentProfile /> : <Navigate to='/login' />} />
-              <Route path="/task/:degreeYear/:degreeId/module/:moduleCode" element={authUser ? <ModuleProfile /> : <Navigate to='/login' />} />
+              <Route path="/add-degree" element={authUser && !isPortal ? <DegreeForm /> : <Navigate to='/login' />} />
+              <Route path="/faq" element={authUser && !isPortal ? <FAQ /> : <Navigate to='/' />} />
+              <Route path="/task/:degreeYear" element={authUser && !isPortal ? <DegreeBoard /> : <Navigate to='/login' />} />
+              <Route path="/task/:degreeYear/:degreeId" element={authUser && !isPortal ? <DegreeProfile /> : <Navigate to='/login' />} />
+              <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser && !isPortal ? <StudentProfile /> : <Navigate to='/login' />} />
+              <Route path="/task/:degreeYear/:degreeId/module/:moduleCode" element={authUser && !isPortal ? <ModuleProfile /> : <Navigate to='/login' />} />
 
               {/* Catch-all route */}
               <Route path="/*" element={<Navigate to='/task' />} />

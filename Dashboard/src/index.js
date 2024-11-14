@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
 import { TokenContextProvider } from './context/TokenContext';
 import { getApp } from './utils/constants';
-import { App } from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const CurrentApp = getApp();

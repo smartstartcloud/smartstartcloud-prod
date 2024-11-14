@@ -15,6 +15,7 @@ export const AuthContextProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("access-token")) || null
   );
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPortal, setIsPortal] = useState(false);
 
   useEffect(() => {
     const { userId = null, userRole = null } = extractDataFromToken(token) || {};
@@ -22,6 +23,8 @@ export const AuthContextProvider = ({ children }) => {
     
     if (userRole === "admin") {
       setIsAdmin(true);
+    } else if (userRole === "edu" || userRole === "pen") {
+      setIsPortal(true)
     }
   }, [token]);
   return (
