@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { tokens } from '../../theme'
 import {
   Box,
@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import FileUpload from '../FileUpload';
+import useFetchModuleData from '../../hooks/useFetchModuleData';
+import ModuleAssignmentTable from '../ModuleAssignmentTable';
 
 
 const ModuleProfile = () => {
@@ -25,14 +27,22 @@ const ModuleProfile = () => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  console.log(degreeId, moduleCode);
+  const location = useLocation()
+  const { moduleId } = location.state || [];  
+  // console.log(degreeId, moduleCode, moduleId);
+  const { moduleData, loading, error } = useFetchModuleData(degreeId, moduleId);
   const handleFileOpen = () => {
     setOpen(true);
   };
   
   return (
     <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
-      <Box display="flex" justifyContent="space-between" mb={2}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
+        mb={2}
+      >
         <Card
           sx={{
             width: "100%",
@@ -91,7 +101,7 @@ const ModuleProfile = () => {
                   Module Assignments:
                 </Typography>
               </Grid>
-              <Grid item xs={6} display='flex' gap={2}>
+              <Grid item xs={6} display="flex" gap={2}>
                 <Typography variant="h6" color={colors.grey[100]}>
                   {"Essay"}
                 </Typography>
@@ -147,7 +157,11 @@ const ModuleProfile = () => {
             </Grid>
           </CardContent>
         </Card>
-
+        {moduleData && moduleData.moduleData && (
+          <Box m="20px 0px">
+            <ModuleAssignmentTable studentData={moduleData.moduleData} />
+          </Box>
+        )}
         {open && (
           <FileUpload
             setOpen={setOpen}

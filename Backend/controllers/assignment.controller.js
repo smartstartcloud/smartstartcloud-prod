@@ -13,12 +13,12 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                 for (let i = 0; i < studentList.length; i++) {
                 // Create a new Assignment instance
                 const newAssignment = new Assignment({
-                    assignmentName: assignmentData.assignmentName,
-                    assignmentType: assignmentData.assignmentType,
-                    assignmentDeadline: assignmentData.assignmentDeadline,
-                    assignmentNature: "dynamic",
-                    moduleCode: moduleCode,
-                    referenceNumber: referenceNumber
+                  assignmentName: assignmentData.assignmentName,
+                  assignmentType: assignmentData.assignmentType,
+                  assignmentDeadline: assignmentData.assignmentDeadline,
+                  assignmentNature: "dynamic",
+                  moduleCode: moduleCode,
+                  referenceNumber: assignmentData.referenceNumber,
                 });
 
                 // Save the assignment to the database and collect its ObjectID
@@ -83,19 +83,19 @@ export const updateAssignment = async (req, res) => {
       assignmentNature,
     } = req.body;
 
-    // Replace empty string fields with "N/A"
-    const updatedFields = {
-      moduleCode: moduleCode || "N/A",
-      orderID: orderID || "N/A",
-      assignmentName: assignmentName || "N/A",
-      assignmentType: assignmentType || "N/A",
-      assignmentProgress: assignmentProgress || "N/A",
-      assignmentPayment: assignmentPayment || "N/A",
-      assignmentDeadline: assignmentDeadline || "N/A",
-      assignmentGrade: assignmentGrade || "N/A",
-      assignmentFile: assignmentFile || [], // Use empty array if assignmentFile is not provided
-      assignmentNature: assignmentNature || "N/A",
-    };
+    // Update only the fields that are provided in the request body
+    const updatedFields = {};
+
+    if (orderID) updatedFields.orderID = orderID; // Only update if provided
+    if (moduleCode) updatedFields.moduleCode = moduleCode;
+    if (assignmentName) updatedFields.assignmentName = assignmentName;
+    if (assignmentType) updatedFields.assignmentType = assignmentType;
+    if (assignmentProgress) updatedFields.assignmentProgress = assignmentProgress;
+    if (assignmentPayment) updatedFields.assignmentPayment = assignmentPayment;
+    if (assignmentDeadline) updatedFields.assignmentDeadline = assignmentDeadline;
+    if (assignmentGrade) updatedFields.assignmentGrade = assignmentGrade;
+    if (assignmentFile) updatedFields.assignmentFile = assignmentFile;
+    if (assignmentNature) updatedFields.assignmentNature = assignmentNature;
 
     // Find the specific assignment by its ID and update it
     const assignment = await Assignment.findByIdAndUpdate(

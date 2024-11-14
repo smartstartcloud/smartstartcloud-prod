@@ -2,6 +2,7 @@ import ModuleAssignment from '../models/moduleAssignment.models.js';
 import Module from '../models/module.models.js';
 import mongoose from 'mongoose';
 import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assignment.controller.js';
+import Degree from '../models/degree.models.js';
 
 // New helper function to add the assignment to the Module model
 export const addNewModule = async(moduleList, studentList) =>  {
@@ -65,15 +66,19 @@ export const getAssignment = async (req, res) => {
   }
 };
 
-export const getAssignmentNew = async (moduleID, degreeID) => {
+export const getModuleData = async (req, res) => {
   try {
+    const { degreeID, moduleID } = req.params;
+
     // Step 1: Retrieve the module details by moduleID
     const module = await Module.findById(moduleID);
     if (!module) {
-      return { success: false, error: "Module not found" };
+      res
+        .status(404)
+        .json({ error: "No module found for the provided student and module" });
     }
 
-    const { moduleName, moduleCode } = module;
+    const { moduleName, moduleCode } = module;    
 
     // Step 2: Retrieve the student list for the given degree
     const degree = await Degree.findOne({ degreeID }).populate("degreeStudentList");
@@ -82,38 +87,36 @@ export const getAssignmentNew = async (moduleID, degreeID) => {
     }
 
     const studentList = degree.degreeStudentList || [];
+    
     const populatedStudentList = [];
 
     // Step 3: Iterate over each student in the list
-    for (let i = 0; i <= studentList.length; i++) {
-      const student = studentList[i];
+    for (let i = 0; i < studentList.length; i++) {
+      const student = studentList[i];            
       const tempStudent = {
-        id: student._id,
+        id: student.studentID,
         name: student.studentName,
-        assignmentList: []
+        assignmentList: [],
       };
 
       // Step 4: Fetch assignments for each student for the specified module
-      const assignmentResult = await getAssignmentForModule(student._id, moduleID);
+      const assignmentResult = await getAssignmentForModule(student._id, moduleID);      
 
       if (assignmentResult.success) {
-        tempStudent.assignmentList = assignmentResult.assignments;
+        tempStudent.assignmentList = assignmentResult.assignments;        
       } else {
         console.log(`No assignments found for student ${student._id} in module ${moduleID}`);
       }
 
       // Step 5: Add the temp student object to the populated student list
       populatedStudentList.push(tempStudent);
-    }
-
+    }    
      // Step 6: Send JSON response with module details and populated student list
      res.status(200).json({
-      moduleName,
-      moduleCode,
-      moduleData: {
-        studentList: populatedStudentList
-      }
-    });
+       moduleName,
+       moduleCode,
+       moduleData: populatedStudentList,
+     });
   } catch (error) {
     console.error("Error in getAssignmentNew:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -126,11 +129,17 @@ export const getAssignmentForModule = async (studentID, moduleID) => {
     const moduleAssignment = await ModuleAssignment.findOne({
       moduleID: new mongoose.Types.ObjectId(moduleID),
       studentID: new mongoose.Types.ObjectId(studentID),
-    }).populate("assignments");
+    }).populate({
+      path: "assignments",
+      select:
+        "-assignmentFile -assignmentGrade -assignmentNature -assignmentPayment -assignmentProgress",
+    });
+    
 
     if (moduleAssignment) {
       // Extract assignments list to return to the caller
       const assignmentsList = moduleAssignment.assignments || [];
+      
       return { success: true, assignments: assignmentsList };
     } else {
       return { success: false, error: "No module found for the provided student and module" };

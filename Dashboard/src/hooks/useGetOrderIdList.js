@@ -3,13 +3,9 @@ import useApi from "./useApi";
 const useGetOrderIdList = () => {
   const api = useApi();
   const getOrderIdList = async (refNo) => {    
-    try {
-        console.log(refNo);
-        
+    try {        
         const res = await api.get(`/api/order/orderList/${refNo}`);
-        const data = await res.data;
-        console.log(data);
-        
+        const data = await res.data;        
         if (data.error) {
           throw new Error(data.error);
         }

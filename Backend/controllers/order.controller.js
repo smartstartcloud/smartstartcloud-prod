@@ -16,7 +16,6 @@ const upload = multer({ storage });
 // Create a new order with orderID and referenceNumber
 export const newOrder = async (req, res) => {
   const {orderIDList} = req.body
-  console.log(orderIDList);
   
   const orderLog = {
     acceptedOrders: [],

@@ -120,9 +120,7 @@ export const listFilesByOrderID = async (req, res) => {
   try {
     const { orderID } = req.params;
 
-    const files = await File.find({ orderID }, "fileName fileType category createdAt");
-    console.log(files);
-    
+    const files = await File.find({ orderID }, "fileName fileType category createdAt");    
 
     res.json(files || []);
   } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -44,8 +44,8 @@ const DegreeForm = () => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  const navigate = useNavigate(); 
+
+  const navigate = useNavigate();
 
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
@@ -60,7 +60,12 @@ const DegreeForm = () => {
           moduleName: "",
           moduleCode: "",
           assignmentList: [
-            { assignmentName: "", assignmentType: "", assignmentDeadline: "" },
+            {
+              assignmentName: "",
+              referenceNumber: "",
+              assignmentType: "",
+              assignmentDeadline: "",
+            },
           ],
         },
       ],
@@ -103,21 +108,24 @@ const DegreeForm = () => {
 
   const onSubmit = async (data) => {
     const modules = {};
-    data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;    
+    data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;
 
     data.degreeModules.forEach((module, index) => {
       module.moduleName = `Module ${index + 1}`;
       module.moduleCode = `${refDegreeID ? `${refDegreeID}_M` : ""}${
         index + 1
       }`;
-    });
+      module.assignmentList.forEach((assignment, assignmentIndex)=> {
+        assignment.referenceNumber = `${refDegreeID ? `${refDegreeID}_M${index + 1}_A` : ""}${assignmentIndex + 1}`;
+      })
+    });    
     setLoading(true);
     try {
       const response = await sendDegreeForm(data);
       console.log("Form Data:", data);
       // console.log('Response Data:', response);
       navigate(0);
-      
+
       setFormSaved(true);
       setLoading(false);
     } catch (e) {
@@ -318,8 +326,16 @@ const DegreeForm = () => {
 
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Degree Students
-        </Typography><Typography variant="p" gutterBottom sx={{ mt: 4, mb: 2 }}>
-        Please use this <a href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/edit?usp=sharing" target="_blank">template</a> when uploading students in bulk using a CSV file.
+        </Typography>
+        <Typography variant="p" gutterBottom sx={{ mt: 4, mb: 2 }}>
+          Please use this{" "}
+          <a
+            href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/edit?usp=sharing"
+            target="_blank"
+          >
+            template
+          </a>{" "}
+          when uploading students in bulk using a CSV file.
         </Typography>
         <Grid item xs={12} sm={4}>
           <Button
@@ -574,7 +590,7 @@ const DegreeForm = () => {
                     }}
                   >
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={3}>
                         <Controller
                           name={`degreeModules[${index}].assignmentList[${assignmentIndex}].assignmentName`}
                           control={control}
@@ -584,6 +600,32 @@ const DegreeForm = () => {
                               label="Assignment Name"
                               variant="outlined"
                               fullWidth
+                            />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Controller
+                          name={`degreeModules[${index}].assignmentList[${assignmentIndex}].referenceNumber`}
+                          control={control}
+                          defaultValue={`${
+                            refDegreeID ? `${refDegreeID}_M${index + 1}_A` : ""
+                          }${assignmentIndex + 1}`}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              label="Reference Number"
+                              variant="outlined"
+                              fullWidth
+                              disabled
+                              value={
+                                field.value ||
+                                `${
+                                  refDegreeID
+                                    ? `${refDegreeID}_M${index + 1}_A`
+                                    : ""
+                                }${assignmentIndex + 1}`
+                              }
                             />
                           )}
                         />

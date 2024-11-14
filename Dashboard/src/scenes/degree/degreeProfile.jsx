@@ -67,7 +67,10 @@ const DegreeProfile = () => {
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleModuleClick = (module) => {
     // Assuming degreeYear is part of the degree data    
-    navigate(`/task/${degreeYear}/${degreeId}/module/${module.moduleCode}`);
+    const moduleId = module._id 
+    navigate(`/task/${degreeYear}/${degreeId}/module/${module.moduleCode}`, {
+      state: {moduleId}
+    });
 
   };
 
