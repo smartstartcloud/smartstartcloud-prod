@@ -20,7 +20,7 @@ const DegreeProfile = () => {
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const { deleteStudents } = useDeleteStudents();
+  const { deleteStudent } = useDeleteStudents();
   const navigate = useNavigate(); 
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
@@ -92,7 +92,7 @@ const DegreeProfile = () => {
   const handleDelete = async (data) => {
     console.log("whats in handle delete params ?",data);
     try{
-      const response = await deleteStudents(data._id)
+      const response = await deleteStudent(data._id)
       console.log("Response Data:", response);
       navigate(0);
     }catch (e) {
