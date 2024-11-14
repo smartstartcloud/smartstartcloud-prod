@@ -10,16 +10,20 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import StudentForm from '../../components/forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import useDeleteStudents from '../../hooks/useDeleteStudents';
+import useDeleteDegrees from '../../hooks/useDeleteDegrees';
 
 
 const DegreeProfile = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate(); // useNavigate to handle navigation
   const { degreeYear, degreeId } = useParams();
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { deleteStudent } = useDeleteStudents();
+  const { deleteDegree } = useDeleteDegrees();
+  const navigate = useNavigate(); 
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
 
@@ -46,7 +50,7 @@ const DegreeProfile = () => {
           <IconButton
             onClick={(event) => {
               event.stopPropagation(); // Prevents the row click event
-              handleDelete(params.row);
+              handleEdit(params.row);
             }}
           >
             <EditOutlinedIcon />
@@ -54,7 +58,7 @@ const DegreeProfile = () => {
           <IconButton
             onClick={(event) => {
               event.stopPropagation(); // Prevents the row click event
-              handleEdit(params.row);
+              handleDelete(params.row);
             }}
           >
             <DeleteOutlineOutlinedIcon />
@@ -87,8 +91,25 @@ const DegreeProfile = () => {
     console.log(data);
   };
 
-  const handleDelete = (data) => {
-    console.log(data);
+  const handleDelete = async (data) => {
+    console.log("whats in handle delete params ?",data);
+    try{
+      const response = await deleteStudent(data._id)
+      console.log("Response Data:", response);
+      navigate(0);
+    }catch (e) {
+        console.log("Error submitting form: ", e.message)
+    }
+  };
+
+  const handleDegreeDelete = async () => {
+    try {
+      const response = await deleteDegree(degreeId);
+      console.log("Degree deleted:", response);
+      navigate("/allDegrees"); 
+    } catch (e) {
+      console.log("Error deleting degree: ", e.message);
+    }
   };
 
   if (loading) {
@@ -204,7 +225,26 @@ const DegreeProfile = () => {
               </Box>
             </Grid>
           </Grid>
+           <IconButton
+          onClick={handleDegreeDelete}
+          sx={{
+            position: "absolute",
+            top: 119,
+            right: 123,
+            backgroundColor: colors.redAccent[500],
+            color: colors.grey[100],
+            "&:hover": {
+              backgroundColor: colors.redAccent[600],
+              transform: "scale(1.1)",
+              transition: "transform 0.2s",
+            },
+            boxShadow: 3,
+          }}
+        >
+          <DeleteOutlineOutlinedIcon />
+        </IconButton>
         </CardContent>
+       
       </Card>
 
       <Box sx={{ width: "100%", maxWidth: "1000px", mt: 3 }}>

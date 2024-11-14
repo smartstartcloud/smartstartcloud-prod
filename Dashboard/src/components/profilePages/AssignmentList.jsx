@@ -26,6 +26,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AssignmentForm from '../forms/AssignmentForm';
 import Slide from '@mui/material/Slide';
 import useDeleteObjects from '../../hooks/useDeleteObjects';
+import { useNavigate } from 'react-router-dom';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -46,11 +47,13 @@ const AssignmentList = ({ list, degreeModules, student }) => {
     setOpenDialog(true);
   };
 
+  const navigate = useNavigate(); 
+
   const handleDeleteAssignment = async (assignment) => {
     try{
       const response = await deleteAssignment(assignment._id)
       console.log("Response Data:", response);
-      window.location.reload();
+      navigate(0);
     }catch (e) {
         console.log("Error submitting form: ", e.message)
     }
