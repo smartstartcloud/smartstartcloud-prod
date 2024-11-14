@@ -10,16 +10,18 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import StudentForm from '../../components/forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import useDeleteStudents from '../../hooks/useDeleteStudents';
 
 
 const DegreeProfile = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate(); // useNavigate to handle navigation
   const { degreeYear, degreeId } = useParams();
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { deleteStudents } = useDeleteStudents();
+  const navigate = useNavigate(); 
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
 
@@ -46,7 +48,7 @@ const DegreeProfile = () => {
           <IconButton
             onClick={(event) => {
               event.stopPropagation(); // Prevents the row click event
-              handleDelete(params.row);
+              handleEdit(params.row);
             }}
           >
             <EditOutlinedIcon />
@@ -54,7 +56,7 @@ const DegreeProfile = () => {
           <IconButton
             onClick={(event) => {
               event.stopPropagation(); // Prevents the row click event
-              handleEdit(params.row);
+              handleDelete(params.row);
             }}
           >
             <DeleteOutlineOutlinedIcon />
@@ -87,8 +89,15 @@ const DegreeProfile = () => {
     console.log(data);
   };
 
-  const handleDelete = (data) => {
-    console.log(data);
+  const handleDelete = async (data) => {
+    console.log("whats in handle delete params ?",data);
+    try{
+      const response = await deleteStudents(data._id)
+      console.log("Response Data:", response);
+      navigate(0);
+    }catch (e) {
+        console.log("Error submitting form: ", e.message)
+    }
   };
 
   if (loading) {
