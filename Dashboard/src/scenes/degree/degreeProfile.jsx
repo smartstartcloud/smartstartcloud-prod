@@ -11,6 +11,7 @@ import StudentForm from '../../components/forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteStudents from '../../hooks/useDeleteStudents';
+import useDeleteDegrees from '../../hooks/useDeleteDegrees';
 
 
 const DegreeProfile = () => {
@@ -21,6 +22,7 @@ const DegreeProfile = () => {
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent } = useDeleteStudents();
+  const { deleteDegree } = useDeleteDegrees();
   const navigate = useNavigate(); 
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
@@ -97,6 +99,16 @@ const DegreeProfile = () => {
       navigate(0);
     }catch (e) {
         console.log("Error submitting form: ", e.message)
+    }
+  };
+
+  const handleDegreeDelete = async () => {
+    try {
+      const response = await deleteDegree(degreeId);
+      console.log("Degree deleted:", response);
+      navigate("/allDegrees"); 
+    } catch (e) {
+      console.log("Error deleting degree: ", e.message);
     }
   };
 
@@ -213,7 +225,26 @@ const DegreeProfile = () => {
               </Box>
             </Grid>
           </Grid>
+           <IconButton
+          onClick={handleDegreeDelete}
+          sx={{
+            position: "absolute",
+            top: 119,
+            right: 123,
+            backgroundColor: colors.redAccent[500],
+            color: colors.grey[100],
+            "&:hover": {
+              backgroundColor: colors.redAccent[600],
+              transform: "scale(1.1)",
+              transition: "transform 0.2s",
+            },
+            boxShadow: 3,
+          }}
+        >
+          <DeleteOutlineOutlinedIcon />
+        </IconButton>
         </CardContent>
+       
       </Card>
 
       <Box sx={{ width: "100%", maxWidth: "1000px", mt: 3 }}>
