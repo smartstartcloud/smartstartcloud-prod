@@ -10,8 +10,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import StudentForm from '../../components/forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import useDeleteStudents from '../../hooks/useDeleteStudents';
-import useDeleteDegrees from '../../hooks/useDeleteDegrees';
+import useDeleteObjects from '../../hooks/useDeleteObjects';
 
 
 const DegreeProfile = () => {
@@ -21,8 +20,7 @@ const DegreeProfile = () => {
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const { deleteStudent } = useDeleteStudents();
-  const { deleteDegree } = useDeleteDegrees();
+  const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
@@ -103,8 +101,8 @@ const DegreeProfile = () => {
   };
 
   const handleDegreeDelete = async () => {
-    try {
-      const response = await deleteDegree(degreeId);
+    try {      
+      const response = await deleteDegree(degree._id);
       console.log("Degree deleted:", response);
       navigate("/allDegrees"); 
     } catch (e) {
