@@ -22,24 +22,25 @@ import ModuleProfile from "./components/profilePages/ModuleProfile";
 import { useEffect } from "react";
 import PortalIndex from "./components/Portal/PortalIndex";
 import PortalAll from "./components/Portal/PortalAll";
+import PortalSidebar from "./components/Portal/PortalSidebar";
 
-function App() {
+export const App = () => {
   const [theme, colorMode] = useMode();
   const { authUser, isAdmin } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const hostname = window.location.hostname;
+  // useEffect(() => {
+  //   const hostname = window.location.hostname;
     
-    // Check for 'portal' subdomain and ensure navigation to portal routes
-    if (hostname === "portal.smartstart.cloud" || hostname === "portal.localhost") {
-      if (!location.pathname.startsWith("/portal")) {
-        navigate("/portal");
-      }
-    }
-  }, [location.pathname, navigate]);
+  //   // Check for 'portal' subdomain and ensure navigation to portal routes
+  //   if (hostname === "portal.smartstart.cloud" || hostname === "portal.localhost") {
+  //     if (!location.pathname.startsWith("/portal")) {
+  //       navigate("/portal");
+  //     }
+  //   }
+  // }, [location.pathname, navigate]);
 
   const handleLogout = () => {
     logout().then(() => console.log("User logged out successfully"));
@@ -54,10 +55,6 @@ function App() {
           <main className="content">
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
-              {/* Portal-specific routes */}
-              <Route path="/portal" element={authUser ? <PortalIndex /> : <Navigate to='/login' />} />
-              <Route path="/portal/all" element={authUser ? <PortalAll /> : <Navigate to='/login' />} />
-
               {/* Main app routes */}
               <Route path="/task" element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser ? <AllDegree /> : <Navigate to='/login' />} />
@@ -84,4 +81,41 @@ function App() {
   );
 }
 
-export default App;
+export const AppPortal = () => {
+  const [theme, colorMode] = useMode();
+  const { authUser, isAdmin } = useAuthContext();
+  const { logout } = useLogout();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout().then(() => console.log("User logged out successfully"));
+  };
+
+  return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div className="app">
+          {authUser && <PortalSidebar />}
+          <main className="content">
+            {location.pathname !== "/welcome" && (
+              <Topbar logOut={handleLogout} />
+            )}
+            <Routes>
+              {/* Portal-specific routes */}
+              <Route path="/" element={authUser ? <PortalIndex /> : <Navigate to="/login" />}/>
+              <Route path="/all" element={authUser ? <PortalAll /> : <Navigate to="/login" />}/>
+
+              {/* Main app routes */}
+              <Route path="/login" element={authUser ? <Navigate to="/" /> : <LoginForm />}/>
+
+              {/* Catch-all route */}
+              <Route path="/*" element={<Navigate to="/" />} />
+            </Routes>
+          </main>
+        </div>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
+}

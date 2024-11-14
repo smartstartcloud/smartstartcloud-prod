@@ -1,19 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
 import { TokenContextProvider } from './context/TokenContext';
+import { getApp } from './utils/constants';
+import { App } from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const CurrentApp = getApp();
 
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
       <TokenContextProvider>
         <BrowserRouter>
-          <App />
+          <CurrentApp />
         </BrowserRouter>
       </TokenContextProvider>
     </AuthContextProvider>
