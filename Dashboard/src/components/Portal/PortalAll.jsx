@@ -244,7 +244,7 @@ const PortalAll = () => {
             </Typography>
           </Box>
         )}
-        <Grid container spacing={3} justifyContent="left">
+        <Grid container spacing={3} mb={3} justifyContent="left">
           {displayList &&
             displayList.map((order) => (
               <Grid item xs={4} sm={2} md={2} key={order._id}>

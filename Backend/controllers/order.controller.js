@@ -18,36 +18,45 @@ const upload = multer({ storage });
 // Create a new order with orderID and referenceNumber
 export const newOrder = async (req, res) => {
   const {orderIDList} = req.body
+  const testToken = req.headers.authorization;
+
+  if (!testToken) {
+    return res.status(401).json({error: "Unauthorized",message: "Authentication is required to access this resource.",});
+  }
+
+  const token = testToken.split(" ")[1];
+  const decoded = jwt.decode(token);
+
+  const userGroup = decoded.userRole;  
   
   const orderLog = {
     acceptedOrders: [],
     unacceptedOrders: [],
   };
-    try {
-      
-      if (!orderIDList.length) {
-        return res.status(404).json({ error: "Order ID list empty" });
-      }
-      for (let order of orderIDList) {
-        const { orderID, referenceNumber, group } = order;
-        // Check if the orderID already exists
-        const existingOrder = await Order.findOne({ orderID });
-        if (existingOrder) {          
-          // return res.status(400).json({ error: "Order ID already exists" });
-          orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
-        } else {
-          // Create a new order document
-          const order = new Order({ orderID, referenceNumber, group });
-          await order.save();
-          orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
-        }
-      }
-      
-      res.status(201).json({ message: "Order created successfully", orderLog });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Internal Server Error" });
+  try {
+    if (!orderIDList.length) {
+      return res.status(404).json({ error: "Order ID list empty" });
     }
+    for (let order of orderIDList) {
+      const { orderID, referenceNumber } = order;
+      // Check if the orderID already exists
+      const existingOrder = await Order.findOne({ orderID });
+      if (existingOrder) {          
+        // return res.status(400).json({ error: "Order ID already exists" });
+        orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
+      } else {
+        // Create a new order document
+        const order = new Order({ orderID, referenceNumber, group: userGroup });        
+        await order.save();
+        orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
+      }
+    }
+    
+    res.status(201).json({ message: "Order created successfully", orderLog });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
   
 };
 
@@ -55,7 +64,7 @@ export const newOrder = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const { refNo } = req.query;
-    const testToken = req.headers.authorization;    
+    const testToken = req.headers.authorization;
 
     if (!testToken) {
       return res.status(401).json({ error: "Unauthorized", message: "Authentication is required to access this resource." });
