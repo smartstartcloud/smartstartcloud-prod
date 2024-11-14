@@ -65,7 +65,7 @@ export const App = () => {
               <Route path="/renew" element={authUser && !isPortal ? <Navigate to='/' /> : <RenewPassword />} />
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
               <Route path="/add-degree" element={authUser && !isPortal ? <DegreeForm /> : <Navigate to='/login' />} />
-              <Route path="/faq" element={authUser && !isPortal ? <FAQ /> : <Navigate to='/' />} />
+              <Route path="/faq" element={authUser && !isPortal ? <FAQ /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear" element={authUser && !isPortal ? <DegreeBoard /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId" element={authUser && !isPortal ? <DegreeProfile /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser && !isPortal ? <StudentProfile /> : <Navigate to='/login' />} />
