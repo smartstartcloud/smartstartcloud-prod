@@ -71,6 +71,11 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 // Middleware for handling file uploads for a specific orderID
 export const uploadFile = [
   upload.single('file'), // Middleware to handle single file upload
