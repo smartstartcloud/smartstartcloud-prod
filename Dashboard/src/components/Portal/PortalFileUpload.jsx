@@ -36,7 +36,8 @@ const PortalFileUpload = ({orderIDPass, close}) => {
     // Prepare form data for upload
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("orderID", orderID); // BSON handling occurs in the backend
+    formData.append("orderID", orderID);
+    formData.append("category", "assignment");
     try {
       const response = await uploadFiles(formData);
       console.log("Response Data:", response);
