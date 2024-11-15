@@ -145,7 +145,7 @@ const PortalIndex = () => {
             Order ID
           </Typography>
           
-          <Typography variant="p" component="div">
+          <Typography variant="p" component="div" sx={{ paddingTop: 2, paddingBottom: 2 }}>
             Please use this <a href="https://docs.google.com/spreadsheets/d/1Sn6U4RF7iIQzrvk3KGQH7X_RAfiD7ZcgFtaeZUDkcnU/edit?usp=sharing" target="_blank">template</a> when uploading orders in bulk using a CSV file.
           </Typography>
 

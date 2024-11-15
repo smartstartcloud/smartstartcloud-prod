@@ -13,6 +13,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CollectionsBookmarkOutlinedIcon from "@mui/icons-material/CollectionsBookmarkOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -114,14 +115,14 @@ const PortalSidebar = () => {
           {/* Menu Items */}
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
-              title="Dashboard"
+              title="Add New Order"
               to="/"
-              icon={<HomeOutlinedIcon />}
+              icon={<AddBoxOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="all"
+              title="All Orders"
               to="/all"
               icon={<CollectionsBookmarkOutlinedIcon />}
               selected={selected}
