@@ -1,4 +1,4 @@
-import { Box, Card, CardActionArea, CardContent, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, Typography, useTheme, Divider } from '@mui/material';
 import React from 'react';
 import { tokens } from '../../theme';
 
@@ -10,10 +10,11 @@ const OrderCard = ({ orderID, referenceNumber, handleIDClick }) => {
     <Card
       onClick={() => handleIDClick(orderID)}
       sx={{
-        minWidth: "100%",
+        minWidth: "250px", // Increased minimum width
+        maxWidth: "400px", // Optional: Limit maximum width
         background: `linear-gradient(210deg, ${colors.blueAccent[800]}, ${colors.blueAccent[900]})`,
         boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
-        borderRadius: "12px",
+        borderRadius: "8px",
         overflow: "hidden",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
         "&:hover": {
@@ -32,31 +33,36 @@ const OrderCard = ({ orderID, referenceNumber, handleIDClick }) => {
             alignItems="baseline"
             mb={1}
           >
-            <Typography variant="h5" component="div">
+            <Typography variant="h6" component="div">
               Order ID
             </Typography>
             <Typography
               variant="subtitle1"
               component="div"
-              sx={{ fontWeight: "bold", maxWidth: "60%", wordWrap: "break-word" }}
+              sx={{ fontWeight: "bold", maxWidth: "80%", wordWrap: "break-word" }}
             >
               {orderID}
             </Typography>
           </Box>
+
+          {/* Divider */}
+          <Divider sx={{ my: 1, backgroundColor: colors.grey[100] }} />
+
+
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="baseline"
           >
-            <Typography variant="h5" component="div">
-              Ref. No
+            <Typography variant="h6" component="div">
+              Ref
             </Typography>
             <Typography
               variant="subtitle1"
               component="div"
               sx={{
                 fontWeight: "bold",
-                maxWidth: "60%",  // Limit max width for text wrapping
+                maxWidth: "80%",  // Limit max width for text wrapping
                 wordWrap: "break-word",  // Wrap long text
                 overflowWrap: "break-word",
               }}
