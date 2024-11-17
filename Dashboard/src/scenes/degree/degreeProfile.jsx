@@ -25,11 +25,11 @@ const DegreeProfile = () => {
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
 
-  // useEffect(() => {
-  //   if (degree){
-  //     console.log(degree);   
-  //   }
-  // }, [degree])
+  useEffect(() => {
+    if (degree){
+      console.log(degree);   
+    }
+  }, [degree])
 
   const studentList = [...degreeStudentList];
 
