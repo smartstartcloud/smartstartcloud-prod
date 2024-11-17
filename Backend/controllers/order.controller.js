@@ -80,13 +80,25 @@ export const getAllOrders = async (req, res) => {
     // Check if the user's group matches "edu" or "pen"
     if (!["edu", "pen"].includes(userGroup)) {
       orders = refNo
-      ? await Order.find({ referenceNumber: refNo }, "orderID referenceNumber group")
-      : await Order.find({}, "orderID referenceNumber group");
+        ? await Order.find(
+            { referenceNumber: { $regex: refNo, $options: "i" } },
+            "orderID referenceNumber group"
+          )
+        : await Order.find({}, "orderID referenceNumber group");
     } else {
     // Filter orders based on refNo if provided, and user group
       orders = refNo
-        ? await Order.find({ referenceNumber: refNo, group: userGroup }, "orderID referenceNumber group")
-        : await Order.find({ group: userGroup }, "orderID referenceNumber group");
+        ? await Order.find(
+            {
+              referenceNumber: { $regex: refNo, $options: "i" },
+              group: userGroup,
+            },
+            "orderID referenceNumber group"
+          )
+        : await Order.find(
+            { group: userGroup },
+            "orderID referenceNumber group"
+          );
     }
 
 

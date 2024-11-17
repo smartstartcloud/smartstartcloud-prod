@@ -1,14 +1,14 @@
-import { Box, Button, CircularProgress, Grid, IconButton, InputAdornment, List, ListItem, ListItemText, Paper, TextField, Typography, useTheme } from '@mui/material';
-import React, { useState } from 'react'
-import Header from '../Header';
-import useFetchOrderList from '../../hooks/useFetchOrderList';
-import { tokens } from '../../theme';
-import OrderCard from './OrderCard';
-import PortalFileUpload from './PortalFileUpload';
+import {Box,Button,CircularProgress,Grid,IconButton,InputAdornment,List,ListItem,ListItemText,Paper,TextField,Typography,useTheme} from "@mui/material";
+import React, { useState } from "react";
+import Header from "../Header";
+import useFetchOrderList from "../../hooks/useFetchOrderList";
+import { tokens } from "../../theme";
 import SearchIcon from "@mui/icons-material/Search";
+import OrderCard from "../Portal/OrderCard";
+import { FileUpload } from "@mui/icons-material";
+import PortalFileUpload from "../Portal/PortalFileUpload";
 
-
-const PortalAll = () => {
+const OrderIDList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -23,9 +23,6 @@ const PortalAll = () => {
   const [suggestions, setSuggestions] = useState([]);
 
   const [searchTermByRef, setSearchTermByRef] = useState("");
-  // const [isSearching, setIsSearching] = useState(false);
-  // const [searchResult, setSearchResult] = useState([]);
-  // const [suggestions, setSuggestions] = useState([]);
 
   const handleIDClick = (orderID) => {
     setOpen(true);
@@ -94,7 +91,6 @@ const PortalAll = () => {
   };
 
   const displayList = isSearching ? searchResult : orderList;
-
   if (loading) {
     return (
       <Box
@@ -111,7 +107,7 @@ const PortalAll = () => {
   }
 
   return (
-    <Box m="20px">
+    <Box m="20px" pb={3}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header
           title={"PORTAL"}
@@ -122,7 +118,7 @@ const PortalAll = () => {
         {open && (
           <Grid container spacing={3} mb={5} justifyContent="center">
             <Grid item xs={12} sm={6}>
-              <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} />
+              <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} main={true} />
             </Grid>
           </Grid>
         )}
@@ -212,27 +208,6 @@ const PortalAll = () => {
                   </Button>
                 )}
               </Box>
-
-              {/* {suggestions.length > 0 && (
-                  <Paper
-                    elevation={3}
-                    sx={{ width: "100%", maxWidth: "600px", mt: 1 }}
-                  >
-                    <List>
-                      {suggestions.map((suggestion) => (
-                        <ListItem
-                          button
-                          key={suggestion.orderID}
-                          onClick={() =>
-                            handleSuggestionClick(suggestion.orderID)
-                          }
-                        >
-                          <ListItemText primary={suggestion.orderID} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Paper>
-                )} */}
             </Box>
           </Grid>
         </Grid>
@@ -259,6 +234,6 @@ const PortalAll = () => {
       </Box>
     </Box>
   );
-}
+};
 
-export default PortalAll
+export default OrderIDList;

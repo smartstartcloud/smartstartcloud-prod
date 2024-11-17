@@ -1,30 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // For accessing query params
+import { useLocation, useNavigate } from "react-router-dom"; // For accessing query params
 import {Button,Container,Typography,Box,Card,CardContent,IconButton,TableContainer,Table,TableHead,TableCell,TableRow,TableBody,Grid,TextField,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ShareIcon from "@mui/icons-material/Share";
 import axios from "axios";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Paper from "@mui/material/Paper";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import useUploadFiles from "../../hooks/useUploadFiles";
 import CloseIcon from "@mui/icons-material/Close";
+import useFetchFileList from "../../hooks/useFetchFileList";
 
-const PortalFileUpload = ({orderIDPass, close}) => {
+const customScrollbarStyles = {
+  "&::-webkit-scrollbar": {
+    display: "none",
+  },
+  "-ms-overflow-style": "none",
+  "scrollbar-width": "none",
+};
+
+const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
   const [files, setFiles] = useState([]);
   const [orderID, setOrderID] = useState(orderIDPass);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const { uploadFiles } = useUploadFiles();  
-
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
+  const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
+  const { fileList } = useFetchFileList(orderID);
+  
   const {
     control,
   } = useForm({});
 
+  const navigate = useNavigate(); 
+
   useEffect(() => {
-    setOrderID(orderIDPass)    
-  }, [orderIDPass]);
+    setOrderID(orderIDPass);    
+    if (fileList) {
+      setExistingFiles(fileList);
+      setExistingFilteredFiles(fileList);
+    }
+    // console.log(fileList);
+  }, [orderIDPass, fileList]);
 
   // Handle multiple file changes
   const handleFileChange = (event) => {
@@ -47,6 +67,20 @@ const PortalFileUpload = ({orderIDPass, close}) => {
     }
   };
 
+  const handleView = async (file) => {
+    downloadFiles(file, false);
+  };
+
+  const handleDelete = async (file) => {
+    try {
+      const response = await deleteFiles(file._id);
+      console.log(response.message);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleDownload = (file) => {
     const url = URL.createObjectURL(file);
     const a = document.createElement("a");
@@ -55,6 +89,15 @@ const PortalFileUpload = ({orderIDPass, close}) => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleCategoryChange = (category) => {
+    const filteredFiles = existingFiles.filter(
+      (file) => file.category === category
+    );
+    // console.log(filteredFiles);
+
+    setExistingFilteredFiles(filteredFiles);
   };
   return (
     <Card raised style={{ padding: "20px", borderRadius: "10px" }}>
@@ -76,8 +119,9 @@ const PortalFileUpload = ({orderIDPass, close}) => {
           align="center"
           style={{ fontWeight: "bold", color: "#1976d2" }}
         >
-          File Upload
+          {main ? "File View" : "File Upload"}
         </Typography>
+
         <Grid container spacing={2} display="flex" alignItems="center">
           <Grid item xs={12} sm={6}>
             <Controller
@@ -96,7 +140,7 @@ const PortalFileUpload = ({orderIDPass, close}) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {!main && <Grid item xs={12} sm={6}>
             <Button
               variant="contained"
               component="label"
@@ -105,12 +149,17 @@ const PortalFileUpload = ({orderIDPass, close}) => {
               fullWidth
             >
               Upload Attachments
-              <input type="file" onChange={handleFileChange} hidden multiple />
+              <input
+                type="file"
+                onChange={handleFileChange}
+                hidden
+                multiple
+              />
             </Button>
-          </Grid>
+          </Grid>}
         </Grid>
         {/* Render table if files are uploaded */}
-        {files.length > 0 && (
+        {!main && files.length > 0 && (
           <TableContainer component={Paper} style={{ marginTop: "20px" }}>
             <Table>
               <TableHead>
@@ -151,6 +200,97 @@ const PortalFileUpload = ({orderIDPass, close}) => {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+
+        {main && !isModule && (
+          <Grid container spacing={2} mt={3}>
+            <Grid item xs={4}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                align="center"
+                sx={{ color: "#1976d2", cursor: "pointer" }}
+                onClick={() => handleCategoryChange("assignment")}
+              >
+                Assignment Files
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                align="center"
+                sx={{ color: "#1976d2", cursor: "pointer" }}
+                onClick={() => handleCategoryChange("payment")}
+              >
+                Payment Files
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                align="center"
+                sx={{ color: "#1976d2", cursor: "pointer" }}
+                onClick={() => handleCategoryChange("grades")}
+              >
+                Grade Files
+              </Typography>
+            </Grid>
+          </Grid>
+        )}
+
+        {main && existingFilteredFiles.length > 0 && (
+          <Box mt={3}>
+            <TableContainer
+              component={Paper}
+              sx={{ marginTop: "20px", ...customScrollbarStyles }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">File Name</TableCell>
+                    <TableCell align="center">Download</TableCell>
+                    <TableCell align="center">Delete</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {existingFilteredFiles.map((file, index) => (
+                    <TableRow key={index}>
+                      <TableCell align="center">
+                        <Typography
+                          align="center"
+                          onClick={() => handleView(file)}
+                          sx={{
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {file.fileName}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleDownload(file)}
+                        >
+                          <CloudDownloadIcon />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDelete(file)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         )}
       </CardContent>
     </Card>

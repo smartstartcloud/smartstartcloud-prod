@@ -6,13 +6,8 @@ import { Link, useLocation } from "react-router-dom";
 import { tokens } from "../../theme";
 import "react-pro-sidebar/dist/css/styles.css";
 import { useAuthContext } from "../../context/AuthContext";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CollectionsBookmarkOutlinedIcon from "@mui/icons-material/CollectionsBookmarkOutlined";
-import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {

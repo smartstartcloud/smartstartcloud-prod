@@ -23,24 +23,13 @@ import { useEffect } from "react";
 import PortalIndex from "./components/Portal/PortalIndex";
 import PortalAll from "./components/Portal/PortalAll";
 import PortalSidebar from "./components/Portal/PortalSidebar";
+import OrderIDList from "./components/profilePages/OrderIDList";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
   const { authUser, isAdmin, isPortal } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const hostname = window.location.hostname;
-    
-  //   // Check for 'portal' subdomain and ensure navigation to portal routes
-  //   if (hostname === "portal.smartstart.cloud" || hostname === "portal.localhost") {
-  //     if (!location.pathname.startsWith("/portal")) {
-  //       navigate("/portal");
-  //     }
-  //   }
-  // }, [location.pathname, navigate]);
 
   const handleLogout = () => {
     logout().then(() => console.log("User logged out successfully"));
@@ -59,8 +48,9 @@ export const App = () => {
               <Route path="/login" element={authUser && !isPortal ? <Navigate to='/task' /> : <LoginForm />} />
               <Route path="/task" element={authUser && !isPortal ? <Dashboard /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser && !isPortal ? <AllDegree /> : <Navigate to='/login' />} />
-              <Route path="/uploadPage" element={<UploadDownload />} />
-              <Route path="/globalLink" element={<GlobalUploadPage />} />
+              <Route path="/allOrders" element={authUser && !isPortal ? <OrderIDList /> : <Navigate to='/login' />} />
+              {/* <Route path="/uploadPage" element={<UploadDownload />} /> */}
+              {/* <Route path="/globalLink" element={<GlobalUploadPage />} /> */}
               <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />
               <Route path="/renew" element={authUser && !isPortal ? <Navigate to='/' /> : <RenewPassword />} />
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
