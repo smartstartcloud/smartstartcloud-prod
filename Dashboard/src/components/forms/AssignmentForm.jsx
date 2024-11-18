@@ -273,8 +273,10 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 render={({ field }) => (
                   <Select
                     {...field}
+                    label="Assignment Type"
                     variant="outlined"
                     fullWidth
+                    required
                     sx={{ mb: 2 }}
                     // error={
                     //   !!touchedFields.assignmentProgress &&
@@ -287,8 +289,10 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     //     : null
                     // }
                   >
-                    <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
-                    <MenuItem value="COMPLETE">COMPLETE</MenuItem>
+                    <MenuItem value="ORDER ID ASSIGNED">ORDER ID ASSIGNED</MenuItem>
+                    <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
+                    <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
+                    <MenuItem value="COMPLETED">COMPLETED</MenuItem>
                   </Select>
                 )}
               />
