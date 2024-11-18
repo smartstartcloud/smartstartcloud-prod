@@ -10,8 +10,8 @@ const OrderCard = ({ orderID, referenceNumber, handleIDClick }) => {
     <Card
       onClick={() => handleIDClick(orderID)}
       sx={{
-        minWidth: "300px", // Increased minimum width
-        maxWidth: "400px", // Optional: Limit maximum width
+        minWidth: "270px", // Increased minimum width
+        maxWidth: "100%", // Optional: Limit maximum width
         background: `linear-gradient(210deg, ${colors.blueAccent[800]}, ${colors.blueAccent[900]})`,
         boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
         borderRadius: "8px",

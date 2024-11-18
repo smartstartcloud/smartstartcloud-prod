@@ -120,7 +120,7 @@ const PortalAll = () => {
       </Box>
       <Box>
         {open && (
-          <Grid container spacing={3} mb={5} justifyContent="center">
+          <Grid container spacing={3} mb={3} justifyContent="center">
             <Grid item xs={12} sm={6}>
               <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} />
             </Grid>
