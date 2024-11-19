@@ -160,13 +160,12 @@ export const getDegreeByID = async (req,res)=>{
 
 const getAssignmentDetailsList = async (moduleList, studentList) => {
   try {
-    const tempAssArray = [];
     let sum = 0;
     let assignmentProgressList = [];
     let assignmentGradeList = [];
     for (const module of moduleList) {
       // Iterate over each module in the moduleList
-      for (let i = 0; i < studentList.length; i++) {
+      for (let i = 0; i < studentList.length; i++) {        
         const studentID = studentList[i]; // Get studentID from the list
 
         const existingModuleAssignment = await ModuleAssignment.findOne({
@@ -174,7 +173,9 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
           moduleID: module, // Use module._id or the proper property of module
         }).populate("assignments");
         if (existingModuleAssignment) {
+          // console.log(existingModuleAssignment);          
           if (existingModuleAssignment.assignments) {
+            const tempAssArray = [];
             tempAssArray.push(...existingModuleAssignment.assignments);
             if (tempAssArray) {
               // Perform your logic for the found assignment

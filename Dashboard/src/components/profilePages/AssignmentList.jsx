@@ -270,7 +270,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                         "assignmentGrade",
                       ].map((key) => (
                         <TableCell key={key}>
-                          <Tooltip
+                          {/* <Tooltip
                             title={
                               key === "assignmentProgress"
                                 ? renderTooltipContent(assignment)
@@ -278,7 +278,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                             } // Conditionally render the tooltip content
                             arrow
                             interactive={key === "assignmentProgress"}
-                          >
+                          > */}
                             {/* Ensure that assignment[key] is rendered properly */}
                             <span>
                               {assignment[key] !== undefined
@@ -289,7 +289,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                                   : assignment[key]
                                 : "N/A"}
                             </span>
-                          </Tooltip>
+                          {/* </Tooltip> */}
                         </TableCell>
                       ))}
                       <TableCell>

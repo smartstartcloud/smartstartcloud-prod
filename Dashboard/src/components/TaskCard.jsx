@@ -18,7 +18,7 @@ const TaskCard = ({yearId, taskName, taskDetails, taskAgents, filterByAgent=null
   const agentList = [...new Set(taskAgents.map((agent) => (`${agent.firstName} ${agent.lastName}`)))]
   
   return (
-    <Card onClick={handleClick} sx={{ maxWidth: 345, background: colors.grey[100] }} >
+    <Card onClick={handleClick} sx={{ width: '100%', background: colors.grey[100] }} >
       <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div" color={colors.grey[900]}>

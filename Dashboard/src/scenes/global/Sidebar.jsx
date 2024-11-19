@@ -65,103 +65,118 @@ const Sidebar = () => {
       }}
     >
       <ProSidebar collapsed={isCollapsed}>
-        <Menu iconShape="square">
-          {/* Logo and Icon Menu */}
-          <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
-            style={{
-              margin: "10px 0 20px 0",
-              color: colors.grey[100],
-            }}
-          >
-            {!isCollapsed && (
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                ml="15px"
-              >
-                <IconButton
-                  onClick={() => setIsCollapsed(!isCollapsed)}
-                  style={{ marginLeft: "auto" }}
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          height="100%"
+        >
+          <Menu iconShape="square">
+            {/* Logo and Icon Menu */}
+            <MenuItem
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
+              style={{
+                margin: "10px 0 20px 0",
+                color: colors.grey[100],
+              }}
+            >
+              {!isCollapsed && (
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  ml="15px"
                 >
-                  <MenuOutlinedIcon />
-                </IconButton>
+                  <IconButton
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    style={{ marginLeft: "auto" }}
+                  >
+                    <MenuOutlinedIcon />
+                  </IconButton>
+                </Box>
+              )}
+            </MenuItem>
+
+            {/* User */}
+            {!isCollapsed && (
+              <Box mb="25px">
+                <Box textAlign="center">
+                  <Typography
+                    variant="h3"
+                    color={colors.grey[100]}
+                    fontWeight="bold"
+                    sx={{ m: "10px 0 0 0" }}
+                  >
+                    {authUser.name}
+                  </Typography>
+                  <Typography variant="h4" color={colors.greenAccent[500]}>
+                    {authUser?.role
+                      ? authUser.role.charAt(0).toUpperCase() +
+                        authUser.role.slice(1)
+                      : ""}
+                  </Typography>
+                </Box>
               </Box>
             )}
-          </MenuItem>
 
-          {/* User */}
-          {!isCollapsed && (
-            <Box mb="25px">
-              <Box textAlign="center">
-                <Typography
-                  variant="h3"
-                  color={colors.grey[100]}
-                  fontWeight="bold"
-                  sx={{ m: "10px 0 0 0" }}
-                >
-                  {authUser.name}
-                </Typography>
-                <Typography variant="h4" color={colors.greenAccent[500]}>
-                  {authUser?.role
-                    ? authUser.role.charAt(0).toUpperCase() +
-                      authUser.role.slice(1)
-                    : ""}
-                </Typography>
-              </Box>
-            </Box>
-          )}
-
-          {/* Menu Items */}
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            <Item
-              title="Dashboard"
-              to="/task"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Add Degree"
-              to="/add-degree"
-              icon={<CollectionsBookmarkOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="All Degrees"
-              to="/allDegrees"
-              icon={<StorageOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="All Orders"
-              to="/allOrders"
-              icon={<ListIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            {isAdmin && (
+            {/* Menu Items */}
+            <Box paddingLeft={isCollapsed ? undefined : "10%"}>
               <Item
-                title="Signup User"
-                to="/signup"
-                icon={<PersonOutlinedIcon />}
+                title="Dashboard"
+                to="/task"
+                icon={<HomeOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
-            )}
-            <Item
-              title="FAQ Page"
-              to="/faq"
-              icon={<HelpOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-          </Box>
-        </Menu>
+              <Item
+                title="Add Degree"
+                to="/add-degree"
+                icon={<CollectionsBookmarkOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="All Degrees"
+                to="/allDegrees"
+                icon={<StorageOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="All Orders"
+                to="/allOrders"
+                icon={<ListIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              {isAdmin && (
+                <Item
+                  title="Signup User"
+                  to="/signup"
+                  icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
+              <Item
+                title="FAQ Page"
+                to="/faq"
+                icon={<HelpOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </Box>
+          </Menu>
+          <Typography
+            variant="h6"
+            color={colors.grey[700]}
+            sx={{ p: "10px 10px" }}
+            textAlign='center'
+          >
+            Developed by SOFTCO.IT.COM
+          </Typography>
+        </Box>
       </ProSidebar>
     </Box>
   );

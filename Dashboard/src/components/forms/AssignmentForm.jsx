@@ -32,7 +32,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
             orderID: '',
             assignmentName: '',
             assignmentType: '',
-            assignmentProgress: 'IN PROGRESS',
+            assignmentProgress: 'TBA',
             assignmentPayment: 0,
             assignmentDeadline: '',
             assignmentGrade: ''
@@ -49,7 +49,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     orderID: assignmentData?.orderID || '',
                     assignmentName: assignmentData?.assignmentName || '',
                     assignmentType: assignmentData?.assignmentType || '',
-                    assignmentProgress: assignmentData?.assignmentProgress || 'IN PROGRESS',
+                    assignmentProgress: assignmentData?.assignmentProgress || 'TBA',
                     assignmentPayment: assignmentData?.assignmentPayment || '',
                     assignmentDeadline: assignmentData?.assignmentDeadline || '',
                     assignmentGrade: assignmentData?.assignmentGrade || ''
@@ -61,7 +61,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 orderID: '',
                 assignmentName: '',
                 assignmentType: '',
-                assignmentProgress: 'IN PROGRESS',
+                assignmentProgress: 'TBA',
                 assignmentPayment: '',
                 assignmentDeadline: '',
                 assignmentGrade: '',
@@ -273,7 +273,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label="Assignment Type"
+                    // label="Assignment Progress"
                     variant="outlined"
                     fullWidth
                     required
@@ -289,6 +289,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     //     : null
                     // }
                   >
+                    <MenuItem value="TBA">TO BE ASSIGNED</MenuItem>
                     <MenuItem value="ORDER ID ASSIGNED">ORDER ID ASSIGNED</MenuItem>
                     <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
                     <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
