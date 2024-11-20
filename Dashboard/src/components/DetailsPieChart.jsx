@@ -1,9 +1,9 @@
-import { Box, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import React from 'react'
 import { tokens } from '../theme';
 import { ResponsivePie } from "@nivo/pie";
 
-const DetailsPieChart = ({data}) => {
+const DetailsPieChart = ({ data, headLine}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   // console.log(data);
@@ -20,7 +20,6 @@ const DetailsPieChart = ({data}) => {
   );
   const resultArray = Array.from(resultSet).map((item) => JSON.parse(item));
   console.log(resultArray);
-  
 
   return (
     <Box
@@ -28,15 +27,20 @@ const DetailsPieChart = ({data}) => {
         p: 2,
         backgroundColor: colors.blueAccent[800],
         borderRadius: 2,
-        height: "300px",
+        height: "320px",
       }}
     >
+      <Box sx={{ mb: 1 }}>
+        <Typography variant="h5" color={colors.grey[200]}>
+          <strong>{headLine}</strong>
+        </Typography>
+      </Box>
       <ResponsivePie
         data={resultArray}
-        margin={{ top: 30, right: 0, bottom: 40, left: -150 }}
+        margin={{ top: 40, right: 0, bottom: 50, left: -100 }}
         innerRadius={0.5}
         cornerRadius={1}
-        activeOuterRadiusOffset={8}
+        activeOuterRadiusOffset={5}
         colors={{ scheme: "nivo" }}
         borderWidth={1}
         borderColor="black"
@@ -97,6 +101,6 @@ const DetailsPieChart = ({data}) => {
       />
     </Box>
   );
-}
+};
 
 export default DetailsPieChart

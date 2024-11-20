@@ -229,6 +229,7 @@ const DegreeProfile = () => {
               <Grid item xs={12} sm={6}>
                 <DetailsPieChart
                   data={degree.assignmentTally.assignmentProgressList}
+                  headLine={"Status Chart"}
                 />
               </Grid>
             )}
@@ -236,6 +237,7 @@ const DegreeProfile = () => {
               <Grid item xs={12} sm={6}>
                 <DetailsPieChart
                   data={degree.assignmentTally.assignmentGradeList}
+                  headLine={"Grade Chart"}
                 />
               </Grid>
             )}
