@@ -73,31 +73,31 @@ const DetailsPieChart = ({ data, headLine}) => {
             spacing: 10,
           },
         ]}
-        legends={[
-          {
-            anchor: "right",
-            direction: "column",
-            justify: false,
-            translateX: 6,
-            translateY: 0,
-            itemsSpacing: 0,
-            itemWidth: 150,
-            itemHeight: 18,
-            itemTextColor: "#999",
-            itemDirection: "left-to-right",
-            itemOpacity: 1,
-            symbolSize: 10,
-            symbolShape: "circle",
-            effects: [
-              {
-                on: "hover",
-                style: {
-                  itemTextColor: "#000",
-                },
-              },
-            ],
-          },
-        ]}
+        // legends={[
+        //   {
+        //     anchor: "right",
+        //     direction: "column",
+        //     justify: false,
+        //     translateX: 6,
+        //     translateY: 0,
+        //     itemsSpacing: 0,
+        //     itemWidth: 150,
+        //     itemHeight: 18,
+        //     itemTextColor: "#999",
+        //     itemDirection: "left-to-right",
+        //     itemOpacity: 1,
+        //     symbolSize: 10,
+        //     symbolShape: "circle",
+        //     effects: [
+        //       {
+        //         on: "hover",
+        //         style: {
+        //           itemTextColor: "#000",
+        //         },
+        //       },
+        //     ],
+        //   },
+        // ]}
       />
     </Box>
   );
