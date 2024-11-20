@@ -226,14 +226,14 @@ const DegreeProfile = () => {
           </Grid>
           <Grid container spacing={2} mt={2}>
             {degree.assignmentTally.assignmentProgressList && (
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <DetailsPieChart
                   data={degree.assignmentTally.assignmentProgressList}
                 />
               </Grid>
             )}
             {degree.assignmentTally.assignmentGradeList.length > 0 && (
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <DetailsPieChart
                   data={degree.assignmentTally.assignmentGradeList}
                 />
