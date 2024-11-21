@@ -103,7 +103,7 @@ const DegreeProfile = () => {
 
   const handleDegreeDelete = async () => {
     try {      
-      const response = await deleteDegree(degree._id);
+      const response = await deleteDegree(degree.degreeID);
       console.log("Degree deleted:", response);
       navigate("/allDegrees"); 
     } catch (e) {

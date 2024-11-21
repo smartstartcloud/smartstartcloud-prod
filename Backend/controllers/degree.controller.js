@@ -1,5 +1,7 @@
 import Degree from '../models/degree.models.js';
 import Student from '../models/student.models.js';
+import Assignment from '../models/assignment.models.js';
+import Module from '../models/module.models.js';
 import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
 import { addNewModule } from './module.controller.js'; // Import newAssignment
@@ -248,5 +250,28 @@ export const getStudentByID = async (req,res)=>{
   }
 }
 
-
-
+export const deleteDegree = async (req,res)=>{
+  const {degreeID} = req.params
+  try {
+      await Degree.findOneAndDelete({degreeID:degreeID}).then(async (degree)=>{
+        await Promise.all(degree.degreeModules.map(async (moduleID)=>{
+            await Module.findOneAndDelete({_id:moduleID}).then(async(module)=>{
+              const allMixSchema = await ModuleAssignment.find({moduleID:module._id});
+              await Promise.all(allMixSchema.map(async(allMix)=>{
+                await ModuleAssignment.findOneAndDelete({_id:allMix._id})
+              }))
+              await Promise.all(module.moduleAssignments.map(async (moduleAssignmentsIDArr)=>{
+                await Promise.all(moduleAssignmentsIDArr.map(async(id)=>{
+                    await Assignment.findOneAndDelete({_id:id});
+                }))
+              }))
+            })
+        }))
+      });
+      
+      res.status(200);
+  } catch (error) {
+    console.error("Error deleting Degree:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
