@@ -66,20 +66,20 @@ const Welcome = ( ) => {
           }}
       >
         <Typography variant="h3" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333' }}>
-          Welcome to Our Service!
+          Welcome to SmartStart's Digital Platform!
         </Typography>
         <Typography
             variant="body1"
             style={{ marginBottom: '40px', color: '#666', textAlign: 'center', maxWidth: '600px' }}
         >
-          Below is the new agent's login keys.
+          Below is the new agent's login credentials.
           Just click the button to copy it to your clipboard! Please keep it safe:
         </Typography>
 
         <Card style={{ width: '80%', maxWidth: '600px', backgroundColor: '#fff', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
           <CardContent>
             <Typography variant="h6" style={{ marginBottom: '20px' }}>
-              Signup JSON Data:
+              Signup Data:
             </Typography>
             <Box
                 style={{
@@ -113,7 +113,7 @@ const Welcome = ( ) => {
                     style={{ textTransform: 'none' }}
                     onClick={handleCopy}
                 >
-                  {copied ? 'Copied!' : 'Copy JSON'}
+                  {copied ? 'Copied!' : 'Copy Data'}
                 </Button>
               </Box>
           </CardContent>
