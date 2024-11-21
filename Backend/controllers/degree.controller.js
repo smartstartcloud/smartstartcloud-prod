@@ -251,8 +251,8 @@ export const getStudentByID = async (req,res)=>{
 }
 
 export const deleteDegree = async (req,res)=>{
-  const {degreeID} = req.params
   try {
+    const {degreeID} = req.params
       await Degree.findOneAndDelete({degreeID:degreeID}).then(async (degree)=>{
         await Promise.all(degree.degreeModules.map(async (moduleID)=>{
             await Module.findOneAndDelete({_id:moduleID}).then(async(module)=>{
@@ -268,8 +268,7 @@ export const deleteDegree = async (req,res)=>{
             })
         }))
       });
-      
-      res.status(200);
+      res.status(200).json({degreeID});
   } catch (error) {
     console.error("Error deleting Degree:", error);
     res.status(500).json({ error: 'Internal Server Error' });
