@@ -26,6 +26,8 @@ import { tokens } from '../../theme';
 import useSendDegreeForm from '../../hooks/useSendDegreeForm';
 import useFetchAgentList from '../../hooks/useFetchAgentList';
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import AssignmentFieldForm from './AssignmentFieldForm';
+import StudentFieldForm from './StudentFieldForm';
 
 
 const currentYear = new Date().getFullYear();
@@ -59,14 +61,7 @@ const DegreeForm = () => {
         {
           moduleName: "",
           moduleCode: "",
-          assignmentList: [
-            {
-              assignmentName: "",
-              referenceNumber: "",
-              assignmentType: "",
-              assignmentDeadline: "",
-            },
-          ],
+          assignmentList: [],
         },
       ],
     },
@@ -76,30 +71,12 @@ const DegreeForm = () => {
   const refDegreeID = watch("degreeID"); // This will hold the current value of degreeID
 
   const {
-    fields: studentFields,
-    append: appendStudent,
-    remove: removeStudent,
-  } = useFieldArray({
-    control,
-    name: "degreeStudentList",
-  });
-
-  const {
     fields: moduleFields,
     append: appendModule,
     remove: removeModule,
   } = useFieldArray({
     control,
     name: "degreeModules",
-  });
-
-  const {
-    fields: assignmentFields,
-    append: appendAssignment,
-    remove: removeAssignment,
-  } = useFieldArray({
-    control,
-    name: "assignmentList",
   });
 
   const { agentList } = useFetchAgentList();
@@ -121,13 +98,13 @@ const DegreeForm = () => {
     });    
     setLoading(true);
     try {
-      const response = await sendDegreeForm(data);
+      // const response = await sendDegreeForm(data);
       console.log("Form Data:", data);
       // console.log('Response Data:', response);
-      navigate(0);
+      // navigate(0);
 
-      setFormSaved(true);
-      setLoading(false);
+      // setFormSaved(true);
+      // setLoading(false);
     } catch (e) {
       setFormError(true);
       setLoading(false);
@@ -144,41 +121,7 @@ const DegreeForm = () => {
     setFormError(false);
   };
 
-  const handleFileChange = (event) => {
-    const files = event.target.files;
-    if (files && files[0]) {
-      const file = files[0];
-      const reader = new FileReader();
 
-      reader.onload = (e) => {
-        const csvContent = e.target.result;
-        parseCSV(csvContent);
-      };
-
-      reader.readAsText(file);
-    }
-  };
-
-  const parseCSV = (csvContent) => {
-    const rows = csvContent.split("\n").filter((row) => row.trim() !== "");
-    const data = rows.map((row) => row.split(",").map((cell) => cell.trim()));
-    // console.log("Parsed CSV Data:", data);
-    populateStudentData(data);
-  };
-
-  const populateStudentData = (data) => {
-    const studentListToPopulate = data.slice(1);
-    for (let student of studentListToPopulate) {
-      appendStudent({
-        studentID: student[0],
-        studentName: student[1],
-        studentContact: student[2],
-        studentLogin: student[3],
-        studentPassword: student[4],
-        studentAssignmentList: [],
-      });
-    }
-  };
 
   return (
     <Box
@@ -327,7 +270,11 @@ const DegreeForm = () => {
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Degree Students
         </Typography>
-        <Typography variant="p" gutterBottom sx={{ mt: 4, mb: 2, paddingTop: 2, paddingBottom: 2 }}>
+        <Typography
+          variant="p"
+          gutterBottom
+          sx={{ mt: 4, mb: 2, paddingTop: 2, paddingBottom: 2 }}
+        >
           Please use this{" "}
           <a
             href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/edit?usp=sharing"
@@ -337,174 +284,9 @@ const DegreeForm = () => {
           </a>{" "}
           when uploading students in bulk using a CSV file.
         </Typography>
-        <Grid item xs={12} sm={4}>
-          <Button
-            variant="contained"
-            component="label"
-            color="secondary"
-            startIcon={<UploadFileIcon />}
-            style={{
-              width: "100%",
-              padding: "10px 20px",
-              marginBottom: "20px",
-              marginRight: "10px",
-            }}
-          >
-            Upload Student List
-            <input type="file" onChange={handleFileChange} hidden multiple />
-          </Button>
+        <Grid item sm={12}>
+          <StudentFieldForm control={control} />
         </Grid>
-        {studentFields.map((field, index) => (
-          <Box
-            key={field.id}
-            sx={{
-              mb: 3,
-              width: "100%",
-              border: "1px solid rgba(102, 106, 108, 0.5)",
-              borderRadius: "8px",
-              position: "relative",
-              padding: "16px",
-              transition: "border-color 0.3s ease",
-              "&:hover": {
-                borderColor: "rgba(102, 106, 108, 0.9)",
-              },
-            }}
-          >
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentID`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Student ID (Auto-generated)">
-                          <TextField
-                            {...field}
-                            label="Student ID"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentName`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Name">
-                          <TextField
-                            {...field}
-                            label="Student Name"
-                            variant="outlined"
-                            fullWidth
-                            required
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentContact`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Contact">
-                          <TextField
-                            {...field}
-                            label="Student Contact"
-                            variant="outlined"
-                            fullWidth
-                            required
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentLogin`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Username">
-                          <TextField
-                            {...field}
-                            label="Student Username"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentPassword`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Password">
-                          <TextField
-                            {...field}
-                            label="Student Password"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-
-            <Tooltip title="Remove Student">
-              <IconButton
-                onClick={() => removeStudent(index)}
-                sx={{
-                  position: "absolute",
-                  top: "-9px",
-                  right: "-9px",
-                  backgroundColor: "grey",
-                  color: "white",
-                  borderRadius: "50%",
-                  height: "20px",
-                  width: "20px",
-                  "&:hover": {
-                    backgroundColor: "white",
-                    color: "grey",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ))}
-
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: colors.grey[200],
-            color: colors.grey[900],
-            "&:hover": { backgroundColor: colors.grey[100] },
-          }}
-          onClick={() =>
-            appendStudent({
-              studentID: "",
-              studentName: "",
-              studentContact: "",
-              studentLogin: "",
-              studentPassword: "",
-              studentAssignmentList: [],
-            })
-          }
-          startIcon={<AddIcon />}
-        >
-          Add Student
-        </Button>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Degree Modules
@@ -570,168 +352,12 @@ const DegreeForm = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
-                  Module Assignment
-                </Typography>
-                {assignmentFields.map((assignment, assignmentIndex) => (
-                  <Box
-                    key={assignment.id}
-                    sx={{
-                      mb: 3,
-                      width: "100%",
-                      border: "1px solid rgba(102, 106, 108, 0.5)",
-                      borderRadius: "8px",
-                      position: "relative",
-                      padding: "16px",
-                      transition: "border-color 0.3s ease",
-                      "&:hover": {
-                        borderColor: "rgba(102, 106, 108, 0.9)",
-                      },
-                    }}
-                  >
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={3}>
-                        <Controller
-                          name={`degreeModules[${index}].assignmentList[${assignmentIndex}].assignmentName`}
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="Assignment Name"
-                              variant="outlined"
-                              fullWidth
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={3}>
-                        <Controller
-                          name={`degreeModules[${index}].assignmentList[${assignmentIndex}].referenceNumber`}
-                          control={control}
-                          defaultValue={`${
-                            refDegreeID ? `${refDegreeID}_M${index + 1}_A` : ""
-                          }${assignmentIndex + 1}`}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="Reference Number"
-                              variant="outlined"
-                              fullWidth
-                              disabled
-                              value={
-                                field.value ||
-                                `${
-                                  refDegreeID
-                                    ? `${refDegreeID}_M${index + 1}_A`
-                                    : ""
-                                }${assignmentIndex + 1}`
-                              }
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={3}>
-                        <Controller
-                          name={`degreeModules[${index}].assignmentList[${assignmentIndex}].assignmentType`}
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="Assignment Type"
-                              variant="outlined"
-                              fullWidth
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={3}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <Controller
-                            name={`degreeModules[${index}].assignmentList[${assignmentIndex}].assignmentDeadline`}
-                            control={control}
-                            rules={{
-                              required: "Assignment Deadline is required", // Validation rule to require the field
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                              <DatePicker
-                                {...field}
-                                label="Assignment Deadline"
-                                inputFormat="MM/dd/yyyy" // Custom date format
-                                value={
-                                  field.value ? new Date(field.value) : null
-                                } // Ensure the value is a Date object
-                                onChange={(newValue) => {
-                                  field.onChange(
-                                    newValue
-                                      ? format(newValue, "MM/dd/yyyy")
-                                      : ""
-                                  );
-                                }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    fullWidth
-                                    variant="outlined"
-                                    required
-                                    error={!!error} // Display error if validation fails
-                                    helperText={error ? error.message : null} // Show the error message
-                                  />
-                                )}
-                              />
-                            )}
-                          />
-                        </LocalizationProvider>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        sm={1}
-                        sx={{ alignSelf: "flex-start" }}
-                      >
-                        <IconButton
-                          onClick={() => removeAssignment(index)}
-                          sx={{
-                            position: "absolute",
-                            top: "-9px",
-                            right: "-9px",
-                            backgroundColor: "grey",
-                            color: "white",
-                            borderRadius: "50%",
-                            height: "20px",
-                            width: "20px",
-                            "&:hover": {
-                              backgroundColor: "white",
-                              color: "grey",
-                              cursor: "pointer",
-                            },
-                          }}
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                ))}
+                <AssignmentFieldForm
+                  control={control}
+                  index={index}
+                  refDegreeID={refDegreeID}
+                />
               </Grid>
-              <Button
-                variant="contained"
-                sx={{
-                  marginLeft: "16px",
-                  backgroundColor: colors.grey[200],
-                  color: colors.grey[900],
-                  "&:hover": { backgroundColor: colors.grey[100] },
-                }}
-                onClick={() =>
-                  appendAssignment({
-                    assignmentName: "",
-                    assignmentType: "",
-                    assignmentDeadline: "",
-                  })
-                }
-                startIcon={<AddIcon />}
-              >
-                Add Assignment
-              </Button>
 
               <Grid item xs={12} sm={1} sx={{ alignSelf: "flex-start" }}>
                 <IconButton
