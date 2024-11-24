@@ -77,7 +77,7 @@ const ModuleProfile = () => {
                 </Typography>
               </Grid>
 
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <Typography
                   variant="h6"
                   color={colors.grey[100]}
@@ -108,9 +108,9 @@ const ModuleProfile = () => {
                 <Typography variant="h6" color={colors.grey[100]}>
                   {"Essay"}
                 </Typography>
-              </Grid>
+              </Grid> */}
 
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Typography
                   variant="h6"
                   color={colors.grey[100]}
@@ -135,7 +135,7 @@ const ModuleProfile = () => {
                   dolore nulla ab fuga quasi? Qui iusto error expedita eligendi!
                   Repellendus, qui nobis?
                 </Typography>
-              </Grid>
+              </Grid> */}
               <Grid item container alignItems="center" spacing={1}>
                 <Grid item>
                   <Button
@@ -150,7 +150,7 @@ const ModuleProfile = () => {
                     }}
                     variant="contained" // or "outlined" based on your styling preference
                   >
-                    Open Folder
+                    Open Module Brief
                   </Button>
                 </Grid>
               </Grid>
