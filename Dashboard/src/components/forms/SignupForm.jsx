@@ -155,18 +155,17 @@ const SignupForm = () => {
                                         label="Last Name"
                                         variant="outlined"
                                         fullWidth
-                                        required
                                         sx={{ mb: 2 }}
                                         error={!!touchedFields.lastName && !!errors.lastName}
                                         helperText={touchedFields.lastName && errors.lastName ? errors.lastName.message : null}
-                                        onBlur={(e) => {
-                                            field.onBlur();
-                                            if (!field.value) {
-                                                setError("lastName", { type: "manual", message: "Last Name is required" });
-                                            }else {
-                                                clearErrors("lastName");
-                                            }
-                                        }}
+                                        // onBlur={(e) => {
+                                        //     field.onBlur();
+                                        //     if (!field.value) {
+                                        //         setError("lastName", { type: "manual", message: "Last Name is required" });
+                                        //     }else {
+                                        //         clearErrors("lastName");
+                                        //     }
+                                        // }}
                                     />
                                 )}
                             />

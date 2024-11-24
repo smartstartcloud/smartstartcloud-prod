@@ -71,7 +71,7 @@ export const signupUser = async (req, res) => {
         const newUser = new User({
             email,
             firstName,
-            lastName,
+            lastName : lastName ? lastName : "",
             userName,
             gender,
             role,

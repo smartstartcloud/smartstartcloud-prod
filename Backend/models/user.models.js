@@ -13,7 +13,7 @@ const userSchema = new mongo.Schema({
     },
     lastName: {
         type: String,
-        required: true
+        // required: true
     },
     userName: {
         type: String,
