@@ -140,7 +140,6 @@ const StudentFieldForm = ({ control, index, refDegreeID }) => {
                             label="Student Contact"
                             variant="outlined"
                             fullWidth
-                            required
                             />
                         </Tooltip>
                         )}

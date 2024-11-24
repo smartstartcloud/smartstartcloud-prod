@@ -34,7 +34,6 @@ const StudentForm = ({open, setOpen, degreeID}) => {
         const newErrors = {};
         if (!newStudent.studentID) newErrors.studentID = 'Student ID is required';
         if (!newStudent.studentName) newErrors.studentName = 'Student Name is required';
-
         return newErrors;
     };
 
