@@ -280,3 +280,17 @@ export const deleteDegree = async (req,res)=>{
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+export const deleteStudentFromDegree = async (req,res)=>{
+  const {studentID,degreeID} = req.params
+  try {
+    await Degree.findOne({degreeID:degreeID}).then(async (degree)=>{
+      const newArr = await Promise.all(degree.degreeStudentList.filter(item => item.toHexString()!==studentID));
+      await Degree.updateOne({degreeID:degreeID},{$set:{degreeStudentList:newArr}});
+      await ModuleAssignment.deleteMany({studentID:studentID});
+    });
+    res.status(200).json({studentID});
+  } catch (error) {
+    console.error("Error deleting Student:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

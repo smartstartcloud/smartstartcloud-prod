@@ -48,9 +48,9 @@ const useDeleteObjects = () => {
       }
     };
 
-    const deleteStudent = async (studentID) => {
+    const deleteStudent = async (studentID,degreeID) => {
       try {
-        res = await api.delete(`/api/degree/deleteStudent/${studentID}`);
+        res = await api.delete(`/api/degree/deleteStudent/${studentID}/${degreeID}`);
         const data = await res.data;
         if (data.error) {
           throw new Error(data.error);

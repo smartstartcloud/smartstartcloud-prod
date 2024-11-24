@@ -91,9 +91,8 @@ const DegreeProfile = () => {
   };
 
   const handleDelete = async (data) => {
-    console.log("whats in handle delete params ?",data);
     try{
-      const response = await deleteStudent(data._id)
+      const response = await deleteStudent(data._id,degree.degreeID)
       console.log("Response Data:", response);
       navigate(0);
     }catch (e) {

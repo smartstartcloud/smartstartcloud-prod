@@ -1,5 +1,5 @@
 import express from "express"
-import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree} from '../controllers/degree.controller.js'
+import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree} from '../controllers/degree.controller.js'
 import { getAgentList } from "../controllers/auth.controller.js"
 import {authenticate,adminAllowed} from '../middlewares/protect.js'
 import { addStudentInDegree } from "../controllers/student.controller.js"
@@ -20,4 +20,5 @@ router.get('/selected/studentID/:studentID',getStudentByID) ;
 router.post('/addStudentInDegree',addStudentInDegree) ;
 
 router.delete('/deleteDegree/:degreeID',deleteDegree);
+router.delete('/deleteStudent/:studentID/:degreeID',deleteStudentFromDegree);
 export default router;
