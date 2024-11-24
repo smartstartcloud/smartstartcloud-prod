@@ -10,7 +10,7 @@ import RenewPassword from "./scenes/renewPassword";
 import Welcome from "./scenes/welcome";
 import DegreeForm from "./components/forms/DegreeForm";
 import DegreeBoard from "./scenes/degree";
-import DegreeProfile from "./scenes/degree/degreeProfile";
+import DegreeProfile from "./components/profilePages/degreeProfile";
 import SignupForm from "./components/forms/SignupForm";
 import LoginForm from "./components/forms/LoginForm";
 import useLogout from "./hooks/useLogout";
@@ -58,6 +58,7 @@ export const App = () => {
               <Route path="/faq" element={authUser && !isPortal ? <FAQ /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear" element={authUser && !isPortal ? <DegreeBoard /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId" element={authUser && !isPortal ? <DegreeProfile /> : <Navigate to='/login' />} />
+              <Route path="/task/:degreeYear/:degreeId/editDegree" element={authUser && !isPortal ? <DegreeForm editPage={true} /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser && !isPortal ? <StudentProfile /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId/module/:moduleCode" element={authUser && !isPortal ? <ModuleProfile /> : <Navigate to='/login' />} />
 

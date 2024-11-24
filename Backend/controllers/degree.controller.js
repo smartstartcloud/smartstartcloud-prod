@@ -140,7 +140,14 @@ export const getDegreeByID = async (req,res)=>{
   try {
     const degrees = await Degree.findOne({ degreeID })
       .populate("degreeStudentList")
-      .populate("degreeModules");
+      .populate({
+        path: "degreeModules", // Populate degreeModules
+        populate: {
+          path: "moduleAssignments", // Populate moduleAssignments within each degreeModule
+          model: "Assignment", // Specify the model explicitly if needed
+          match: { assignmentNature: "main" }, // Filter for assignments with assignmentNature: "main"
+        },
+      });
     const Agent = await User.find({_id:[degrees.degreeAgent]});
     const moduleList = degrees.degreeModules;
     const studentList = degrees.degreeStudentList;
@@ -169,10 +176,9 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
       // Iterate over each module in the moduleList
       for (let i = 0; i < studentList.length; i++) {        
         const studentID = studentList[i]; // Get studentID from the list
-
         const existingModuleAssignment = await ModuleAssignment.findOne({
           studentID: studentID,
-          moduleID: module, // Use module._id or the proper property of module
+          moduleID: module._id, // Use module._id or the proper property of module
         }).populate("assignments");
         if (existingModuleAssignment) {
           // console.log(existingModuleAssignment);          

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -28,15 +28,15 @@ import useFetchAgentList from '../../hooks/useFetchAgentList';
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AssignmentFieldForm from './AssignmentFieldForm';
 import StudentFieldForm from './StudentFieldForm';
+import { extractObjects } from '../../utils/functions';
 
 
 const currentYear = new Date().getFullYear();
-
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
-const DegreeForm = () => {
+const DegreeForm = ({editPage=false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [open, setOpen] = useState(false);
@@ -47,9 +47,19 @@ const DegreeForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const location = useLocation();
+  var degree;
+  var editMode;
+
+  if (editPage) {
+    const state = location?.state;
+    degree = state.degree;
+    editMode = state.editMode;
+  }
+
   const navigate = useNavigate();
 
-  const { control, handleSubmit, watch } = useForm({
+  const { control, handleSubmit, watch, reset } = useForm({
     defaultValues: {
       degreeID: "",
       degreeYear: "",
@@ -66,6 +76,45 @@ const DegreeForm = () => {
       ],
     },
   });
+
+  useEffect(() => {
+    if (editPage, degree) {
+      if (editMode) {
+        console.log(degree);
+        reset({
+          _id: degree._id,
+          degreeID: degree?.degreeID || "",
+          degreeYear: degree?.degreeYear || "",
+          degreeName: degree?.degreeName || "",
+          degreeAgent: degree?.degreeAgent._id || "",
+          degreeStudentList:
+            degree?.degreeStudentList.map((student) => ({
+              _id: student._id,
+              studentID: student.studentID || "",
+              studentName: student.studentName || "",
+              studentContact: student.studentContact || "",
+              studentLogin: student.studentLogin || "",
+              studentPassword: student.studentPassword || "",
+              studentAssignmentList: student.studentAssignment || [],
+            })) || [],
+          degreeModules:
+            degree?.degreeModules.map((module) => ({
+              _id: module._id,
+              moduleName: module.moduleName || "",
+              moduleCode: module.moduleCode || "",
+              assignmentList:
+                extractObjects(module.moduleAssignments).map((assignment) => ({
+                  _id: assignment._id,
+                  assignmentName: assignment.assignmentName || "", // Placeholder for assignment details if needed
+                  referenceNumber: assignment.referenceNumber || "",
+                  assignmentType: assignment.assignmentType || "", // Placeholder for assignment type if needed
+                  assignmentDeadline: assignment.assignmentDeadline || "", // Placeholder for deadline if needed
+                })) || [],
+            })) || [],
+        });
+      }
+    }
+  }, [degree, reset, editMode, editPage]);
 
   // Watch for changes to the degreeID field
   const refDegreeID = watch("degreeID"); // This will hold the current value of degreeID
@@ -98,13 +147,13 @@ const DegreeForm = () => {
     });    
     setLoading(true);
     try {
-      // const response = await sendDegreeForm(data);
+      const response = await sendDegreeForm(data, editMode);
       console.log("Form Data:", data);
       // console.log('Response Data:', response);
       // navigate(0);
 
-      // setFormSaved(true);
-      // setLoading(false);
+      setFormSaved(true);
+      setLoading(false);
     } catch (e) {
       setFormError(true);
       setLoading(false);
@@ -150,7 +199,7 @@ const DegreeForm = () => {
       }}
     >
       <Typography variant="h4" gutterBottom>
-        Degree Form
+        {editMode ? "Edit Degree Form" : "Degree Form"}
       </Typography>
 
       <form onSubmit={handleSubmit(onSubmit)}>

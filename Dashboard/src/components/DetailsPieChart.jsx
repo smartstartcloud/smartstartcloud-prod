@@ -19,7 +19,6 @@ const DetailsPieChart = ({ data, headLine}) => {
     )
   );
   const resultArray = Array.from(resultSet).map((item) => JSON.parse(item));
-  console.log(resultArray);
 
   return (
     <Box

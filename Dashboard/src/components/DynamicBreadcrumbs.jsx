@@ -34,16 +34,13 @@ const DynamicBreadcrumbs = () => {
             </Typography>
           ) : (
             // Intermediate breadcrumbs are links
-            <Link
-              component={RouterLink}
-              // to={routeTo}
-              // underline="hover"
-              underline="none"
+            <Typography
+              variant="body1" // You can choose the appropriate variant
               color="inherit"
               key={index}
             >
               {value.charAt(0).toUpperCase() + value.slice(1)}
-            </Link>
+            </Typography>
           );
         })}
       </Breadcrumbs>

@@ -4,19 +4,35 @@ import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 // Function to create a new assignment and update relevant records
 export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode, referenceNumber) => {        
-    try {
+    try {    
         // Use Promise.all to save all Assignment concurrently
-        const addedAssignmentIDs = await Promise.all(
-            assignmentList.map(async (assignmentData) => { 
-                const assignmentIDs = [];
-                // Create a new Assignment instance
-                for (let i = 0; i < studentList.length; i++) {
+        const addedAssignmentIDs = await Promise.all(          
+            assignmentList.map(async (assignmentData) => {
+              const assignmentIDs = [];
+              // Store main assignments
+              const newAssignmentMain = new Assignment({
+                assignmentName: assignmentData.assignmentName,
+                assignmentType: assignmentData.assignmentType,
+                assignmentDeadline: assignmentData.assignmentDeadline,
+                assignmentProgress: "TBA",
+                assignmentPayment: 0,
+                assignmentGrade: "",
+                assignmentNature: "main",
+                moduleCode: moduleCode,
+                referenceNumber: assignmentData.referenceNumber,
+              });
+              const savedAssignmentMain = await newAssignmentMain.save();
+              assignmentIDs.push(savedAssignmentMain._id); // Collect each saved ID
+              // Store student basis assignment
+
+              // Create a new Assignment instance
+              for (let i = 0; i < studentList.length; i++) {
                 // Create a new Assignment instance
                 const newAssignment = new Assignment({
                   assignmentName: assignmentData.assignmentName,
                   assignmentType: assignmentData.assignmentType,
                   assignmentDeadline: assignmentData.assignmentDeadline,
-                  assignmentProgress: 'TBA',
+                  assignmentProgress: "TBA",
                   assignmentPayment: 0,
                   assignmentGrade: "",
                   assignmentNature: "dynamic",
@@ -27,8 +43,8 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                 // Save the assignment to the database and collect its ObjectID
                 const savedAssignment = await newAssignment.save();
                 assignmentIDs.push(savedAssignment._id); // Collect each saved ID
-                }
-                return assignmentIDs;
+              }
+              return assignmentIDs;
             })
         );        
         return addedAssignmentIDs; // Return the array of added Assignment IDs

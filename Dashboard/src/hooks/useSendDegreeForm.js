@@ -5,11 +5,22 @@ import useApi from './useApi';
 
 const useSendDegreeForm = () => {
     const api = useApi()
+    var res;
 
-    const sendDegreeForm = async({degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}) => {
+    const sendDegreeForm = async({_id=null, degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}, editMode=null) => {
+        
         try {
-            console.log(degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules);
-            const res = await api.post(`/api/degree/new`, {
+            if (editMode) {
+                console.log(
+                    _id,
+                  degreeID,
+                  degreeYear,
+                  degreeName,
+                  degreeAgent,
+                  degreeStudentList,
+                  degreeModules
+                );
+                res = await api.post(`/api/degree/edit/${degreeID}`, {
                 degreeID,
                 degreeYear, 
                 degreeName, 
@@ -19,6 +30,18 @@ const useSendDegreeForm = () => {
             }, {
                 headers: {"Content-Type": "application/json"}
             })
+            } 
+            else {
+                res = await api.post(`/api/degree/new`, {
+                degreeID,
+                degreeYear, 
+                degreeName, 
+                degreeAgent, 
+                degreeStudentList, 
+                degreeModules
+            }, {
+                headers: {"Content-Type": "application/json"}
+            })}
 
             const data = await res.data;
             if (data.error) {

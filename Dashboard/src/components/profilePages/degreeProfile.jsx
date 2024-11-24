@@ -7,11 +7,11 @@ import {
 } from '@mui/material';
 import { tokens } from '../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import StudentForm from '../../components/forms/StudentForm';
+import StudentForm from '../forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteObjects from '../../hooks/useDeleteObjects';
-import DetailsPieChart from '../../components/DetailsPieChart';
+import DetailsPieChart from '../DetailsPieChart';
 
 
 const DegreeProfile = () => {
@@ -28,7 +28,7 @@ const DegreeProfile = () => {
 
   // useEffect(() => {
   //   if (degree){
-  //     console.log(degree.assignmentTally.assignmentProgressList);   
+  //     console.log(degree);   
   //   }
   // }, [degree])
 
@@ -109,6 +109,9 @@ const DegreeProfile = () => {
     } catch (e) {
       console.log("Error deleting degree: ", e.message);
     }
+  };
+  const handleDegreeEdit = async (degree, editMode) => {
+    navigate(`/task/${degreeYear}/${degreeId}/editDegree`, { state: {editMode: editMode, degree: degree} });
   };
 
   if (loading) {
@@ -259,6 +262,24 @@ const DegreeProfile = () => {
             }}
           >
             <DeleteOutlineOutlinedIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => handleDegreeEdit(degree, true)}
+            sx={{
+              position: "absolute",
+              top: 180,
+              right: 123,
+              backgroundColor: colors.greenAccent[500],
+              color: colors.grey[100],
+              "&:hover": {
+                backgroundColor: colors.greenAccent[600],
+                transform: "scale(1.1)",
+                transition: "transform 0.2s",
+              },
+              boxShadow: 3,
+            }}
+          >
+            <EditOutlinedIcon />
           </IconButton>
         </CardContent>
       </Card>
