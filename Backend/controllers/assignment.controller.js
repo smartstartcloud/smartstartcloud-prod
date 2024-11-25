@@ -100,32 +100,56 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
     }
 };
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {
+export const filterMainAssignments = async(assignments) => {
+  // Fetch all assignments with their main assignment nature
+  const results = await Promise.all(
+    assignments.map(async (id) => {
+      const mainAssignment = await Assignment.findOne({
+        _id: id,
+        assignmentNature: "main",
+      });
+      return { id, isMain: !!mainAssignment }; // Track whether it's a main assignment
+    })
+  );
+  console.log(results);
+  
+
+  // Filter out main assignments
+  const filteredAssignments = results
+    .filter((result) => !result.isMain) // Keep only non-main assignments
+    .map((result) => result.id); // Extract the assignment IDs
+
+  return filteredAssignments;
+}
+
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
     for (const assignments of assignmentList) {
-        for (let i = 0; i < studentList.length; i++) {
-            let existingModuleAssignment = await ModuleAssignment.findOne({
-                studentID: studentList[i],
-                moduleID: moduleID,
-            });
-            if (existingModuleAssignment) {
-                // If it exists, add the new assignment ID to the assignments array if it's not already present
-                if (!existingModuleAssignment.assignments.includes(assignments[i])) 
-                {
-                  existingModuleAssignment.assignments.push(assignments[i]);
-                  await existingModuleAssignment.save(); // Save the updated document
-                  // console.log("existingModuleAssignment", existingModuleAssignment);
-                }
-            } else {
-                // If it does not exist, create a new ModuleAssignment document
-                const newModuleAssignment = new ModuleAssignment({
-                studentID: studentList[i],
-                moduleID: moduleID,
-                assignments: [assignments[i]], // Initialize with the first assignment
-                });
-                await newModuleAssignment.save();
-                // console.log("newModuleAssignment", newModuleAssignment);
-            }
+      const updatedAssignments = await filterMainAssignments(assignments);
+      for (let i = 0; i < studentList.length; i++) {
+        console.log('ashche');
+        
+        let existingModuleAssignment = await ModuleAssignment.findOne({
+          studentID: studentList[i],
+          moduleID: moduleID,
+        });
+        if (existingModuleAssignment) {
+          // If it exists, add the new assignment ID to the assignments array if it's not already present
+          if (!existingModuleAssignment.assignments.includes(updatedAssignments[i])) {
+            existingModuleAssignment.assignments.push(updatedAssignments[i]);
+            await existingModuleAssignment.save(); // Save the updated document
+            // console.log("existingModuleAssignment", existingModuleAssignment);
+          }
+        } else {
+          // If it does not exist, create a new ModuleAssignment document
+          const newModuleAssignment = new ModuleAssignment({
+            studentID: studentList[i],
+            moduleID: moduleID,
+            assignments: [updatedAssignments[i]], // Initialize with the first assignment
+          });
+          await newModuleAssignment.save();
+          // console.log("newModuleAssignment", newModuleAssignment);
         }
+      }
     }
 }
 

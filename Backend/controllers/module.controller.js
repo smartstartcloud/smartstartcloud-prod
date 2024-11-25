@@ -28,7 +28,7 @@ export const addNewModule = async(moduleList, studentList) =>  {
             },
             { new: true } // Return the updated document
           );
-          createNewModuleStudentAssignment(
+          await createNewModuleStudentAssignment(
             updatedModule._id,
             studentList,
             updatedModule.moduleAssignments
@@ -47,7 +47,7 @@ export const addNewModule = async(moduleList, studentList) =>  {
           });
 
           const savedModule = await newModule.save();
-          createNewModuleStudentAssignment(
+          await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
             savedModule.moduleAssignments
