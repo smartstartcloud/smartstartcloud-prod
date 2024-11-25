@@ -11,25 +11,20 @@ const useSendDegreeForm = () => {
         
         try {
             if (editMode) {
-                console.log(
-                    _id,
-                  degreeID,
-                  degreeYear,
-                  degreeName,
-                  degreeAgent,
-                  degreeStudentList,
-                  degreeModules
+                res = await api.put(
+                  `/api/degree/updateDegree/${_id}`,
+                  {
+                    degreeID,
+                    degreeYear,
+                    degreeName,
+                    degreeAgent,
+                    degreeStudentList,
+                    degreeModules,
+                  },
+                  {
+                    headers: { "Content-Type": "application/json" },
+                  }
                 );
-                res = await api.post(`/api/degree/edit/${degreeID}`, {
-                degreeID,
-                degreeYear, 
-                degreeName, 
-                degreeAgent, 
-                degreeStudentList, 
-                degreeModules
-            }, {
-                headers: {"Content-Type": "application/json"}
-            })
             } 
             else {
                 res = await api.post(`/api/degree/new`, {

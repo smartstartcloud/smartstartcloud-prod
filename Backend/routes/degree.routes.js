@@ -1,5 +1,5 @@
 import express from "express"
-import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree} from '../controllers/degree.controller.js'
+import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree, updateDegree} from '../controllers/degree.controller.js'
 import { getAgentList } from "../controllers/auth.controller.js"
 import {authenticate,adminAllowed} from '../middlewares/protect.js'
 import { addStudentInDegree } from "../controllers/student.controller.js"
@@ -11,6 +11,7 @@ router.use(authenticate);
 
 router.get('/agentlist',getAgentList) ;
 router.post("/new",newDegree);
+router.put("/updateDegree/:degree_id", updateDegree);
 
 router.get('/all',getAllDegree) ;
 router.get('/selected/year/:degreeYear',getDegreeByYear) ;

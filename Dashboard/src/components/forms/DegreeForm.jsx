@@ -81,6 +81,15 @@ const DegreeForm = ({editPage=false}) => {
     if (editPage, degree) {
       if (editMode) {
         console.log(degree);
+        console.log(monthYear);
+        const existingMonthYear = degree.degreeYear.split("_")[0];
+        const existingMonth = existingMonthYear.charAt(0).toUpperCase() + existingMonthYear.slice(1);
+        const existingYear = degree.degreeYear.split("_")[1];
+        setMonthYear({
+          month: existingMonth,
+          year: existingYear,
+        });
+        
         reset({
           _id: degree._id,
           degreeID: degree?.degreeID || "",
@@ -149,7 +158,7 @@ const DegreeForm = ({editPage=false}) => {
     try {
       const response = await sendDegreeForm(data, editMode);
       console.log("Form Data:", data);
-      // console.log('Response Data:', response);
+      console.log('Response Data:', response);
       // navigate(0);
 
       setFormSaved(true);
