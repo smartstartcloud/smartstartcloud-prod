@@ -28,11 +28,6 @@ export const addNewModule = async(moduleList, studentList) =>  {
             },
             { new: true } // Return the updated document
           );
-          // await createNewModuleStudentAssignment(
-          //   updatedModule._id,
-          //   studentList,
-          //   updatedModule.moduleAssignments
-          // );
           return updatedModule._id;
         }
         else {

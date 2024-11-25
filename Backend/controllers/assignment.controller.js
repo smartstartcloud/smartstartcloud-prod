@@ -3,12 +3,11 @@ import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 // Function to create a new assignment and update relevant records
-export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode, referenceNumber) => {        
+export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
     try {          
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(          
             assignmentList.map(async (assignmentData) => {
-              console.log(assignmentData);
               
               const assignmentIDs = [];
               let currentAssignment = await Assignment.findOne({
@@ -126,7 +125,6 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
-      console.log(sortedUpdatedAssignments);
       
       for (let i = 0; i < studentList.length; i++) {        
         let existingModuleAssignment = await ModuleAssignment.findOne({
@@ -155,13 +153,10 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
 }
 
 export const updateModuleStudentAssignment = async (moduleCode, studentID, assignmentID) => {
-  let moduleID = await Module.findOne({moduleCode: moduleCode}).select("_id");
-  console.log(moduleID);
-  
+  let moduleID = await Module.findOne({moduleCode: moduleCode}).select("_id");  
 
   moduleID = moduleID?._id || null; // Safely extract the _id or set to null if no document is found
   if (moduleID){
-    console.log('hoise');
     
     let existingModuleAssignment = await ModuleAssignment.findOne({
       studentID: studentID,
