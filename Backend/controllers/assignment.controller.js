@@ -8,6 +8,8 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(          
             assignmentList.map(async (assignmentData) => {
+              console.log(assignmentData);
+              
               const assignmentIDs = [];
               let currentAssignment = await Assignment.findOne({
                 _id: assignmentData._id
@@ -28,10 +30,9 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
 
                 let dynamicAssignmentList =
                   await Assignment.find({
-                    referenceNumber:
-                      assignmentData.referenceNumber, // Match by referenceNumber
+                    referenceNumber:assignmentData.referenceNumber, // Match by referenceNumber
                     assignmentNature: "dynamic", // Match only if assignmentNature is "dynamic"
-                  });                
+                  });
                 await Promise.all(
                   dynamicAssignmentList.map(async (assignment)=> {
                     const updateStudentAssignment =
@@ -85,7 +86,8 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
 
                   // Save the assignment to the database and collect its ObjectID
                   const savedAssignment = await newAssignment.save();
-                  assignmentIDs.push(savedAssignment._id); // Collect each saved ID                  
+                  assignmentIDs.push(savedAssignment._id); // Collect each saved ID  
+                  await updateModuleStudentAssignment(moduleCode, studentList[i],savedAssignment._id)                
                 }
               }
               
@@ -110,9 +112,7 @@ export const filterMainAssignments = async(assignments) => {
       });
       return { id, isMain: !!mainAssignment }; // Track whether it's a main assignment
     })
-  );
-  console.log(results);
-  
+  );  
 
   // Filter out main assignments
   const filteredAssignments = results
@@ -125,17 +125,18 @@ export const filterMainAssignments = async(assignments) => {
 export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
-      for (let i = 0; i < studentList.length; i++) {
-        console.log('ashche');
-        
+      const sortedUpdatedAssignments = updatedAssignments.sort()
+      console.log(sortedUpdatedAssignments);
+      
+      for (let i = 0; i < studentList.length; i++) {        
         let existingModuleAssignment = await ModuleAssignment.findOne({
           studentID: studentList[i],
           moduleID: moduleID,
         });
         if (existingModuleAssignment) {
           // If it exists, add the new assignment ID to the assignments array if it's not already present
-          if (!existingModuleAssignment.assignments.includes(updatedAssignments[i])) {
-            existingModuleAssignment.assignments.push(updatedAssignments[i]);
+          if (!existingModuleAssignment.assignments.includes(sortedUpdatedAssignments[i])) {
+            existingModuleAssignment.assignments.push(sortedUpdatedAssignments[i]);
             await existingModuleAssignment.save(); // Save the updated document
             // console.log("existingModuleAssignment", existingModuleAssignment);
           }
@@ -144,13 +145,47 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
           const newModuleAssignment = new ModuleAssignment({
             studentID: studentList[i],
             moduleID: moduleID,
-            assignments: [updatedAssignments[i]], // Initialize with the first assignment
+            assignments: [sortedUpdatedAssignments[i]], // Initialize with the first assignment
           });
           await newModuleAssignment.save();
           // console.log("newModuleAssignment", newModuleAssignment);
         }
       }
     }
+}
+
+export const updateModuleStudentAssignment = async (moduleCode, studentID, assignmentID) => {
+  let moduleID = await Module.findOne({moduleCode: moduleCode}).select("_id");
+  console.log(moduleID);
+  
+
+  moduleID = moduleID?._id || null; // Safely extract the _id or set to null if no document is found
+  if (moduleID){
+    console.log('hoise');
+    
+    let existingModuleAssignment = await ModuleAssignment.findOne({
+      studentID: studentID,
+      moduleID: moduleID,
+    });
+    if (existingModuleAssignment) {
+      // If it exists, add the new assignment ID to the assignments array if it's not already present
+      if (!existingModuleAssignment.assignments.includes(assignmentID)) {
+        existingModuleAssignment.assignments.push(assignmentID);
+        await existingModuleAssignment.save(); // Save the updated document
+        // console.log("existingModuleAssignment", existingModuleAssignment);
+      }
+    } else {
+      // If it does not exist, create a new ModuleAssignment document
+      const newModuleAssignment = new ModuleAssignment({
+        studentID: studentID,
+        moduleID: moduleID,
+        assignments: [assignmentID], // Initialize with the first assignment
+      });
+      await newModuleAssignment.save();
+      // console.log("newModuleAssignment", newModuleAssignment);
+    }
+  }
+
 }
 
 export const updateAssignment = async (req, res) => {

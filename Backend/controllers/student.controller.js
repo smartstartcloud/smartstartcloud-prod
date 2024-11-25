@@ -7,11 +7,11 @@ export async function addNewStudent(studentList) {
     const addedStudentIDs = await Promise.all(
       studentList.map(async (studentData) => {
         // Finding the current student in database to see if the ID already exists in database;
-        let currentStudent = await Student.findOne({_id:studentData._id});
+        let currentStudent = await Student.findOne({studentID:studentData.studentID});
         if(currentStudent){          
           // Update the current student with the new data
           const updatedStudent = await Student.findOneAndUpdate(
-            { _id: studentData._id }, // Find the student by studentID
+            { _id: currentStudent._id }, // Find the student by studentID
             {
               studentID: studentData.studentID,
               studentName: studentData.studentName,
