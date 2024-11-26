@@ -19,6 +19,7 @@ export async function addNewStudent(studentList) {
               studentLogin: studentData.studentLogin,
               studentPassword: studentData.studentPassword,
               studentOfficePassword: studentData.studentOfficePassword,
+              studentOther: studentData.studentOther,
             },
             { new: true } // Return the updated document
           );
@@ -32,6 +33,7 @@ export async function addNewStudent(studentList) {
           studentLogin: studentData.studentLogin, // Corrected field name
           studentPassword: studentData.studentPassword, // Corrected field name
           studentOfficePassword: studentData.studentOfficePassword,
+          studentOther: studentData.studentOther,
         });
 
         // Save the student to the database and return the saved student's ObjectID
@@ -50,7 +52,7 @@ export async function addNewStudent(studentList) {
 
 export const addStudentInDegree = async (req,res)=>{
   try{
-    const {degreeID,studentName,studentID,studentContact,studentLogin,studentPassword,studentOfficePassword} = req.body
+    const {degreeID,studentName,studentID,studentContact,studentLogin,studentPassword,studentOfficePassword,studentOther} = req.body
     
     let currentStudent = await Student.findOne({studentID});
     if(currentStudent){
@@ -63,7 +65,8 @@ export const addStudentInDegree = async (req,res)=>{
       studentContact,
       studentLogin, 
       studentPassword,
-      studentOfficePassword
+      studentOfficePassword,
+      studentOther
     });
     const savedStudent = await newStudent.save();
     if(savedStudent){
