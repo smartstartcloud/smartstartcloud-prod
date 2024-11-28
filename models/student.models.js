@@ -23,6 +23,12 @@ const studentSchema = new mongo.Schema({
         type: String,
         // required: true
     },
+    studentOfficePassword: {
+        type: String,
+    },
+    studentOther: {
+        type: String,
+    },
     studentAssignment: {
         type: Array,
         default: []
