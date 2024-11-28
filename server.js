@@ -37,6 +37,8 @@ app.use(
           "https://www.smartstart.cloud",
           "https://smartstart.cloud",
           "www.smartstart.cloud",
+          "https://portal.smartstart.cloud",
+          "portal.smartstart.cloud",
         ],
       },
     },
@@ -56,6 +58,8 @@ app.use(
       "https://www.smartstart.cloud",
       "https://smartstart.cloud",
       "www.smartstart.cloud",
+      "https://portal.smartstart.cloud",
+      "portal.smartstart.cloud",
     ],
     credentials: true,
   })
