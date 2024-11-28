@@ -18,86 +18,23 @@ export const newDegree = async (req, res) => {
       degreeModules,
     } = req.body; // Expect assignmentData in the request body
 
-    let currentDegree = await Degree.findOne({
-      degreeID: degreeID,
-    });
+    const populatedStudentList = await addNewStudent(degreeStudentList);
+    const populatedModules = await addNewModule(degreeModules, populatedStudentList);
 
-    if (currentDegree){
-      const error = new Error("Degree ID already exists");
-      error.code = 11000; // Set the error code
-      throw error; // Throw the error object
-    } else {
-      const populatedStudentList = await addNewStudent(degreeStudentList);
-      const populatedModules = await addNewModule(
-        degreeModules,
-        populatedStudentList
-      );
-
-      // Step 1: Create Degree
-      const newDegree = new Degree({
-        degreeID,
-        degreeName,
-        degreeYear,
-        degreeAgent,
-        degreeStudentList: populatedStudentList,
-        degreeModules: populatedModules,
-      });
-      // console.log(newDegree);
-
-      await newDegree.save();
-
-      res.status(200).json(newDegree);
-    }
-    
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(409).json({ error: "Degree ID already exists" });
-    } else {
-      console.error("Error in newDegree:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-};
-
-export const updateDegree = async (req, res) => {
-  try {
-    const { degree_id } = req.params;
-    const {
+    // Step 1: Create Degree
+    const newDegree = new Degree({
       degreeID,
       degreeName,
       degreeYear,
       degreeAgent,
-      degreeStudentList,
-      degreeModules,
-    } = req.body; // Expect assignmentData in the request body
-
-    let currentDegree = await Degree.findOne({
-      _id: degree_id,
+      degreeStudentList: populatedStudentList,
+      degreeModules: populatedModules,
     });
+    // console.log(newDegree);
 
-    if (currentDegree) {
-      const populatedStudentList = await addNewStudent(degreeStudentList);
-      const populatedModules = await addNewModule(
-        degreeModules,
-        populatedStudentList
-      );
+    await newDegree.save()
 
-      let updatedDegree = await Degree.findOneAndUpdate(
-        { _id: degree_id },
-        {
-          degreeID,
-          degreeName,
-          degreeYear,
-          degreeAgent,
-          degreeStudentList: populatedStudentList,
-          degreeModules: populatedModules,
-        }
-      );
-      res.status(200).json(updatedDegree);
-    } else {
-      res.status(404).json({ error: "No degree found with the specified ID" });
-    }
-    
+    res.status(200).json({ newDegree });
   } catch (error) {
     if (error.code === 11000) {
       res.status(409).json({ error: "Degree ID already exists" });

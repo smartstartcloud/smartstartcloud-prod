@@ -8,22 +8,8 @@ export async function addNewStudent(studentList) {
       studentList.map(async (studentData) => {
         // Finding the current student in database to see if the ID already exists in database;
         let currentStudent = await Student.findOne({studentID:studentData.studentID});
-        if(currentStudent){          
-          // Update the current student with the new data
-          const updatedStudent = await Student.findOneAndUpdate(
-            { _id: currentStudent._id }, // Find the student by studentID
-            {
-              studentID: studentData.studentID,
-              studentName: studentData.studentName,
-              studentContact: studentData.studentContact,
-              studentLogin: studentData.studentLogin,
-              studentPassword: studentData.studentPassword,
-              studentOfficePassword: studentData.studentOfficePassword,
-              studentOther: studentData.studentOther,
-            },
-            { new: true } // Return the updated document
-          );
-          return updatedStudent._id;
+        if(currentStudent){
+          return currentStudent._id;
         }else{
           // Create a new Student instance
           const newStudent = new Student({
@@ -32,8 +18,6 @@ export async function addNewStudent(studentList) {
           studentContact: studentData.studentContact,
           studentLogin: studentData.studentLogin, // Corrected field name
           studentPassword: studentData.studentPassword, // Corrected field name
-          studentOfficePassword: studentData.studentOfficePassword,
-          studentOther: studentData.studentOther,
         });
 
         // Save the student to the database and return the saved student's ObjectID
@@ -52,7 +36,7 @@ export async function addNewStudent(studentList) {
 
 export const addStudentInDegree = async (req,res)=>{
   try{
-    const {degreeID,studentName,studentID,studentContact,studentLogin,studentPassword,studentOfficePassword,studentOther} = req.body
+    const {degreeID,studentName,studentID,studentContact,studentLogin,studentPassword} = req.body
     
     let currentStudent = await Student.findOne({studentID});
     if(currentStudent){
@@ -64,9 +48,7 @@ export const addStudentInDegree = async (req,res)=>{
       studentID,
       studentContact,
       studentLogin, 
-      studentPassword,
-      studentOfficePassword,
-      studentOther
+      studentPassword
     });
     const savedStudent = await newStudent.save();
     if(savedStudent){

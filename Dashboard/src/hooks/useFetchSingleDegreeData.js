@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import useApi from './useApi';
 
 
-const useFetchSingleDegreeData = (degreeId, editPage=true) => {
+const useFetchSingleDegreeData = (degreeId) => {
     const api = useApi()
     const [degree, setDegree] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -29,10 +29,8 @@ const useFetchSingleDegreeData = (degreeId, editPage=true) => {
             }
         };
 
-        if(editPage){
-          fetchDegreeData(degreeId); // Call the async function within useEffect
-        }
-    }, [degreeId, editPage]);
+        fetchDegreeData(degreeId); // Call the async function within useEffect
+    }, [degreeId]);
 
   return {degree, loading, error}
 

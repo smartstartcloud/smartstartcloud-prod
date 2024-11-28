@@ -12,25 +12,11 @@ export const addNewModule = async(moduleList, studentList) =>  {
       moduleList.map(async (moduleData) => {
         // Finding the current Module in database to see if the ID already exists in database;
         let currentModule = await Module.findOne({
-          _id: moduleData._id,
+          moduleCode: moduleData.moduleCode,
         });
-        if (currentModule) {
-          const updatedModule = await Module.findOneAndUpdate(
-            { _id: moduleData._id }, // Find the student by studentID
-            {
-              moduleName: moduleData.moduleName,
-              moduleCode: moduleData.moduleCode,
-              moduleAssignments: await newAssignmentDynamic(
-                moduleData.assignmentList,
-                studentList,
-                moduleData.moduleCode
-              ),
-            },
-            { new: true } // Return the updated document
-          );
-          return updatedModule._id;
-        }
-        else {
+        if (currentModule) {          
+          return currentModule._id;
+        } else {
           const newModule = new Module({
             moduleName: moduleData.moduleName,
             moduleCode: moduleData.moduleCode,
@@ -42,12 +28,13 @@ export const addNewModule = async(moduleList, studentList) =>  {
           });
 
           const savedModule = await newModule.save();
-          await createNewModuleStudentAssignment(
+          createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
             savedModule.moduleAssignments
           );
           return savedModule._id;
+          
         }
       })
     );    
@@ -82,21 +69,17 @@ export const getAssignment = async (req, res) => {
 export const getModuleData = async (req, res) => {
   try {
     const { degreeID, moduleID } = req.params;
-    
 
     // Step 1: Retrieve the module details by moduleID
-    const module = await Module.findById(moduleID).populate({
-      path: "moduleAssignments",
-      model: "Assignment", // Specify the model explicitly if needed
-      match: { assignmentNature: "main" }, // Filter for assignments with assignmentNature: "main"
-      select: "assignmentName assignmentType referenceNumber assignmentDeadline",
-    });
+    const module = await Module.findById(moduleID);
     if (!module) {
       res
         .status(404)
         .json({ error: "No module found for the provided student and module" });
-    }    
-    const { moduleName, moduleCode, moduleAssignments } = module;
+    }
+
+    const { moduleName, moduleCode } = module;    
+
     // Step 2: Retrieve the student list for the given degree
     const degree = await Degree.findOne({ degreeID }).populate("degreeStudentList");
     if (!degree) {
@@ -133,7 +116,6 @@ export const getModuleData = async (req, res) => {
        moduleName,
        moduleCode,
        moduleData: populatedStudentList,
-       moduleAssignments,
      });
   } catch (error) {
     console.error("Error in getAssignmentNew:", error);
