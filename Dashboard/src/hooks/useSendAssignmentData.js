@@ -58,11 +58,26 @@ const useSendAssignmentData = () => {
         
     }
 
-    const updateOrderID = async ({ assignmentID, orderID }) => {
+    const updateOrderID = async ({ assignmentID, newValue, tStatus }) => {
+      
       try {
-        res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
-          orderID,
-        });
+        if (tStatus === "orderID") {
+          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
+            orderID: newValue,
+          });
+        } else if (tStatus === "progress") {
+          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
+            assignmentProgress: newValue,
+          });
+        } else if (tStatus === "paymentAmount") {
+          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
+            assignmentPayment: newValue,
+          });
+        } else if (tStatus === "grade") {
+          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
+            assignmentGrade: newValue,
+          });
+        }
         const data = await res.data;
         if (data.error) {
           throw new Error(data.error);

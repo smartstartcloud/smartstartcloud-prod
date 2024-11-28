@@ -150,7 +150,7 @@ export const getAssignmentForModule = async (studentID, moduleID) => {
     }).populate({
       path: "assignments",
       select:
-        "-assignmentFile -assignmentGrade -assignmentNature -assignmentPayment -assignmentProgress",
+        "-assignmentFile -assignmentNature",
     });
     
 

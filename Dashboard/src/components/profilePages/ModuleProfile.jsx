@@ -45,7 +45,7 @@ const ModuleProfile = () => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     if (moduleData) {
       setMainAssignmentList(extractObjects(moduleData.moduleAssignments));
     }
@@ -58,10 +58,10 @@ const ModuleProfile = () => {
     }
   }, [mainAssignmentList]); // This will trigger when mainAssignmentList is updated
 
-  useEffect(() => {
-    // Log the single assignment list whenever it changes
-    console.log(singleAssignmentList);
-  }, [singleAssignmentList]); // Log every time singleAssignmentList changes
+  // useEffect(() => {
+  //   // Log the single assignment list whenever it changes
+  //   console.log(singleAssignmentList);
+  // }, [singleAssignmentList]); // Log every time singleAssignmentList changes
 
   return (
     <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
