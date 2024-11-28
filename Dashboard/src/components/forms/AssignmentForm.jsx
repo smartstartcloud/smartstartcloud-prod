@@ -33,7 +33,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
             assignmentName: '',
             assignmentType: '',
             assignmentProgress: 'TBA',
-            assignmentPayment: 0,
+            assignmentPayment: '',
             assignmentDeadline: '',
             assignmentGrade: ''
         }
@@ -306,7 +306,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    type="number"
+                    type="string"
                     variant="outlined"
                     fullWidth
                     label="Payment Amount"
@@ -370,41 +370,55 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
               </LocalizationProvider>
             </Grid>
           </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Controller
-                name="assignmentGrade"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="assignmentGrade"
-                    variant="outlined"
-                    fullWidth
-                    // required
-                    sx={{ mb: 2 }}
-                    // error={!!touchedFields.assignmentGrade && !!errors.assignmentGrade}
-                    // helperText={
-                    //   touchedFields.assignmentGrade && errors.assignmentGrade
-                    //     ? errors.assignmentGrade.message
-                    //     : null
-                    // }
-                    // onBlur={(e) => {
-                    //   field.onBlur();
-                    //   if (!field.value) {
-                    //     setError("assignmentGrade", {
-                    //       type: "manual",
-                    //       message: "assignmentGrade is required",
-                    //     });
-                    //   } else {
-                    //     clearErrors("assignmentGrade");
-                    //   }
-                    // }}
-                  />
-                )}
-              />
-            </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={5.25}>
+            <Controller
+              name="assignmentGrade"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Assignment Grade"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
           </Grid>
+
+          <Grid item xs={3}>
+            <Controller
+              name="assignmentPaymentAccount"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Payment Account"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={3}>
+            <Controller
+              name="assignmentPaymentDate"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Payment Date"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
           <Button
             variant="contained"
             color="primary"

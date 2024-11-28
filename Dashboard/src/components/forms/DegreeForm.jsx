@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -29,6 +29,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AssignmentFieldForm from './AssignmentFieldForm';
 import StudentFieldForm from './StudentFieldForm';
 import { extractObjects } from '../../utils/functions';
+import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 
 
 const currentYear = new Date().getFullYear();
@@ -39,6 +40,7 @@ const months = [
 const DegreeForm = ({editPage=false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { degreeYear, degreeId } = useParams();
   const [open, setOpen] = useState(false);
   const [formSaved, setFormSaved] = useState(false);
   const [formError, setFormError] = useState(false);
@@ -46,14 +48,13 @@ const DegreeForm = ({editPage=false}) => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { degree } = useFetchSingleDegreeData(degreeId, editPage);
 
-  const location = useLocation();
-  var degree;
+  const location = useLocation();  
   var editMode;
 
   if (editPage) {
     const state = location?.state;
-    degree = state.degree;
     editMode = state.editMode;
   }
 
@@ -80,7 +81,14 @@ const DegreeForm = ({editPage=false}) => {
   useEffect(() => {
     if (editPage, degree) {
       if (editMode) {
-        console.log(degree);
+        const existingMonthYear = degree.degreeYear.split("_")[0];
+        const existingMonth = existingMonthYear.charAt(0).toUpperCase() + existingMonthYear.slice(1);
+        const existingYear = degree.degreeYear.split("_")[1];
+        setMonthYear({
+          month: existingMonth,
+          year: existingYear,
+        });
+        
         reset({
           _id: degree._id,
           degreeID: degree?.degreeID || "",
@@ -98,12 +106,12 @@ const DegreeForm = ({editPage=false}) => {
               studentAssignmentList: student.studentAssignment || [],
             })) || [],
           degreeModules:
-            degree?.degreeModules.map((module) => ({
+            degree?.degreeModules?.map((module) => ({
               _id: module._id,
               moduleName: module.moduleName || "",
               moduleCode: module.moduleCode || "",
               assignmentList:
-                extractObjects(module.moduleAssignments).map((assignment) => ({
+                extractObjects(module.moduleAssignments)?.map((assignment) => ({
                   _id: assignment._id,
                   assignmentName: assignment.assignmentName || "", // Placeholder for assignment details if needed
                   referenceNumber: assignment.referenceNumber || "",
@@ -149,8 +157,8 @@ const DegreeForm = ({editPage=false}) => {
     try {
       const response = await sendDegreeForm(data, editMode);
       console.log("Form Data:", data);
-      // console.log('Response Data:', response);
-      // navigate(0);
+      console.log('Response Data:', response);
+      navigate(0);
 
       setFormSaved(true);
       setLoading(false);
