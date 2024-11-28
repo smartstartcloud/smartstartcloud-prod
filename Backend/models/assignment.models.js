@@ -21,6 +21,12 @@ const AssignmentSchema = new mongo.Schema({
   assignmentPayment: {
     type: String,
   },
+  assignmentPaymentAccount: {
+    type: String,
+  },
+  assignmentPaymentDate: {
+    type: String,
+  },
   assignmentGrade: {
     type: String,
   },
