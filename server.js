@@ -37,14 +37,14 @@ app.use(
           "www.smartstart.cloud",
           "https://portal.smartstart.cloud",
           "portal.smartstart.cloud",],
-        // connectSrc: [
-        //   "'self'",
-        //   "https://www.smartstart.cloud",
-        //   "https://smartstart.cloud",
-        //   "www.smartstart.cloud",
-        //   "https://portal.smartstart.cloud",
-        //   "portal.smartstart.cloud",
-        // ],
+        connectSrc: [
+          "'self'",
+          "https://www.smartstart.cloud",
+          "https://smartstart.cloud",
+          "www.smartstart.cloud",
+          "https://portal.smartstart.cloud",
+          "portal.smartstart.cloud",
+        ],
       },
     },
   })
@@ -54,7 +54,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(helmet());
+app.set("trust proxy", 1); // Trust Heroku's proxy
 app.use(
   cors({
     origin: [
@@ -62,9 +62,7 @@ app.use(
       "http://localhost:3000",
       "https://www.smartstart.cloud",
       "https://smartstart.cloud",
-      "www.smartstart.cloud",
       "https://portal.smartstart.cloud",
-      "portal.smartstart.cloud",
     ],
     credentials: true,
   })
