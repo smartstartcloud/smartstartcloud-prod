@@ -124,7 +124,7 @@ const ModuleProfile = () => {
               justifyContent="center"
             >
               {mainAssignmentList.map((assignment, idx) => (
-                <Grid item xs={2} key={idx}>
+                <Grid item xs={12} sm={5} key={idx}>
                   <Button
                     onClick={() =>
                       setSingleAssignmentList(

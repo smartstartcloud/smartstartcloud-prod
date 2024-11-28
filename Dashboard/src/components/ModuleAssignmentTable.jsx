@@ -41,8 +41,6 @@ const ModuleAssignmentTable = ({studentData}) => {
   };
   // Fetch Order IDs when the component mounts or when studentData changes
   useEffect(() => {
-    console.log(studentData);
-
     studentData.forEach((student) => {
       student.assignmentList.forEach((assignment) => {
         fetchOrderIdList(assignment.referenceNumber);
@@ -154,7 +152,7 @@ const ModuleAssignmentTable = ({studentData}) => {
                     <TableCell rowSpan={row.assignmentList.length}>
                       {row.id}
                     </TableCell>
-                    <TableCell rowSpan={row.assignmentList.length}>
+                    <TableCell rowSpan={row.assignmentList.length} sx={{fontSize: "14px"}}>
                       {row.name}
                     </TableCell>
                     <TableCell>
@@ -322,7 +320,7 @@ const ModuleAssignmentTable = ({studentData}) => {
                               assignment={assignment}
                               assignmentDataLists={assignmentGradeLists}
                               handleDropdownChange={handleDropdownChange}
-                              dataType={assignment.assignmentPayment}
+                              dataType={assignment.assignmentGrade}
                               label={"Grades"}
                             />
                           )}
