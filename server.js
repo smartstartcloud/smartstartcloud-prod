@@ -31,15 +31,20 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: [
-          "'self'",
+        defaultSrc: ["'self'", 
           "https://www.smartstart.cloud",
           "https://smartstart.cloud",
           "www.smartstart.cloud",
           "https://portal.smartstart.cloud",
-          "portal.smartstart.cloud",
-        ],
+          "portal.smartstart.cloud",],
+        // connectSrc: [
+        //   "'self'",
+        //   "https://www.smartstart.cloud",
+        //   "https://smartstart.cloud",
+        //   "www.smartstart.cloud",
+        //   "https://portal.smartstart.cloud",
+        //   "portal.smartstart.cloud",
+        // ],
       },
     },
   })
