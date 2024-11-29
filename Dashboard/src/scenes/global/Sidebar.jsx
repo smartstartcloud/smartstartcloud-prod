@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar"
-<<<<<<< HEAD
-import { Box, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material'
-=======
 import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
->>>>>>> form-dashboard-shiam
 import { Link, useLocation } from 'react-router-dom'
 import { tokens } from '../../theme'
 import "react-pro-sidebar/dist/css/styles.css";
@@ -39,15 +35,9 @@ const Item = ({title, to, icon, selected, setSelected}) => {
 
 
 const Sidebar = () => {
-<<<<<<< HEAD
-  const theme = useTheme()
-  const colors = tokens(theme.palette.mode)
-
-=======
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
->>>>>>> form-dashboard-shiam
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x)[0];
 
@@ -62,24 +52,9 @@ const Sidebar = () => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
 
-<<<<<<< HEAD
-  const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
-  const { authUser, isAdmin } = useAuthContext()
-
-  const isSmallScreen = useMediaQuery("(max-width: 600px)");
-  const [isCollapsed, setIsCollapsed] = useState(isSmallScreen);
-  
-=======
->>>>>>> form-dashboard-shiam
   return (
     <Box
       sx={{
-        position: isSmallScreen ? "fixed" : "sticky",
-        top: 0,
-        zIndex: isSmallScreen ? 1000 : "auto",
-        width: isCollapsed ? "70px" : "250px",
-        transition: "width 0.3s ease",
-        height: "100vh",
         "& .pro-sidebar-inner": {
           background: `${colors.primary[400]} !important`,
         },
@@ -97,16 +72,11 @@ const Sidebar = () => {
         },
       }}
     >
-<<<<<<< HEAD
-      <ProSidebar collapsed={isCollapsed}
-        style={{ height: "100%" }}>
-=======
       <ProSidebar
         collapsed={isCollapsed}
         collapsedWidth="70px"
         width={isMobile ? "100vw" : ""}
       >
->>>>>>> form-dashboard-shiam
         <Box
           display="flex"
           flexDirection="column"
@@ -210,18 +180,13 @@ const Sidebar = () => {
               />
             </Box>
           </Menu>
-<<<<<<< HEAD
-          {/* <Typography
-            variant="h6"
-=======
           <Typography
->>>>>>> form-dashboard-shiam
             color={colors.grey[700]}
             sx={{ p: "10px 0px", fontSize: "10px" }}
             textAlign="center"
           >
             Developed by SOFTCO.IT.COM
-          </Typography> */}
+          </Typography>
         </Box>
       </ProSidebar>
     </Box>
