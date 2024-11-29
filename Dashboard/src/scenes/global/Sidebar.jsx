@@ -81,7 +81,7 @@ const Sidebar = () => {
           display="flex"
           flexDirection="column"
           justifyContent="space-between"
-          height="100%"
+
         >
           <Menu iconShape="square">
             {/* Logo and Icon Menu */}
@@ -181,9 +181,8 @@ const Sidebar = () => {
             </Box>
           </Menu>
           <Typography
-            variant="h6"
             color={colors.grey[700]}
-            sx={{ p: "10px 10px" }}
+            sx={{ p: "10px 0px", fontSize: "10px" }}
             textAlign="center"
           >
             Developed by SOFTCO.IT.COM
