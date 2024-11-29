@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar"
-import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 import { tokens } from '../../theme'
 import "react-pro-sidebar/dist/css/styles.css";
@@ -37,16 +37,25 @@ const Item = ({title, to, icon, selected, setSelected}) => {
 const Sidebar = () => {
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
-  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x)[0]  
 
   const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
   const { authUser, isAdmin } = useAuthContext()
+
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const [isCollapsed, setIsCollapsed] = useState(isSmallScreen);
   
   return (
     <Box
       sx={{
+        position: isSmallScreen ? "fixed" : "sticky",
+        top: 0,
+        zIndex: isSmallScreen ? 1000 : "auto",
+        width: isCollapsed ? "70px" : "250px",
+        transition: "width 0.3s ease",
+        height: "100vh",
         "& .pro-sidebar-inner": {
           background: `${colors.primary[400]} !important`,
         },
@@ -64,7 +73,8 @@ const Sidebar = () => {
         },
       }}
     >
-      <ProSidebar collapsed={isCollapsed}>
+      <ProSidebar collapsed={isCollapsed}
+        style={{ height: "100%" }}>
         <Box
           display="flex"
           flexDirection="column"
@@ -168,14 +178,14 @@ const Sidebar = () => {
               />
             </Box>
           </Menu>
-          <Typography
+          {/* <Typography
             variant="h6"
             color={colors.grey[700]}
             sx={{ p: "10px 10px" }}
             textAlign='center'
           >
             Developed by SOFTCO.IT.COM
-          </Typography>
+          </Typography> */}
         </Box>
       </ProSidebar>
     </Box>

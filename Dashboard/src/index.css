@@ -15,6 +15,15 @@ body,
   position: relative;
 }
 
+.app .sidebar-expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5); 
+}
+
 ::-webkit-scrollbar{
   width: 10px;
 }
