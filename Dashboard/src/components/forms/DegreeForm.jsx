@@ -184,8 +184,8 @@ const DegreeForm = ({editPage=false}) => {
     <Box
       sx={{
         p: 3,
-        width: "80%",
-        maxWidth: "80%",
+        width: "90%",
+        maxWidth: "90%",
         margin: "0 auto",
         mt: 5,
         border: "1px solid rgba(102, 106, 108, 0.5)",

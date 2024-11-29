@@ -19,7 +19,6 @@ import StudentProfile from "./components/profilePages/StudentProfile";
 import AllDegree from "./scenes/dashboard/AllDegree";
 import GlobalUploadPage from "./devTest/GlobalUploadPage";
 import ModuleProfile from "./components/profilePages/ModuleProfile";
-import { useEffect, useState } from "react";
 import PortalIndex from "./components/Portal/PortalIndex";
 import PortalAll from "./components/Portal/PortalAll";
 import PortalSidebar from "./components/Portal/PortalSidebar";
@@ -27,14 +26,9 @@ import OrderIDList from "./components/profilePages/OrderIDList";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
-  const { authUser, isAdmin, isPortal } = useAuthContext();
+  const { authUser, isAdmin, isPortal, isCollapsed } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
 
   const handleLogout = () => {
     logout().then(() => console.log("User logged out successfully"));
@@ -45,12 +39,8 @@ export const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          {authUser && location.pathname !== '/welcome' && (
-            <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-          )}
-          <main className={`content ${isSidebarOpen ? "sidebar-expanded" : ""}`}
-                onClick={() => isSidebarOpen && setSidebarOpen(false)}
-          >
+          {authUser && location.pathname !== '/welcome' && <Sidebar />}
+          <main className="content" style={{marginLeft: isCollapsed ? '100px' : '300px', transition: "margin-left 0.3s ease"}}>
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
               {/* Main app routes */}

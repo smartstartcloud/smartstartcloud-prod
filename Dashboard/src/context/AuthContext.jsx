@@ -16,6 +16,7 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const { userId = null, userRole = null } = extractDataFromToken(token) || {};
@@ -28,7 +29,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [token]);
   return (
-    <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin, isPortal }}>
+    <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin, isPortal, isCollapsed, setIsCollapsed }}>
       {children}
     </AuthContext.Provider>
   );

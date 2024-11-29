@@ -37,12 +37,11 @@ const Item = ({title, to, icon, selected, setSelected}) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x)[0];
 
   const [selected, setSelected] = useState(pathnames ? pathnames : "task");
-  const { authUser, isAdmin } = useAuthContext();
+  const { authUser, isAdmin, isCollapsed, setIsCollapsed } = useAuthContext();
 
   // Use `useMediaQuery` to detect screen size
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -70,6 +69,10 @@ const Sidebar = () => {
         "& .pro-menu-item.active": {
           color: "#6870fa !important",
         },
+        position: "fixed",
+        top: 0,
+        height: "100vh", // Ensures the sidebar spans the full viewport height
+        zIndex: 10, // Keeps it above other elements if needed
       }}
     >
       <ProSidebar
@@ -81,7 +84,7 @@ const Sidebar = () => {
           display="flex"
           flexDirection="column"
           justifyContent="space-between"
-
+          height="100%"
         >
           <Menu iconShape="square">
             {/* Logo and Icon Menu */}
