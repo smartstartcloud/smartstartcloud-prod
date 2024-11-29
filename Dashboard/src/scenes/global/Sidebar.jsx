@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar"
-import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 import { tokens } from '../../theme'
 import "react-pro-sidebar/dist/css/styles.css";
@@ -35,15 +35,23 @@ const Item = ({title, to, icon, selected, setSelected}) => {
 
 
 const Sidebar = () => {
-  const theme = useTheme()
-  const colors = tokens(theme.palette.mode)
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
-  const pathnames = location.pathname.split('/').filter((x) => x)[0]  
+  const pathnames = location.pathname.split("/").filter((x) => x)[0];
 
-  const [selected, setSelected] = useState(pathnames ? pathnames : 'task')
-  const { authUser, isAdmin } = useAuthContext()
-  
+  const [selected, setSelected] = useState(pathnames ? pathnames : "task");
+  const { authUser, isAdmin } = useAuthContext();
+
+  // Use `useMediaQuery` to detect screen size
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Automatically collapse the sidebar for mobile
+  useEffect(() => {
+    setIsCollapsed(isMobile);
+  }, [isMobile]);
+
   return (
     <Box
       sx={{
@@ -64,7 +72,11 @@ const Sidebar = () => {
         },
       }}
     >
-      <ProSidebar collapsed={isCollapsed}>
+      <ProSidebar
+        collapsed={isCollapsed}
+        collapsedWidth="70px"
+        width={isMobile ? "100vw" : ""}
+      >
         <Box
           display="flex"
           flexDirection="column"
@@ -172,7 +184,7 @@ const Sidebar = () => {
             variant="h6"
             color={colors.grey[700]}
             sx={{ p: "10px 10px" }}
-            textAlign='center'
+            textAlign="center"
           >
             Developed by SOFTCO.IT.COM
           </Typography>

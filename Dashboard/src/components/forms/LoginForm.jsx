@@ -68,9 +68,9 @@ const LoginForm = () => {
         <Box 
             sx={{
                 p: 3,
-                maxWidth: '30%',
+                maxWidth: { xs: '90%', sm: '60%', md: '30%' }, // Responsive maxWidth
                 margin: '0 auto',
-                mt: 5,
+                mt: { xs: 2, sm: 4, md: 5 }, // Responsive margin-top
                 border: '1px solid rgba(102, 106, 108, 0.5)',
                 borderRadius: '8px',
                 '& .MuiOutlinedInput-root': {

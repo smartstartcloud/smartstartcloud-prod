@@ -118,12 +118,16 @@ const OrderIDList = () => {
         {open && (
           <Grid container spacing={3} mb={5} justifyContent="center">
             <Grid item xs={12} sm={6}>
-              <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} main={true} />
+              <PortalFileUpload
+                orderIDPass={orderIDPass}
+                close={setOpen}
+                main={true}
+              />
             </Grid>
           </Grid>
         )}
         <Grid container spacing={3} mb={3} justifyContent="center">
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <Box display="flex" width="100%" gap={2} alignItems="center">
                 <TextField
@@ -177,7 +181,7 @@ const OrderIDList = () => {
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <Box display="flex" width="100%" gap={2} alignItems="center">
                 <TextField
@@ -222,7 +226,7 @@ const OrderIDList = () => {
         <Grid container spacing={3} mb={3} justifyContent="left">
           {displayList &&
             displayList.map((order) => (
-              <Grid item xs={4} sm={3} md={3} key={order._id}>
+              <Grid item xs={12} sm={6} md={4} lg={3} key={order._id}>
                 <OrderCard
                   orderID={order.orderID}
                   referenceNumber={order.referenceNumber}
