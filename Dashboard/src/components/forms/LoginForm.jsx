@@ -68,7 +68,7 @@ const LoginForm = () => {
         <Box 
             sx={{
                 p: 3,
-                maxWidth: '30%',
+                width: '400px',
                 margin: '0 auto',
                 mt: 5,
                 border: '1px solid rgba(102, 106, 108, 0.5)',
@@ -86,6 +86,9 @@ const LoginForm = () => {
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
                     color: colors.grey[100],
+                },
+                [theme.breakpoints.down('sm')]: {
+                    width: '90%', 
                 },
             }}
         >

@@ -108,131 +108,114 @@ const OrderIDList = () => {
 
   return (
     <Box m="20px" pb={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header
-          title={"PORTAL"}
-          subtitle={"Welcome to Portal for Order ID LIST"}
-        />
-      </Box>
-      <Box>
-        {open && (
-          <Grid container spacing={3} mb={5} justifyContent="center">
-            <Grid item xs={12} sm={6}>
-              <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} main={true} />
-            </Grid>
-          </Grid>
-        )}
-        <Grid container spacing={3} mb={3} justifyContent="center">
-          <Grid item xs={12} sm={3}>
-            <Box display="flex" flexDirection="column" alignItems="center">
-              <Box display="flex" width="100%" gap={2} alignItems="center">
-                <TextField
-                  label="Search by Order ID"
-                  variant="outlined"
-                  fullWidth
-                  value={searchTerm}
-                  onChange={handleInputChange}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()} // Trigger search on Enter key press
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleSearch}>
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                {isSearching && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={resetSearch}
-                    sx={{ minWidth: "120px" }}
-                  >
-                    Reset
-                  </Button>
-                )}
-              </Box>
-
-              {suggestions.length > 0 && (
-                <Paper
-                  elevation={3}
-                  sx={{ width: "100%", maxWidth: "600px", mt: 1 }}
-                >
-                  <List>
-                    {suggestions.map((suggestion) => (
-                      <ListItem
-                        button
-                        key={suggestion.orderID}
-                        onClick={() =>
-                          handleSuggestionClick(suggestion.orderID)
-                        }
-                      >
-                        <ListItemText primary={suggestion.orderID} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Paper>
-              )}
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Box display="flex" flexDirection="column" alignItems="center">
-              <Box display="flex" width="100%" gap={2} alignItems="center">
-                <TextField
-                  label="Search by Reference"
-                  variant="outlined"
-                  fullWidth
-                  value={searchTermByRef}
-                  onChange={handleInputChangeRef}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearchRef()} // Trigger search on Enter key press
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleSearchRef}>
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                {isSearching && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={resetSearchRef}
-                    sx={{ minWidth: "120px" }}
-                  >
-                    Reset
-                  </Button>
-                )}
-              </Box>
-            </Box>
-          </Grid>
+  <Box display="flex" justifyContent="space-between" alignItems="center" flexDirection={{ xs: "column", sm: "row" }} mb={3}>
+    <Header title={"PORTAL"} subtitle={"Welcome to Portal for Order ID LIST"} />
+  </Box>
+  <Box>
+    {open && (
+      <Grid container spacing={3} mb={5} justifyContent="center">
+        <Grid item xs={12} sm={8} md={6}>
+          <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} main={true} />
         </Grid>
-
-        {isSearching && (
-          <Box mt={2}>
-            <Typography variant="subtitle1" color={colors.blueAccent[500]}>
-              Showing search result for: <strong>{searchTerm}</strong>
-            </Typography>
+      </Grid>
+    )}
+    <Grid container spacing={3} mb={3} justifyContent="center">
+      {/* Search by Order ID */}
+      <Grid item xs={12} sm={6} md={4}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Box display="flex" width="100%" gap={1} alignItems="center" flexWrap="wrap">
+            <TextField
+              label="Search by Order ID"
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={handleInputChange}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()} // Trigger search on Enter key press
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleSearch}>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {isSearching && (
+              <Button variant="outlined" color="secondary" onClick={resetSearch} sx={{ whiteSpace: "nowrap" }}>
+                Reset
+              </Button>
+            )}
           </Box>
-        )}
-        <Grid container spacing={3} mb={3} justifyContent="left">
-          {displayList &&
-            displayList.map((order) => (
-              <Grid item xs={4} sm={3} md={3} key={order._id}>
-                <OrderCard
-                  orderID={order.orderID}
-                  referenceNumber={order.referenceNumber}
-                  handleIDClick={handleIDClick}
-                />
-              </Grid>
-            ))}
-        </Grid>
+          {suggestions.length > 0 && (
+            <Paper elevation={3} sx={{ width: "100%", maxWidth: "600px", mt: 1 }}>
+              <List>
+                {suggestions.map((suggestion) => (
+                  <ListItem button key={suggestion.orderID} onClick={() => handleSuggestionClick(suggestion.orderID)}>
+                    <ListItemText primary={suggestion.orderID} />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          )}
+        </Box>
+      </Grid>
+
+      {/* Search by Reference */}
+      <Grid item xs={12} sm={6} md={4}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Box display="flex" width="100%" gap={1} alignItems="center" flexWrap="wrap">
+            <TextField
+              label="Search by Reference"
+              variant="outlined"
+              fullWidth
+              value={searchTermByRef}
+              onChange={handleInputChangeRef}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchRef()} // Trigger search on Enter key press
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleSearchRef}>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {isSearching && (
+              <Button variant="outlined" color="secondary" onClick={resetSearchRef} sx={{ whiteSpace: "nowrap" }}>
+                Reset
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
+
+    {isSearching && (
+      <Box mt={2} textAlign="center">
+        <Typography variant="subtitle1" color={colors.blueAccent[500]}>
+          Showing search result for: <strong>{searchTerm}</strong>
+        </Typography>
       </Box>
-    </Box>
+    )}
+
+    {/* Display List */}
+    <Grid container spacing={2} justifyContent="center">
+      {displayList &&
+        displayList.map((order) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={order._id}>
+            <OrderCard
+              orderID={order.orderID}
+              referenceNumber={order.referenceNumber}
+              handleIDClick={handleIDClick}
+            />
+          </Grid>
+        ))}
+    </Grid>
+  </Box>
+</Box>
+
   );
 };
 
