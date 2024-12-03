@@ -16,7 +16,7 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     const { userId = null, userRole = null } = extractDataFromToken(token) || {};
