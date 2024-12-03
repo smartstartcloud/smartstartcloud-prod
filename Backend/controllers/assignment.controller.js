@@ -204,10 +204,7 @@ export const updateAssignment = async (req, res) => {
       assignmentGrade,
       assignmentFile,
       assignmentNature,
-    } = req.body;
-
-    console.log(assignmentPaymentAccount, assignmentPaymentDate);
-    
+    } = req.body;    
 
     // Update only the fields that are provided in the request body
     const updatedFields = {};
