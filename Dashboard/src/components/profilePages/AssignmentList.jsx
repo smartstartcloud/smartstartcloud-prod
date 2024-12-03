@@ -252,6 +252,24 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                       Grade
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "assignmentGrade"}
+                      direction={orderBy === "assignmentGrade" ? order : "asc"}
+                      onClick={() => handleRequestSort("assignmentGrade")}
+                    >
+                      Payment Status
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "assignmentGrade"}
+                      direction={orderBy === "assignmentGrade" ? order : "asc"}
+                      onClick={() => handleRequestSort("assignmentGrade")}
+                    >
+                      Payment Date
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -268,6 +286,8 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                         "assignmentProgress",
                         "assignmentPayment",
                         "assignmentGrade",
+                        "assignmentPaymentAccount",
+                        "assignmentPaymentDate",
                       ].map((key) => (
                         <TableCell key={key}>
                           {/* <Tooltip
@@ -279,16 +299,16 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                             arrow
                             interactive={key === "assignmentProgress"}
                           > */}
-                            {/* Ensure that assignment[key] is rendered properly */}
-                            <span>
-                              {assignment[key] !== undefined
-                                ? key === "assignmentPayment"
-                                  ? assignment[key] === 0
-                                    ? "NOT PAID"
-                                    : assignment[key]
+                          {/* Ensure that assignment[key] is rendered properly */}
+                          <span>
+                            {assignment[key] !== undefined
+                              ? key === "assignmentPayment"
+                                ? assignment[key] === 0
+                                  ? "NOT PAID"
                                   : assignment[key]
-                                : "N/A"}
-                            </span>
+                                : assignment[key]
+                              : "N/A"}
+                          </span>
                           {/* </Tooltip> */}
                         </TableCell>
                       ))}
