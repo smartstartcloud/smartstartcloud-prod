@@ -168,6 +168,8 @@ const DegreeBoard = () => {
           <Grid container spacing={3} justifyContent="center">
             {displayDegrees.length > 0 ? (
               displayDegrees.map((degree) => {
+                console.log(degree);
+                
                 // totalPayment(degree.degreeModules, degree.degreeStudentList);
                 
                 return (

@@ -25,47 +25,61 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
 
  const { sendAssignment } = useSendAssignmentData() 
 
- const { control, handleSubmit, setError, clearErrors, reset, formState: { errors, touchedFields } } = useForm({
-        defaultValues: {
-            studentID: studentData,
-            moduleCode: '',
-            orderID: '',
-            assignmentName: '',
-            assignmentType: '',
-            assignmentProgress: 'TBA',
-            assignmentPayment: '',
-            assignmentDeadline: '',
-            assignmentGrade: ''
-        }
-    });
+ const {
+   control,
+   handleSubmit,
+   setError,
+   clearErrors,
+   reset,
+   formState: { errors, touchedFields },
+ } = useForm({
+   defaultValues: {
+     studentID: studentData,
+     moduleCode: "",
+     orderID: "",
+     assignmentName: "",
+     assignmentType: "",
+     assignmentProgress: "TBA",
+     assignmentPayment: "",
+     assignmentDeadline: "",
+     assignmentGrade: "",
+     assignmentPaymentAccount: "",
+     assignmentPaymentDate: "",
+   },
+ });
 
     useEffect(() => {      
         if (studentData && studentData) {
             if (editMode) {
                 reset({
-                    assignmentID: assignmentData?._id || '',  // Adding assignmentID when editMode is true
-                    studentID: studentData,
-                    moduleCode: assignmentData?.moduleCode || '',
-                    orderID: assignmentData?.orderID || '',
-                    assignmentName: assignmentData?.assignmentName || '',
-                    assignmentType: assignmentData?.assignmentType || '',
-                    assignmentProgress: assignmentData?.assignmentProgress || 'TBA',
-                    assignmentPayment: assignmentData?.assignmentPayment || '',
-                    assignmentDeadline: assignmentData?.assignmentDeadline || '',
-                    assignmentGrade: assignmentData?.assignmentGrade || ''
+                  assignmentID: assignmentData?._id || "", // Adding assignmentID when editMode is true
+                  studentID: studentData,
+                  moduleCode: assignmentData?.moduleCode || "",
+                  orderID: assignmentData?.orderID || "",
+                  assignmentName: assignmentData?.assignmentName || "",
+                  assignmentType: assignmentData?.assignmentType || "",
+                  assignmentProgress:
+                    assignmentData?.assignmentProgress || "TBA",
+                  assignmentPayment: assignmentData?.assignmentPayment || "",
+                  assignmentDeadline: assignmentData?.assignmentDeadline || "",
+                  assignmentGrade: assignmentData?.assignmentGrade || "",
+                  assignmentPaymentAccount: assignmentData?.assignmentPaymentAccount || "",
+                  assignmentPaymentDate: assignmentData?.assignmentPaymentDate || "",
                 });
             } else {              
                 reset({
-                studentID: studentData, 
-                moduleCode: '',
-                orderID: '',
-                assignmentName: '',
-                assignmentType: '',
-                assignmentProgress: 'TBA',
-                assignmentPayment: '',
-                assignmentDeadline: '',
-                assignmentGrade: '',
-            });
+                  studentID: studentData,
+                  moduleCode: "",
+                  orderID: "",
+                  assignmentName: "",
+                  assignmentType: "",
+                  assignmentProgress: "TBA",
+                  assignmentPayment: "",
+                  assignmentDeadline: "",
+                  assignmentGrade: "",
+                  assignmentPaymentAccount: "",
+                  assignmentPaymentDate: "",
+                });
             }
         }
     }, [studentData, reset, editMode]);

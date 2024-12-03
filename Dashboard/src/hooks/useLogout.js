@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from '../context/TokenContext';
-import { api } from '../utils/axiosInstance';
 import axios from 'axios';
 
 const useLogout = () => {

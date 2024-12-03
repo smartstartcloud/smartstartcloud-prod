@@ -204,7 +204,7 @@ export const updateAssignment = async (req, res) => {
       assignmentGrade,
       assignmentFile,
       assignmentNature,
-    } = req.body;
+    } = req.body;    
 
     // Update only the fields that are provided in the request body
     const updatedFields = {};

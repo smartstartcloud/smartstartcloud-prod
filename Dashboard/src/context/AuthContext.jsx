@@ -11,25 +11,25 @@ export const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user-details")) || null
   );
-  const [token, setToken] = useState(
-    JSON.parse(localStorage.getItem("access-token")) || null
-  );
+  const [token, setToken] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
-    const { userId = null, userRole = null } = extractDataFromToken(token) || {};
+    if (!token) return; // Exit if token is null or undefined
+
+    const { userId = null, userRole = null } =
+      extractDataFromToken(token) || {};
     // Update authUser with the extracted data
-    
-    if (userRole === "admin") {
+    if (userRole === "admin") {      
       setIsAdmin(true);
     } else if (userRole === "edu" || userRole === "pen") {
-      setIsPortal(true)
+      setIsPortal(true);
     }
   }, [token]);
   return (
-    <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin, isPortal, isCollapsed, setIsCollapsed }}>
+    <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin, isPortal, isCollapsed, setIsCollapsed, setToken }}>
       {children}
     </AuthContext.Provider>
   );

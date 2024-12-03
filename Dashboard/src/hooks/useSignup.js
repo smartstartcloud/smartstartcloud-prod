@@ -1,7 +1,4 @@
-import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import axios from "axios";
-import { api } from "../utils/axiosInstance";
 import useApi from "./useApi";
 
 const useSignup = ( ) => {
