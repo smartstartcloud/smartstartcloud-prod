@@ -33,6 +33,8 @@ export const App = () => {
   const handleLogout = () => {
     logout().then(() => console.log("User logged out successfully"));
   };
+  console.log(isCollapsed);
+  
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -40,7 +42,7 @@ export const App = () => {
         <CssBaseline />
         <div className="app">
           {authUser && location.pathname !== '/welcome' && <Sidebar />}
-          <main className="content" style={{marginLeft: isCollapsed ? '100px' : '300px', transition: "margin-left 0.3s ease"}}>
+          <main className="content" style={{marginLeft: !authUser || location.pathname === '/welcome' ? '0px' : isCollapsed ? '100px' : '300px', transition: "margin-left 0.3s ease"}}>
             {location.pathname !== '/welcome' && <Topbar logOut={handleLogout} />}
             <Routes>
               {/* Main app routes */}
