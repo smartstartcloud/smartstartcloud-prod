@@ -6,7 +6,7 @@ import useApi from "./useApi";
 
 const useLogin = () => {
     const api = useApi()
-    const {setAuthUser} = useAuthContext();
+    const {setAuthUser, setToken} = useAuthContext();
     const {setAccessToken} = useTokenContext()
     const navigate = useNavigate();
     const login = async({userName, password}) => {
@@ -16,7 +16,6 @@ const useLogin = () => {
                 password, 
             })
             const data = await res.data;
-            console.log(data);
 
             // If status is 401, navigate to /renew
             if (res.status === 401) {
@@ -33,6 +32,8 @@ const useLogin = () => {
             localStorage.setItem("access-token", JSON.stringify(data.accessToken))
             setAccessToken(data.accessToken)            
             setAuthUser(data)
+            setToken(data.accessToken)
+            
             return data
 
         } catch (error) {

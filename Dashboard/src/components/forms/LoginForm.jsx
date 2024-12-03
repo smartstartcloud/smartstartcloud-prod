@@ -42,13 +42,11 @@ const LoginForm = () => {
         },
     });
 
-    const onSubmit = async (data) => {
-        console.log("data ? ", data);
-        
+    const onSubmit = async (data) => {        
         setLoading(true);
         try {
             const response = await login(data);
-            console.log('Response Data:', response);
+            // console.log('Response Data:', response);
             setformSuccess(true);
             setLoading(false);
         } catch (e) {

@@ -50,7 +50,7 @@ const Sidebar = () => {
   useEffect(() => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
-
+  
   return (
     <Box
       sx={{

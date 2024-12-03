@@ -153,44 +153,29 @@ export const getDegreeByYear = async (req,res)=>{
   }
 }
 
-const getAssignmentSum = async (moduleList, studentList) => {
+const getAssignmentSum = async (moduleList, studentList) => {  
   try {
-    const tempAssArray = []
-    let sum = 0
-    for (const module of moduleList) {
-      // Iterate over each module in the moduleList
-      for (let i = 0; i < studentList.length; i++) {
-        const studentID = studentList[i]; // Get studentID from the list
-
-        const existingModuleAssignment = await ModuleAssignment.findOne({
-          studentID: studentID,
-          moduleID: module, // Use module._id or the proper property of module
-        }).populate("assignments");
-        if (existingModuleAssignment) {
-          if (existingModuleAssignment.assignments) {
-            tempAssArray.push(...existingModuleAssignment.assignments);
-            if (tempAssArray) {
-              // Perform your logic for the found assignment
-              for (const assignment of tempAssArray) {
-                if (
-                  assignment.assignmentPayment &&
-                  assignment.assignmentPayment !== "N/A"
-                ) {
-                  sum += Number(assignment.assignmentPayment);
-                }
-              }
-            }
-            
-          } else {
-            // Handle the case when no assignment is found
-            console.log(
-              `No assignment found for student ${studentID} in module ${module}`
-            );
+    let sum = 0;
+    // Fetch all relevant ModuleAssignments in a single query
+    const moduleAssignments = await ModuleAssignment.find({
+      studentID: { $in: studentList },
+      moduleID: { $in: moduleList },
+    }).populate("assignments");
+    
+    moduleAssignments.forEach((moduleAssignment) => {
+      if (moduleAssignment.assignments) {
+        moduleAssignment.assignments.forEach((assignment) => {
+          if (
+            assignment.assignmentPayment &&
+            assignment.assignmentPayment !== "N/A" &&
+            assignment.assignmentPayment !== "0"
+          ) {
+            sum += Number(assignment.assignmentPayment);
           }
-        }
+        });
       }
-    }
-    return sum
+    });
+    return sum;
   } catch (error) {
     console.error("Error fetching assignments: ", error);
   }
@@ -232,55 +217,100 @@ export const getDegreeByID = async (req,res)=>{
 
 const getAssignmentDetailsList = async (moduleList, studentList) => {
   try {
+    // Step 1: Fetch all relevant ModuleAssignments in a single query
+    const moduleAssignments = await ModuleAssignment.find({
+      studentID: { $in: studentList },
+      moduleID: { $in: moduleList.map((module) => module._id) },
+    }).populate(
+      "assignments",
+      "assignmentPayment assignmentGrade assignmentProgress"
+    );
+
+    // Step 2: Initialize results
     let sum = 0;
-    let assignmentProgressList = [];
-    let assignmentGradeList = [];
-    for (const module of moduleList) {
-      // Iterate over each module in the moduleList
-      for (let i = 0; i < studentList.length; i++) {        
-        const studentID = studentList[i]; // Get studentID from the list
-        const existingModuleAssignment = await ModuleAssignment.findOne({
-          studentID: studentID,
-          moduleID: module._id, // Use module._id or the proper property of module
-        }).populate("assignments");
-        if (existingModuleAssignment) {
-          // console.log(existingModuleAssignment);          
-          if (existingModuleAssignment.assignments) {
-            const tempAssArray = [];
-            tempAssArray.push(...existingModuleAssignment.assignments);
-            if (tempAssArray) {
-              // Perform your logic for the found assignment
-              for (const assignment of tempAssArray) {
-                if (
-                  assignment.assignmentPayment &&
-                  assignment.assignmentPayment !== "N/A"
-                ) {
-                  sum += Number(assignment.assignmentPayment);
-                }
-                if (
-                  assignment.assignmentGrade &&
-                  assignment.assignmentGrade !== "N/A"
-                ) {
-                  assignmentGradeList.push(assignment.assignmentGrade);
-                }
-                if (
-                  assignment.assignmentProgress &&
-                  assignment.assignmentProgress !== "N/A"
-                ) {
-                  assignmentProgressList.push(assignment.assignmentProgress);
-                }
-              }
-            }
-          } else {
-            // Handle the case when no assignment is found
-            console.log(
-              `No assignment found for student ${studentID} in module ${module}`
-            );
+    const assignmentProgressList = [];
+    const assignmentGradeList = [];
+
+    // Step 3: Process the fetched assignments
+    moduleAssignments.forEach((moduleAssignment) => {
+      if (moduleAssignment.assignments) {
+        moduleAssignment.assignments.forEach((assignment) => {
+          // Calculate sum of assignmentPayment
+          if (
+            assignment.assignmentPayment &&
+            assignment.assignmentPayment !== "N/A"
+          ) {
+            sum += Number(assignment.assignmentPayment);
           }
-        }
+
+          // Collect assignmentGrade
+          if (
+            assignment.assignmentGrade &&
+            assignment.assignmentGrade !== "N/A"
+          ) {
+            assignmentGradeList.push(assignment.assignmentGrade);
+          }
+
+          // Collect assignmentProgress
+          if (
+            assignment.assignmentProgress &&
+            assignment.assignmentProgress !== "N/A"
+          ) {
+            assignmentProgressList.push(assignment.assignmentProgress);
+          }
+        });
       }
-    }
-    return {sum, assignmentProgressList, assignmentGradeList};
+    });
+
+    // let sum = 0;
+    // let assignmentProgressList = [];
+    // let assignmentGradeList = [];
+    // for (const module of moduleList) {
+    //   // Iterate over each module in the moduleList
+    //   for (let i = 0; i < studentList.length; i++) {
+    //     const studentID = studentList[i]; // Get studentID from the list
+    //     const existingModuleAssignment = await ModuleAssignment.findOne({
+    //       studentID: studentID,
+    //       moduleID: module._id, // Use module._id or the proper property of module
+    //     }).populate("assignments");
+    //     if (existingModuleAssignment) {
+    //       // console.log(existingModuleAssignment);
+    //       if (existingModuleAssignment.assignments) {
+    //         const tempAssArray = [];
+    //         tempAssArray.push(...existingModuleAssignment.assignments);
+    //         if (tempAssArray) {
+    //           // Perform your logic for the found assignment
+    //           for (const assignment of tempAssArray) {
+    //             if (
+    //               assignment.assignmentPayment &&
+    //               assignment.assignmentPayment !== "N/A"
+    //             ) {
+    //               sum += Number(assignment.assignmentPayment);
+    //             }
+    //             if (
+    //               assignment.assignmentGrade &&
+    //               assignment.assignmentGrade !== "N/A"
+    //             ) {
+    //               assignmentGradeList.push(assignment.assignmentGrade);
+    //             }
+    //             if (
+    //               assignment.assignmentProgress &&
+    //               assignment.assignmentProgress !== "N/A"
+    //             ) {
+    //               assignmentProgressList.push(assignment.assignmentProgress);
+    //             }
+    //           }
+    //         }
+    //       } else {
+    //         // Handle the case when no assignment is found
+    //         console.log(
+    //           `No assignment found for student ${studentID} in module ${module}`
+    //         );
+    //       }
+    //     }
+    //   }
+    // }
+    return { sum, assignmentProgressList, assignmentGradeList };
   } catch (error) {
     console.error("Error fetching assignments: ", error);
   }

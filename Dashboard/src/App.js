@@ -32,9 +32,7 @@ export const App = () => {
 
   const handleLogout = () => {
     logout().then(() => console.log("User logged out successfully"));
-  };
-  console.log(isCollapsed);
-  
+  };  
 
   return (
     <ColorModeContext.Provider value={colorMode}>
