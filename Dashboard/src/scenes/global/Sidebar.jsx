@@ -14,6 +14,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import ListIcon from "@mui/icons-material/List";
+import PersonIcon from "@mui/icons-material/Person";
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -174,6 +175,13 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
+              <Item
+                title="All Student"
+                to="/allStudent"
+                icon={<PersonIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
               <Item
                 title="FAQ Page"
                 to="/faq"
