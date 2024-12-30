@@ -199,15 +199,11 @@ export const getDegreeByID = async (req,res)=>{
     const Agent = await User.find({_id:[degrees.degreeAgent]});
     const moduleList = degrees.degreeModules;
     const studentList = degrees.degreeStudentList;
-    const { sum, assignmentProgressList, assignmentGradeList } =
+    const { moduleDetailsList } =
       await getAssignmentDetailsList(moduleList, studentList);
     let degreeObject = degrees.toObject();
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
-    degreeObject.assignmentTally = {
-      sum,
-      assignmentProgressList,
-      assignmentGradeList,
-    };
+    degreeObject.moduleDetailsList = moduleDetailsList
     res.status(200).json(degreeObject);
   } catch (error) {
     console.error("Error fetching degrees:", error);
@@ -215,16 +211,19 @@ export const getDegreeByID = async (req,res)=>{
   }
 }
 
-const getAssignmentDetailsList = async (moduleList, studentList) => {
+const getAssignmentDetailsList = async (moduleList, studentList) => {    
   try {
     // Step 1: Fetch all relevant ModuleAssignments in a single query
     const moduleAssignments = await ModuleAssignment.find({
-      studentID: { $in: studentList },
+      studentID: { $in: studentList.map((student) => student._id) },
       moduleID: { $in: moduleList.map((module) => module._id) },
     }).populate(
       "assignments",
       "assignmentPayment assignmentGrade assignmentProgress"
     );
+    const moduleDetailsList = moduleList.map((module) => {
+      return {_id:module._id, modulecode:module.moduleCode, moduleName: module.moduleName, modulePayment: [], moduleGrade: [], moduleProgress: [], moduleSum : 0};
+    })    
 
     // Step 2: Initialize results
     let sum = 0;
@@ -232,85 +231,42 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
     const assignmentGradeList = [];
 
     // Step 3: Process the fetched assignments
-    moduleAssignments.forEach((moduleAssignment) => {
+    moduleAssignments.forEach((moduleAssignment) => {    
       if (moduleAssignment.assignments) {
-        moduleAssignment.assignments.forEach((assignment) => {
-          // Calculate sum of assignmentPayment
-          if (
-            assignment.assignmentPayment &&
-            assignment.assignmentPayment !== "N/A"
-          ) {
-            sum += Number(assignment.assignmentPayment);
-          }
+        const moduleDetails = moduleDetailsList.find(
+          (module) =>
+            module._id.toString() === moduleAssignment.moduleID.toString()
+        );
+        if (moduleDetails) {          
+          moduleAssignment.assignments.forEach((assignment) => {
+            // Calculate sum of assignmentPayment
+            if (
+              assignment.assignmentPayment &&
+              assignment.assignmentPayment !== "N/A"
+            ) {
+              moduleDetails.moduleSum += Number(assignment.assignmentPayment);
+            }
 
-          // Collect assignmentGrade
-          if (
-            assignment.assignmentGrade &&
-            assignment.assignmentGrade !== "N/A"
-          ) {
-            assignmentGradeList.push(assignment.assignmentGrade);
-          }
+            // Collect assignmentGrade
+            if (
+              assignment.assignmentGrade &&
+              assignment.assignmentGrade !== "N/A"
+            ) {
+              moduleDetails.moduleGrade.push(assignment.assignmentGrade);
+            }
 
-          // Collect assignmentProgress
-          if (
-            assignment.assignmentProgress &&
-            assignment.assignmentProgress !== "N/A"
-          ) {
-            assignmentProgressList.push(assignment.assignmentProgress);
-          }
-        });
+            // Collect assignmentProgress
+            if (
+              assignment.assignmentProgress &&
+              assignment.assignmentProgress !== "N/A"
+            ) {
+              moduleDetails.moduleProgress.push(assignment.assignmentProgress);
+            }
+          });
+        }
       }
-    });
-
-    // let sum = 0;
-    // let assignmentProgressList = [];
-    // let assignmentGradeList = [];
-    // for (const module of moduleList) {
-    //   // Iterate over each module in the moduleList
-    //   for (let i = 0; i < studentList.length; i++) {
-    //     const studentID = studentList[i]; // Get studentID from the list
-    //     const existingModuleAssignment = await ModuleAssignment.findOne({
-    //       studentID: studentID,
-    //       moduleID: module._id, // Use module._id or the proper property of module
-    //     }).populate("assignments");
-    //     if (existingModuleAssignment) {
-    //       // console.log(existingModuleAssignment);
-    //       if (existingModuleAssignment.assignments) {
-    //         const tempAssArray = [];
-    //         tempAssArray.push(...existingModuleAssignment.assignments);
-    //         if (tempAssArray) {
-    //           // Perform your logic for the found assignment
-    //           for (const assignment of tempAssArray) {
-    //             if (
-    //               assignment.assignmentPayment &&
-    //               assignment.assignmentPayment !== "N/A"
-    //             ) {
-    //               sum += Number(assignment.assignmentPayment);
-    //             }
-    //             if (
-    //               assignment.assignmentGrade &&
-    //               assignment.assignmentGrade !== "N/A"
-    //             ) {
-    //               assignmentGradeList.push(assignment.assignmentGrade);
-    //             }
-    //             if (
-    //               assignment.assignmentProgress &&
-    //               assignment.assignmentProgress !== "N/A"
-    //             ) {
-    //               assignmentProgressList.push(assignment.assignmentProgress);
-    //             }
-    //           }
-    //         }
-    //       } else {
-    //         // Handle the case when no assignment is found
-    //         console.log(
-    //           `No assignment found for student ${studentID} in module ${module}`
-    //         );
-    //       }
-    //     }
-    //   }
-    // }
-    return { sum, assignmentProgressList, assignmentGradeList };
+    });    
+    return { moduleDetailsList };
   } catch (error) {
     console.error("Error fetching assignments: ", error);
   }

@@ -11,7 +11,8 @@ import StudentForm from '../forms/StudentForm';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteObjects from '../../hooks/useDeleteObjects';
-import DetailsPieChart from '../DetailsPieChart';
+import DetailsBarChart from '../DetailsBarChart.jsx';
+
 
 
 const DegreeProfile = () => {
@@ -227,23 +228,35 @@ const DegreeProfile = () => {
             </Grid>
           </Grid>
           <Grid container spacing={2} mt={2}>
-            {degree.assignmentTally.assignmentProgressList && (
+            {degree.moduleDetailsList && (
               <Grid item xs={12} sm={6}>
-                <DetailsPieChart
-                  data={degree.assignmentTally.assignmentProgressList}
+                <DetailsBarChart
+                  data={degree.moduleDetailsList}
                   headLine={"Status Chart"}
+                  type={"status"}
                 />
               </Grid>
             )}
-            {degree.assignmentTally.assignmentGradeList.length > 0 && (
+            {degree.moduleDetailsList && (
               <Grid item xs={12} sm={6}>
-                <DetailsPieChart
-                  data={degree.assignmentTally.assignmentGradeList}
+                <DetailsBarChart
+                  data={degree.moduleDetailsList}
                   headLine={"Grade Chart"}
+                  type={"grade"}
+                />
+              </Grid>
+            )}
+            {degree.moduleDetailsList && (
+              <Grid item xs={12} sm={6}>
+                <DetailsBarChart
+                  data={degree.moduleDetailsList}
+                  headLine={"Payment Chart"}
+                  type={"payment"}
                 />
               </Grid>
             )}
           </Grid>
+
           <IconButton
             onClick={handleDegreeDelete}
             sx={{
