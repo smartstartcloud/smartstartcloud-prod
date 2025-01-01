@@ -13,6 +13,7 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [token, setToken] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -22,14 +23,30 @@ export const AuthContextProvider = ({ children }) => {
     const { userId = null, userRole = null } =
       extractDataFromToken(token) || {};
     // Update authUser with the extracted data
-    if (userRole === "admin") {      
+    if (userRole === "superAdmin") {
+      setIsSuperAdmin(true);
+      setIsAdmin(true);
+    } else if (userRole === "admin") {      
+      console.log('ashche');
+      
       setIsAdmin(true);
     } else if (userRole === "edu" || userRole === "pen") {
       setIsPortal(true);
     }
   }, [token]);
   return (
-    <AuthContext.Provider value={{ authUser, setAuthUser, isAdmin, isPortal, isCollapsed, setIsCollapsed, setToken }}>
+    <AuthContext.Provider
+      value={{
+        authUser,
+        setAuthUser,
+        isAdmin,
+        isSuperAdmin,
+        isPortal,
+        isCollapsed,
+        setIsCollapsed,
+        setToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

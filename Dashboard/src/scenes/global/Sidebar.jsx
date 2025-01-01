@@ -43,6 +43,8 @@ const Sidebar = () => {
 
   const [selected, setSelected] = useState(pathnames ? pathnames : "task");
   const { authUser, isAdmin, isCollapsed, setIsCollapsed } = useAuthContext();
+  console.log(isAdmin);
+  
 
   // Use `useMediaQuery` to detect screen size
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

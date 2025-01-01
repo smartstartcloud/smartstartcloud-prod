@@ -7,10 +7,12 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { tokens } from '../../theme';
 import useSignup from '../../hooks/useSignup';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 const SignupForm = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const { isSuperAdmin } = useAuthContext();
     const [formSuccess, setformSuccess] = useState(false);
     const [formError, setFormError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -358,6 +360,7 @@ const SignupForm = () => {
                                         sx={{ mb: 2 }}
                                     >
                                         <MenuItem value="" disabled>Select Role</MenuItem>
+                                        {isSuperAdmin && <MenuItem value="superAdmin">Super Admin</MenuItem>}
                                         <MenuItem value="admin">Admin</MenuItem>
                                         <MenuItem value="agent">Agent</MenuItem>
                                         <MenuItem value="edu">EDU</MenuItem>
