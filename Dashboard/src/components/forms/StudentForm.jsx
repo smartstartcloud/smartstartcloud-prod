@@ -2,32 +2,34 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-    Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button, Modal, TextField, Snackbar, IconButton,
+    Box, CircularProgress, Typography, useTheme, Button, Modal, TextField, Snackbar, IconButton,
     Alert,
 } from '@mui/material';
 import { tokens } from '../../theme';
 import MuiAlert from '@mui/material/Alert';
 import useSendStudentData from '../../hooks/useSendStudentData';
 
-const StudentForm = ({open, setOpen, degreeID}) => {
+const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { sendStudent } = useSendStudentData()
+    const { sendStudent, updateStudent } = useSendStudentData();
     const navigate = useNavigate(); 
+    console.log(studentData.studentName, studentEditMode);
+    
     
 
     const [formSaved, setFormSaved] = useState(false);
     const [formError, setFormError] = useState(false);
     const [formErrorMessage, setFormErrorMessage] = useState('');
     const [formLoading, setformLoading] = useState(false);
-    const [errors, setErrors] = React.useState({});
+    const [errors, setErrors] = useState({});
     const [newStudent, setNewStudent] = useState({
-        studentID: '',
-        studentName: '',
-        studentLogin: '',
-        studentPassword: '',
-        studentContact: '',
-        degreeID: degreeID
+      studentID: studentData.studentID || "",
+      studentName: studentData.studentName || "",
+      studentLogin: studentData.studentLogin || "",
+      studentPassword: studentData.studentPassword || "",
+      studentContact: studentData.studentContact || "",
+      degreeID: degreeID,
     });
 
     const validateForm = () => {
@@ -40,9 +42,12 @@ const StudentForm = ({open, setOpen, degreeID}) => {
     const handleSubmit = () => {        
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length === 0) {
-            handleAddStudent();
-
-            navigate(0);
+            if(studentEditMode) {
+                handleUpdateStudent();
+            } else {
+              handleAddStudent();
+            }
+            // navigate(0);
         } else {
             setErrors(validationErrors);
         }
@@ -79,6 +84,33 @@ const StudentForm = ({open, setOpen, degreeID}) => {
             studentPassword: '',
             studentContact: ''
         });
+    };
+
+    const handleUpdateStudent = async () => {
+      // setformLoading(true);
+      console.log(newStudent);
+      
+
+      // try {
+      //   const response = await updateStudent(newStudent);
+      //   console.log("Form Data:", newStudent);
+      //   console.log("Response Data:", response);
+      //   setFormSaved(true);
+      //   setformLoading(false);
+      // } catch (e) {
+      //   setFormError(true);
+      //   setformLoading(false);
+      //   setFormErrorMessage(e.message);
+      //   console.log("Error submitting form: ", e.message);
+      //   setOpen(false);
+      // }
+      // setNewStudent({
+      //   studentID: "",
+      //   studentName: "",
+      //   studentLogin: "",
+      //   studentPassword: "",
+      //   studentContact: "",
+      // });
     };
 
     return (
@@ -168,24 +200,45 @@ const StudentForm = ({open, setOpen, degreeID}) => {
             }}
             sx={{ mb: 2 }}
           />
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={formLoading}
-            sx={{
-              width: "100%",
-              backgroundColor: colors.blueAccent[500],
-              "&:hover": {
-                backgroundColor: colors.blueAccent[600],
-              },
-            }}
-          >
-            {formLoading ? (
-              <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
-            ) : (
-              "Add"
-            )}
-          </Button>
+          {studentEditMode ? (
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={formLoading}
+              sx={{
+                width: "100%",
+                backgroundColor: colors.blueAccent[500],
+                "&:hover": {
+                  backgroundColor: colors.blueAccent[600],
+                },
+              }}
+            >
+              {formLoading ? (
+                <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
+              ) : (
+                "Update Student"
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={formLoading}
+              sx={{
+                width: "100%",
+                backgroundColor: colors.blueAccent[500],
+                "&:hover": {
+                  backgroundColor: colors.blueAccent[600],
+                },
+              }}
+            >
+              {formLoading ? (
+                <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
+              ) : (
+                "Add Student"
+              )}
+            </Button>
+          )}
 
           <Snackbar
             open={formSaved}

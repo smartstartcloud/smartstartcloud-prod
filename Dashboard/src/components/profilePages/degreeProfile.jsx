@@ -21,6 +21,8 @@ const DegreeProfile = () => {
   const { degreeYear, degreeId } = useParams();
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
+  const [studentEditMode, setStudentEditMode] = useState(false);
+  const [studentData, setStudentData] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
@@ -88,7 +90,15 @@ const DegreeProfile = () => {
   };
 
   const handleEdit = (data) => {
-    console.log(data);
+    setStudentData(data);
+    setStudentEditMode(true);
+    setOpen(true);
+  };
+
+  const handleAdd = () => {
+    setStudentData({});
+    setStudentEditMode(false);
+    setOpen(true);
   };
 
   const handleDelete = async (data) => {
@@ -352,13 +362,19 @@ const DegreeProfile = () => {
               backgroundColor: colors.blueAccent[600],
             },
           }}
-          onClick={() => setOpen(true)}
+          onClick={handleAdd}
         >
           Add Student
         </Button>
       </Box>
 
-      <StudentForm open={open} setOpen={setOpen} degreeID={degreeId} />
+      <StudentForm
+        open={open}
+        setOpen={setOpen}
+        degreeID={degreeId}
+        studentData={studentData}
+        studentEditMode={studentEditMode}
+      />
 
       {/* <Snackbar
                 open={snackbarOpen}
