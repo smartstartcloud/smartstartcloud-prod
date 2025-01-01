@@ -11,7 +11,7 @@ export const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user-details")) || null
   );
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("access-token") || null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
@@ -26,9 +26,7 @@ export const AuthContextProvider = ({ children }) => {
     if (userRole === "superAdmin") {
       setIsSuperAdmin(true);
       setIsAdmin(true);
-    } else if (userRole === "admin") {      
-      console.log('ashche');
-      
+    } else if (userRole === "admin") {            
       setIsAdmin(true);
     } else if (userRole === "edu" || userRole === "pen") {
       setIsPortal(true);
@@ -54,6 +52,7 @@ export const AuthContextProvider = ({ children }) => {
 
 // Sample function to decode JWT token
 const extractDataFromToken = (token) => {
+  
   try {    
     if (token === "" || token === null){        
         throw new Error("Empty Token"); 
