@@ -66,12 +66,12 @@ const DegreeForm = ({editPage=false}) => {
       degreeYear: "",
       degreeName: "",
       degreeAgent: "",
-      // degreeStudentList: [{ studentID: '', studentName: '', studentContact: '', studentUsername: '', studentPassword: '', studentAssignmentList: [] }],
       degreeStudentList: [],
       degreeModules: [
         {
           moduleName: "",
           moduleCode: "",
+          moduleCost: "",
           assignmentList: [],
         },
       ],
@@ -110,6 +110,7 @@ const DegreeForm = ({editPage=false}) => {
               _id: module._id,
               moduleName: module.moduleName || "",
               moduleCode: module.moduleCode || "",
+              moduleCost: module.moduleCost || "",
               assignmentList:
                 extractObjects(module.moduleAssignments)?.map((assignment) => ({
                   _id: assignment._id,
@@ -149,6 +150,7 @@ const DegreeForm = ({editPage=false}) => {
       module.moduleCode = `${refDegreeID ? `${refDegreeID}_M` : ""}${
         index + 1
       }`;
+      module.moduleCost = module.moduleCost || 0;
       module.assignmentList.forEach((assignment, assignmentIndex)=> {
         assignment.referenceNumber = `${refDegreeID ? `${refDegreeID}_M${index + 1}_A` : ""}${assignmentIndex + 1}`;
       })
@@ -408,6 +410,22 @@ const DegreeForm = ({editPage=false}) => {
                   )}
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name={`degreeModules[${index}].moduleCost`}
+                  control={control}
+                  render={({ field }) => (
+                    <Tooltip title="Module Cost">
+                      <TextField
+                        {...field}
+                        label="Module Cost"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Tooltip>
+                  )}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <AssignmentFieldForm
                   control={control}
@@ -450,7 +468,7 @@ const DegreeForm = ({editPage=false}) => {
               color: colors.grey[900],
               "&:hover": { backgroundColor: colors.grey[100] },
             }}
-            onClick={() => appendModule({ moduleName: "", moduleCode: "" })}
+            onClick={() => appendModule({ moduleName: "", moduleCode: "", moduleCost: "" })}
             startIcon={<AddIcon />}
           >
             Add Module

@@ -1,13 +1,26 @@
 import Student from '../models/student.models.js';
 import Degree from '../models/degree.models.js'
+
+export async function getAllStudents(req, res) {
+  try {
+    // Find all students and return them
+    const students = await Student.find({});
+    res.status(200).json(students);
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    throw new Error("Failed to fetch students");
+  }
+}
 // Function to add new students and return their MongoDB ObjectIDs
 export async function addNewStudent(studentList) {
   try {
+    console.log(studentList);
+    
     // Use Promise.all to save all students concurrently
     const addedStudentIDs = await Promise.all(
       studentList.map(async (studentData) => {
         // Finding the current student in database to see if the ID already exists in database;
-        let currentStudent = await Student.findOne({studentID:studentData.studentID});
+        let currentStudent = await Student.findOne({_id:studentData._id});
         if(currentStudent){          
           // Update the current student with the new data
           const updatedStudent = await Student.findOneAndUpdate(
