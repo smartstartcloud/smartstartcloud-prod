@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 import FileUpload from '../FileUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -27,6 +28,7 @@ import AssignmentForm from '../forms/AssignmentForm';
 import Slide from '@mui/material/Slide';
 import useDeleteObjects from '../../hooks/useDeleteObjects';
 import { useNavigate } from 'react-router-dom';
+import PaymentForm from '../forms/PaymentForm';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -37,6 +39,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
   const [open, setOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   const [orderIdToPass, setOrderIdToPass] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
@@ -155,6 +158,10 @@ const AssignmentList = ({ list, degreeModules, student }) => {
     setOrderIdToPass(orderID);
     setOpen(true);
   }
+
+  const handlePaymentOpen = () => {
+    setPaymentOpen(true);
+  };
 
   
 
@@ -321,6 +328,11 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                               <FolderOpenOutlinedIcon />
                             </IconButton>
                           </Tooltip>
+                          <Tooltip title="Open Payment">
+                            <IconButton onClick={() => handlePaymentOpen()}>
+                              <PaymentsOutlinedIcon />
+                            </IconButton>
+                          </Tooltip>
                           <Tooltip title="Edit">
                             <IconButton
                               onClick={() => handleEditAssignment(assignment)}
@@ -355,6 +367,9 @@ const AssignmentList = ({ list, degreeModules, student }) => {
       )}
       {open && (
         <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />
+      )}
+      {paymentOpen && (
+        <PaymentForm setOpen={setPaymentOpen} open={paymentOpen}/>
       )}
       <Dialog
         open={openDialog}
