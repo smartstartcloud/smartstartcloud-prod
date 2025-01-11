@@ -26,11 +26,11 @@ const StudentList = () => {
   //   }
   // }, [studentList])
 
-  // useEffect(() => {
-  //   if (studentList) {
-  //     setCurrentAvailableID(studentList.length + 1);
-  //   }
-  // }, [studentList]);
+  useEffect(() => {
+    if (studentList) {
+      setCurrentAvailableID(studentList.length + 1);
+    }
+  }, [studentList]);
 
   const columns = [
     { field: "studentID", headerName: "Student ID", flex: 0.5 },
