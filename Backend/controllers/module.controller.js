@@ -45,7 +45,8 @@ export const addNewModule = async(moduleList, studentList) =>  {
           await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
-            savedModule.moduleAssignments
+            savedModule.moduleAssignments,
+            moduleData.moduleCost
           );
           return savedModule._id;
         }

@@ -29,7 +29,7 @@ export const adminAllowed = async (req,res,next)=>{
     if (!testToken) return res.status(401).json({"error": "Unauthorized", "message": "Authentication is required to access this resource."});;
     if(testToken){
         token = testToken.split(' ')[1];
-        if(jwt.decode(token).userRole !='admin'){
+        if(jwt.decode(token).userRole !='admin' && jwt.decode(token).userRole !='superAdmin'){
             res.status(405).json({error: "Role is not valid to access this resourse"});
         }else{  
             next();

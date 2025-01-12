@@ -3,7 +3,7 @@ import useApi from "./useApi"
 const useSendAssignmentData = () => {
     const api = useApi()
     let res;
-    const sendAssignment = async({assignmentID, studentID, moduleCode, orderID, assignmentName, assignmentType, assignmentProgress, assignmentPayment, assignmentDeadline, assignmentGrade, assignmentPaymentAccount, assignmentPaymentDate}, editMode) => {        
+    const sendAssignment = async({assignmentID, studentID, moduleCode, orderID, assignmentName, assignmentType, assignmentProgress, assignmentDeadline, assignmentGrade}, editMode) => {        
         try {
             if (editMode) {
                 res = await api.put(
@@ -14,11 +14,8 @@ const useSendAssignmentData = () => {
                     assignmentName,
                     assignmentType,
                     assignmentProgress,
-                    assignmentPayment,
                     assignmentDeadline,
                     assignmentGrade,
-                    assignmentPaymentAccount,
-                    assignmentPaymentDate,
                   }
                 );
 
@@ -30,11 +27,8 @@ const useSendAssignmentData = () => {
                   assignmentName,
                   assignmentType,
                   assignmentProgress,
-                  assignmentPayment,
                   assignmentDeadline,
                   assignmentGrade,
-                  assignmentPaymentAccount,
-                  assignmentPaymentDate,
                 });
             }
             const data = await res.data;
@@ -72,10 +66,6 @@ const useSendAssignmentData = () => {
         } else if (tStatus === "progress") {
           res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
             assignmentProgress: newValue,
-          });
-        } else if (tStatus === "paymentAmount") {
-          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
-            assignmentPayment: newValue,
           });
         } else if (tStatus === "grade") {
           res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {

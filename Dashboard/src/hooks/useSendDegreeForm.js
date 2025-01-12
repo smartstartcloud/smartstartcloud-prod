@@ -7,8 +7,7 @@ const useSendDegreeForm = () => {
     const api = useApi()
     var res;
 
-    const sendDegreeForm = async({_id=null, degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}, editMode=null) => {
-        
+    const sendDegreeForm = async({_id=null, degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}, editMode=null) => {        
         try {
             if (editMode) {
                 res = await api.put(
