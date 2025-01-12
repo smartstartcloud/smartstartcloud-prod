@@ -17,6 +17,15 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
   },
+  degreeID: {
+    type: String,
+  },
+  degreeName: {
+    type: String,
+  },
+  degreeYear: {
+    type: String,
+  },
   modulePrice: {
     type: String,
   },

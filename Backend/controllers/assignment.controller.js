@@ -120,7 +120,7 @@ export const filterMainAssignments = async(assignments) => {
   return filteredAssignments;
 }
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, moduleCost) => {  
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, moduleCost, degreeDetailsForPayment) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
@@ -138,7 +138,7 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
             // console.log("existingModuleAssignment", existingModuleAssignment);
           }
         } else {          
-          const modulePaymentList = await addNewPayment(studentList[i], moduleID, moduleCost);
+          const modulePaymentList = await addNewPayment(studentList[i], moduleID, moduleCost, degreeDetailsForPayment);
           
           // If it does not exist, create a new ModuleAssignment document
           const newModuleAssignment = new ModuleAssignment({

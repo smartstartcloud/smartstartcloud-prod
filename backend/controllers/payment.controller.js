@@ -1,12 +1,16 @@
 import Module from "../models/module.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 
-export const addNewPayment = async (studentID, moduleID, moduleCost) => {
+export const addNewPayment = async (studentID, moduleID, moduleCost, degreeDetailsForPayment) => {
+    const { degreeID, degreeName, degreeYear } = degreeDetailsForPayment
     try {
         const newPayment = new ModuleStudentFinance({
-          studentID: studentID,
-          moduleID: moduleID,
-          modulePrice: moduleCost,
+          studentID,
+          moduleID,
+          modulePrice : moduleCost,
+          degreeID,
+          degreeName, 
+          degreeYear
         });
         // console.log('ashche', newPayment, moduleCost);
         
@@ -38,6 +42,17 @@ export const getPaymentDetails = async (req, res) => {
         console.error("Error fetching finance data:", error);
         res.status(500).json({ error: "An error occurred while fetching data" });
     }
+};
+
+export const getPaymentDetailsByType = async (req, res) => {  
+  try {
+    // Find all records in ModuleStudentFinance where studentID and moduleID match
+    const finances = await ModuleStudentFinance.find();
+    res.status(200).json(finances);
+  } catch (error) {
+    console.error("Error fetching finance data:", error);
+    res.status(500).json({ error: "An error occurred while fetching data" });
+  }
 };
 
 export const updatePaymentDetails = async (req, res) => {

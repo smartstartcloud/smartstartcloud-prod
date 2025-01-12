@@ -22,7 +22,7 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
-
+    const degreeDetailsForPayment = { degreeID, degreeName, degreeYear };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
       error.code = 11000; // Set the error code
@@ -31,7 +31,8 @@ export const newDegree = async (req, res) => {
       const populatedStudentList = await addNewStudent(degreeStudentList);
       const populatedModules = await addNewModule(
         degreeModules,
-        populatedStudentList
+        populatedStudentList,
+        degreeDetailsForPayment
       );
 
       // Step 1: Create Degree
