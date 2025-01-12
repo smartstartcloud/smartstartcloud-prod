@@ -32,16 +32,18 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
   },
-  paymentDate: {
+  paidAmount: {
     type: String,
   },
-  paymentAccount: {
+  otherPaymentMethod: {
     type: String,
   },
-  paymentNature: {
-    type: String,
-  }
-
+  paymentLog: [
+    {
+      date: { type: Date },
+      logString: { type: String },
+    },
+  ],
 });
 
 const ModuleStudentFinance = infoDB.model(
