@@ -23,7 +23,7 @@ const useAllGetPaymentDetails = () => {
     fetchAllPaymentData(); // Call the async function within useEffect
   }, []);
 
-  return { paymentData };
+  return { paymentData, loading, error };
 };
 
 export default useAllGetPaymentDetails;

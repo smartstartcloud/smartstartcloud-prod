@@ -59,7 +59,6 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
 
     useEffect(() => {
       if (paymentData) {
-        console.log(paymentData);
         
         setPaymentDetails({
           totalPaymentDue: paymentData?.totalPaymentDue || "",
@@ -272,7 +271,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
             <Typography variant="h5" color={colors.grey[50]} sx={{ mb: 2 }}>
               Payment Details
             </Typography>
-            {paymentDetails.paymentLog.length > 0 ? (
+            {paymentDetails.paymentLog && paymentDetails.paymentLog.length > 0 ? (
               <TableContainer component={Paper}>
                 <Table>
                   <TableHead>
