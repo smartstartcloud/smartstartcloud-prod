@@ -47,8 +47,8 @@ const BarChart = ({data}) => {
           },
         },
       }}
-      keys={["payment"]}
-      indexBy="module"
+      keys={["paidAmount"]}
+      indexBy="label"
       margin={{ top: 20, right: 50, bottom: 60, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}

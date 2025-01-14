@@ -112,9 +112,7 @@ export const updatePaymentDetails = async (req, res) => {
 };
 
 const createPaymentLog = (previousData, newData) => {
-    let logString = ''
-    console.log(previousData);
-    
+    let logString = ''    
     if (previousData.paidAmount && previousData.paymentMethod && previousData.totalPaymentDue){
         logString = `A PAYMENT WAS MADE OF ${Number(newData.paidAmount) - Number(previousData.paidAmount)} GBP at ${newData.totalPaymentToDate}. Remaining ${newData.totalPaymentDue} GBP`;
     } else {
