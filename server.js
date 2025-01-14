@@ -26,25 +26,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "Dashboard/build"))); //To connect react app
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
+// Common trusted sources
+const commonSources = [
+  "'self'",
+  "https://www.smartstart.cloud",
+  "https://smartstart.cloud",
+  "www.smartstart.cloud",
+  "https://portal.smartstart.cloud",
+  "portal.smartstart.cloud",
+];
+
+// Add development-specific sources
+if (isDevelopment) {
+  commonSources.push("http://portal.localhost:3000", "http://localhost:3000");
+}
+
 //CSP Configuration
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'", 
-          "https://www.smartstart.cloud",
-          "https://smartstart.cloud",
-          "www.smartstart.cloud",
-          "https://portal.smartstart.cloud",
-          "portal.smartstart.cloud",],
-        connectSrc: [
-          "'self'",
-          "https://www.smartstart.cloud",
-          "https://smartstart.cloud",
-          "www.smartstart.cloud",
-          "https://portal.smartstart.cloud",
-          "portal.smartstart.cloud",
-        ],
+        defaultSrc: commonSources,
+        connectSrc: commonSources,
       },
     },
   })
