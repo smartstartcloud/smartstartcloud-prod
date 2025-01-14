@@ -160,7 +160,7 @@ const DegreeForm = ({editPage=false}) => {
       const response = await sendDegreeForm(data, editMode);
       console.log("Form Data:", data);
       console.log('Response Data:', response);
-      navigate(0);
+      // navigate(0);
 
       setFormSaved(true);
       setLoading(false);

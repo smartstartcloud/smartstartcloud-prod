@@ -40,11 +40,8 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
      assignmentName: "",
      assignmentType: "",
      assignmentProgress: "TBA",
-     assignmentPayment: "",
      assignmentDeadline: "",
      assignmentGrade: "",
-     assignmentPaymentAccount: "",
-     assignmentPaymentDate: "",
    },
  });
 
@@ -58,13 +55,9 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   orderID: assignmentData?.orderID || "",
                   assignmentName: assignmentData?.assignmentName || "",
                   assignmentType: assignmentData?.assignmentType || "",
-                  assignmentProgress:
-                    assignmentData?.assignmentProgress || "TBA",
-                  assignmentPayment: assignmentData?.assignmentPayment || "",
+                  assignmentProgress: assignmentData?.assignmentProgress || "TBA",
                   assignmentDeadline: assignmentData?.assignmentDeadline || "",
                   assignmentGrade: assignmentData?.assignmentGrade || "",
-                  assignmentPaymentAccount: assignmentData?.assignmentPaymentAccount || "",
-                  assignmentPaymentDate: assignmentData?.assignmentPaymentDate || "",
                 });
             } else {              
                 reset({
@@ -74,11 +67,8 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   assignmentName: "",
                   assignmentType: "",
                   assignmentProgress: "TBA",
-                  assignmentPayment: "",
                   assignmentDeadline: "",
                   assignmentGrade: "",
-                  assignmentPaymentAccount: "",
-                  assignmentPaymentDate: "",
                 });
             }
         }
@@ -304,47 +294,13 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     // }
                   >
                     <MenuItem value="TBA">TO BE ASSIGNED</MenuItem>
-                    <MenuItem value="ORDER ID ASSIGNED">ORDER ID ASSIGNED</MenuItem>
+                    <MenuItem value="ORDER ID ASSIGNED">
+                      ORDER ID ASSIGNED
+                    </MenuItem>
                     <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
                     <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
                     <MenuItem value="COMPLETED">COMPLETED</MenuItem>
                   </Select>
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={3}>
-              <Controller
-                name="assignmentPayment"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="string"
-                    variant="outlined"
-                    fullWidth
-                    label="Payment Amount"
-                    sx={{ mb: 2 }}
-                    inputProps={{ min: 0 }}
-                    error={!!touchedFields.assignmentPayment && !!errors.assignmentPayment}
-                    helperText={
-                      touchedFields.assignmentPayment && errors.assignmentPayment
-                        ? errors.assignmentPayment.message
-                        : null
-                    }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      const value = parseFloat(e.target.value);
-                      if (isNaN(value) || value < 0) {
-                        setError("assignmentPayment", {
-                          type: "manual",
-                          message: "Please enter a number greater than 0",
-                        });
-                      } else {
-                        clearErrors("assignmentPayment");
-                      }
-                    }}
-                  />
                 )}
               />
             </Grid>
@@ -383,56 +339,22 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 />
               </LocalizationProvider>
             </Grid>
+            <Grid item xs={5.25} sm={3}>
+              <Controller
+                name="assignmentGrade"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Assignment Grade"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={5.25}>
-            <Controller
-              name="assignmentGrade"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Assignment Grade"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={3}>
-            <Controller
-              name="assignmentPaymentAccount"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Payment Account"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={3}>
-            <Controller
-              name="assignmentPaymentDate"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Payment Date"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
           <Button
             variant="contained"
             color="primary"

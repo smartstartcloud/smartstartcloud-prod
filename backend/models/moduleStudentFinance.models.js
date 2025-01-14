@@ -17,6 +17,15 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
   },
+  degreeID: {
+    type: String,
+  },
+  degreeName: {
+    type: String,
+  },
+  degreeYear: {
+    type: String,
+  },
   modulePrice: {
     type: String,
   },
@@ -32,16 +41,18 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
   },
-  paymentDate: {
+  paidAmount: {
     type: String,
   },
-  paymentAccount: {
+  otherPaymentMethod: {
     type: String,
   },
-  paymentNature: {
-    type: String,
-  }
-
+  paymentLog: [
+    {
+      date: { type: Date },
+      logString: { type: String },
+    },
+  ],
 });
 
 const ModuleStudentFinance = infoDB.model(

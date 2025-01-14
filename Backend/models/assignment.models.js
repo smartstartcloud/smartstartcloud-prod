@@ -18,15 +18,6 @@ const AssignmentSchema = new mongo.Schema({
   assignmentProgress: {
     type: String,
   },
-  assignmentPayment: {
-    type: String,
-  },
-  assignmentPaymentAccount: {
-    type: String,
-  },
-  assignmentPaymentDate: {
-    type: String,
-  },
   assignmentGrade: {
     type: String,
   },

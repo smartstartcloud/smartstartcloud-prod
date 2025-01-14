@@ -29,6 +29,7 @@ import Slide from '@mui/material/Slide';
 import useDeleteObjects from '../../hooks/useDeleteObjects';
 import { useNavigate } from 'react-router-dom';
 import PaymentForm from '../forms/PaymentForm';
+import { set } from 'date-fns';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -43,6 +44,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [orderIdToPass, setOrderIdToPass] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
+  const [paymentRequiredInformation, setPaymentRequiredInformation] = useState({});
   const {deleteAssignment} = useDeleteObjects()
   // console.log("students from parent ::::", student)
   const handleEditAssignment = (assignment) => {
@@ -94,14 +96,13 @@ const AssignmentList = ({ list, degreeModules, student }) => {
 
   const handleDownloadCSV = () => {
     const csvContent = [
-      ['Order ID', 'Assignment Name', 'Assignment Type', 'Deadline', 'Progress', 'Payment', 'Grade'],
+      ['Order ID', 'Assignment Name', 'Assignment Type', 'Deadline', 'Progress', 'Grade'],
       ...sortedList.map(assignment => [
         assignment.orderID,
         assignment.assignmentName,
         assignment.assignmentType,
         assignment.assignmentDeadline,
         assignment.assignmentProgress,
-        assignment.assignmentPayment,
         assignment.assignmentGrade
       ])
     ]
@@ -159,7 +160,13 @@ const AssignmentList = ({ list, degreeModules, student }) => {
     setOpen(true);
   }
 
-  const handlePaymentOpen = () => {
+  const handlePaymentOpen = (assignmentID, moduleCode, studentID) => {
+    setPaymentRequiredInformation({
+      assignmentID: assignmentID,
+      moduleCode: moduleCode,
+      studentID: studentID
+    });
+    
     setPaymentOpen(true);
   };
 
@@ -241,40 +248,11 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === "assignmentPayment"}
-                      direction={
-                        orderBy === "assignmentPayment" ? order : "asc"
-                      }
-                      onClick={() => handleRequestSort("assignmentPayment")}
-                    >
-                      Payment Status (GBP)
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
                       active={orderBy === "assignmentGrade"}
                       direction={orderBy === "assignmentGrade" ? order : "asc"}
                       onClick={() => handleRequestSort("assignmentGrade")}
                     >
                       Grade
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "assignmentGrade"}
-                      direction={orderBy === "assignmentGrade" ? order : "asc"}
-                      onClick={() => handleRequestSort("assignmentGrade")}
-                    >
-                      Payment Status
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "assignmentGrade"}
-                      direction={orderBy === "assignmentGrade" ? order : "asc"}
-                      onClick={() => handleRequestSort("assignmentGrade")}
-                    >
-                      Payment Date
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>Actions</TableCell>
@@ -291,10 +269,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                         "assignmentType",
                         "assignmentDeadline",
                         "assignmentProgress",
-                        "assignmentPayment",
                         "assignmentGrade",
-                        "assignmentPaymentAccount",
-                        "assignmentPaymentDate",
                       ].map((key) => (
                         <TableCell key={key}>
                           {/* <Tooltip
@@ -329,7 +304,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Open Payment">
-                            <IconButton onClick={() => handlePaymentOpen()}>
+                            <IconButton onClick={() => handlePaymentOpen(assignment._id, assignment.moduleCode, student._id)}>
                               <PaymentsOutlinedIcon />
                             </IconButton>
                           </Tooltip>
@@ -369,7 +344,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
         <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />
       )}
       {paymentOpen && (
-        <PaymentForm setOpen={setPaymentOpen} open={paymentOpen}/>
+        <PaymentForm setOpen={setPaymentOpen} open={paymentOpen} paymentRequiredInformation = {paymentRequiredInformation} />
       )}
       <Dialog
         open={openDialog}

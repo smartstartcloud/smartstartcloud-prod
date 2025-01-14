@@ -12,6 +12,8 @@ export const yearFilter = (degree) => {
 }
 
 export const formatDateString = (dateString) => {
+    console.log(dateString);
+    
         // Split the input string by underscore
         const [month, year] = dateString.split('_');
 

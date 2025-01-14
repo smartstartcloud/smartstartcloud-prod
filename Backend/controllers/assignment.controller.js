@@ -1,6 +1,7 @@
 import Assignment from "../models/assignment.models.js";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import { addNewPayment } from "./payment.controller.js";
 
 // Function to create a new assignment and update relevant records
 export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
@@ -57,9 +58,6 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                   assignmentType: assignmentData.assignmentType,
                   assignmentDeadline: assignmentData.assignmentDeadline,
                   assignmentProgress: "TBA",
-                  assignmentPayment: 0,
-                  assignmentPaymentAccount: '',
-                  assignmentPaymentDate: '',
                   assignmentGrade: "",
                   assignmentNature: "main",
                   moduleCode: moduleCode,
@@ -78,9 +76,6 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
                     assignmentProgress: "TBA",
-                    assignmentPayment: 0,
-                    assignmentPaymentAccount: '',
-                    assignmentPaymentDate: '',
                     assignmentGrade: "",
                     assignmentNature: "dynamic",
                     moduleCode: moduleCode,
@@ -125,7 +120,7 @@ export const filterMainAssignments = async(assignments) => {
   return filteredAssignments;
 }
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, moduleCost, degreeDetailsForPayment) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
@@ -142,12 +137,15 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
             await existingModuleAssignment.save(); // Save the updated document
             // console.log("existingModuleAssignment", existingModuleAssignment);
           }
-        } else {
+        } else {          
+          const modulePaymentList = await addNewPayment(studentList[i], moduleID, moduleCost, degreeDetailsForPayment);
+          
           // If it does not exist, create a new ModuleAssignment document
           const newModuleAssignment = new ModuleAssignment({
             studentID: studentList[i],
             moduleID: moduleID,
             assignments: [sortedUpdatedAssignments[i]], // Initialize with the first assignment
+            modulePayment: modulePaymentList,
           });
           await newModuleAssignment.save();
           // console.log("newModuleAssignment", newModuleAssignment);
@@ -197,9 +195,6 @@ export const updateAssignment = async (req, res) => {
       assignmentName,
       assignmentType,
       assignmentProgress,
-      assignmentPayment,
-      assignmentPaymentAccount,
-      assignmentPaymentDate,
       assignmentDeadline,
       assignmentGrade,
       assignmentFile,
@@ -214,9 +209,6 @@ export const updateAssignment = async (req, res) => {
     if (assignmentName) updatedFields.assignmentName = assignmentName;
     if (assignmentType) updatedFields.assignmentType = assignmentType;
     if (assignmentProgress) updatedFields.assignmentProgress = assignmentProgress;
-    if (assignmentPayment) updatedFields.assignmentPayment = assignmentPayment;
-    if (assignmentPaymentAccount) updatedFields.assignmentPaymentAccount = assignmentPaymentAccount;
-    if (assignmentPaymentDate) updatedFields.assignmentPaymentDate = assignmentPaymentDate;
     if (assignmentDeadline) updatedFields.assignmentDeadline = assignmentDeadline;
     if (assignmentGrade) updatedFields.assignmentGrade = assignmentGrade;
     if (assignmentFile) updatedFields.assignmentFile = assignmentFile;
@@ -248,9 +240,6 @@ async function createNewAssignmentManual(
   assignmentType,
   assignmentDeadline,
   assignmentProgress,
-  assignmentPayment,
-  assignmentPaymentAccount,
-  assignmentPaymentDate,
   assignmentGrade,
   moduleCode,
   referenceNumber
@@ -261,9 +250,6 @@ async function createNewAssignmentManual(
     assignmentType: assignmentType,
     assignmentDeadline: assignmentDeadline,
     assignmentProgress: assignmentProgress,
-    assignmentPayment: assignmentPayment,
-    assignmentPaymentAccount: assignmentPaymentAccount,
-    assignmentPaymentDate: assignmentPaymentDate,
     assignmentGrade: assignmentGrade,
     assignmentFile: [], // Default to empty array
     assignmentNature: "manual",
@@ -293,9 +279,6 @@ export const newAssignmentManual = async (req, res) => {
       assignmentType,
       assignmentDeadline,
       assignmentProgress,
-      assignmentPayment,
-      assignmentPaymentAccount,
-      assignmentPaymentDate,
       assignmentGrade,
     } = req.body;
     const moduleID = await findModuleIdByCode(moduleCode);
@@ -306,9 +289,6 @@ export const newAssignmentManual = async (req, res) => {
       assignmentType,
       assignmentDeadline,
       assignmentProgress,
-      assignmentPayment,
-      assignmentPaymentAccount,
-      assignmentPaymentDate,
       assignmentGrade,
       moduleCode
     );

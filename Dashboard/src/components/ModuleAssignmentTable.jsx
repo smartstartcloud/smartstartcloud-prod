@@ -26,6 +26,11 @@ const ModuleAssignmentTable = ({studentData}) => {
   const [assignmentProgressStatusLists, setAssignmentProgressStatusLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentGradeLists, setAssignmentGradeLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode
+
+  console.log(studentData);
+  
+
+  
   // Function to fetch Order IDs for a given moduleCode
   const fetchOrderIdList = async (referenceNumber) => {
     if (!referenceNumber) return;
@@ -49,6 +54,7 @@ const ModuleAssignmentTable = ({studentData}) => {
   }, [studentData]);
 
   const { updateOrderID } = useSendAssignmentData();
+  
   const handleDropdownChange = async (assignmentId, newValue) => {
     console.log(tableStatus, newValue);
     if (tableStatus === "orderID") {
@@ -152,7 +158,10 @@ const ModuleAssignmentTable = ({studentData}) => {
                     <TableCell rowSpan={row.assignmentList.length}>
                       {row.id}
                     </TableCell>
-                    <TableCell rowSpan={row.assignmentList.length} sx={{fontSize: "14px"}}>
+                    <TableCell
+                      rowSpan={row.assignmentList.length}
+                      sx={{ fontSize: "14px" }}
+                    >
                       {row.name}
                     </TableCell>
                     <TableCell>

@@ -6,6 +6,7 @@ import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
 import { addNewModule } from './module.controller.js'; // Import newAssignment
 import ModuleAssignment from '../models/moduleAssignment.models.js';
+import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 
 export const newDegree = async (req, res) => {
   try {
@@ -21,7 +22,7 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
-
+    const degreeDetailsForPayment = { degreeID, degreeName, degreeYear };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
       error.code = 11000; // Set the error code
@@ -30,7 +31,8 @@ export const newDegree = async (req, res) => {
       const populatedStudentList = await addNewStudent(degreeStudentList);
       const populatedModules = await addNewModule(
         degreeModules,
-        populatedStudentList
+        populatedStudentList,
+        degreeDetailsForPayment
       );
 
       // Step 1: Create Degree
@@ -313,7 +315,15 @@ export const deleteDegree = async (req,res)=>{
             await Module.findOneAndDelete({_id:moduleID}).then(async(module)=>{
               const allMixSchema = await ModuleAssignment.find({moduleID:module._id});
               await Promise.all(allMixSchema.map(async(allMix)=>{
-                await ModuleAssignment.findOneAndDelete({_id:allMix._id})
+                // Delete the associated payment data first
+                if (allMix.modulePayment) {
+                  await ModuleStudentFinance.findOneAndDelete({
+                    _id: allMix.modulePayment,
+                  });
+                }
+
+                // Then delete the ModuleAssignment
+                await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
               }))
               await Promise.all(module.moduleAssignments.map(async (moduleAssignmentsIDArr)=>{
                 await Promise.all(moduleAssignmentsIDArr.map(async(id)=>{
