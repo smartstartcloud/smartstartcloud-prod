@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon server.js",
     "heroku-postbuild": "cd Dashboard && npm install && npm run build"
   },
@@ -22,14 +22,12 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
-    "firebase": "^11.0.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0",
     "multer": "^1.4.4",
     "multer-gridfs-storage": "^5.0.2",
     "nodemon": "^3.1.4",
-    "path": "^0.12.7",
-    "url": "^0.11.4"
+    "path": "^0.12.7"
   }
 }

@@ -5,7 +5,7 @@ import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assign
 import Degree from '../models/degree.models.js';
 
 // New helper function to add the assignment to the Module model
-export const addNewModule = async(moduleList, studentList) =>  {
+export const addNewModule = async(moduleList, studentList, degreeDetailsForPayment) =>  {
   try {
     // Use Promise.all to save all Module concurrently    
     const addedModuleIDs = await Promise.all(
@@ -45,7 +45,9 @@ export const addNewModule = async(moduleList, studentList) =>  {
           await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
-            savedModule.moduleAssignments
+            savedModule.moduleAssignments,
+            moduleData.moduleCost,
+            degreeDetailsForPayment
           );
           return savedModule._id;
         }
@@ -150,7 +152,7 @@ export const getAssignmentForModule = async (studentID, moduleID) => {
     }).populate({
       path: "assignments",
       select:
-        "-assignmentFile -assignmentGrade -assignmentNature -assignmentPayment -assignmentProgress",
+        "-assignmentFile -assignmentNature",
     });
     
 

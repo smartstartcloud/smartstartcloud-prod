@@ -13,12 +13,14 @@ export async function getAllStudents(req, res) {
 }
 // Function to add new students and return their MongoDB ObjectIDs
 export async function addNewStudent(studentList) {
-  try {
+  try {    
     // Use Promise.all to save all students concurrently
     const addedStudentIDs = await Promise.all(
       studentList.map(async (studentData) => {
         // Finding the current student in database to see if the ID already exists in database;
-        let currentStudent = await Student.findOne({studentID:studentData.studentID});
+        let currentStudent = await Student.findOne({
+          studentID: studentData.studentID,
+        });
         if(currentStudent){          
           // Update the current student with the new data
           const updatedStudent = await Student.findOneAndUpdate(

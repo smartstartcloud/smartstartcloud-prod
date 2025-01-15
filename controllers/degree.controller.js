@@ -6,6 +6,7 @@ import User from "../models/user.models.js";
 import { addNewStudent } from './student.controller.js';
 import { addNewModule } from './module.controller.js'; // Import newAssignment
 import ModuleAssignment from '../models/moduleAssignment.models.js';
+import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 
 export const newDegree = async (req, res) => {
   try {
@@ -21,7 +22,7 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
-
+    const degreeDetailsForPayment = { degreeID, degreeName, degreeYear };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
       error.code = 11000; // Set the error code
@@ -30,7 +31,8 @@ export const newDegree = async (req, res) => {
       const populatedStudentList = await addNewStudent(degreeStudentList);
       const populatedModules = await addNewModule(
         degreeModules,
-        populatedStudentList
+        populatedStudentList,
+        degreeDetailsForPayment
       );
 
       // Step 1: Create Degree
@@ -153,44 +155,29 @@ export const getDegreeByYear = async (req,res)=>{
   }
 }
 
-const getAssignmentSum = async (moduleList, studentList) => {
+const getAssignmentSum = async (moduleList, studentList) => {  
   try {
-    const tempAssArray = []
-    let sum = 0
-    for (const module of moduleList) {
-      // Iterate over each module in the moduleList
-      for (let i = 0; i < studentList.length; i++) {
-        const studentID = studentList[i]; // Get studentID from the list
-
-        const existingModuleAssignment = await ModuleAssignment.findOne({
-          studentID: studentID,
-          moduleID: module, // Use module._id or the proper property of module
-        }).populate("assignments");
-        if (existingModuleAssignment) {
-          if (existingModuleAssignment.assignments) {
-            tempAssArray.push(...existingModuleAssignment.assignments);
-            if (tempAssArray) {
-              // Perform your logic for the found assignment
-              for (const assignment of tempAssArray) {
-                if (
-                  assignment.assignmentPayment &&
-                  assignment.assignmentPayment !== "N/A"
-                ) {
-                  sum += Number(assignment.assignmentPayment);
-                }
-              }
-            }
-            
-          } else {
-            // Handle the case when no assignment is found
-            console.log(
-              `No assignment found for student ${studentID} in module ${module}`
-            );
+    let sum = 0;
+    // Fetch all relevant ModuleAssignments in a single query
+    const moduleAssignments = await ModuleAssignment.find({
+      studentID: { $in: studentList },
+      moduleID: { $in: moduleList },
+    }).populate("assignments");
+    
+    moduleAssignments.forEach((moduleAssignment) => {
+      if (moduleAssignment.assignments) {
+        moduleAssignment.assignments.forEach((assignment) => {
+          if (
+            assignment.assignmentPayment &&
+            assignment.assignmentPayment !== "N/A" &&
+            assignment.assignmentPayment !== "0"
+          ) {
+            sum += Number(assignment.assignmentPayment);
           }
-        }
+        });
       }
-    }
-    return sum
+    });
+    return sum;
   } catch (error) {
     console.error("Error fetching assignments: ", error);
   }
@@ -214,15 +201,11 @@ export const getDegreeByID = async (req,res)=>{
     const Agent = await User.find({_id:[degrees.degreeAgent]});
     const moduleList = degrees.degreeModules;
     const studentList = degrees.degreeStudentList;
-    const { sum, assignmentProgressList, assignmentGradeList } =
+    const { moduleDetailsList } =
       await getAssignmentDetailsList(moduleList, studentList);
     let degreeObject = degrees.toObject();
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
-    degreeObject.assignmentTally = {
-      sum,
-      assignmentProgressList,
-      assignmentGradeList,
-    };
+    degreeObject.moduleDetailsList = moduleDetailsList
     res.status(200).json(degreeObject);
   } catch (error) {
     console.error("Error fetching degrees:", error);
@@ -230,57 +213,62 @@ export const getDegreeByID = async (req,res)=>{
   }
 }
 
-const getAssignmentDetailsList = async (moduleList, studentList) => {
+const getAssignmentDetailsList = async (moduleList, studentList) => {    
   try {
+    // Step 1: Fetch all relevant ModuleAssignments in a single query
+    const moduleAssignments = await ModuleAssignment.find({
+      studentID: { $in: studentList.map((student) => student._id) },
+      moduleID: { $in: moduleList.map((module) => module._id) },
+    }).populate(
+      "assignments",
+      "assignmentPayment assignmentGrade assignmentProgress"
+    );
+    const moduleDetailsList = moduleList.map((module) => {
+      return {_id:module._id, modulecode:module.moduleCode, moduleName: module.moduleName, modulePayment: [], moduleGrade: [], moduleProgress: [], moduleSum : 0};
+    })    
+
+    // Step 2: Initialize results
     let sum = 0;
-    let assignmentProgressList = [];
-    let assignmentGradeList = [];
-    for (const module of moduleList) {
-      // Iterate over each module in the moduleList
-      for (let i = 0; i < studentList.length; i++) {        
-        const studentID = studentList[i]; // Get studentID from the list
-        const existingModuleAssignment = await ModuleAssignment.findOne({
-          studentID: studentID,
-          moduleID: module._id, // Use module._id or the proper property of module
-        }).populate("assignments");
-        if (existingModuleAssignment) {
-          // console.log(existingModuleAssignment);          
-          if (existingModuleAssignment.assignments) {
-            const tempAssArray = [];
-            tempAssArray.push(...existingModuleAssignment.assignments);
-            if (tempAssArray) {
-              // Perform your logic for the found assignment
-              for (const assignment of tempAssArray) {
-                if (
-                  assignment.assignmentPayment &&
-                  assignment.assignmentPayment !== "N/A"
-                ) {
-                  sum += Number(assignment.assignmentPayment);
-                }
-                if (
-                  assignment.assignmentGrade &&
-                  assignment.assignmentGrade !== "N/A"
-                ) {
-                  assignmentGradeList.push(assignment.assignmentGrade);
-                }
-                if (
-                  assignment.assignmentProgress &&
-                  assignment.assignmentProgress !== "N/A"
-                ) {
-                  assignmentProgressList.push(assignment.assignmentProgress);
-                }
-              }
+    const assignmentProgressList = [];
+    const assignmentGradeList = [];
+
+    // Step 3: Process the fetched assignments
+    moduleAssignments.forEach((moduleAssignment) => {    
+      if (moduleAssignment.assignments) {
+        const moduleDetails = moduleDetailsList.find(
+          (module) =>
+            module._id.toString() === moduleAssignment.moduleID.toString()
+        );
+        if (moduleDetails) {          
+          moduleAssignment.assignments.forEach((assignment) => {
+            // Calculate sum of assignmentPayment
+            if (
+              assignment.assignmentPayment &&
+              assignment.assignmentPayment !== "N/A"
+            ) {
+              moduleDetails.moduleSum += Number(assignment.assignmentPayment);
             }
-          } else {
-            // Handle the case when no assignment is found
-            console.log(
-              `No assignment found for student ${studentID} in module ${module}`
-            );
-          }
+
+            // Collect assignmentGrade
+            if (
+              assignment.assignmentGrade &&
+              assignment.assignmentGrade !== "N/A"
+            ) {
+              moduleDetails.moduleGrade.push(assignment.assignmentGrade);
+            }
+
+            // Collect assignmentProgress
+            if (
+              assignment.assignmentProgress &&
+              assignment.assignmentProgress !== "N/A"
+            ) {
+              moduleDetails.moduleProgress.push(assignment.assignmentProgress);
+            }
+          });
         }
       }
-    }
-    return {sum, assignmentProgressList, assignmentGradeList};
+    });    
+    return { moduleDetailsList };
   } catch (error) {
     console.error("Error fetching assignments: ", error);
   }
@@ -327,7 +315,15 @@ export const deleteDegree = async (req,res)=>{
             await Module.findOneAndDelete({_id:moduleID}).then(async(module)=>{
               const allMixSchema = await ModuleAssignment.find({moduleID:module._id});
               await Promise.all(allMixSchema.map(async(allMix)=>{
-                await ModuleAssignment.findOneAndDelete({_id:allMix._id})
+                // Delete the associated payment data first
+                if (allMix.modulePayment) {
+                  await ModuleStudentFinance.findOneAndDelete({
+                    _id: allMix.modulePayment,
+                  });
+                }
+
+                // Then delete the ModuleAssignment
+                await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
               }))
               await Promise.all(module.moduleAssignments.map(async (moduleAssignmentsIDArr)=>{
                 await Promise.all(moduleAssignmentsIDArr.map(async(id)=>{

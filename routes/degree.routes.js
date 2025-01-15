@@ -17,7 +17,7 @@ router.get('/all',getAllDegree) ;
 router.get('/selected/year/:degreeYear',getDegreeByYear) ;
 router.get('/selected/degreeID/:degreeID',getDegreeByID) ;
 router.get('/selected/agentID/:degreeAgent',getDegreeByAgent) ;
-router.get("/student/all", getAllStudents);
+router.get('/student/all', getAllStudents)
 router.get('/selected/studentID/:studentID',getStudentByID) ;
 router.post('/addStudentInDegree',addStudentInDegree) ;
 
