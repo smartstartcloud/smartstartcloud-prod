@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 const useApi = () => {
     const { logout } = useLogout(); // Call useLogout here
-    
+
     const api = axios.create({
         baseURL: process.env.REACT_APP_LOCALHOST,
         withCredentials: true,
@@ -23,6 +23,7 @@ const useApi = () => {
             (response) => response,
             async (error) => {
                 const originalRequestUrl = error.config.url; // Get the URL of the original request
+                
                 //If Role is role not matched for that specific task, show alert for unauthorized access
                 if(error.response && error.response.status === 405){
                     alert('Unauthorized access! You do not have permission to perform this task.');

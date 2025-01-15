@@ -109,7 +109,7 @@ const StudentList = () => {
         >
           Current Latest ID: s{currentAvailableID}
         </Typography>
-        {studentList && <DataGrid
+        <DataGrid
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: colors.blueAccent[200],
@@ -142,7 +142,7 @@ const StudentList = () => {
           pageSizeOptions={[10, 20, 50, 100]}
           autoHeight
           onRowClick={handleRowClick} // Add onRowClick handler
-        />}
+        />
       </Box>
     </Box>
   );
