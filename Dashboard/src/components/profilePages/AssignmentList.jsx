@@ -27,7 +27,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AssignmentForm from '../forms/AssignmentForm';
 import Slide from '@mui/material/Slide';
 import useDeleteObjects from '../../hooks/useDeleteObjects';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PaymentForm from '../forms/PaymentForm';
 import { set } from 'date-fns';
 
@@ -42,16 +42,19 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const [open, setOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [orderIdToPass, setOrderIdToPass] = useState('');
+  const [referenceIdToPass, setReferenceIdToPass] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
   const [paymentRequiredInformation, setPaymentRequiredInformation] = useState({});
   const {deleteAssignment} = useDeleteObjects()
   // console.log("students from parent ::::", student)
+  const { degreeId } = useParams();     
+  
   const handleEditAssignment = (assignment) => {
     setCurrentAssignment(assignment);    
     setOpenDialog(true);
   };
-
+  
   const navigate = useNavigate(); 
 
   const handleDeleteAssignment = async (assignment) => {
@@ -85,14 +88,14 @@ const AssignmentList = ({ list, degreeModules, student }) => {
 
   const filteredList = list.filter((assignment) =>
     assignment.assignmentName && assignment.assignmentName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  );  
 
   const sortedList = filteredList.sort((a, b) => {
     if (order === 'asc') {
       return a[orderBy] < b[orderBy] ? -1 : 1;
     }
     return a[orderBy] > b[orderBy] ? -1 : 1;
-  });
+  });  
 
   const handleDownloadCSV = () => {
     const csvContent = [
@@ -155,18 +158,20 @@ const AssignmentList = ({ list, degreeModules, student }) => {
     );
   };
 
-  const handleFileOpen = (orderID) => {    
-    setOrderIdToPass(orderID);
+  const handleFileOpen = (assignment) => {
+    setReferenceIdToPass(assignment._id);
+    setOrderIdToPass(assignment.orderID);
     setOpen(true);
   }
 
-  const handlePaymentOpen = (assignmentID, moduleCode, studentID) => {
+  const handlePaymentOpen = (assignmentID, moduleCode, studentID, moduleId) => {
     setPaymentRequiredInformation({
-      assignmentID: assignmentID,
-      moduleCode: moduleCode,
-      studentID: studentID
-    });
-    
+      degreeID: degreeId,
+      assignmentID,
+      moduleCode,
+      studentID,
+      moduleId
+    });    
     setPaymentOpen(true);
   };
 
@@ -298,13 +303,22 @@ const AssignmentList = ({ list, degreeModules, student }) => {
                         <div style={{ display: "flex", gap: "8px" }}>
                           <Tooltip title="Open Files">
                             <IconButton
-                              onClick={() => handleFileOpen(assignment.orderID)}
+                              onClick={() => handleFileOpen(assignment)}
                             >
                               <FolderOpenOutlinedIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Open Payment">
-                            <IconButton onClick={() => handlePaymentOpen(assignment._id, assignment.moduleCode, student._id)}>
+                            <IconButton
+                              onClick={() =>
+                                handlePaymentOpen(
+                                  assignment._id,
+                                  assignment.moduleCode,
+                                  student._id,
+                                  list[0].moduleId
+                                )
+                              }
+                            >
                               <PaymentsOutlinedIcon />
                             </IconButton>
                           </Tooltip>
@@ -341,10 +355,21 @@ const AssignmentList = ({ list, degreeModules, student }) => {
         </Box>
       )}
       {open && (
-        <FileUpload setOpen={setOpen} open={open} orderID={orderIdToPass} />
+        <FileUpload
+          setOpen={setOpen}
+          open={open}
+          referenceID={referenceIdToPass}
+          referenceCollection={"Assignment"}
+          isOrder={true}
+          orderID={orderIdToPass}
+        />
       )}
       {paymentOpen && (
-        <PaymentForm setOpen={setPaymentOpen} open={paymentOpen} paymentRequiredInformation = {paymentRequiredInformation} />
+        <PaymentForm
+          setOpen={setPaymentOpen}
+          open={paymentOpen}
+          paymentRequiredInformation={paymentRequiredInformation}
+        />
       )}
       <Dialog
         open={openDialog}

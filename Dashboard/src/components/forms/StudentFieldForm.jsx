@@ -81,165 +81,214 @@ const StudentFieldForm = ({ control }) => {
           </Button>
         </Grid>
         {studentFields.map((field, index) => (
-          <Box
-            key={field.id}
-            sx={{
-              mb: 3,
-              width: "100%",
-              border: "1px solid rgba(102, 106, 108, 0.5)",
-              borderRadius: "8px",
-              position: "relative",
-              padding: "16px",
-              transition: "border-color 0.3s ease",
-              "&:hover": {
-                borderColor: "rgba(102, 106, 108, 0.9)",
-              },
-            }}
-          >
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentID`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Student ID (Auto-generated)">
-                          <TextField
-                            {...field}
-                            label="Student ID"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentName`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Name">
-                          <TextField
-                            {...field}
-                            label="Student Name"
-                            variant="outlined"
-                            fullWidth
-                            required
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentContact`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Contact">
-                          <TextField
-                            {...field}
-                            label="Student Contact"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentLogin`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Username">
-                          <TextField
-                            {...field}
-                            label="Student Username"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentPassword`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Password">
-                          <TextField
-                            {...field}
-                            label="Student Password"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentOfficePassword`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Office Password">
-                          <TextField
-                            {...field}
-                            label="Student Office Password"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Controller
-                      name={`degreeStudentList[${index}].studentOther`}
-                      control={control}
-                      render={({ field }) => (
-                        <Tooltip title="Enter Student Other Information">
-                          <TextField
-                            {...field}
-                            label="Student Other Information"
-                            variant="outlined"
-                            fullWidth
-                          />
-                        </Tooltip>
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+  <Box
+    key={field.id}
+    sx={{
+      mb: 3,
+      width: "100%",
+      border: "1px solid rgba(102, 106, 108, 0.5)",
+      borderRadius: "8px",
+      position: "relative",
+      padding: "16px",
+      transition: "border-color 0.3s ease",
+      "&:hover": {
+        borderColor: "rgba(102, 106, 108, 0.9)",
+      },
+    }}
+  >
+    <Grid container spacing={2} alignItems="center">
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name={`degreeStudentList[${index}].studentID`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Student ID (Auto-generated)">
+                  <TextField
+                    {...field}
+                    label="Student ID"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name={`degreeStudentList[${index}].studentName`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Name">
+                  <TextField
+                    {...field}
+                    label="Student Name"
+                    variant="outlined"
+                    fullWidth
+                    required
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name={`degreeStudentList[${index}].studentContact`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Contact">
+                  <TextField
+                    {...field}
+                    label="Student Contact"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`degreeStudentList[${index}].studentLogin`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Username">
+                  <TextField
+                    {...field}
+                    label="Student Username"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name={`degreeStudentList[${index}].studentPassword`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Password">
+                  <TextField
+                    {...field}
+                    label="Student Password"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name={`degreeStudentList[${index}].studentOfficePassword`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Office Password">
+                  <TextField
+                    {...field}
+                    label="Student Office Password"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`degreeStudentList[${index}].studentOther`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Student Other Information">
+                  <TextField
+                    {...field}
+                    label="Student Other Information"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`degreeStudentList[${index}].groupName`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Group Name">
+                  <TextField
+                    {...field}
+                    label="Group Name"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`degreeStudentList[${index}].tutorName`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Tutor Name">
+                  <TextField
+                    {...field}
+                    label="Tutor Name"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`degreeStudentList[${index}].campusLocation`}
+              control={control}
+              render={({ field }) => (
+                <Tooltip title="Enter Campus Location">
+                  <TextField
+                    {...field}
+                    label="Campus Location"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
 
-            <Tooltip title="Remove Student">
-              <IconButton
-                onClick={() => removeStudent(index)}
-                sx={{
-                  position: "absolute",
-                  top: "-9px",
-                  right: "-9px",
-                  backgroundColor: "grey",
-                  color: "white",
-                  borderRadius: "50%",
-                  height: "20px",
-                  width: "20px",
-                  "&:hover": {
-                    backgroundColor: "white",
-                    color: "grey",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ))}
+    <Tooltip title="Remove Student">
+      <IconButton
+        onClick={() => removeStudent(index)}
+        sx={{
+          position: "absolute",
+          top: "-9px",
+          right: "-9px",
+          backgroundColor: "grey",
+          color: "white",
+          borderRadius: "50%",
+          height: "20px",
+          width: "20px",
+          "&:hover": {
+            backgroundColor: "white",
+            color: "grey",
+            cursor: "pointer",
+          },
+        }}
+      >
+        <RemoveIcon />
+      </IconButton>
+    </Tooltip>
+  </Box>
+))}
+
 
         <Button
           variant="contained"

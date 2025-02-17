@@ -6,8 +6,7 @@ const useFetchAssignmentList = () => {
         try {
             const res = await api.get(`/api/module/getAssignment/${moduleID}/${studentID}`)
 
-            const data = await res.data.assignments;        
-                
+            const data = await res.data.assignments;  
             if (data.error) {
                 throw new Error(data.error);
             }

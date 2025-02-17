@@ -17,14 +17,13 @@ const StudentProfile = () => {
     const location = useLocation();
     const { studentId } = useParams();
     
-    const { student, loading, error } = useFetchSingleStudentData(studentId);
-
+    const { student, loading, error } = useFetchSingleStudentData(studentId);    
     const { fetchAssignmentList } = useFetchAssignmentList();
 
     const { _id, studentName, studentContact, studentLogin, studentPassword } = student || {};
     // console.log("student :::", student);
     
-    const { degreeModules } = location.state || [];    
+    const { degreeModules } = location.state || [];        
 
     const [open, setOpen] = useState(false);
     const [selectedModule, setSelectedModule] = useState(degreeModules[0]?._id || null);
@@ -45,18 +44,16 @@ const StudentProfile = () => {
         setAssignmentList([]);
 
         try {
-            const response = await fetchAssignmentList(moduleId, _id);
+            const response = await fetchAssignmentList(moduleId, _id);            
             if (Array.isArray(response)) {
-                setAssignmentList([{ moduleName }, ...response]);                
+                setAssignmentList([{ moduleName, moduleId }, ...response]);                
             } else {
                 throw new Error("Invalid response from the server");
             }
         } catch (e) {
             setListError(true);
             setListErrorMessage(e.message);
-        } finally {
-            console.log(assignmentList);
-            
+        } finally {            
             setListLoading(false);
         }
     };

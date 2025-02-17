@@ -15,6 +15,7 @@ import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBook
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import ListIcon from "@mui/icons-material/List";
 import PersonIcon from "@mui/icons-material/Person";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -40,9 +41,9 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x)[0];
-
+  
   const [selected, setSelected] = useState(pathnames ? pathnames : "task");
-  const { authUser, isAdmin, isCollapsed, setIsCollapsed } = useAuthContext();  
+  const { authUser, isAdmin, isFinance, isCollapsed, setIsCollapsed } = useAuthContext();    
 
   // Use `useMediaQuery` to detect screen size
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -145,13 +146,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              <Item
-                title="Add Degree"
-                to="/add-degree"
-                icon={<CollectionsBookmarkOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
+              {!isFinance || isAdmin && (
+                <Item
+                  title="Add Degree"
+                  to="/add-degree"
+                  icon={<CollectionsBookmarkOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="All Degrees"
                 to="/allDegrees"
@@ -159,18 +162,29 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              <Item
-                title="All Orders"
-                to="/allOrders"
-                icon={<ListIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
+              {!isFinance || isAdmin && (
+                <Item
+                  title="All Orders"
+                  to="/allOrders"
+                  icon={<ListIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               {isAdmin && (
                 <Item
                   title="Signup User"
                   to="/signup"
                   icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
+              {isFinance && (
+                <Item
+                  title="Payment Approvals"
+                  to="/paymentApprovals"
+                  icon={<AccountBalanceIcon />}
                   selected={selected}
                   setSelected={setSelected}
                 />
