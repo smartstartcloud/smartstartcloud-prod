@@ -33,7 +33,7 @@ import { set } from 'date-fns';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
-const AssignmentList = ({ list, degreeModules, student }) => {
+const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('orderID');
   const [page, setPage] = useState(0);
@@ -53,7 +53,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
   const handleEditAssignment = (assignment) => {
     setCurrentAssignment(assignment);    
     setOpenDialog(true);
-  };
+  };  
   
   const navigate = useNavigate(); 
 
@@ -362,6 +362,7 @@ const AssignmentList = ({ list, degreeModules, student }) => {
           referenceCollection={"Assignment"}
           isOrder={true}
           orderID={orderIdToPass}
+          parentID = {moduleStudentID}
         />
       )}
       {paymentOpen && (

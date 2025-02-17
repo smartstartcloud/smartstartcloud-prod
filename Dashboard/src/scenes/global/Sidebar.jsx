@@ -125,13 +125,13 @@ const Sidebar = () => {
                     fontWeight="bold"
                     sx={{ m: "10px 0 0 0" }}
                   >
-                    {authUser.name}
+                    {authUser?.name || "Guest"}
                   </Typography>
                   <Typography variant="h4" color={colors.greenAccent[500]}>
                     {authUser?.role
                       ? authUser.role.charAt(0).toUpperCase() +
                         authUser.role.slice(1)
-                      : ""}
+                      : "Unknown Role"}
                   </Typography>
                 </Box>
               </Box>
@@ -146,15 +146,16 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {!isFinance || isAdmin && (
-                <Item
-                  title="Add Degree"
-                  to="/add-degree"
-                  icon={<CollectionsBookmarkOutlinedIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              )}
+              {!isFinance ||
+                (isAdmin && (
+                  <Item
+                    title="Add Degree"
+                    to="/add-degree"
+                    icon={<CollectionsBookmarkOutlinedIcon />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                ))}
               <Item
                 title="All Degrees"
                 to="/allDegrees"
@@ -162,15 +163,16 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {!isFinance || isAdmin && (
-                <Item
-                  title="All Orders"
-                  to="/allOrders"
-                  icon={<ListIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              )}
+              {!isFinance ||
+                (isAdmin && (
+                  <Item
+                    title="All Orders"
+                    to="/allOrders"
+                    icon={<ListIcon />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                ))}
               {isAdmin && (
                 <Item
                   title="Signup User"

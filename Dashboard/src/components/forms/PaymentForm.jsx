@@ -37,7 +37,6 @@ import useSendPaymentData from '../../hooks/useSendPaymentData';
 import { formatDate } from '../../utils/functions';
 import { useAuthContext } from '../../context/AuthContext';
 import FileUpload from '../FileUpload';
-import FileUploadPayment from '../FileUploadPayment';
 import useFetchModuleAssignmentData from '../../hooks/useFetchModuleAssignmentData';
 
 const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {     

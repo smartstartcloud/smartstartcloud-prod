@@ -35,7 +35,8 @@ const FileUpload = ({
   open,
   isOrder = false,
   orderID = '',
-  isPayment = false
+  isPayment = false,
+  parentID = ''
 }) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
@@ -45,12 +46,12 @@ const FileUpload = ({
   const [uploadStatus, setUploadStatus] = useState({});
   const [uploadTimeline, setUploadTimeline] = useState([]);
   const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
-  const { fileList } = useFetchFileList(referenceID, isOrder, orderID);
+  const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);
   
   const { control } = useForm({});
-
+  
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (fileList) {
       setExistingFiles(fileList);
@@ -227,19 +228,17 @@ const FileUpload = ({
                         }}
                         fullWidth
                       >
-                        {!isPayment && (
-                          <>
+                        {!isPayment && [
                             <MenuItem key="assignment" value="assignment">
                               Assignment
-                            </MenuItem>
+                            </MenuItem>,
                             <MenuItem key="payment" value="payment">
                               Payment
-                            </MenuItem>
+                            </MenuItem>,
                             <MenuItem key="grades" value="grades">
                               Grades
                             </MenuItem>
-                          </>
-                        )}
+                          ]}
                         {isPayment && (
                           <MenuItem key="payment" value="payment">
                             Payment

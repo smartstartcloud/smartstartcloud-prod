@@ -29,6 +29,7 @@ const StudentProfile = () => {
     const [selectedModule, setSelectedModule] = useState(degreeModules[0]?._id || null);
     const [selectedModuleName, setSelectedModuleName] = useState(degreeModules[0]?.moduleName || "");
     const [assignmentList, setAssignmentList] = useState([]);
+    const [moduleStudentID, setModuleStudentID] = useState('');
     const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
@@ -44,9 +45,10 @@ const StudentProfile = () => {
         setAssignmentList([]);
 
         try {
-            const response = await fetchAssignmentList(moduleId, _id);            
-            if (Array.isArray(response)) {
-                setAssignmentList([{ moduleName, moduleId }, ...response]);                
+            const response = await fetchAssignmentList(moduleId, _id);  
+            setModuleStudentID(response.moduleStudentID);
+            if (Array.isArray(response.data)) {
+                setAssignmentList([{ moduleName, moduleId }, ...response.data]);                
             } else {
                 throw new Error("Invalid response from the server");
             }
@@ -204,7 +206,7 @@ const StudentProfile = () => {
                         <Typography variant="h3" color={colors.grey[100]} sx={{ fontWeight: 'bold', mb: 2 }}>
                         Assignments List for {selectedModuleName}
                         </Typography>
-                        <AssignmentList list={assignmentList} degreeModules={degreeModules} student={student} />
+                        <AssignmentList list={assignmentList} degreeModules={degreeModules} student={student} moduleStudentID={moduleStudentID} />
                         {assignmentList.length === 0 && (
                             <Typography align="center" color={colors.grey[200]}>
                                 No assignments found for this module.

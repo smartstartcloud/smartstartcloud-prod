@@ -362,6 +362,7 @@ const SignupForm = () => {
                                         <MenuItem value="" disabled>Select Role</MenuItem>
                                         {isSuperAdmin && <MenuItem value="superAdmin">Super Admin</MenuItem>}
                                         <MenuItem value="admin">Admin</MenuItem>
+                                        <MenuItem value="finance">Finance</MenuItem>
                                         <MenuItem value="agent">Agent</MenuItem>
                                         <MenuItem value="edu">EDU</MenuItem>
                                         <MenuItem value="pen">PEN</MenuItem>
