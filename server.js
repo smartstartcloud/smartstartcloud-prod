@@ -19,22 +19,42 @@ import path from 'path';
 // Initialize express app
 const app = express();
 
+const isDevelopment = process.env.NODE_ENV === "development";
 
-//To deploy Frontend and Backend in save Heroku App
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname,'Dashboard/build'))); //To connect react app
+if (!isDevelopment){
+  //To deploy Frontend and Backend in save Heroku App
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  app.use(express.static(path.join(__dirname, "Dashboard/build"))); //To connect react app
+}
 
+
+// Common trusted sources
+const commonSources = [
+  "'self'",
+  "https://www.smartstart.cloud",
+  "https://smartstart.cloud",
+  "www.smartstart.cloud",
+  "https://portal.smartstart.cloud",
+  "portal.smartstart.cloud",
+];
+
+// Add development-specific sources
+if (isDevelopment) {
+  commonSources.push("http://portal.localhost:3000", "http://localhost:3000");
+}
 
 //CSP Configuration
-app.use(helmet({
-  contentSecurityPolicy: {
+app.use(
+  helmet({
+    contentSecurityPolicy: {
       directives: {
-          defaultSrc: ["'self'"],
-          connectSrc: ["'self'", "https://www.smartstart.cloud", "https://smartstart.cloud", "www.smartstart.cloud"]
-      }
-  }
-}));
+        defaultSrc: commonSources,
+        connectSrc: commonSources,
+      },
+    },
+  })
+);
 
 // Middleware
 app.use(cookieParser());
