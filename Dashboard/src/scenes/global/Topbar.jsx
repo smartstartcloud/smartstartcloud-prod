@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Button, Menu, MenuItem } from "@mui/material"
+import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Menu, MenuItem } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'

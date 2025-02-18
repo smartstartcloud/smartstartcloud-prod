@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -35,7 +34,6 @@ import { tokens } from '../../theme';
 import useGetPaymentDetails from '../../hooks/useGetPaymentDetails';
 import useSendPaymentData from '../../hooks/useSendPaymentData';
 import { formatDate } from '../../utils/functions';
-import { useAuthContext } from '../../context/AuthContext';
 import FileUpload from '../FileUpload';
 import useFetchModuleAssignmentData from '../../hooks/useFetchModuleAssignmentData';
 

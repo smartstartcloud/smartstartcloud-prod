@@ -1,6 +1,4 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-// import { api } from '../utils/axiosInstance';
 import useApi from "./useApi";
 
 const useFetchAgentFilteredDegreeData = (agentID) => {
