@@ -14,6 +14,7 @@ export const AuthContextProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("access-token") || null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isFinance, setIsFinance] = useState(false);
   const [isPortal, setIsPortal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -26,8 +27,12 @@ export const AuthContextProvider = ({ children }) => {
     if (userRole === "superAdmin") {
       setIsSuperAdmin(true);
       setIsAdmin(true);
-    } else if (userRole === "admin") {            
+      setIsFinance(true);
+    } else if (userRole === "admin") {
       setIsAdmin(true);
+      setIsFinance(true);
+    } else if (userRole === "finance") {
+      setIsFinance(true);
     } else if (userRole === "edu" || userRole === "pen") {
       setIsPortal(true);
     }
@@ -39,6 +44,7 @@ export const AuthContextProvider = ({ children }) => {
         setAuthUser,
         isAdmin,
         isSuperAdmin,
+        isFinance,
         isPortal,
         isCollapsed,
         setIsCollapsed,
