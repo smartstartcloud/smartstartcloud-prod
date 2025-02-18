@@ -24,10 +24,11 @@ import PortalAll from "./components/Portal/PortalAll";
 import PortalSidebar from "./components/Portal/PortalSidebar";
 import OrderIDList from "./components/profilePages/OrderIDList";
 import StudentList from "./scenes/studentList";
+import PaymentApproval from "./components/profilePages/PaymentApproval";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
-  const { authUser, isAdmin, isPortal, isCollapsed } = useAuthContext();
+  const { authUser, isAdmin, isFinance, isPortal, isCollapsed } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
 
@@ -49,8 +50,6 @@ export const App = () => {
               <Route path="/task" element={authUser && !isPortal ? <Dashboard /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser && !isPortal ? <AllDegree /> : <Navigate to='/login' />} />
               <Route path="/allOrders" element={authUser && !isPortal ? <OrderIDList /> : <Navigate to='/login' />} />
-              {/* <Route path="/uploadPage" element={<UploadDownload />} /> */}
-              {/* <Route path="/globalLink" element={<GlobalUploadPage />} /> */}
               <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />
               <Route path="/renew" element={authUser && !isPortal ? <Navigate to='/' /> : <RenewPassword />} />
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
@@ -62,6 +61,8 @@ export const App = () => {
               <Route path="/task/:degreeYear/:degreeId/editDegree" element={authUser && !isPortal ? <DegreeForm editPage={true} /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId/student/:studentId" element={authUser && !isPortal ? <StudentProfile /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId/module/:moduleCode" element={authUser && !isPortal ? <ModuleProfile /> : <Navigate to='/login' />} />
+
+              <Route path="/paymentApprovals" element={isFinance ? <PaymentApproval /> : <Navigate to='/' />} />
 
               {/* Catch-all route */}
               <Route path="/*" element={<Navigate to='/task' />} />

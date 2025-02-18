@@ -237,7 +237,7 @@ const DegreeProfile = () => {
               </Box>
             </Grid>
           </Grid>
-          <Grid container spacing={2} mt={2}>
+          {/* <Grid container spacing={2} mt={2}>
             {degree.moduleDetailsList && (
               <Grid item xs={12} sm={6}>
                 <DetailsBarChart
@@ -265,7 +265,7 @@ const DegreeProfile = () => {
                 />
               </Grid>
             )}
-          </Grid>
+          </Grid> */}
 
           <IconButton
             onClick={handleDegreeDelete}
@@ -306,75 +306,40 @@ const DegreeProfile = () => {
         </CardContent>
       </Card>
 
-      <Box sx={{ width: "100%", maxWidth: "1000px", mt: 3 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            textAlign: "center",
-            mb: 2,
-            color: colors.blueAccent[300],
-            textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-          }}
-        >
-          Student List
-        </Typography>
+      <Box sx={{ width: "100%", maxWidth: "1000px" }}>
+        <Typography variant="h4" textAlign="center" mb={2} color={colors.blueAccent[300]}>Student List</Typography>
         <DataGrid
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: colors.blueAccent[200],
-              color: colors.black,
-              fontSize: "16px",
-            },
-            "& .MuiDataGrid-row": {
-              backgroundColor: colors.grey[50],
-              color: colors.black,
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: colors.blueAccent[50],
-                transform: "scale(1.01)",
-                transition: "transform 0.2s",
-              },
-            },
-          }}
           rows={studentList}
           columns={columns}
           getRowId={(row) => row.studentID}
           slots={{ toolbar: GridToolbar }}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
           pageSizeOptions={[5, 10, 20]}
           autoHeight
-          onRowClick={handleRowClick} // Add onRowClick handler
+          onRowClick={handleRowClick}
+          sx= {{ cursor: "pointer" }}
         />
-        <Button
-          variant="contained"
-          sx={{
-            mt: 3,
-            display: "block",
-            mx: "auto",
-            backgroundColor: colors.blueAccent[500],
-            "&:hover": {
-              backgroundColor: colors.blueAccent[600],
-            },
-          }}
-          onClick={handleAdd}
-        >
+        <Button variant="contained" sx={{ mt: 3, display: "block", mx: "auto", backgroundColor: colors.blueAccent[500] }} onClick={() => setOpen(true)}>
           Add Student
         </Button>
       </Box>
 
-      <StudentForm
-        open={open}
-        setOpen={setOpen}
-        degreeID={degreeId}
-        studentData={studentData}
-        studentEditMode={studentEditMode}
-      />
+      {degree.moduleDetailsList && (
+        <Box sx={{ width: "100%", maxWidth: "1000px", marginBottom: "20px" }}>
+          <Typography variant="h4" textAlign="center" mb={2} color={colors.blueAccent[300]}>Analytics</Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Status Chart" type="status" /></Grid>
+            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Grade Chart" type="grade" /></Grid>
+            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Payment Chart" type="payment" /></Grid>
+          </Grid>
+        </Box>
+      )}
+
+      <StudentForm 
+       open={open}
+       setOpen={setOpen} 
+       degreeID={degreeId} 
+       studentData={studentData} 
+       studentEditMode={studentEditMode} />
 
       {/* <Snackbar
                 open={snackbarOpen}
