@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import {
     Box, CircularProgress, Typography, useTheme, Button, Modal, TextField, Snackbar, IconButton,
@@ -12,12 +11,7 @@ import useSendStudentData from '../../hooks/useSendStudentData';
 const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { sendStudent, updateStudent } = useSendStudentData();
-    const navigate = useNavigate(); 
-    console.log(studentData, studentEditMode);
-    
-    
-
+    const { sendStudent } = useSendStudentData();
     const [formSaved, setFormSaved] = useState(false);
     const [formError, setFormError] = useState(false);
     const [formErrorMessage, setFormErrorMessage] = useState('');
@@ -52,7 +46,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           degreeID: degreeID,
         });
       }
-    }, [studentEditMode]);
+    }, [studentEditMode, studentData, degreeID]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -222,6 +216,24 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
             }}
             sx={{ mb: 2 }}
           />
+          <TextField label="Group Name" 
+           fullWidth 
+           value={newStudent.groupName} 
+           onChange={(e) => {
+            setNewStudent({ ...newStudent, groupName: e.target.value })
+            setErrors({ ...errors, groupName: "" });
+          }} 
+           sx={{ mb: 2 }} />
+          <TextField label="Tutor Name" fullWidth value={newStudent.tutorName} onChange={(e) => {
+            setNewStudent({ ...newStudent, tutorName: e.target.value })
+            setErrors({ ...errors, tutorName: "" });
+          }} sx={{ mb: 2 }} />
+          <TextField label="Campus Location" fullWidth value={newStudent.campusLocation} onChange={(e) => 
+            {  
+              setNewStudent({ ...newStudent, campusLocation: e.target.value })
+              setErrors({ ...errors, campusLocation: "" });
+            }
+            } sx={{ mb: 2 }} />
           {studentEditMode ? (
             <Button
               variant="contained"

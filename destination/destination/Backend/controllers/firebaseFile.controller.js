@@ -204,7 +204,7 @@ export const listFiles = async (req, res) => {
 // Controller to list all files by order ID
 export const listFilesByReferenceID = async (req, res) => {
   try {
-    const { referenceID, isOrder, orderID } = req.body;    
+    const { referenceID, isOrder, orderID, parentID } = req.body;    
     let files;
     
     if (!referenceID) {
@@ -220,6 +220,13 @@ export const listFilesByReferenceID = async (req, res) => {
         "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
       );
       files = [...files,...writerFiles];
+    }
+    if (parentID !== "") {
+      const paymentFiles = await File.find(
+        { referenceID: parentID },
+        "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
+      );
+      files = [...files, ...paymentFiles];
     }
     res.json(files || []);
   } catch (error) {

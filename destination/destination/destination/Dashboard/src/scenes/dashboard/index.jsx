@@ -1,47 +1,72 @@
-import { Box, Grid, Typography } from '@mui/material'
-import Header from '../../components/Header'
-import TaskCard from '../../components/TaskCard'
-// import {degree } from '../../data/mockData'
-import { yearFilter } from '../../utils/yearFilter'
-
-// Test
-import { useAuthContext } from '../../context/AuthContext'
-import useFetchAgentFilteredDegreeData from '../../hooks/useFetchAgentFilteredDegreeData'
-import SuperAdminCharts from '../../components/profilePages/SuperAdminCharts.jsx'
-// Test
+import { Box, Grid, Select, MenuItem, FormControl, InputLabel, Typography } from "@mui/material";
+import { useState } from "react";
+import Header from "../../components/Header";
+import TaskCard from "../../components/TaskCard";
+import { yearFilter } from "../../utils/yearFilter";
+import { useAuthContext } from "../../context/AuthContext";
+import useFetchAgentFilteredDegreeData from "../../hooks/useFetchAgentFilteredDegreeData";
+import SuperAdminCharts from "../../components/profilePages/SuperAdminCharts.jsx";
+import { sortByProperty } from "../../utils/functions.js";
 
 const Dashboard = () => {
-
- // Empty dependency array ensures this runs only once after the first render
   const { authUser, isSuperAdmin } = useAuthContext();
   const { degree, error, loading } = useFetchAgentFilteredDegreeData(authUser._id);
-    
-  const yearList = degree ? yearFilter(degree) : [];  
-  
-  // Handle loading and error states
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const [selectedIntake, setSelectedIntake] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
-  if (error) {
-    return <div>Error loading data...</div>;
-  }
+  const yearList = degree ? yearFilter(degree) : [];
+
+  const handleIntakeChange = (event) => setSelectedIntake(event.target.value);
+  const handleYearChange = (event) => setSelectedYear(event.target.value);
+
+  // Generate last 10 years dynamically
+  const currentYear = new Date().getFullYear();
+  const lastTenYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
+
+  // Filter Degrees Based on Intake and Year
+  let filteredYearList = yearList.filter((year) => {
+    const intakeMatch = selectedIntake ? year.yearName.startsWith(selectedIntake) : true;
+    const yearMatch = selectedYear ? year.yearName.endsWith(selectedYear) : true;
+    return intakeMatch && yearMatch;
+  });
+  filteredYearList = sortByProperty(filteredYearList, "year_id", "dsc");  
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data...</div>;
 
   return (
     <Box m="20px">
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title={"DASHBOARD"} subtitle={"Welcome to Dashboard"} />
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Header title="DASHBOARD" subtitle="Welcome to Dashboard" />
       </Box>
+      
       {!isSuperAdmin && (
-        <Grid container spacing={2}>
-          {yearList.length > 0 ? (
-            yearList
-              .sort((a, b) => {
-                const dateA = new Date(a.yearName); // Assuming yearName is in "Month YYYY" format
-                const dateB = new Date(b.yearName);
-                return dateA - dateB;
-              })
-              .map((year, idx) => (
+        <>
+          <Box display="flex" gap={2} mb={3}>
+            <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+              <InputLabel>Intake</InputLabel>
+              <Select value={selectedIntake} onChange={handleIntakeChange} label="Intake">
+                <MenuItem value="">All</MenuItem>
+                {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month) => (
+                  <MenuItem key={month} value={month}>{month}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+              <InputLabel>Year</InputLabel>
+              <Select value={selectedYear} onChange={handleYearChange} label="Year">
+                <MenuItem value="">All</MenuItem>
+                {lastTenYears.map((year) => (
+                  <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Grid container spacing={2}>
+            {filteredYearList.length > 0 ? (
+              filteredYearList.map((year, idx) => (
                 <Grid item xs={12} sm={6} md={4} lg={2} key={idx}>
                   <TaskCard
                     yearId={year.year_id}
@@ -52,18 +77,17 @@ const Dashboard = () => {
                   />
                 </Grid>
               ))
-          ) : (
-            <Grid item xs={12}>
-              <Typography variant="h3">No Degree to Display</Typography>
-            </Grid>
-          )}
-        </Grid>
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="h3">No Degree to Display</Typography>
+              </Grid>
+            )}
+          </Grid>
+        </>
       )}
-      {isSuperAdmin && (
-        <SuperAdminCharts />
-      )}
+      {isSuperAdmin && <SuperAdminCharts />}
     </Box>
   );
-}
+};
 
-export default Dashboard
+export default Dashboard;
