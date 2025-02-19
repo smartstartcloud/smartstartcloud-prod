@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from '../context/TokenContext';
-import axios from 'axios';
+import useApi from './useApi';
 
 const useLogout = () => {
+  const api = useApi()
   const { setAuthUser } = useAuthContext(); // To update the authenticated user state
   const { setAccessToken } = useTokenContext(); // To update the access token state
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const useLogout = () => {
   const logout = async () => {
     try {
       // Send a logout request to the backend
-      const res = await axios.post(`${process.env.REACT_APP_LOCALHOST}/api/auth/logout`, {});
+      const res = await api.post(`/api/auth/logout`, {});
 
       const data = await res.data;
       console.log(data);
