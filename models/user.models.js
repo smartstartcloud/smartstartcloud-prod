@@ -32,7 +32,7 @@ const userSchema = new mongo.Schema({
     role: {
         type: String,
         required: true,
-        enum: ["superAdmin", "admin", "hr", "agent", "edu", "pen"]
+        enum: ["superAdmin", "admin", "hr", "finance", "agent", "edu", "pen"]
     },
     passRenew:{
         type: Boolean

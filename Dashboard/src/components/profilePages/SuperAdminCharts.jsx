@@ -6,12 +6,6 @@ import PaymentCard from "../PaymentCard.jsx";
 import { formatDateString } from "../../utils/yearFilter.js";
 import BarChart from "../../components/BarChart.jsx";
 
-import {
-  mockBarDataBusiness1234,
-  mockBarDataBusNTour,
-  FY_CCCU_Business_and_Tourism,
-} from "../../data/mockData.js";
-
 const SuperAdminCharts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -20,6 +14,12 @@ const SuperAdminCharts = () => {
   const [groupedData, setGroupedData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const { paymentData, error, loading } = useAllGetPaymentDetails();
+
+  useEffect(() => {
+    if (paymentData && chartStatus) {
+      dataFilter(paymentData, chartStatus);
+    }
+  }, [paymentData, chartStatus]);
 
   const dataFilter = (paymentData, chartStatus) => {
     if (chartStatus === "degree") {
@@ -32,71 +32,60 @@ const SuperAdminCharts = () => {
           // If not, create a new group
           group = {
             degreeID,
-            degreeName,
-            degreeData: [],
+            dataName : degreeName,
+            data: [],
           };
           acc.push(group);
         }
 
         // Add the current item to the degreeData array
-        group.degreeData.push(item);
+        group.data.push(item);
 
         return acc;
       }, []);
       setGroupedData(groupedData);
+      setChartData([]);
+      barChartData(groupedData);
     }
-
-    if (chartStatus === "year") {
+    if (chartStatus === "year") {    
       const groupedData = paymentData.reduce((acc, item) => {
         const { degreeYear } = item;
-
         // Check if the degreeYear group exists
-        let group = acc.find((group) => group.degreeYear === degreeYear);
-        if (!group) {
+        let group = acc.find((group) => group.dataName === degreeYear);        
+        if (!group) {          
           // If not, create a new group
           group = {
-            degreeYear,
-            yearData: [],
+            dataName: degreeYear,
+            data: [],
           };
           acc.push(group);
         }
 
         // Add the current item to the yearData array
-        group.yearData.push(item);
-
+        group.data.push(item);
         return acc;
-      }, []);
+      }, []);      
       setGroupedData(groupedData);
+      setChartData([])
+      barChartData(groupedData);
     }
-    barChartData(groupedData);
   };
 
-  const barChartData = (paymentData) => {
+  const barChartData = (paymentData) => {        
     paymentData.forEach((element) => {
-      const totalPaidPriceTemp = Array.isArray(element.degreeData)
-        ? element.degreeData.reduce(
+      const totalPaidPriceTemp = Array.isArray(element.data)
+        ? element.data.reduce(
             (sum, item) => sum + Number(item.paidAmount || 0),
             0
           )
         : 0;
       const tempObj = {
-        label: element.degreeName,
+        label: element.dataName,
         paidAmount: totalPaidPriceTemp,
       };
       setChartData((prevData) => [...prevData, tempObj]);
     });
   };
-
-  // Log chartData whenever it changes
-  useEffect(() => {
-    console.log(chartData);
-  }, [chartData]); // Dependency array will make this run every time chartData changes
-
-  useEffect(() => {
-    if (paymentData && chartStatus) {
-      dataFilter(paymentData, chartStatus);
-    }
-  }, [paymentData, chartStatus]);
 
   if (loading) {
     return (
@@ -136,20 +125,21 @@ const SuperAdminCharts = () => {
       <Grid container spacing={2} mb={2}>
         <Grid item xs={12}>
           <Box width="60%" height="300px" m="0 auto" border="1px solid #000">
-            <BarChart data={chartData} />
+            <BarChart data={chartData} type={chartStatus} />
           </Box>
         </Grid>
       </Grid>
       {chartStatus === "degree" && (
         <Grid container spacing={2}>
           {groupedData && groupedData.length > 0 ? (
-            groupedData.map(({ degreeID, degreeName, degreeData }) => (
+            groupedData.map(({ degreeID, dataName, data }) => (
               <Grid item xs={12} sm={3} key={degreeID}>
                 <Box display="flex" flexDirection="column" gap={2}>
                   <PaymentCard
                     id={degreeID}
-                    name={degreeName}
-                    data={degreeData}
+                    name={dataName}
+                    data={data}
+                    type={chartStatus}
                   />
                 </Box>
               </Grid>
@@ -164,20 +154,15 @@ const SuperAdminCharts = () => {
       {chartStatus === "year" && (
         <Grid container spacing={2}>
           {groupedData && groupedData.length > 0 ? (
-            groupedData.map(
-              ({ degreeID, degreeYear: degreeName, yearData: degreeData }) => (
-                <Grid item xs={12} sm={3} key={degreeID}>
-                  <Typography mb={2} variant="h5">
-                    {degreeName}
-                  </Typography>
-                  <PaymentCard
-                    id={degreeID}
-                    name={degreeName}
-                    data={degreeData}
-                  />
-                </Grid>
-              )
-            )
+            groupedData.map(({ dataName, data }, index) => (
+              <Grid item xs={12} sm={3} key={index}>
+                <PaymentCard
+                  name={formatDateString(dataName)}
+                  data={data}
+                  type={chartStatus}
+                />
+              </Grid>
+            ))
           ) : (
             <Grid item xs={12}>
               <Typography variant="h5">No Data</Typography>

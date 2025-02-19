@@ -45,7 +45,7 @@ export const signupUser = async (req, res) => {
     try {
         const {email, firstName, lastName, userName, password, gender, role} = req.body;
         // Check if the role is valid
-        const validRoles = ["superAdmin", "admin", "agent", "edu", "pen"];
+        const validRoles = ["superAdmin", "admin", "agent", "finance", "edu", "pen"];
         if (!validRoles.includes(role)) {
         return res.status(400).json({ message: "Invalid role specified" });
         }

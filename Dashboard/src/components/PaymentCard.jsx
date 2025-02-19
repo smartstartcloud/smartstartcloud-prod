@@ -10,7 +10,7 @@ import {
 import { tokens } from '../theme';
 
 
-const PaymentCard = ({id, name, data}) => {
+const PaymentCard = ({id, name, data, type}) => {  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   // Check if data is defined and is an array
@@ -51,13 +51,13 @@ const PaymentCard = ({id, name, data}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              Degree Name
+              {type === "degree" ? "Degree Name" : "Year Name"}
             </Typography>
             <Typography variant="subtitle1" component="div">
               {name}
             </Typography>
           </Box>
-          <Box
+          {type === "degree" && <Box
             display="flex"
             justifyContent="space-between"
             alignItems="baseline"
@@ -73,7 +73,7 @@ const PaymentCard = ({id, name, data}) => {
             <Typography variant="subtitle1" component="div">
               {id}
             </Typography>
-          </Box>
+          </Box>}
           <Box
             display="flex"
             justifyContent="space-between"

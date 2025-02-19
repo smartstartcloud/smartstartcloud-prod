@@ -1,12 +1,13 @@
 import axios from 'axios';
 import useLogout from '../hooks/useLogout';
 import { useEffect } from 'react';
+import { switchBackendURL } from '../utils/connections';
 
 const useApi = () => {
     const { logout } = useLogout(); // Call useLogout here
-
+    const backendURL = switchBackendURL()
     const api = axios.create({
-        baseURL: process.env.REACT_APP_LOCALHOST,
+        baseURL: backendURL,
         withCredentials: true,
     });
 

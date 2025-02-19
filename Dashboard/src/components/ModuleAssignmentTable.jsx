@@ -25,12 +25,8 @@ const ModuleAssignmentTable = ({studentData}) => {
   const [assignmentOrderIdLists, setAssignmentOrderIdLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentProgressStatusLists, setAssignmentProgressStatusLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentGradeLists, setAssignmentGradeLists] = useState({}); // Object to store Order IDs for each moduleCode
-  const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode
+  const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode  
 
-  console.log(studentData);
-  
-
-  
   // Function to fetch Order IDs for a given moduleCode
   const fetchOrderIdList = async (referenceNumber) => {
     if (!referenceNumber) return;
@@ -155,103 +151,125 @@ const ModuleAssignmentTable = ({studentData}) => {
               {studentData.map((row, index) => (
                 <React.Fragment key={index}>
                   <TableRow>
-                    <TableCell rowSpan={row.assignmentList.length}>
+                    <TableCell
+                      rowSpan={
+                        row.assignmentList.length > 0
+                          ? row.assignmentList.length
+                          : 1
+                      }
+                    >
                       {row.id}
                     </TableCell>
                     <TableCell
-                      rowSpan={row.assignmentList.length}
+                      rowSpan={
+                        row.assignmentList.length > 0
+                          ? row.assignmentList.length
+                          : 1
+                      }
                       sx={{ fontSize: "14px" }}
                     >
                       {row.name}
                     </TableCell>
                     <TableCell>
-                      {row.assignmentList[0].assignmentName}
+                      {row.assignmentList.length > 0
+                        ? row.assignmentList[0].assignmentName
+                        : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {row.assignmentList[0].assignmentType}
+                      {row.assignmentList.length > 0
+                        ? row.assignmentList[0].assignmentType
+                        : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {row.assignmentList[0].assignmentDeadline}
+                      {row.assignmentList.length > 0
+                        ? row.assignmentList[0].assignmentDeadline
+                        : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {row.assignmentList[0].referenceNumber}
+                      {row.assignmentList.length > 0
+                        ? row.assignmentList[0].referenceNumber
+                        : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {tableStatus === "orderID" && (
-                        <Select
-                          value={
-                            assignmentOrderIdLists[row.assignmentList[0]._id] ||
-                            row.assignmentList[0].orderID || // Set initial value from orderID
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleDropdownChange(
-                              row.assignmentList[0]._id,
-                              e.target.value
-                            )
-                          }
-                          displayEmpty
-                        >
-                          <MenuItem value="">
-                            <em>Select Order ID</em>
-                          </MenuItem>
-                          {(
-                            orderIdLists[
-                              row.assignmentList[0].referenceNumber
-                            ] || []
-                          ).map((orderId) => (
-                            <MenuItem key={orderId} value={orderId}>
-                              {orderId}
+                      {row.assignmentList.length > 0 ? <>
+                        {tableStatus === "orderID" && (
+                          <Select
+                            value={
+                              assignmentOrderIdLists[
+                                row.assignmentList[0]._id
+                              ] ||
+                              row.assignmentList[0].orderID || // Set initial value from orderID
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleDropdownChange(
+                                row.assignmentList[0]._id,
+                                e.target.value
+                              )
+                            }
+                            displayEmpty
+                          >
+                            <MenuItem value="">
+                              <em>Select Order ID</em>
                             </MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                      {tableStatus === "progress" && (
-                        <Select
-                          value={
-                            assignmentProgressStatusLists[
-                              row.assignmentList[0]._id
-                            ] ||
-                            row.assignmentList[0].assignmentProgress || // Set initial value from orderID
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleDropdownChange(
-                              row.assignmentList[0]._id,
-                              e.target.value
-                            )
-                          }
-                          displayEmpty
-                        >
-                          <MenuItem value="TBA">TO BE ASSIGNED</MenuItem>
-                          <MenuItem value="ORDER ID ASSIGNED">
-                            ORDER ID ASSIGNED
-                          </MenuItem>
-                          <MenuItem value="FILE UPLOADED">
-                            FILE UPLOADED
-                          </MenuItem>
-                          <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
-                          <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-                        </Select>
-                      )}
-                      {tableStatus === "paymentAmount" && (
-                        <EditableTextField
-                          row={row}
-                          assignmentDataLists={assignmentpaymentAmountLists}
-                          handleDropdownChange={handleDropdownChange}
-                          dataType={row.assignmentList[0].assignmentPayment}
-                          label={"Payment Amount"}
-                        />
-                      )}
-                      {tableStatus === "grade" && (
-                        <EditableTextField
-                          row={row}
-                          assignmentDataLists={assignmentpaymentAmountLists}
-                          handleDropdownChange={handleDropdownChange}
-                          dataType={row.assignmentList[0].assignmentGrade}
-                          label={"Grades"}
-                        />
-                      )}
+                            {(
+                              orderIdLists[
+                                row.assignmentList[0].referenceNumber
+                              ] || []
+                            ).map((orderId) => (
+                              <MenuItem key={orderId} value={orderId}>
+                                {orderId}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        )}
+                        {tableStatus === "progress" && (
+                          <Select
+                            value={
+                              assignmentProgressStatusLists[
+                                row.assignmentList[0]._id
+                              ] ||
+                              row.assignmentList[0].assignmentProgress || // Set initial value from orderID
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleDropdownChange(
+                                row.assignmentList[0]._id,
+                                e.target.value
+                              )
+                            }
+                            displayEmpty
+                          >
+                            <MenuItem value="TBA">TO BE ASSIGNED</MenuItem>
+                            <MenuItem value="ORDER ID ASSIGNED">
+                              ORDER ID ASSIGNED
+                            </MenuItem>
+                            <MenuItem value="FILE UPLOADED">
+                              FILE UPLOADED
+                            </MenuItem>
+                            <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
+                            <MenuItem value="COMPLETED">COMPLETED</MenuItem>
+                          </Select>
+                        )}
+                        {tableStatus === "paymentAmount" && (
+                          <EditableTextField
+                            row={row}
+                            assignmentDataLists={assignmentpaymentAmountLists}
+                            handleDropdownChange={handleDropdownChange}
+                            dataType={row.assignmentList[0].assignmentPayment}
+                            label={"Payment Amount"}
+                          />
+                        )}
+                        {tableStatus === "grade" && (
+                          <EditableTextField
+                            row={row}
+                            assignmentDataLists={assignmentpaymentAmountLists}
+                            handleDropdownChange={handleDropdownChange}
+                            dataType={row.assignmentList[0].assignmentGrade}
+                            label={"Grades"}
+                          />
+                        )}
+                      </> : "N/A"}
                     </TableCell>
                   </TableRow>
                   {row.assignmentList

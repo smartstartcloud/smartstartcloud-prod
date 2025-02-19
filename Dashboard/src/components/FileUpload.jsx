@@ -18,6 +18,7 @@ import { Controller, useForm } from 'react-hook-form';
 import Paper from '@mui/material/Paper';
 import useUploadFiles from '../hooks/useUploadFiles';
 import useFetchFileList from '../hooks/useFetchFileList';
+import { formatDate } from '../utils/functions';
 
 const customScrollbarStyles = {
   '&::-webkit-scrollbar': {
@@ -27,39 +28,36 @@ const customScrollbarStyles = {
   'scrollbar-width': 'none', 
 };
 
-const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false }) => {  
+const FileUpload = ({
+  referenceID,
+  referenceCollection,
+  setOpen,
+  open,
+  isOrder = false,
+  orderID = '',
+  isPayment = false,
+  parentID = ''
+}) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
   const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
-  // const [token, setToken] = useState(null);
-  const [orderID, setOrderID] = useState(orderIDFromParent);
-  const [category, setCategory] = useState(isModule ? "module" : "assignment");
-  // const [shareLink, setShareLink] = useState('');
+  const [category, setCategory] = useState("");
   const [uploadStatus, setUploadStatus] = useState({});
-  const { uploadFiles, downloadFiles, handleGenerateShareableLink, deleteFiles } = useUploadFiles();
-  const { fileList } = useFetchFileList(orderID);
-
+  const [uploadTimeline, setUploadTimeline] = useState([]);
+  const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
+  const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);
+  
   const { control } = useForm({});
-
-  const navigate = useNavigate(); 
-
+  
+  const navigate = useNavigate();
+  
   useEffect(() => {
-    if (fileList) {                  
+    if (fileList) {
       setExistingFiles(fileList);
-      setExistingFilteredFiles(fileList)
+      setExistingFilteredFiles(fileList);
     }
-    console.log(existingFilteredFiles);
-    
   }, [fileList]);
-
-  // const location = useLocation();
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(location.search);
-  //   const tokenFromURL = params.get("token");
-  //   setToken(tokenFromURL);
-  // }, [location]);
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -86,23 +84,45 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
     }
   };
 
-  const handleUpload = async (file) => {    
+  const handleUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("orderID", orderID);
-    formData.append("category", category);
+    formData.append("referenceID", referenceID);
+    formData.append("fileCategory", category);
+    formData.append("referenceCollection", referenceCollection);
+    formData.append("fileType", file.type);
+    if (isPayment){
+      formData.append("paymentFlag", true);
+    }
+    if (isOrder){
+      formData.append("orderID", orderID);
+      formData.append("referenceCollection", "Assignment");
+      formData.append("fileCategory", "assignment");
+      formData.append("writerFlag", true);
+    }
     try {
       const response = await uploadFiles(formData);
       setUploadStatus((prevStatus) => ({
         ...prevStatus,
         [file.name]: true,
       }));
-      // console.log("will navigate", location.pathname)
+
+      // Add to timeline
+      setUploadTimeline((prevTimeline) => [
+        ...prevTimeline,
+        {
+          fileName: file.name,
+          fileType: file.type,
+          uploadDateTime: new Date().toLocaleString(),
+          uploadedBy: "UserName",
+        },
+      ]);
+
       setTimeout(() => {
         navigate(0);
         console.log("navigated ");
       }, 1);
-      console.log("navigated ")
+      console.log("navigated ");
     } catch (error) {
       console.log("Error submitting form: ", error.message);
     }
@@ -118,12 +138,11 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
 
   const handleDelete = async (file) => {
     try {
-      const response = await deleteFiles(file._id)
+      const response = await deleteFiles(file._id);
       console.log(response.message);
       navigate(0);
     } catch (error) {
       console.log(error);
-      
     }
   };
 
@@ -131,38 +150,12 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
     setOpen(false);
   };
 
-  // const handleSharableLink = async () => {
-  //   try {
-  //     const response = await handleGenerateShareableLink(orderID);
-  //     setShareLink(response.shareableLink)
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
-
-  // const handleLinkCopy = () => {
-  //   if (shareLink) {
-  //     navigator.clipboard
-  //       .writeText(shareLink)
-  //       .then(() => {
-  //         alert("Share link copied to clipboard!");
-  //       })
-  //       .catch((err) => {
-  //         console.error("Failed to copy the link: ", err);
-  //       });
-  //   }
-  // };
-
   const handleCategoryChange = (category) => {
     const filteredFiles = existingFiles.filter(
-      (file) => file.category === category
+      (file) => file.fileCategory === category
     );
-    console.log(filteredFiles);
-    
     setExistingFilteredFiles(filteredFiles);
-    
-  }
+  };
 
   return (
     <Modal open={open} onClose={handleCloseModal}>
@@ -201,13 +194,13 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
             <Grid container spacing={2} mb={2}>
               <Grid item xs={12} sm={4}>
                 <Controller
-                  name="orderID"
+                  name="referenceID"
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      value={orderID || ""}
-                      label="Order ID"
+                      value={referenceID || ""}
+                      label="Reference ID"
                       variant="outlined"
                       fullWidth
                       required
@@ -235,10 +228,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
                         }}
                         fullWidth
                       >
-                        {isModule ? (
-                          [<MenuItem value="module">Module</MenuItem>]
-                        ) : (
-                          [
+                        {!isPayment && [
                             <MenuItem key="assignment" value="assignment">
                               Assignment
                             </MenuItem>,
@@ -247,56 +237,20 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
                             </MenuItem>,
                             <MenuItem key="grades" value="grades">
                               Grades
-                            </MenuItem>,
-                          ]
+                            </MenuItem>
+                          ]}
+                        {isPayment && (
+                          <MenuItem key="payment" value="payment">
+                            Payment
+                          </MenuItem>
                         )}
                       </Select>
                     </FormControl>
                   )}
                 />
               </Grid>
-              {/* <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  onClick={handleSharableLink}
-                  color="primary"
-                  sx={{
-                    height: "100%",
-                    width: "100%",
-                  }}
-                >
-                  Generate Link
-                </Button>
-              </Grid> */}
             </Grid>
-            {/* <Grid container spacing={2}>
-              <Grid item sm={12}>
-                <Controller
-                  name="shareLink"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      value={shareLink || ""}
-                      label="Share Link"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      disabled
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton onClick={handleLinkCopy} edge="end">
-                              <ContentCopyIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid> */}
+
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <Box>
@@ -381,7 +335,7 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
               </TableContainer>
             )}
 
-            {!isModule && <Grid container spacing={2} mt={3}>
+            <Grid container spacing={2} mt={3}>
               <Grid item xs={4}>
                 <Typography
                   variant="h5"
@@ -415,18 +369,25 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
                   Grade Files
                 </Typography>
               </Grid>
-            </Grid>}
+            </Grid>
 
-            {existingFilteredFiles.length > 0 && (
+            {(existingFilteredFiles.length > 0 ||
+              uploadTimeline.length > 0) && (
               <Box mt={3}>
+                <Typography variant="h6" gutterBottom>
+                  File Management
+                </Typography>
                 <TableContainer
                   component={Paper}
-                  sx={{ marginTop: "20px", ...customScrollbarStyles }}
+                  sx={{ marginTop: "10px", ...customScrollbarStyles }}
                 >
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">File Name</TableCell>
+                        <TableCell align="center">File Type</TableCell>
+                        <TableCell align="center">Upload Date & Time</TableCell>
+                        <TableCell align="center">Uploaded By</TableCell>
                         <TableCell align="center">Download</TableCell>
                         <TableCell align="center">Delete</TableCell>
                       </TableRow>
@@ -447,6 +408,15 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
+                            {file.fileType || "Unknown"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {formatDate(file.createdAt) || "N/A"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {file.uploadedByUserName || "Unknown"}
+                          </TableCell>
+                          <TableCell align="center">
                             <IconButton
                               color="secondary"
                               onClick={() => handleDownload(file)}
@@ -458,6 +428,34 @@ const FileUpload = ({ orderID: orderIDFromParent, setOpen, open, isModule=false 
                             <IconButton
                               color="error"
                               onClick={() => handleDelete(file)}
+                            >
+                              <DeleteOutlineOutlinedIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {uploadTimeline.map((entry, index) => (
+                        <TableRow key={index + existingFilteredFiles.length}>
+                          <TableCell align="center">{entry.fileName}</TableCell>
+                          <TableCell align="center">{entry.fileType}</TableCell>
+                          <TableCell align="center">
+                            {entry.uploadDateTime}
+                          </TableCell>
+                          <TableCell align="center">
+                            {entry.uploadedBy}
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              color="secondary"
+                              onClick={() => handleDownload(entry)}
+                            >
+                              <CloudDownloadIcon />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              color="error"
+                              onClick={() => handleDelete(entry)}
                             >
                               <DeleteOutlineOutlinedIcon />
                             </IconButton>

@@ -24,20 +24,19 @@ import { extractObjects } from '../../utils/functions';
 
 const ModuleProfile = () => {
   const { degreeId, moduleCode } = useParams();
-  const [orderIdToPass, setOrderIdToPass] = useState(moduleCode);
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const location = useLocation();
   const { moduleId } = location.state || [];
-  // console.log(degreeId, moduleCode, moduleId);
   const { moduleData, loading, error } = useFetchModuleData(degreeId, moduleId);
+  const [referenceIdToPass, setreferenceIdToPass] = useState(moduleId);
   const [mainAssignmentList, setMainAssignmentList] = useState([]);
   const [singleAssignmentList, setSingleAssignmentList] = useState(null);
   const handleFileOpen = () => {
     setOpen(true);
   };
-  const handleAssignmentButton = (value) => {
+  const handleAssignmentButton = (value) => {    
     for (let assignment of mainAssignmentList){      
       if (assignment.referenceNumber === value) {
         return assignment
@@ -46,7 +45,7 @@ const ModuleProfile = () => {
   };
 
   useEffect(() => {    
-    if (moduleData) {
+    if (moduleData) {      
       setMainAssignmentList(extractObjects(moduleData.moduleAssignments));
     }
   }, [moduleData]);
@@ -62,6 +61,21 @@ const ModuleProfile = () => {
   //   // Log the single assignment list whenever it changes
   //   console.log(singleAssignmentList);
   // }, [singleAssignmentList]); // Log every time singleAssignmentList changes
+
+  if (loading) {
+    return (
+      <Box
+        mt="200px"
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
+        <CircularProgress size={150} sx={{ color: colors.blueAccent[100] }} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <Box m="20px auto" display="flex" flexDirection="column" maxWidth="1000px">
@@ -106,7 +120,7 @@ const ModuleProfile = () => {
               </Grid>
             </Grid>
             <Grid container spacing={2} mt={2}>
-              <Grid item xs={12} display="flex" justifyContent="center">
+              <Grid item xs={12} display="flex" justifyContent="start">
                 <Typography
                   variant="h5"
                   color={colors.grey[100]}
@@ -121,10 +135,10 @@ const ModuleProfile = () => {
               spacing={2}
               mt={0}
               display="flex"
-              justifyContent="center"
+              justifyContent="start"
             >
               {mainAssignmentList.map((assignment, idx) => (
-                <Grid item xs={12} sm={5} key={idx}>
+                <Grid item xs={12} sm={3} key={idx}>
                   <Button
                     onClick={() =>
                       setSingleAssignmentList(
@@ -214,7 +228,8 @@ const ModuleProfile = () => {
           <FileUpload
             setOpen={setOpen}
             open={open}
-            orderID={orderIdToPass}
+            referenceID={referenceIdToPass}
+            referenceCollection={"Module"}
             isModule={true}
           />
         )}

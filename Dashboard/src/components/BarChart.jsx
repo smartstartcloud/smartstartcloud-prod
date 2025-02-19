@@ -3,17 +3,18 @@ import { ResponsiveBar } from "@nivo/bar"
 import { tokens } from "../theme"
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
-const BarChart = ({data}) => {
+const BarChart = ({data, type}) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-
+  const colors = tokens(theme.palette.mode);  
+  
   // Calculate the min and max payment values dynamically
-  const [minPayment, maxPayment] = extent(data, (d) => d.payment);
+  
+  const [minPayment, maxPayment] = extent(data, (d) => d.paidAmount);    
 
   // Create a color scale with dynamic domain
   const colorScale = scaleLinear()
     .domain([minPayment, maxPayment]) // Dynamic range based on data
-    .range(["#db4f4a", "#4cceac"]); // Red to Green gradient
+    .range(["#db4f4a", "#4cceac"]); // Red to Green gradient  
 
   return (
     <ResponsiveBar
@@ -53,7 +54,7 @@ const BarChart = ({data}) => {
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={(bar) => colorScale(bar.data.payment)} // Custom color function
+      colors={(bar) => colorScale(bar.data.paidAmount)} // Custom color function
       defs={[
         {
           id: "dots",

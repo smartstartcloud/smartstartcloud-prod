@@ -24,7 +24,13 @@ const moduleAssignmentSchema = new mongoose.Schema({
       required: true,
     },
   ],
-});
+  fileList: [
+    {
+      type: mongo.Schema.Types.ObjectId,
+      ref: "File",
+    },
+  ],
+}, { timestamps: true });
   
 const ModuleAssignment = infoDB.model(
   "ModuleAssignment",

@@ -300,6 +300,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
                     <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
                     <MenuItem value="COMPLETED">COMPLETED</MenuItem>
+                    <MenuItem value="NOT TAKING ASSIGNMENT">NOT TAKING ASSIGNMENT</MenuItem>
                   </Select>
                 )}
               />

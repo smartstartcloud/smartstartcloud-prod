@@ -19,7 +19,12 @@ const moduleSchema = new mongo.Schema({
       },
     ],
   ],
-  
+  fileList: [
+    {
+      type: mongo.Schema.Types.ObjectId,
+      ref: "File",
+    },
+  ],
 });
 
 const Module = infoDB.model("Module", moduleSchema, "Module");

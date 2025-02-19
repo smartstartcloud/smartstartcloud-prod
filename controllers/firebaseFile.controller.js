@@ -10,12 +10,24 @@ import {
 } from "firebase/storage";
 
 import axios from "axios";
+import Module from "../models/module.models.js";
+import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 const storage = getStorage(app);
 
-export const fileUpload = async (req, res) => {
+export const fileUpload = async (req, res) => {  
   try {
-    const { orderID, category } = req.body;
+    const {
+      referenceID,
+      referenceCollection,
+      orderID,
+      fileCategory,
+      uploadedByUserID,
+      uploadedByUserName,
+      writerFlag,
+      paymentFlag
+    } = req.body;
+    
     const storageRef = ref(storage, req.file.originalname);
 
     const metadata = {
@@ -32,20 +44,48 @@ export const fileUpload = async (req, res) => {
 
     // Save the file data to MongoDB
     const newFile = new File({
-      orderID: orderID, // Use orderID as token
+      referenceID,
+      referenceCollection,
+      orderID,
+      fileCategory,
+      uploadedByUserID,
+      uploadedByUserName,
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
       fileUrl: downloadURL,
-      category: category, // Set the category
+      ...(writerFlag && { writerFlag }),
+      ...(paymentFlag && { paymentFlag })
     });
 
     await newFile.save();
 
-    // Add the new file ID to the assignment's `assignmentFile` array
-    const assignment = await Assignment.findOne({ orderID });
-    assignment.assignmentFile.push(newFile._id);
-    // Save the updated assignment
-    await assignment.save();
+    if (referenceCollection === "Assignment") {
+      if (writerFlag) {
+        // Add the new file ID to the assignment's `assignmentFile` array
+        const assignment = await Assignment.findOne({ orderID }); // Find the Assignment document by its ID);
+        assignment.fileList.push(newFile._id);
+        // Save the updated assignment
+        await assignment.save();
+      } else {
+        const assignment = await Assignment.findByIdAndUpdate(
+          { _id: referenceID }, // Find the Assignment document by its ID
+          { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
+          { new: true } // Return updated document
+        );
+      }
+    } else if (referenceCollection === "Module") {
+      const module = await Module.findByIdAndUpdate(
+        { _id: referenceID }, // Find the Module document by its ID
+        { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
+        { new: true } // Return updated document
+      );
+    } else if (referenceCollection === "ModuleAssignment") {
+      const moduleAssignment = await ModuleAssignment.findByIdAndUpdate(
+        { _id: referenceID }, // Find the Module document by its ID
+        { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
+        { new: true } // Return updated document
+      );
+    }
 
     res
       .status(201)
@@ -100,17 +140,91 @@ export const fileDelete = async (req, res) => {
     }
     // Find the file by fileName and delete it from Firebase
     const storageRef = ref(storage, deletedFile.fileName);
-    deleteObject(storageRef).then(() => {
-      console.log(`${deletedFile.fileName} deleted from Firebase`)
-    }).catch((error) => {
-      console.log(`Firebase file delete error: `+error.message)
-    });
+    deleteObject(storageRef)
+      .then(() => {
+        console.log(`${deletedFile.fileName} deleted from Firebase`);
+      })
+      .catch((error) => {
+        console.log(`Firebase file delete error: ` + error.message);
+      });
+    const referenceCollection = deletedFile.referenceCollection;
 
-    res.status(200).json({ message: "File deleted successfully" });
+    if (referenceCollection === "Assignment") {
+      await Assignment.updateMany(
+        { fileList: fileId },
+        { $pull: { fileList: fileId } }
+      );
+    } else if (referenceCollection === "Module") {
+      await Module.updateMany(
+        { fileList: fileId },
+        { $pull: { fileList: fileId } }
+      );
+      return res.status(200).json({
+        success: true,
+        message: "File deleted and file references updated successfully",
+        deletedFile,
+      });
+    } else if (referenceCollection === "ModuleAssignment") {
+      await ModuleAssignment.updateMany(
+        { fileList: fileId },
+        { $pull: { fileList: fileId } }
+      );
+      return res.status(200).json({
+        success: true,
+        message: "File deleted and file references updated successfully",
+        deletedFile,
+      });
+    } else {
+      console.error(`Model for collection "${referenceCollection}" not found.`);
+      return res.status(404).json({
+        success: false,
+        message: `Model for collection "${referenceCollection}" not found.`,
+      });
+    }
   } catch (error) {
     console.log(error);
     res
       .status(500)
       .json({ message: "Error deleting file", error: error.message });
+  }
+};
+
+// Controller to list all files
+export const listFiles = async (req, res) => {
+  try {
+    const files = await File.find({}, "fileName fileType createdAt");
+    res.json({ files });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error listing files", error: error.message });
+  }
+};
+
+// Controller to list all files by order ID
+export const listFilesByReferenceID = async (req, res) => {
+  try {
+    const { referenceID, isOrder, orderID } = req.body;    
+    let files;
+    
+    if (!referenceID) {
+      return res.status(400).json({ message: "Reference ID is required" });
+    }
+    files = await File.find(
+      { referenceID },
+      "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
+    );        
+    if (isOrder) {      
+      const writerFiles = await File.find(
+        { orderID: orderID },
+        "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
+      );
+      files = [...files,...writerFiles];
+    }
+    res.json(files || []);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error listing files", error: error.message });
   }
 };

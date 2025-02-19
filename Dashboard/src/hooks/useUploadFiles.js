@@ -1,10 +1,14 @@
 import axios from "axios";
 import React from "react";
 import useApi from "./useApi";
+import useGetUserInfo from "./useGetUserInfo";
 
 const useUploadFiles = () => {
   const api = useApi();
-  const uploadFiles = async (formData) => {
+  const { userID, userFullName } = useGetUserInfo();  
+  const uploadFiles = async (formData) => {    
+    formData.append("uploadedByUserID", userID);
+    formData.append("uploadedByUserName", userFullName);
     try {
       const res = await api.post(
         `/api/files/fileUpload`,
