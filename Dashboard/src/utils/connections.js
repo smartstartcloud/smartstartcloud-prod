@@ -1,6 +1,5 @@
 export const switchBackendURL = () => {
     let baseURL;
-    console.log(process.env.REACT_APP_NODE_ENV);
     if (process.env.REACT_APP_NODE_ENV === "development"){
         baseURL = process.env.REACT_APP_LOCALHOST
     } else if (process.env.REACT_APP_NODE_ENV === "production"){

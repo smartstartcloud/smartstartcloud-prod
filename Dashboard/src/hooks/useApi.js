@@ -9,9 +9,7 @@ const useApi = () => {
     const api = axios.create({
         baseURL: backendURL,
         withCredentials: true,
-    });
-    console.log(backendURL);
-    
+    });    
     useEffect(()=>{
         // Request interceptor
         const requestInterceptor = api.interceptors.request.use((config) => {
