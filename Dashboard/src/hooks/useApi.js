@@ -12,7 +12,6 @@ const useApi = () => {
     });
     console.log(backendURL);
     
-
     useEffect(()=>{
         // Request interceptor
         const requestInterceptor = api.interceptors.request.use((config) => {
