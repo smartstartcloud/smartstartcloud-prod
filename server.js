@@ -49,7 +49,6 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: commonSources,
-        scriptSrc: [...commonSources, "https://static.cloudflareinsights.com"],
         connectSrc: commonSources,
       },
     },
