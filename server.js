@@ -59,7 +59,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(helmet());
+// app.use(helmet());
 app.use(
   cors({
     origin: commonSources,
