@@ -51,12 +51,12 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://static.cloudflareinsights.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        connectSrc: ["'self'", "https://static.cloudflareinsights.com"],
-        imgSrc: ["'self'", "data:"],
+        defaultSrc: [commonSources],
+        scriptSrc: [...commonSources, "'unsafe-inline'", "'unsafe-eval'", "https://static.cloudflareinsights.com"],
+        styleSrc: [...commonSources, "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: [...commonSources, "https://fonts.gstatic.com"],
+        connectSrc: [...commonSources, "https://static.cloudflareinsights.com"],
+        imgSrc: [...commonSources, "data:"],
       },
     },
   })
