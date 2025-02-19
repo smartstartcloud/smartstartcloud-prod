@@ -21,7 +21,7 @@ const PaymentApproval = () => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (paymentData && paymentData.length > 0) {
+    if (paymentData && paymentData.length > 0) {      
       setTableData([]); // Clear the table data array first
       // Then, populate it with the data from the API response  // This is where you would map over the paymentData array and create objects with the desired properties.
       paymentData.forEach((item) => {
