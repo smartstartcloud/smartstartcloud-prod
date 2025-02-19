@@ -36,7 +36,8 @@ const commonSources = [
   "www.smartstart.cloud",
   "https://portal.smartstart.cloud",
   "portal.smartstart.cloud",
-  "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com/"
+  "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
+  "https://staging.smartstart.cloud"
 ];
 
 // Add development-specific sources
@@ -63,13 +64,7 @@ app.use(express.json());
 app.set("trust proxy", 1); // Trust Heroku's proxy
 app.use(
   cors({
-    origin: [
-      "http://portal.localhost:3000",
-      "http://localhost:3000",
-      "https://www.smartstart.cloud",
-      "https://smartstart.cloud",
-      "https://portal.smartstart.cloud",
-    ],
+    origin: commonSources,
     credentials: true,
   })
 );
