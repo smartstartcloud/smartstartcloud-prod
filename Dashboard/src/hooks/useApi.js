@@ -10,6 +10,8 @@ const useApi = () => {
         baseURL: backendURL,
         withCredentials: true,
     });
+    console.log(backendURL);
+    
 
     useEffect(()=>{
         // Request interceptor
