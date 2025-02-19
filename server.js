@@ -32,7 +32,6 @@ if (!isDevelopment) {
 
 // Common trusted sources
 const commonSources = [
-  "'self'",
   "https://www.smartstart.cloud",
   "https://smartstart.cloud",
   "https://portal.smartstart.cloud",
@@ -53,10 +52,10 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: [commonSources],
-        scriptSrc: [...commonSources, "'unsafe-inline'", "'unsafe-eval'", "https://static.cloudflareinsights.com"],
+        scriptSrc: [...commonSources, "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: [...commonSources, "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: [...commonSources, "https://fonts.gstatic.com"],
-        connectSrc: [...commonSources, "https://static.cloudflareinsights.com"],
+        connectSrc: [...commonSources],
         imgSrc: [...commonSources, "data:"],
       },
     },
