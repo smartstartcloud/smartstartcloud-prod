@@ -36,6 +36,7 @@ const commonSources = [
   "www.smartstart.cloud",
   "https://portal.smartstart.cloud",
   "portal.smartstart.cloud",
+  "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com/"
 ];
 
 // Add development-specific sources
