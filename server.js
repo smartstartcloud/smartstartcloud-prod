@@ -30,7 +30,6 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 // Common trusted sources
 const commonSources = [
-  "'self'",
   "https://www.smartstart.cloud",
   "https://smartstart.cloud",
   "www.smartstart.cloud",
@@ -64,7 +63,15 @@ app.use(express.json());
 app.set("trust proxy", 1); // Trust Heroku's proxy
 app.use(
   cors({
-    origin: commonSources,
+    origin: [
+      "http://portal.localhost:3000",
+      "http://localhost:3000",
+      "https://www.smartstart.cloud",
+      "https://smartstart.cloud",
+      "https://portal.smartstart.cloud",
+      "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
+      "https://staging.smartstart.cloud"
+    ],
     credentials: true,
   })
 );
