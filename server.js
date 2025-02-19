@@ -30,11 +30,13 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 // Common trusted sources
 const commonSources = [
+  "'self'",
   "https://www.smartstart.cloud",
   "https://smartstart.cloud",
   "www.smartstart.cloud",
   "https://portal.smartstart.cloud",
   "portal.smartstart.cloud",
+  "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
   "https://staging.smartstart.cloud"
 ];
 
@@ -68,6 +70,7 @@ app.use(
       "https://www.smartstart.cloud",
       "https://smartstart.cloud",
       "https://portal.smartstart.cloud",
+      "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
       "https://staging.smartstart.cloud"
     ],
     credentials: true,
