@@ -30,7 +30,6 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 // Common trusted sources
 const commonSources = [
-  "'self'",
   "https://www.smartstart.cloud",
   "https://smartstart.cloud",
   "www.smartstart.cloud",
