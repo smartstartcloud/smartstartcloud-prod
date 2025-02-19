@@ -21,11 +21,13 @@ const app = express();
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+// Fix `__dirname` for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 if (!isDevelopment) {
-  //To deploy Frontend and Backend in save Heroku App
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  app.use(express.static(path.join(__dirname, "Dashboard/build"))); //To connect react app
+  // Serve React frontend in production
+  app.use(express.static(path.join(__dirname, "Dashboard/build")));
 }
 
 // Common trusted sources
@@ -33,9 +35,10 @@ const commonSources = [
   "'self'",
   "https://www.smartstart.cloud",
   "https://smartstart.cloud",
-  "www.smartstart.cloud",
   "https://portal.smartstart.cloud",
+  "www.smartstart.cloud",
   "portal.smartstart.cloud",
+  "https://static.cloudflareinsights.com", // Added Cloudflare for analytics
 ];
 
 // Add development-specific sources
@@ -43,13 +46,16 @@ if (isDevelopment) {
   commonSources.push("http://portal.localhost:3000", "http://localhost:3000");
 }
 
-//CSP Configuration
+// CSP Configuration
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: commonSources,
-        connectSrc: commonSources,
+        scriptSrc: [...commonSources, "'unsafe-inline'", "'unsafe-eval'"], // Allow inline scripts
+        connectSrc: [...commonSources, "https://static.cloudflareinsights.com"],
+        imgSrc: ["'self'", "data:", "https://static.cloudflareinsights.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
   })
@@ -59,7 +65,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(helmet());
 app.use(
   cors({
     origin: commonSources,
@@ -73,23 +78,23 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/degree", degreeRoutes);
 app.use("/api/module", moduleRoutes);
-app.use('/newAccessToken', newAccessToken);
-app.use('/api/files', fileRoutes);
+app.use("/newAccessToken", newAccessToken);
+app.use("/api/files", fileRoutes);
 app.use("/api/order", orderRoutes);
 
 
-//Test File Firebase
+// Firebase file handling
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-app.post('/fileUpload',upload.single("file"),fileUpload)
-app.get('/fileDownload',fileDownload)
+app.post("/fileUpload", upload.single("file"), fileUpload);
+app.get("/fileDownload", fileDownload);
 
-/*
-//To deploy Frontend and Backend in save Heroku App
-app.get('*',(req,res)=>{
-  res.sendFile(path.join(__dirname,'Dashboard/build','index.html')); //To connect react app
-})
-*/
+// Serve frontend in production
+if (!isDevelopment) {
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "Dashboard/build", "index.html"));
+  });
+}
 
 
 // Start the server
