@@ -39,6 +39,7 @@ const commonSources = [
   "www.smartstart.cloud",
   "portal.smartstart.cloud",
   "https://static.cloudflareinsights.com", // Added Cloudflare for analytics
+  "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com/"
 ];
 
 // Add development-specific sources
