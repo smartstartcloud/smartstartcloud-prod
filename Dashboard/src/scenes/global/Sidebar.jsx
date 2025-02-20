@@ -191,6 +191,15 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
+              {isAdmin && (
+                <Item
+                  title="All Agent"
+                  to="/allAgent"
+                  icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="All Student"
                 to="/allStudent"

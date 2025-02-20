@@ -11,6 +11,7 @@ import "./db/connectMongoDB.js"; // MongoDB connection file
 import multer from "multer"; // For file handling
 import fileRoutes from "./routes/files.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 import {
   fileUpload,
   fileDownload,
@@ -84,6 +85,7 @@ app.use("/api/module", moduleRoutes);
 app.use("/newAccessToken", newAccessToken);
 app.use("/api/files", fileRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/notification", notificationRoutes);
 
 //Test File Firebase
 const storage = multer.memoryStorage();

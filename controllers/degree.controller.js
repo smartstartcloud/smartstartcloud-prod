@@ -7,6 +7,8 @@ import { addNewStudent } from './student.controller.js';
 import { addNewModule } from './module.controller.js'; // Import newAssignment
 import ModuleAssignment from '../models/moduleAssignment.models.js';
 import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
+import { extractToken } from '../utils/generateToken.js';
+import { sendNotification } from './notification.controller.js';
 
 export const newDegree = async (req, res) => {
   try {
@@ -119,7 +121,7 @@ export const getAllDegree = async (req,res)=>{
       await Promise.all( degrees.map(async (x)=>{        
         const Agent = await User.find({_id:[x.degreeAgent]});
         if (Agent.length === 0) {
-            console.log(`Agent with ID ${x.degreeAgent} not found.`);
+            // console.log(`Agent with ID ${x.degreeAgent} not found.`);
             return; // Skip this degree if no agent is found
         }
         const degreeObject = x.toObject();
@@ -150,7 +152,7 @@ export const getDegreeByYear = async (req,res)=>{
       const studentList = x.degreeStudentList
       const degreeSum = await getAssignmentSum(moduleList, studentList);
       if (Agent.length === 0) {
-          console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          // console.log(`Agent with ID ${x.degreeAgent} not found.`);
           return; // Skip this degree if no agent is found
       }
       const degreeObject = x.toObject();
@@ -216,7 +218,7 @@ export const getDegreeByID = async (req,res)=>{
       await getAssignmentDetailsList(moduleList, studentList);
     let degreeObject = degrees.toObject();
     if (Agent.length === 0) {
-        console.log(`Agent with ID ${x.degreeAgent} not found.`);
+        // console.log(`Agent with ID ${x.degreeAgent} not found.`);
         return; // Skip this degree if no agent is found
     }
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
@@ -300,7 +302,7 @@ export const getDegreeByAgent = async (req,res)=>{
     await Promise.all( degrees.map(async (x)=>{
       const Agent = await User.find({_id:[x.degreeAgent]});
       if (Agent.length === 0) {
-          console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          // console.log(`Agent with ID ${x.degreeAgent} not found.`);
           return; // Skip this degree if no agent is found
       }
       const degreeObject = x.toObject();
@@ -370,5 +372,34 @@ export const deleteStudentFromDegree = async (req,res)=>{
   } catch (error) {
     console.error("Error deleting Student:", error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getAgentList = async (req,res)=>{
+  try {
+      const user = await User.find({role:"agent"},{_id:1,firstName:1,lastName:1});
+      if(!user){
+          res.status(400).json({error:'Error fetching agent'});
+      }
+      res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching agents:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getAllAgentList = async (req,res)=>{
+  const testToken = req.headers.authorization;
+  const {userId} = extractToken(testToken);
+  try {
+      const user = await User.find({ role: { $ne: "superAdmin" } }).select("_id firstName lastName email role gender userName");
+      if(!user){
+          res.status(400).json({error:'Error fetching agent'});
+      }
+      await sendNotification('admin', userId, "alert", "All Agents have been Fetched")
+      res.status(200).json(user);
+  } catch (error) {
+      console.error("Error fetching agents:", error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 }
