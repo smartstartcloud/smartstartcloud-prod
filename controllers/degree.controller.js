@@ -389,14 +389,11 @@ export const getAgentList = async (req,res)=>{
 }
 
 export const getAllAgentList = async (req,res)=>{
-  const testToken = req.headers.authorization;
-  const {userId} = extractToken(testToken);
   try {
       const user = await User.find({ role: { $ne: "superAdmin" } }).select("_id firstName lastName email role gender userName");
       if(!user){
           res.status(400).json({error:'Error fetching agent'});
       }
-      await sendNotification('admin', userId, "alert", "All Agents have been Fetched")
       res.status(200).json(user);
   } catch (error) {
       console.error("Error fetching agents:", error);

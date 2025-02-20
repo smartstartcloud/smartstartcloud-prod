@@ -28,7 +28,6 @@ const notificationSchema = new mongo.Schema({
       type: mongo.Schema.Types.ObjectId,
       ref: "User" 
     }], // Array of users who have read it
-
     metadata: { 
       type: Object, 
       default: {} 

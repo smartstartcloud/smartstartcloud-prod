@@ -124,11 +124,8 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   const handleSubmit = async () => {
     setformLoading(true);
     try{
-      if (paymentDetails.paymentVerificationStatus === "approved"){
-        setPaymentDetails({...paymentDetails, paymentVerificationStatus: "awaiting payment" })
-      }
       const response = await updatePayment(paymentDetails, paymentRequiredInformation);
-      setPaymentDetails({...paymentDetails, paymentLog : response.paymentLog})
+      setPaymentDetails({...paymentDetails, paymentLog : response.paymentLog, paymentVerificationStatus : "awaiting approval"})
       console.log("Form Data:", paymentDetails);
       console.log("Response Data:", response);
       setFormSaved(true);
@@ -412,7 +409,10 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
             </Typography>
             {paymentDetails.paymentLog &&
             paymentDetails.paymentLog.length > 0 ? (
-              <TableContainer component={Paper}>
+              <TableContainer
+                component={Paper}
+                sx={{ maxHeight: "400px", overflowX: "auto" }}
+              >
                 <Table>
                   <TableHead>
                     <TableRow>

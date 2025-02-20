@@ -2,6 +2,7 @@ import Degree from "../models/degree.models.js";
 import Module from "../models/module.models.js";
 import User from "../models/user.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
+import { sendNotification } from "./notification.controller.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -24,6 +25,7 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
       degreeYear: degree.degreeYear,
       moduleName: module.moduleName,
     });
+
     await newPayment.save();
   } catch (error) {
     console.log(error);
@@ -116,7 +118,12 @@ export const updatePaymentDetails = async (req, res) => {
     if (bankPaymentMethod) updateDetails.bankPaymentMethod = bankPaymentMethod;
     if (cashPaymentMethod) updateDetails.cashPaymentMethod = cashPaymentMethod;
     if (referredPaymentMethod) updateDetails.referredPaymentMethod = referredPaymentMethod;
-    if (paymentVerificationStatus) updateDetails.paymentVerificationStatus = paymentVerificationStatus;
+    if (paymentVerificationStatus) {
+      updateDetails.paymentVerificationStatus =
+        paymentVerificationStatus === "approved"
+          ? "awaiting approval"
+          : paymentVerificationStatus;
+    }    
     if (userID) updateDetails.userID = userID;
     
     // Find the module ID using the moduleCode
@@ -146,7 +153,14 @@ export const updatePaymentDetails = async (req, res) => {
       { $set: updateDetails, $push: { paymentLog } },
       { new: true } // Return the updated document
     );
-    if (payment) {        
+    if (payment) {
+      await sendNotification(
+        req,
+        "finance",
+        "alert",
+        `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
+        { goTo: `/paymentApprovals`, paymentId: payment._id }
+      );
       res.status(200).json(payment);
     } else {
       res

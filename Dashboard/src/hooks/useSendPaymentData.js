@@ -16,7 +16,8 @@ const useSendPaymentData = () => {
       otherPaymentMethod,
       bankPaymentMethod,
       cashPaymentMethod,
-      referredPaymentMethod
+      referredPaymentMethod,
+      paymentVerificationStatus,
     },
     paymentRequiredInformation
   ) => {    
@@ -33,7 +34,8 @@ const useSendPaymentData = () => {
         cashPaymentMethod,
         referredPaymentMethod,
         paymentRequiredInformation,
-        userID: authUser._id
+        paymentVerificationStatus,
+        userID: authUser._id,
       });
       const data = await res.data;
       if (data.error) {
