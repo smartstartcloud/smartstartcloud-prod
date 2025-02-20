@@ -111,15 +111,26 @@ export const updateDegree = async (req, res) => {
 };
 
 
-export const getAllDegree = async (req,res)=>{
+export const getAllDegree = async (req,res)=>{  
   try {
     let fillAgentDegree=[];
     const degrees = await Degree.find({})
-      .populate('degreeStudentList');
-      await Promise.all( degrees.map(async (x)=>{
+      .populate('degreeStudentList');      
+      await Promise.all( degrees.map(async (x)=>{        
         const Agent = await User.find({_id:[x.degreeAgent]});
-        const degreeObject = x.toObject();
-        degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+        if (Agent.length === 0) {
+          console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          return; // Skip this degree if no agent is found
+      }
+  
+      console.log(Agent);
+          
+      const degreeObject = x.toObject();
+      degreeObject.degreeAgent = {
+          "_id": Agent[0]._id,
+          "firstName": Agent[0].firstName,
+          "lastName": Agent[0].lastName
+      };
         fillAgentDegree.push(degreeObject);
       })
     )
