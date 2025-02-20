@@ -119,15 +119,15 @@ export const getAllDegree = async (req,res)=>{
       await Promise.all( degrees.map(async (x)=>{        
         const Agent = await User.find({_id:[x.degreeAgent]});
         if (Agent.length === 0) {
-          console.log(`Agent with ID ${x.degreeAgent} not found.`);
-          return; // Skip this degree if no agent is found
-      }          
-      const degreeObject = x.toObject();
-      degreeObject.degreeAgent = {
-          "_id": Agent[0]._id,
-          "firstName": Agent[0].firstName,
-          "lastName": Agent[0].lastName
-      };
+            console.log(`Agent with ID ${x.degreeAgent} not found.`);
+            return; // Skip this degree if no agent is found
+        }
+        const degreeObject = x.toObject();
+        degreeObject.degreeAgent = {
+            "_id": Agent[0]._id,
+            "firstName": Agent[0].firstName,
+            "lastName": Agent[0].lastName
+        };
         fillAgentDegree.push(degreeObject);
       })
     )    
@@ -149,7 +149,10 @@ export const getDegreeByYear = async (req,res)=>{
       const moduleList = x.degreeModules;
       const studentList = x.degreeStudentList
       const degreeSum = await getAssignmentSum(moduleList, studentList);
-      
+      if (Agent.length === 0) {
+          console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          return; // Skip this degree if no agent is found
+      }
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
       degreeObject.degreeSum = degreeSum
@@ -212,6 +215,10 @@ export const getDegreeByID = async (req,res)=>{
     const { moduleDetailsList } =
       await getAssignmentDetailsList(moduleList, studentList);
     let degreeObject = degrees.toObject();
+    if (Agent.length === 0) {
+        console.log(`Agent with ID ${x.degreeAgent} not found.`);
+        return; // Skip this degree if no agent is found
+    }
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
     degreeObject.moduleDetailsList = moduleDetailsList
     res.status(200).json(degreeObject);
@@ -292,6 +299,10 @@ export const getDegreeByAgent = async (req,res)=>{
       .populate('degreeStudentList');
     await Promise.all( degrees.map(async (x)=>{
       const Agent = await User.find({_id:[x.degreeAgent]});
+      if (Agent.length === 0) {
+          console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          return; // Skip this degree if no agent is found
+      }
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
       fillAgentDegree.push(degreeObject);
