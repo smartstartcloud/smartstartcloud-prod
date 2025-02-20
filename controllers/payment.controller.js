@@ -156,7 +156,7 @@ export const updatePaymentDetails = async (req, res) => {
     if (payment) {
       await sendNotification(
         req,
-        "finance",
+        "admin",
         "alert",
         `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
         { goTo: `/paymentApprovals`, paymentId: payment._id }
