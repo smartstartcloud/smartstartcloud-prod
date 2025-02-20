@@ -121,10 +121,7 @@ export const getAllDegree = async (req,res)=>{
         if (Agent.length === 0) {
           console.log(`Agent with ID ${x.degreeAgent} not found.`);
           return; // Skip this degree if no agent is found
-      }
-  
-      console.log(Agent);
-          
+      }          
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {
           "_id": Agent[0]._id,
@@ -133,8 +130,8 @@ export const getAllDegree = async (req,res)=>{
       };
         fillAgentDegree.push(degreeObject);
       })
-    )
-    res.status(200)  .json(fillAgentDegree);
+    )    
+    res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
