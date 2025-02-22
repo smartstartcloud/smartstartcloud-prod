@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 import {
     Box, Card, CardContent, CircularProgress, Typography, useTheme, Grid, Divider, Button,
@@ -26,6 +26,8 @@ const DegreeProfile = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
+  const location = useLocation();
+  const dataId = location.state?.dataId || null
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
 
@@ -307,7 +309,14 @@ const DegreeProfile = () => {
       </Card>
 
       <Box sx={{ width: "100%", maxWidth: "1000px" }}>
-        <Typography variant="h4" textAlign="center" mb={2} color={colors.blueAccent[300]}>Student List</Typography>
+        <Typography
+          variant="h4"
+          textAlign="center"
+          mb={2}
+          color={colors.blueAccent[300]}
+        >
+          Student List
+        </Typography>
         <DataGrid
           rows={studentList}
           columns={columns}
@@ -316,30 +325,66 @@ const DegreeProfile = () => {
           pageSizeOptions={[5, 10, 20]}
           autoHeight
           onRowClick={handleRowClick}
-          sx= {{ cursor: "pointer" }}
+          sx={{ cursor: "pointer" }}
+          rowSelectionModel={dataId ? [dataId] : []} // Pre-selects the passed row ID
         />
-        <Button variant="contained" sx={{ mt: 3, display: "block", mx: "auto", backgroundColor: colors.blueAccent[500] }} onClick={() => setOpen(true)}>
+        <Button
+          variant="contained"
+          sx={{
+            mt: 3,
+            display: "block",
+            mx: "auto",
+            backgroundColor: colors.blueAccent[500],
+          }}
+          onClick={() => setOpen(true)}
+        >
           Add Student
         </Button>
       </Box>
 
       {degree.moduleDetailsList && (
         <Box sx={{ width: "100%", maxWidth: "1000px", marginBottom: "20px" }}>
-          <Typography variant="h4" textAlign="center" mb={2} color={colors.blueAccent[300]}>Analytics</Typography>
+          <Typography
+            variant="h4"
+            textAlign="center"
+            mb={2}
+            color={colors.blueAccent[300]}
+          >
+            Analytics
+          </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Status Chart" type="status" /></Grid>
-            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Grade Chart" type="grade" /></Grid>
-            <Grid item xs={12} sm={4}><DetailsBarChart data={degree.moduleDetailsList} headLine="Payment Chart" type="payment" /></Grid>
+            <Grid item xs={12} sm={4}>
+              <DetailsBarChart
+                data={degree.moduleDetailsList}
+                headLine="Status Chart"
+                type="status"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <DetailsBarChart
+                data={degree.moduleDetailsList}
+                headLine="Grade Chart"
+                type="grade"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <DetailsBarChart
+                data={degree.moduleDetailsList}
+                headLine="Payment Chart"
+                type="payment"
+              />
+            </Grid>
           </Grid>
         </Box>
       )}
 
-      <StudentForm 
-       open={open}
-       setOpen={setOpen} 
-       degreeID={degreeId} 
-       studentData={studentData} 
-       studentEditMode={studentEditMode} />
+      <StudentForm
+        open={open}
+        setOpen={setOpen}
+        degreeID={degreeId}
+        studentData={studentData}
+        studentEditMode={studentEditMode}
+      />
 
       {/* <Snackbar
                 open={snackbarOpen}

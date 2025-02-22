@@ -3,6 +3,7 @@ import Module from "../models/module.models.js";
 import User from "../models/user.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 import { sendNotification } from "./notification.controller.js";
+import Student from "../models/student.models.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -156,7 +157,7 @@ export const updatePaymentDetails = async (req, res) => {
     if (payment) {
       await sendNotification(
         req,
-        "admin",
+        ["admin"],
         "alert",
         `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
         { goTo: `/paymentApprovals`, paymentId: payment._id }
@@ -180,7 +181,7 @@ export const updatePaymentStatus = async (req, res) => {
   } = req.body;
   try {
     const updateDetails = {};
-    if (paymentVerificationStatus)
+    if (paymentVerificationStatus)      
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
 
     const paymentLog = createPaymentLog(updateDetails, true);   
@@ -192,6 +193,17 @@ export const updatePaymentStatus = async (req, res) => {
       { new: true } // Return the updated document
     );
     if (payment) {
+      const student = await Student.findById(payment.studentID)
+      sendNotification(
+        req,
+        ["agent", "admin"],
+        "alert",
+        `Payment for Student : ${student.studentID} and Degree ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName} is ${paymentVerificationStatus}. The paid amount is ${payment.paidAmount}.`,
+        {
+          goTo: `/task/${payment.degreeYear}/${payment.degreeID}`,
+          dataId: student.studentID,
+        }
+      );
       res.status(200).json(payment);
     } else {
       res

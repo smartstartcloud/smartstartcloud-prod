@@ -12,6 +12,7 @@ import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
+import { useLocation } from "react-router-dom";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -20,6 +21,9 @@ const PaymentApproval = () => {
   const { updatePaymentStatus } = useSendPaymentData();
   const [tableData, setTableData] = useState([]);
 
+  const location = useLocation();
+  const dataId = location.state?.dataId || null
+  
   useEffect(() => {
     if (paymentData && paymentData.length > 0) {      
       setTableData([]); // Clear the table data array first
@@ -174,6 +178,7 @@ const PaymentApproval = () => {
           pageSizeOptions={[10, 20, 50, 100]}
           autoHeight
           disableSelectionOnClick // Prevents row selection
+          rowSelectionModel={dataId ? [dataId] : []} // Pre-selects the passed row ID
         />
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-import { Badge, Box } from '@mui/material'
+import { Badge, Box, Divider } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -7,33 +7,49 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import CloseIcon from "@mui/icons-material/Close";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import Tooltip from "@mui/material/Tooltip";
+import { useNavigate } from 'react-router-dom';
+import useSendMarkNotificationAsRead from '../hooks/useSendMarkNotificationAsRead';
+import { useAuthContext } from '../context/AuthContext';
 
-const NotificationCard = ({list}) => {
+const NotificationCard = ({list = []}) => {
     const [anchorEl, setAnchorEl] = useState(null);    
-    const [filteredList, setFilteredList] = useState([]);  
     const open = Boolean(anchorEl);
+    const [newList, setNewList] = useState(list);
+    const {authUser} = useAuthContext()    
 
-    // Use useEffect to update filteredList when `list` changes
-    useEffect(() => {
-        console.log(list);
-        
-        setFilteredList(list);  // Update filteredList when `list` is updated
-    }, [list]);  // Dependency array ensures this runs whenever `list` changes
+    const { sendMarkNotificationAsRead } = useSendMarkNotificationAsRead();
+
+
+    const navigate = useNavigate();
     const handleClick = (event) => {
-        console.log(filteredList);
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const handleNotification = (id) => {    
-        console.log(id);
-            
-        const index = filteredList.findIndex((listItem) => listItem._id === id);
-        if (index !== -1) {
-            const newFilteredList = filteredList.splice(index, 1);
-            setFilteredList(newFilteredList); // Removes the item at the found index
+
+    useEffect(() => {
+      if (list.length > 0){
+        setNewList(list);
+      }
+    }, [list]); // This will re-run the effect whenever `list` changes
+
+    const handleNotificationClick = (id) => {
+        const notification = list.find((item) => item._id === id);
+        if (notification) {
+          const {goTo, dataId} = notification.metadata;
+          navigate(goTo, { state: { dataId } });
+          handleDismiss(id)
+          sendMarkNotificationAsRead(id, authUser._id)
+
+        } else {
+          console.error(`Notification with ID ${id} not found`);
         }
+        
+    };
+
+    const handleDismiss = (id) => {
+      setNewList((prev) => prev.filter((item) => item._id !== id));
     };
     return (
       <Box>
@@ -41,7 +57,7 @@ const NotificationCard = ({list}) => {
           sx={{ display: "flex", alignItems: "center", textAlign: "center" }}
         >
           <Tooltip title="Notifications">
-            <Badge badgeContent={list.length} color="info">
+            <Badge badgeContent={newList.length} color="info">
               <IconButton onClick={handleClick} size="small" sx={{ ml: 0 }}>
                 <NotificationsOutlinedIcon sx={{ width: 20, height: 20 }} />
               </IconButton>
@@ -84,21 +100,26 @@ const NotificationCard = ({list}) => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          {filteredList.length > 0 && filteredList.map((item, index) => (
-            <MenuItem
-              key={item?._id || `fallback-key-${index}`}
-              sx={{ textWrap: "wrap", maxWidth: "400px" }}
-              onClick={() =>
-                handleNotification(item?._id || `fallback-key-${index}`)
-              }
-            >
-              <PriorityHighIcon color="error" sx={{ marginRight: "15px" }} />{" "}
-              {item.message}
-              <IconButton>
-                <CloseIcon />
-              </IconButton>
-            </MenuItem>
-          ))}
+          {newList.length > 0 &&
+            newList.map((item, index) => (
+              <MenuItem
+                key={item?._id || `fallback-key-${index}`}
+                sx={{ textWrap: "wrap", maxWidth: "400px" }}
+                onClick={() => handleNotificationClick(item._id)}
+              >
+                <PriorityHighIcon color="error" sx={{ marginRight: "15px" }} />{" "}
+                {item.message}
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDismiss(item._id);
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </MenuItem>
+            ))}
         </Menu>
       </Box>
     );
