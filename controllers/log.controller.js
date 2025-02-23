@@ -1,4 +1,37 @@
-import Log from './log.models.js';
+import Log from '../models/log.models.js';
+import User from '../models/user.models.js';
+
+/**
+ * Create a new log entry.
+ * Expected body: { user, collection, action }
+ */
+export const createLog = async ({
+  req,
+  affectedID,
+  collection,
+  action,
+  logMessage,
+}) => {
+  try {
+    const token = req.headers.authorization;
+    const { userId } = extractToken(token);
+    const user = await User.findById(userId, "firstName lastName");
+    const suffixMessage = `Made By ${user.firstName} ${user.lastName}.`;
+    const message = `${logMessage} ${suffixMessage}`;
+
+    const log = new Log({
+      user: userId,
+      affectedID,
+      collectionName: collection,
+      action,
+      message,
+    });
+    await log.save();
+    return log;
+  } catch (error) {
+    throw new Error(`Error creating log: ${error.message}`);
+  }
+};
 
 export const getLogs = async (req, res) => {
   try {

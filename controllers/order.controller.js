@@ -1,6 +1,7 @@
 import Order from '../models/order.models.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
+import { createLog } from './log.controller.js';
 
 
 // Configure multer for file uploads
@@ -41,17 +42,27 @@ export const newOrder = async (req, res) => {
       const { orderID, referenceNumber } = order;
       // Check if the orderID already exists
       const existingOrder = await Order.findOne({ orderID });
-      if (existingOrder) {          
+      if (existingOrder) {
         // return res.status(400).json({ error: "Order ID already exists" });
         orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
       } else {
         // Create a new order document
-        const order = new Order({ orderID, referenceNumber, group: userGroup });        
+        const order = new Order({ orderID, referenceNumber, group: userGroup });
         await order.save();
         orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
       }
     }
-    
+
+    // Construct a log message with summary details
+    const logMessage = `New orders processed. Accepted Orders: ${
+      orderLog.acceptedOrders.length
+    }, Unaccepted Orders: ${
+      orderLog.unacceptedOrders.length
+    } at ${new Date().toISOString()}.`;
+
+    // Create the log entry using the modified createLog helper
+    await createLog({ req, collection: "Order", action: "create", logMessage });
+
     res.status(201).json({ message: "Order created successfully", orderLog });
   } catch (error) {
     console.log(error);

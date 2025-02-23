@@ -1,6 +1,7 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs"
 import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.js";
+import { createLog } from "./log.controller.js";
 
 export const loginUser = async (req, res) => {
     try {
@@ -79,18 +80,27 @@ export const signupUser = async (req, res) => {
             passRenew: passRenew
         })
 
-        if(newUser){
-            await newUser.save();
+        await newUser.save();
 
-            res.status(200).json({
-                _id: newUser._id,
-                email: newUser.email,
-                userName: newUser.userName,
-                role: newUser.role
-            })
-        }
+        // Construct a human-readable log message
+        const logMessage = `User ${newUser.userName} with email ${
+          newUser.email
+        } was signed up at ${new Date().toISOString()}.`;
+        // Create the log entry (the acting user will be extracted from req.headers.authorization)
+        await createLog({
+          req,
+          collection: "User",
+          action: "signup",
+          logMessage,
+          affectedID: newUser._id,
+        });
 
-
+        res.status(200).json({
+          _id: newUser._id,
+          email: newUser.email,
+          userName: newUser.userName,
+          role: newUser.role,
+        });
     } catch (error) {
         console.log("Error in sign up controller", error);
         
@@ -138,3 +148,34 @@ export const renewPassword = async (req, res) => {
     }
     
 }
+
+export const deleteUser = async (req, res) => {
+  try {
+    // Extract the user ID to delete from the URL parameters
+    const { userId } = req.params;
+
+    // Attempt to delete the user from the database
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Construct a descriptive log message
+    const logMessage = `User ${
+      deletedUser.userName
+    } (ID: ${userId}) was deleted at ${new Date().toISOString()}.`;
+
+    // Create the log entry (the acting user's ID is extracted within createLog)
+    await createLog({
+      req,
+      collection: "User",
+      action: "delete",
+      logMessage,
+    });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

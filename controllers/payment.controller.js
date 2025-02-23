@@ -4,6 +4,7 @@ import User from "../models/user.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
+import { createLog } from "./log.controller.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -162,6 +163,19 @@ export const updatePaymentDetails = async (req, res) => {
         `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
         { goTo: `/paymentApprovals`, paymentId: payment._id }
       );
+
+      // Construct and create a log entry for the payment update
+      const logMessage = `Payment details for payment ID ${
+        payment._id
+      } updated at ${new Date().toISOString()}.`;
+      await createLog({
+        req,
+        collection: "Payment",
+        action: "updateDetails",
+        logMessage,
+        affectedID: payment._id,
+      });
+
       res.status(200).json(payment);
     } else {
       res
@@ -193,7 +207,7 @@ export const updatePaymentStatus = async (req, res) => {
       { new: true } // Return the updated document
     );
     if (payment) {
-      const student = await Student.findById(payment.studentID)
+      const student = await Student.findById(payment.studentID);
       sendNotification(
         req,
         ["agent", "admin"],
@@ -204,6 +218,19 @@ export const updatePaymentStatus = async (req, res) => {
           dataId: student.studentID,
         }
       );
+
+      // Log the payment status update action
+      const logMessage = `Payment status for payment ID ${
+        payment._id
+      } updated to "${paymentVerificationStatus}" at ${new Date().toISOString()}.`;
+      await createLog({
+        req,
+        collection: "Payment",
+        action: "updateStatus",
+        logMessage,
+        affectedID: payment._id,
+      });
+
       res.status(200).json(payment);
     } else {
       res

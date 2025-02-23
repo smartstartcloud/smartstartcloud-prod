@@ -1,6 +1,7 @@
 import Assignment from "../models/assignment.models.js";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import { createLog } from "./log.controller.js";
 import { addNewPayment } from "./payment.controller.js";
 
 // Function to create a new assignment and update relevant records
@@ -222,6 +223,18 @@ export const updateAssignment = async (req, res) => {
     );
 
     if (assignment) {
+      // Construct the log message
+      const logMessage = `Assignment ${
+        assignment.assignmentName
+      } (ID: ${assignmentID}) was updated at ${new Date().toISOString()}.`;
+      // Create the log entry using the modified createLog helper
+      await createLog({
+        req,
+        collection: "Assignment",
+        action: "update",
+        logMessage,
+        affectedID: assignment._id,
+      });
       res.status(200).json(assignment);
     } else {
       res
@@ -281,8 +294,11 @@ export const newAssignmentManual = async (req, res) => {
       assignmentProgress,
       assignmentGrade,
     } = req.body;
+
+    // Retrieve moduleID and the corresponding module assignment record
     const moduleID = await findModuleIdByCode(moduleCode);
     const module = await ModuleAssignment.findOne({ moduleID, studentID });
+
     const createdAssignment = await createNewAssignmentManual(
       orderID,
       assignmentName,
@@ -292,21 +308,33 @@ export const newAssignmentManual = async (req, res) => {
       assignmentGrade,
       moduleCode
     );
-    await ModuleAssignment.findOneAndUpdate(
+
+    // Update the ModuleAssignment by pushing the new assignment's ID
+    const updateResult = await ModuleAssignment.findOneAndUpdate(
       { _id: module._id },
       { $push: { assignments: createdAssignment._id } }
-    )
-      .then((result) => {
-        if (result.matchedCount === 0) {
-          console.log("No document found with the given _id.");
-        } else {
-          res.status(200).json({ value: "Assignment added successfully" });
-        }
-      })
-      .catch((err) => {
-        console.error("Error updating the document:", err);
+    );
+
+    if (updateResult) {
+      // Construct a descriptive log message
+      const logMessage = `Manual assignment ${assignmentName} (ID: ${
+        createdAssignment._id
+      }) was created for student ${studentID} in module ${moduleCode} at ${new Date().toISOString()}.`;
+
+      // Log the creation event, storing the new assignment's ID as affectedID
+      await createLog({
+        req,
+        collection: "Assignment",
+        action: "create",
+        logMessage,
+        affectedID: createdAssignment._id,
       });
-} catch (error) {
+
+      res.status(200).json({ value: "Assignment added successfully" });
+    } else {
+      res.status(404).json({ error: "No document found with the given _id." });
+    }
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -327,6 +355,15 @@ export const deleteAssignment = async (req, res) => {
       { assignments: assignmentID },
       { $pull: { assignments: assignmentID } }
     );
+
+    // Construct a log message and create a log entry
+    const logMessage = `Assignment with ID ${assignmentID} was deleted at ${new Date().toISOString()}.`;
+    await createLog({
+      req,
+      collection: "Assignment",
+      action: "delete",
+      logMessage,
+    });
 
     res.status(200).json({ message: "Assignment deleted successfully" });
   } catch (error) {
