@@ -226,7 +226,7 @@ export const updateAssignment = async (req, res) => {
       // Construct the log message
       const logMessage = `Assignment ${
         assignment.assignmentName
-      } (ID: ${assignmentID}) was updated at ${new Date().toISOString()}.`;
+      } (ID: ${assignmentID}) was updated.`;
       // Create the log entry using the modified createLog helper
       await createLog({
         req,
@@ -319,7 +319,7 @@ export const newAssignmentManual = async (req, res) => {
       // Construct a descriptive log message
       const logMessage = `Manual assignment ${assignmentName} (ID: ${
         createdAssignment._id
-      }) was created for student ${studentID} in module ${moduleCode} at ${new Date().toISOString()}.`;
+      }) was created for student ${studentID} in module ${moduleCode}.`;
 
       // Log the creation event, storing the new assignment's ID as affectedID
       await createLog({
@@ -357,7 +357,7 @@ export const deleteAssignment = async (req, res) => {
     );
 
     // Construct a log message and create a log entry
-    const logMessage = `Assignment with ID ${assignmentID} was deleted at ${new Date().toISOString()}.`;
+    const logMessage = `Assignment with ID ${assignmentID} was deleted.`;
     await createLog({
       req,
       collection: "Assignment",

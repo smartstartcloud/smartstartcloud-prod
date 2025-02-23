@@ -58,6 +58,18 @@ export const fileUpload = async (req, res) => {
       ...(paymentFlag && { paymentFlag }),
     });
 
+    // Create a log entry for the file upload
+    const logMessage = `File "${
+      req.file.originalname
+    }" uploaded successfully for ${referenceCollection} with reference ID ${referenceID}.`;
+    await createLog({
+      req,
+      collection: "File",
+      action: "upload",
+      logMessage,
+      affectedID: newFile._id,
+    });
+
     await newFile.save();
 
     if (referenceCollection === "Assignment") {
@@ -88,18 +100,6 @@ export const fileUpload = async (req, res) => {
       );
     }
 
-    // Create a log entry for the file upload
-    const logMessage = `File "${
-      req.file.originalname
-    }" uploaded successfully for ${referenceCollection} with reference ID ${referenceID} at ${new Date().toISOString()}.`;
-    await createLog({
-      req,
-      collection: "File",
-      action: "upload",
-      logMessage,
-      affectedID: newFile._id,
-    });
-
     res
       .status(201)
       .json({ message: "File uploaded successfully", fileId: newFile._id });
@@ -120,7 +120,7 @@ export const fileDownload = async (req, res) => {
     // Log the file download action before streaming
     const logMessage = `File "${file.fileName}" (ID: ${
       file._id
-    }) was downloaded at ${new Date().toISOString()}.`;
+    }) was downloaded.`;
     await createLog({
       req,
       collection: "File",
@@ -203,7 +203,7 @@ export const fileDelete = async (req, res) => {
       // Construct a log message and create a log entry
       const logMessage = `File "${deletedFile.fileName}" (ID: ${
         deletedFile._id
-      }) was deleted at ${new Date().toISOString()}.`;
+      }) was deleted.`;
       await createLog({
         req,
         collection: "File",

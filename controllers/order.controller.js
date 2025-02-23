@@ -58,7 +58,7 @@ export const newOrder = async (req, res) => {
       orderLog.acceptedOrders.length
     }, Unaccepted Orders: ${
       orderLog.unacceptedOrders.length
-    } at ${new Date().toISOString()}.`;
+    }.`;
 
     // Create the log entry using the modified createLog helper
     await createLog({ req, collection: "Order", action: "create", logMessage });

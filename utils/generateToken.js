@@ -27,7 +27,7 @@ const newAccessToken = app.post("/",async (req,res)=>{
 
 const extractToken = (testToken) => {
   if(testToken){
-    const token = testToken.split(' ')[1];
+    const token = testToken.split('=')[1];    
     try {
       // Verify and decode the token
       const decoded = jwt.verify(token, process.env.JWT_KEY);

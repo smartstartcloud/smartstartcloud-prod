@@ -85,7 +85,7 @@ export const signupUser = async (req, res) => {
         // Construct a human-readable log message
         const logMessage = `User ${newUser.userName} with email ${
           newUser.email
-        } was signed up at ${new Date().toISOString()}.`;
+        } was signed up.`;
         // Create the log entry (the acting user will be extracted from req.headers.authorization)
         await createLog({
           req,
@@ -163,7 +163,7 @@ export const deleteUser = async (req, res) => {
     // Construct a descriptive log message
     const logMessage = `User ${
       deletedUser.userName
-    } (ID: ${userId}) was deleted at ${new Date().toISOString()}.`;
+    } (ID: ${userId}) was deleted.`;
 
     // Create the log entry (the acting user's ID is extracted within createLog)
     await createLog({

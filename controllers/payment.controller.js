@@ -167,7 +167,7 @@ export const updatePaymentDetails = async (req, res) => {
       // Construct and create a log entry for the payment update
       const logMessage = `Payment details for payment ID ${
         payment._id
-      } updated at ${new Date().toISOString()}.`;
+      } updated.`;
       await createLog({
         req,
         collection: "Payment",
@@ -223,7 +223,7 @@ export const updatePaymentStatus = async (req, res) => {
       // Log the payment status update action
       const logMessage = `Payment status for payment ID ${
         payment._id
-      } updated to "${paymentVerificationStatus}" at ${new Date().toISOString()}.`;
+      } updated to "${paymentVerificationStatus}".`;
       await createLog({
         req,
         collection: "Payment",

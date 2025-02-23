@@ -12,11 +12,9 @@ export const createLog = async ({
   collection,
   action,
   logMessage,
-}) => {
-  console.log(logMessage);
-  
+}) => {  
   try {
-    const token = req.headers.authorization;
+    const token = req.headers.cookie;
     const { userId } = extractToken(token);
     const user = await User.findById(userId, "firstName lastName userName");
     const suffixMessage = `Made By ${user.firstName} ${user.lastName}.`;

@@ -12,6 +12,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllActionLogs from "../../hooks/useFetchAllActionLogs";
+import { formatDate } from "../../utils/functions";
 
 const LogList = () => {
   const theme = useTheme();
@@ -29,7 +30,13 @@ const LogList = () => {
       { field: "userName", headerName: "Made By", flex: 1 },
       { field: "message", headerName: "Log Message", flex: 5 },
       { field: "collectionName", headerName: "Collection Affected", flex: 1 },
-      { field: "action", headerName: "Affected By", flex: 1 },
+      { field: "action", headerName: "Affected By", flex: .75 },
+      {
+        field: "timestamp",
+        headerName: "Last Modified",
+        flex: 2,
+        renderCell: (params) => formatDate(params.value),
+      },
       {
         field: "modify",
         headerName: "Modify",
