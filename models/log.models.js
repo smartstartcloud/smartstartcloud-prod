@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
+import { infoDB } from "../db/connectMongoDB.js";
 
 const logSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
+  },
+  userName: {
+    type: String,
     required: true,
   },
   affectedID: {
@@ -31,5 +36,5 @@ const logSchema = new mongoose.Schema({
   },
 });
 
-const Log = mongoose.model('Log', logSchema);
+const Log = infoDB.model("Log", logSchema);
 export default Log;

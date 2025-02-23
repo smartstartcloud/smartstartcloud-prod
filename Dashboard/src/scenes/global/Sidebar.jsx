@@ -16,6 +16,7 @@ import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import ListIcon from "@mui/icons-material/List";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -146,16 +147,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {(isAdmin || !isFinance) &&
-                (
-                  <Item
-                    title="Add Degree"
-                    to="/add-degree"
-                    icon={<CollectionsBookmarkOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                )}
+              {(isAdmin || !isFinance) && (
+                <Item
+                  title="Add Degree"
+                  to="/add-degree"
+                  icon={<CollectionsBookmarkOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="All Degrees"
                 to="/allDegrees"
@@ -163,16 +163,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {(isAdmin || !isFinance) &&
-                (
-                  <Item
-                    title="All Orders"
-                    to="/allOrders"
-                    icon={<ListIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                )}
+              {(isAdmin || !isFinance) && (
+                <Item
+                  title="All Orders"
+                  to="/allOrders"
+                  icon={<ListIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               {isAdmin && (
                 <Item
                   title="Signup User"
@@ -207,6 +206,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              {isAdmin && (
+                <Item
+                  title="All User Logs"
+                  to="/allLogs"
+                  icon={<ListAltIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="FAQ Page"
                 to="/faq"

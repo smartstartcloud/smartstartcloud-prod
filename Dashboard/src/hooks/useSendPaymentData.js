@@ -22,7 +22,7 @@ const useSendPaymentData = () => {
     paymentRequiredInformation
   ) => {    
     try {
-      const res = await api.post(`/api/module/updatePaymentData`, {
+      const res = await api.put(`/api/module/updatePaymentData`, {
         totalPaymentDue,
         totalPaymentToDate,
         paymentMethod,
@@ -58,9 +58,9 @@ const useSendPaymentData = () => {
     }
   };
 
-  const updatePaymentStatus = async (id, paymentVerificationStatus) => {
+  const updatePaymentStatus = async (id, paymentVerificationStatus) => {    
     try {      
-      const res = await api.post(`/api/module/updatePaymentStatus`, {
+      const res = await api.put(`/api/module/updatePaymentStatus`, {
         id, paymentVerificationStatus
       });
       const data = await res.data;

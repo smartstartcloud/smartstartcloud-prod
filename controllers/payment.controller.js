@@ -188,11 +188,12 @@ export const updatePaymentDetails = async (req, res) => {
   }
 };
 
-export const updatePaymentStatus = async (req, res) => {
+export const updatePaymentStatus = async (req, res) => {  
   const {
     paymentVerificationStatus,
     id
   } = req.body;
+  
   try {
     const updateDetails = {};
     if (paymentVerificationStatus)      
@@ -226,11 +227,11 @@ export const updatePaymentStatus = async (req, res) => {
       await createLog({
         req,
         collection: "Payment",
-        action: "updateStatus",
+        action: "update",
         logMessage,
         affectedID: payment._id,
       });
-
+      
       res.status(200).json(payment);
     } else {
       res

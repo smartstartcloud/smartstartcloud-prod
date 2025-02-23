@@ -18,6 +18,7 @@ import {
 } from "./controllers/firebaseFile.controller.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import logRoutes from "./routes/log.routes.js";
 
 // Initialize express app
 const app = express();
@@ -86,6 +87,7 @@ app.use("/newAccessToken", newAccessToken);
 app.use("/api/files", fileRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/notification", notificationRoutes);
+app.use("/api/log", logRoutes);
 
 //Test File Firebase
 const storage = multer.memoryStorage();
