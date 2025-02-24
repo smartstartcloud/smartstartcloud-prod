@@ -7,6 +7,7 @@ import { addNewStudent } from './student.controller.js';
 import { addNewModule } from './module.controller.js'; // Import newAssignment
 import ModuleAssignment from '../models/moduleAssignment.models.js';
 import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
+import { createLog } from './log.controller.js';
 
 export const newDegree = async (req, res) => {
   try {
@@ -47,6 +48,18 @@ export const newDegree = async (req, res) => {
       // console.log(newDegree);
 
       await newDegree.save();
+
+      // Construct a human-readable log message
+      const logMessage = `User created Degree ${degreeName} (ID: ${degreeID}).`;
+
+      // Create the log entry using the updated createLog signature
+      await createLog({
+        req,
+        collection: "Degree",
+        action: "create",
+        logMessage,
+        affectedID: newDegree._id,
+      });
 
       res.status(200).json(newDegree);
     }
@@ -93,8 +106,21 @@ export const updateDegree = async (req, res) => {
           degreeAgent,
           degreeStudentList: populatedStudentList,
           degreeModules: populatedModules,
-        }
+        },
+        { new: true } // Return the updated document
       );
+
+      // Construct the log message
+      const logMessage = `Degree ${degreeName} (ID: ${degreeID}) was updated.`;
+      // Create the log entry (user details will be extracted inside createLog)
+      await createLog({
+        req,
+        collection: "Degree",
+        action: "update",
+        logMessage,
+        affectedID: degree_id,
+      });
+
       res.status(200).json(updatedDegree);
     } else {
       res.status(404).json({ error: "No degree found with the specified ID" });
@@ -111,19 +137,27 @@ export const updateDegree = async (req, res) => {
 };
 
 
-export const getAllDegree = async (req,res)=>{
+export const getAllDegree = async (req,res)=>{  
   try {
     let fillAgentDegree=[];
     const degrees = await Degree.find({})
-      .populate('degreeStudentList');
-      await Promise.all( degrees.map(async (x)=>{
+      .populate('degreeStudentList');      
+      await Promise.all( degrees.map(async (x)=>{        
         const Agent = await User.find({_id:[x.degreeAgent]});
+        if (Agent.length === 0) {
+            // console.log(`Agent with ID ${x.degreeAgent} not found.`);
+            return; // Skip this degree if no agent is found
+        }
         const degreeObject = x.toObject();
-        degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
+        degreeObject.degreeAgent = {
+            "_id": Agent[0]._id,
+            "firstName": Agent[0].firstName,
+            "lastName": Agent[0].lastName
+        };
         fillAgentDegree.push(degreeObject);
       })
-    )
-    res.status(200)  .json(fillAgentDegree);
+    )    
+    res.status(200).json(fillAgentDegree);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -141,7 +175,10 @@ export const getDegreeByYear = async (req,res)=>{
       const moduleList = x.degreeModules;
       const studentList = x.degreeStudentList
       const degreeSum = await getAssignmentSum(moduleList, studentList);
-      
+      if (Agent.length === 0) {
+          // console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          return; // Skip this degree if no agent is found
+      }
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
       degreeObject.degreeSum = degreeSum
@@ -204,6 +241,10 @@ export const getDegreeByID = async (req,res)=>{
     const { moduleDetailsList } =
       await getAssignmentDetailsList(moduleList, studentList);
     let degreeObject = degrees.toObject();
+    if (Agent.length === 0) {
+        // console.log(`Agent with ID ${x.degreeAgent} not found.`);
+        return; // Skip this degree if no agent is found
+    }
     degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
     degreeObject.moduleDetailsList = moduleDetailsList
     res.status(200).json(degreeObject);
@@ -284,6 +325,10 @@ export const getDegreeByAgent = async (req,res)=>{
       .populate('degreeStudentList');
     await Promise.all( degrees.map(async (x)=>{
       const Agent = await User.find({_id:[x.degreeAgent]});
+      if (Agent.length === 0) {
+          // console.log(`Agent with ID ${x.degreeAgent} not found.`);
+          return; // Skip this degree if no agent is found
+      }
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
       fillAgentDegree.push(degreeObject);
@@ -309,47 +354,119 @@ export const getStudentByID = async (req,res)=>{
 
 export const deleteDegree = async (req,res)=>{
   try {
-    const {degreeID} = req.params
-      await Degree.findOneAndDelete({degreeID:degreeID}).then(async (degree)=>{
-        await Promise.all(degree.degreeModules.map(async (moduleID)=>{
-            await Module.findOneAndDelete({_id:moduleID}).then(async(module)=>{
-              const allMixSchema = await ModuleAssignment.find({moduleID:module._id});
-              await Promise.all(allMixSchema.map(async(allMix)=>{
-                // Delete the associated payment data first
-                if (allMix.modulePayment) {
-                  await ModuleStudentFinance.findOneAndDelete({
-                    _id: allMix.modulePayment,
-                  });
-                }
+    const { degreeID } = req.params;
+    await Degree.findOneAndDelete({ degreeID: degreeID }).then(
+      async (degree) => {
+        await Promise.all(
+          degree.degreeModules.map(async (moduleID) => {
+            await Module.findOneAndDelete({ _id: moduleID }).then(
+              async (module) => {
+                const allMixSchema = await ModuleAssignment.find({
+                  moduleID: module._id,
+                });
+                await Promise.all(
+                  allMixSchema.map(async (allMix) => {
+                    // Delete the associated payment data first
+                    if (allMix.modulePayment) {
+                      await ModuleStudentFinance.findOneAndDelete({
+                        _id: allMix.modulePayment,
+                      });
+                    }
 
-                // Then delete the ModuleAssignment
-                await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
-              }))
-              await Promise.all(module.moduleAssignments.map(async (moduleAssignmentsIDArr)=>{
-                await Promise.all(moduleAssignmentsIDArr.map(async(id)=>{
-                    await Assignment.findOneAndDelete({_id:id});
-                }))
-              }))
-            })
-        }))
-      });
-      res.status(200).json({degreeID});
+                    // Then delete the ModuleAssignment
+                    await ModuleAssignment.findOneAndDelete({
+                      _id: allMix._id,
+                    });
+                  })
+                );
+                await Promise.all(
+                  module.moduleAssignments.map(
+                    async (moduleAssignmentsIDArr) => {
+                      await Promise.all(
+                        moduleAssignmentsIDArr.map(async (id) => {
+                          await Assignment.findOneAndDelete({ _id: id });
+                        })
+                      );
+                    }
+                  )
+                );
+              }
+            );
+          })
+        );
+      }
+    );
+
+    // Log the deletion action
+    const logMessage = `Degree with ID ${degreeID} was deleted.`;
+    await createLog({
+      req,
+      collection: "Degree",
+      action: "delete",
+      logMessage,
+    });
+
+    res.status(200).json({ degreeID });
   } catch (error) {
     console.error("Error deleting Degree:", error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
 export const deleteStudentFromDegree = async (req,res)=>{
   const {studentID,degreeID} = req.params
   try {
-    await Degree.findOne({degreeID:degreeID}).then(async (degree)=>{
-      const newArr = await Promise.all(degree.degreeStudentList.filter(item => item.toHexString()!==studentID));
-      await Degree.updateOne({degreeID:degreeID},{$set:{degreeStudentList:newArr}});
-      await ModuleAssignment.deleteMany({studentID:studentID});
+    await Degree.findOne({ degreeID: degreeID }).then(async (degree) => {
+      const newArr = await Promise.all(
+        degree.degreeStudentList.filter(
+          (item) => item.toHexString() !== studentID
+        )
+      );
+      await Degree.updateOne(
+        { degreeID: degreeID },
+        { $set: { degreeStudentList: newArr } }
+      );
+      await ModuleAssignment.deleteMany({ studentID: studentID });
     });
-    res.status(200).json({studentID});
+
+    // Log the removal action
+    const logMessage = `Student with ID ${studentID} was removed from Degree ${degreeID}.`;
+    await createLog({
+      req,
+      collection: "Degree",
+      action: "delete",
+      logMessage,
+    });
+
+    res.status(200).json({ studentID });
   } catch (error) {
     console.error("Error deleting Student:", error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getAgentList = async (req,res)=>{
+  try {
+      const user = await User.find({role:"agent"},{_id:1,firstName:1,lastName:1});
+      if(!user){
+          res.status(400).json({error:'Error fetching agent'});
+      }
+      res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching agents:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export const getAllAgentList = async (req,res)=>{
+  try {
+      const user = await User.find({ role: { $ne: "superAdmin" } }).select("_id firstName lastName email role gender userName");
+      if(!user){
+          res.status(400).json({error:'Error fetching agent'});
+      }
+      res.status(200).json(user);
+  } catch (error) {
+      console.error("Error fetching agents:", error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 }

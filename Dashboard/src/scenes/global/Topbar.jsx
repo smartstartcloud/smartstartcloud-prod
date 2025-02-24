@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Menu, MenuItem } from "@mui/material"
+import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Button, Menu, MenuItem, Badge } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
@@ -10,6 +10,8 @@ import { useAuthContext } from '../../context/AuthContext'
 import DynamicBreadcrumbs from '../../components/DynamicBreadcrumbs'
 import Logo from '../global/SmartstartLogo-removebg-preview.png'
 import MenuIcon from "@mui/icons-material/Menu";
+import NotificationCard from '../../components/NotificationCard'
+import useFetchAllNotifications from '../../hooks/useFetchAllNotifications'
 
 const Topbar = ({ logOut }) => {
   const theme = useTheme();
@@ -17,6 +19,14 @@ const Topbar = ({ logOut }) => {
   const colorMode = useContext(ColorModeContext);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { authUser } = useAuthContext();
+  const [notifications, setNotifications] = useState([]);
+  const { notificationList, loading, error} = useFetchAllNotifications(authUser?._id);
+
+  useEffect(() => {
+    if (notificationList) {
+      setNotifications(notificationList);
+    }
+  }, [notificationList]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -34,7 +44,6 @@ const Topbar = ({ logOut }) => {
   useEffect(() => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
-
   return (
     <Box display="flex" flexDirection="column">
       <Box display="flex" justifyContent="space-between" p={2}>
@@ -42,7 +51,7 @@ const Topbar = ({ logOut }) => {
           <Box
             display="flex"
             alignItems="center"
-            sx={{ width: { xs: "135px"} }}
+            sx={{ width: { xs: "135px" } }}
           >
             <img
               src={Logo}
@@ -109,15 +118,14 @@ const Topbar = ({ logOut }) => {
                       <LightModeOutlinedIcon />
                     )}
                   </IconButton>
-                  {authUser && (
+                  {authUser && [
                     <IconButton>
                       <SettingsOutlinedIcon />
-                    </IconButton>
-                  )}
+                    </IconButton>,
+                    <NotificationCard list={notifications} />,
+                  ]}
                 </MenuItem>
-                <MenuItem
-                  sx={{ display: "flex", justifyContent: "center" }}
-                >
+                <MenuItem sx={{ display: "flex", justifyContent: "center" }}>
                   {authUser && (
                     <Box display="flex" justifyContent="center" gap="8px">
                       <PersonOutlinedIcon />
@@ -157,6 +165,7 @@ const Topbar = ({ logOut }) => {
               </IconButton>
               {authUser && (
                 <>
+                  <NotificationCard list={notifications} />
                   <Box display="flex" alignItems="center" gap="8px">
                     <PersonOutlinedIcon />
                     <Typography

@@ -110,13 +110,13 @@ const ModuleAssignmentTable = ({studentData}) => {
         >
           Progress
         </Button>
-        <Button
+        {/* <Button
           onClick={() => setTablestatus("paymentAmount")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
           Payment
-        </Button>
+        </Button> */}
         <Button
           onClick={() => setTablestatus("grade")}
           color="secondary"

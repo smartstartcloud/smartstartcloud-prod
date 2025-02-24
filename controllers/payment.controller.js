@@ -2,6 +2,9 @@ import Degree from "../models/degree.models.js";
 import Module from "../models/module.models.js";
 import User from "../models/user.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
+import { sendNotification } from "./notification.controller.js";
+import Student from "../models/student.models.js";
+import { createLog } from "./log.controller.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -116,7 +119,12 @@ export const updatePaymentDetails = async (req, res) => {
     if (bankPaymentMethod) updateDetails.bankPaymentMethod = bankPaymentMethod;
     if (cashPaymentMethod) updateDetails.cashPaymentMethod = cashPaymentMethod;
     if (referredPaymentMethod) updateDetails.referredPaymentMethod = referredPaymentMethod;
-    if (paymentVerificationStatus) updateDetails.paymentVerificationStatus = paymentVerificationStatus;
+    if (paymentVerificationStatus) {
+      updateDetails.paymentVerificationStatus =
+        paymentVerificationStatus === "approved"
+          ? "awaiting approval"
+          : paymentVerificationStatus;
+    }    
     if (userID) updateDetails.userID = userID;
     
     // Find the module ID using the moduleCode
@@ -146,7 +154,27 @@ export const updatePaymentDetails = async (req, res) => {
       { $set: updateDetails, $push: { paymentLog } },
       { new: true } // Return the updated document
     );
-    if (payment) {        
+    if (payment) {
+      await sendNotification(
+        req,
+        ["admin"],
+        "alert",
+        `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
+        { goTo: `/paymentApprovals`, paymentId: payment._id }
+      );
+
+      // Construct and create a log entry for the payment update
+      const logMessage = `Payment details for payment ID ${
+        payment._id
+      } updated.`;
+      await createLog({
+        req,
+        collection: "Payment",
+        action: "updateDetails",
+        logMessage,
+        affectedID: payment._id,
+      });
+
       res.status(200).json(payment);
     } else {
       res
@@ -159,14 +187,15 @@ export const updatePaymentDetails = async (req, res) => {
   }
 };
 
-export const updatePaymentStatus = async (req, res) => {
+export const updatePaymentStatus = async (req, res) => {  
   const {
     paymentVerificationStatus,
     id
   } = req.body;
+  
   try {
     const updateDetails = {};
-    if (paymentVerificationStatus)
+    if (paymentVerificationStatus)      
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
 
     const paymentLog = createPaymentLog(updateDetails, true);   
@@ -178,6 +207,30 @@ export const updatePaymentStatus = async (req, res) => {
       { new: true } // Return the updated document
     );
     if (payment) {
+      const student = await Student.findById(payment.studentID);
+      sendNotification(
+        req,
+        ["agent", "admin"],
+        "alert",
+        `Payment for Student : ${student.studentID} and Degree ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName} is ${paymentVerificationStatus}. The paid amount is ${payment.paidAmount}.`,
+        {
+          goTo: `/task/${payment.degreeYear}/${payment.degreeID}`,
+          dataId: student.studentID,
+        }
+      );
+
+      // Log the payment status update action
+      const logMessage = `Payment status for payment ID ${
+        payment._id
+      } updated to "${paymentVerificationStatus}".`;
+      await createLog({
+        req,
+        collection: "Payment",
+        action: "update",
+        logMessage,
+        affectedID: payment._id,
+      });
+      
       res.status(200).json(payment);
     } else {
       res

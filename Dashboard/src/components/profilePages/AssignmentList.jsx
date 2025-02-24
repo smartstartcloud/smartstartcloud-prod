@@ -360,7 +360,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
           open={open}
           referenceID={referenceIdToPass}
           referenceCollection={"Assignment"}
-          isOrder={true}
+          isOrder={false}
           orderID={orderIdToPass}
           parentID = {moduleStudentID}
         />

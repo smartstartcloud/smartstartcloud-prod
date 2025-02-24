@@ -1,5 +1,6 @@
 import File from "../models/files.model.js";
 import Assignment from "../models/assignment.models.js";
+import { createLog } from "./log.controller.js";
 import { app } from "../utils/firebaseConfig.js";
 import {
   getStorage,
@@ -25,9 +26,9 @@ export const fileUpload = async (req, res) => {
       uploadedByUserID,
       uploadedByUserName,
       writerFlag,
-      paymentFlag
+      paymentFlag,
     } = req.body;
-    
+
     const storageRef = ref(storage, req.file.originalname);
 
     const metadata = {
@@ -54,7 +55,19 @@ export const fileUpload = async (req, res) => {
       fileType: req.file.mimetype,
       fileUrl: downloadURL,
       ...(writerFlag && { writerFlag }),
-      ...(paymentFlag && { paymentFlag })
+      ...(paymentFlag && { paymentFlag }),
+    });
+
+    // Create a log entry for the file upload
+    const logMessage = `File "${
+      req.file.originalname
+    }" uploaded successfully for ${referenceCollection} with reference ID ${referenceID}.`;
+    await createLog({
+      req,
+      collection: "File",
+      action: "upload",
+      logMessage,
+      affectedID: newFile._id,
     });
 
     await newFile.save();
@@ -103,18 +116,35 @@ export const fileDownload = async (req, res) => {
     if (!file) {
       return res.status(404).json({ message: "File not found" });
     }
+
+    // Log the file download action before streaming
+    const logMessage = `File "${file.fileName}" (ID: ${
+      file._id
+    }) was downloaded.`;
+    await createLog({
+      req,
+      collection: "File",
+      action: "download",
+      logMessage,
+      affectedID: file._id,
+    });
+
     // Fetch the file from Firebase using axios
-    const firebaseResponse = await axios.get(file.fileUrl, 
-      { responseType: 'stream', 
+    const firebaseResponse = await axios.get(file.fileUrl, {
+      responseType: "stream",
       onDownloadProgress: (progressEvent) => {
-      const { loaded, total } = progressEvent;
-      const progress = (loaded / total) * 100;
-      console.log(`Download progress: ${progress.toFixed(2)}%`);
-    } });
+        const { loaded, total } = progressEvent;
+        const progress = (loaded / total) * 100;
+        console.log(`Download progress: ${progress.toFixed(2)}%`);
+      },
+    });
 
     // Set headers for download
-    res.setHeader('Content-Disposition', `attachment; filename="${file.fileName}"`);
-    res.setHeader('Content-Type', file.fileType);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${file.fileName}"`
+    );
+    res.setHeader("Content-Type", file.fileType);
 
     // Stream the file content to the client
     firebaseResponse.data.pipe(res);
@@ -169,6 +199,19 @@ export const fileDelete = async (req, res) => {
         { fileList: fileId },
         { $pull: { fileList: fileId } }
       );
+
+      // Construct a log message and create a log entry
+      const logMessage = `File "${deletedFile.fileName}" (ID: ${
+        deletedFile._id
+      }) was deleted.`;
+      await createLog({
+        req,
+        collection: "File",
+        action: "delete",
+        logMessage,
+        affectedID: deletedFile._id,
+      });
+
       return res.status(200).json({
         success: true,
         message: "File deleted and file references updated successfully",

@@ -5,6 +5,7 @@ import { tokens } from "../../theme.js";
 import PaymentCard from "../PaymentCard.jsx";
 import { formatDateString } from "../../utils/yearFilter.js";
 import BarChart from "../../components/BarChart.jsx";
+import PaymentDetailsDashboard from "../PaymentDetailsDashboard.jsx";
 
 const SuperAdminCharts = () => {
   const theme = useTheme();
@@ -13,11 +14,11 @@ const SuperAdminCharts = () => {
   const [chartStatus, setChartStatus] = useState("degree");
   const [groupedData, setGroupedData] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [paymentDetailsData, setPaymentDetailsData] = useState({});
   const { paymentData, error, loading } = useAllGetPaymentDetails();
-
   useEffect(() => {
     if (paymentData && chartStatus) {
-      dataFilter(paymentData, chartStatus);
+      dataFilter(paymentData, chartStatus);      
     }
   }, [paymentData, chartStatus]);
 
@@ -87,6 +88,10 @@ const SuperAdminCharts = () => {
     });
   };
 
+  const handlePaymentCardClick = (dataName, data) => {
+    setPaymentDetailsData({ dataName, dataDetails: data });
+  };
+
   if (loading) {
     return (
       <Box
@@ -101,9 +106,8 @@ const SuperAdminCharts = () => {
   if (error) {
     return <div>{error.message}</div>;
   }
-
   return (
-    <Box>
+    <Box pb={2}>
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12} gap={2} display="flex">
           <Button
@@ -123,17 +127,29 @@ const SuperAdminCharts = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} mb={2}>
-        <Grid item xs={12}>
-          <Box width="60%" height="300px" m="0 auto" border="1px solid #000">
+        <Grid item xs={12} md={4}>
+          <Box width="100%" height="300px" m="0 auto" border="1px solid #000">
             <BarChart data={chartData} type={chartStatus} />
           </Box>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <PaymentDetailsDashboard
+            data={paymentDetailsData}
+            type={chartStatus}
+          />
         </Grid>
       </Grid>
       {chartStatus === "degree" && (
         <Grid container spacing={2}>
           {groupedData && groupedData.length > 0 ? (
-            groupedData.map(({ degreeID, dataName, data }) => (
-              <Grid item xs={12} sm={3} key={degreeID}>
+            groupedData.map(({ degreeID, dataName, data }, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={3}
+                key={index}
+                onClick={() => handlePaymentCardClick(dataName, data)}
+              >
                 <Box display="flex" flexDirection="column" gap={2}>
                   <PaymentCard
                     id={degreeID}
@@ -155,7 +171,13 @@ const SuperAdminCharts = () => {
         <Grid container spacing={2}>
           {groupedData && groupedData.length > 0 ? (
             groupedData.map(({ dataName, data }, index) => (
-              <Grid item xs={12} sm={3} key={index}>
+              <Grid
+                item
+                xs={12}
+                sm={3}
+                key={index}
+                onClick={() => handlePaymentCardClick(dataName, data)}
+              >
                 <PaymentCard
                   name={formatDateString(dataName)}
                   data={data}

@@ -13,8 +13,8 @@ router.get("/getModuleData/:degreeID/:moduleID", getModuleData);
 router.get("/getPaymentData/all", getPaymentDetailsAll);
 router.post("/getPaymentData", getPaymentDetails);
 router.get("/getModuleAssignmentData/:studentID/:moduleID", getModuleAssignmentData);
-router.post("/updatePaymentData", updatePaymentDetails);
-router.post("/updatePaymentStatus", updatePaymentStatus);
+router.put("/updatePaymentData", updatePaymentDetails);
+router.put("/updatePaymentStatus", updatePaymentStatus);
 router.delete('/deleteAssignment/:assignmentID', deleteAssignment)
 
 export default router;

@@ -23,6 +23,9 @@ import PortalSidebar from "./components/Portal/PortalSidebar";
 import OrderIDList from "./components/profilePages/OrderIDList";
 import StudentList from "./scenes/studentList";
 import PaymentApproval from "./components/profilePages/PaymentApproval";
+import AgentList from "./scenes/agentList/AgentList";
+import LogList from "./scenes/logList/LogList";
+import GlobalSearch from "./scenes/globalSearch/GlobalSearch";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
@@ -46,6 +49,7 @@ export const App = () => {
               {/* Main app routes */}
               <Route path="/login" element={authUser && !isPortal ? <Navigate to='/task' /> : <LoginForm />} />
               <Route path="/task" element={authUser && !isPortal ? <Dashboard /> : <Navigate to='/login' />} />
+              <Route path="/globalSearch" element={authUser && !isPortal ? <GlobalSearch /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser && !isPortal ? <AllDegree /> : <Navigate to='/login' />} />
               <Route path="/allOrders" element={authUser && !isPortal ? <OrderIDList /> : <Navigate to='/login' />} />
               <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />
@@ -53,6 +57,8 @@ export const App = () => {
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
               <Route path="/add-degree" element={authUser && !isPortal ? <DegreeForm /> : <Navigate to='/login' />} />
               <Route path="/allStudent" element={authUser && !isPortal ? <StudentList /> : <Navigate to='/login' />} />
+              <Route path="/allAgent" element={isAdmin ? <AgentList /> : <Navigate to='/' />} />
+              <Route path="/allLogs" element={isAdmin ? <LogList /> : <Navigate to='/' />} />
               <Route path="/faq" element={authUser && !isPortal ? <FAQ /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear" element={authUser && !isPortal ? <DegreeBoard /> : <Navigate to='/login' />} />
               <Route path="/task/:degreeYear/:degreeId" element={authUser && !isPortal ? <DegreeProfile /> : <Navigate to='/login' />} />

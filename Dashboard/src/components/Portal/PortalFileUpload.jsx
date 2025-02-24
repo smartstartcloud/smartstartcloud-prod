@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For accessing query params
-import {Button,Typography,Card,CardContent,IconButton,TableContainer,Table,TableHead,TableCell,TableRow,TableBody,Grid,TextField,
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom"; // For accessing query params
+import {Button,Container,Typography,Box,Card,CardContent,IconButton,TableContainer,Table,TableHead,TableCell,TableRow,TableBody,Grid,TextField,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ShareIcon from "@mui/icons-material/Share";
+import axios from "axios";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Paper from "@mui/material/Paper";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import useUploadFiles from "../../hooks/useUploadFiles";
 import CloseIcon from "@mui/icons-material/Close";
+import useFetchFileList from "../../hooks/useFetchFileList";
 
 const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
@@ -22,7 +26,10 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
   const [files, setFiles] = useState([]);
   const [orderID, setOrderID] = useState(orderIDPass);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const { uploadFiles } = useUploadFiles();
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
+  const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
+  // const { fileList } = useFetchFileList(orderID, true);
   
   const {
     control,

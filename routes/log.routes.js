@@ -1,10 +1,11 @@
 import express from 'express';
-import { getLogs } from './log.controller.js';
-import { authenticate, adminAllowed } from './protect.js'; // Assuming you have these middlewares
+import { getAllLogs } from "../controllers/log.controller.js";
+import { adminAllowed, authenticate } from '../middlewares/protect.js';
 
 const router = express.Router();
 
+router.use(authenticate, adminAllowed);
 // Route to fetch logs (admin access only)
-router.get('/logs', authenticate, adminAllowed, getLogs);
+router.get("/AllLogs", getAllLogs);
 
 export default router;

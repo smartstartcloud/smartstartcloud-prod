@@ -10,11 +10,14 @@ import  HomeOutlinedIcon  from '@mui/icons-material/HomeOutlined'
 import  PersonOutlinedIcon  from '@mui/icons-material/PersonOutlined'
 import  HelpOutlinedIcon  from '@mui/icons-material/HelpOutlined'
 import  MenuOutlinedIcon  from '@mui/icons-material/MenuOutlined'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import ListIcon from "@mui/icons-material/List";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -145,16 +148,22 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {!isFinance ||
-                (isAdmin && (
-                  <Item
-                    title="Add Degree"
-                    to="/add-degree"
-                    icon={<CollectionsBookmarkOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                ))}
+              <Item
+                title="Search"
+                to="/globalSearch"
+                icon={<SearchIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              {(isAdmin || !isFinance) && (
+                <Item
+                  title="Add Degree"
+                  to="/add-degree"
+                  icon={<CollectionsBookmarkOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="All Degrees"
                 to="/allDegrees"
@@ -162,16 +171,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
-              {!isFinance ||
-                (isAdmin && (
-                  <Item
-                    title="All Orders"
-                    to="/allOrders"
-                    icon={<ListIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                ))}
+              {(isAdmin || !isFinance) && (
+                <Item
+                  title="All Orders"
+                  to="/allOrders"
+                  icon={<ListIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               {isAdmin && (
                 <Item
                   title="Signup User"
@@ -190,6 +198,15 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
+              {isAdmin && (
+                <Item
+                  title="All Agent"
+                  to="/allAgent"
+                  icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="All Student"
                 to="/allStudent"
@@ -197,6 +214,15 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+              {isAdmin && (
+                <Item
+                  title="All User Logs"
+                  to="/allLogs"
+                  icon={<ListAltIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              )}
               <Item
                 title="FAQ Page"
                 to="/faq"

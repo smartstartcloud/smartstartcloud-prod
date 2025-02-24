@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Box,
   Card,
@@ -10,9 +10,10 @@ import {
 import { tokens } from '../theme';
 
 
-const PaymentCard = ({id, name, data, type}) => {  
+const PaymentCard = ({id='', name, data, type}) => {      
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode);  
+  
   // Check if data is defined and is an array
   const totalModulePriceTemp = Array.isArray(data)
     ? data.reduce((sum, item) => sum + Number(item.modulePrice || 0), 0)
@@ -20,6 +21,26 @@ const PaymentCard = ({id, name, data, type}) => {
 
   const totalPaidPriceTemp = Array.isArray(data)
     ? data.reduce((sum, item) => sum + Number(item.paidAmount || 0), 0)
+    : 0;
+
+  const totalApprovedPriceTemp = Array.isArray(data)
+    ? data.reduce(
+        (sum, item) =>
+          item.paymentVerificationStatus === "approved"
+            ? sum + Number(item.paidAmount || 0)
+            : sum,
+        0
+      )
+    : 0;
+
+  const totalWaitingApprovalPriceTemp = Array.isArray(data)
+    ? data.reduce(
+        (sum, item) =>
+          item.paymentVerificationStatus === "awaiting approval"
+            ? sum + Number(item.paidAmount || 0)
+            : sum,
+        0
+      )
     : 0;
     
   return (
@@ -57,23 +78,25 @@ const PaymentCard = ({id, name, data, type}) => {
               {name}
             </Typography>
           </Box>
-          {type === "degree" && <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="baseline"
-            mb={2}
-          >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold" }}
+          {type === "degree" && (
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="baseline"
+              mb={2}
             >
-              Degree ID
-            </Typography>
-            <Typography variant="subtitle1" component="div">
-              {id}
-            </Typography>
-          </Box>}
+              <Typography
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: "bold" }}
+              >
+                Degree ID
+              </Typography>
+              <Typography variant="subtitle1" component="div">
+                {id}
+              </Typography>
+            </Box>
+          )}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -102,10 +125,27 @@ const PaymentCard = ({id, name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {"Paid Amount"}
+              {"Paid Amount (Approved)"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {totalPaidPriceTemp}
+              {totalApprovedPriceTemp}
+            </Typography>
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="baseline"
+            mb={2}
+          >
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ fontWeight: "bold" }}
+            >
+              {"Paid Amount (Awaiting Approval)"}
+            </Typography>
+            <Typography variant="subtitle1" component="div">
+              {totalWaitingApprovalPriceTemp}
             </Typography>
           </Box>
         </CardContent>

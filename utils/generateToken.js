@@ -25,4 +25,20 @@ const newAccessToken = app.post("/",async (req,res)=>{
     });
   })
 
-export{generateAccessToken,generateRefreshToken,newAccessToken}
+const extractToken = (testToken) => {
+  if(testToken){
+    const token = testToken.split('=')[1];    
+    try {
+      // Verify and decode the token
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      // Extract user ID and role
+      const { userId, userRole } = decoded;
+      return { userId, userRole };
+    } catch (error) {
+      console.error("Invalid or expired token:", error.message);
+      return null;
+    }
+  }
+}
+
+export{generateAccessToken,generateRefreshToken,newAccessToken, extractToken}

@@ -1,3 +1,4 @@
+import React from "react";
 import useApi from "./useApi";
 import { useAuthContext } from "../context/AuthContext";
 
@@ -15,12 +16,13 @@ const useSendPaymentData = () => {
       otherPaymentMethod,
       bankPaymentMethod,
       cashPaymentMethod,
-      referredPaymentMethod
+      referredPaymentMethod,
+      paymentVerificationStatus,
     },
     paymentRequiredInformation
   ) => {    
     try {
-      const res = await api.post(`/api/module/updatePaymentData`, {
+      const res = await api.put(`/api/module/updatePaymentData`, {
         totalPaymentDue,
         totalPaymentToDate,
         paymentMethod,
@@ -32,7 +34,8 @@ const useSendPaymentData = () => {
         cashPaymentMethod,
         referredPaymentMethod,
         paymentRequiredInformation,
-        userID: authUser._id
+        paymentVerificationStatus,
+        userID: authUser._id,
       });
       const data = await res.data;
       if (data.error) {
@@ -55,9 +58,9 @@ const useSendPaymentData = () => {
     }
   };
 
-  const updatePaymentStatus = async (id, paymentVerificationStatus) => {
+  const updatePaymentStatus = async (id, paymentVerificationStatus) => {    
     try {      
-      const res = await api.post(`/api/module/updatePaymentStatus`, {
+      const res = await api.put(`/api/module/updatePaymentStatus`, {
         id, paymentVerificationStatus
       });
       const data = await res.data;
