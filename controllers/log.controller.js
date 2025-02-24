@@ -44,3 +44,17 @@ export const getAllLogs = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const deleteLog = async (req, res) => {  
+  try {
+    const { id } = req.params; // Extract log ID from URL params
+    const deletedLog = await Log.findByIdAndDelete(id);
+    if (!deletedLog) {
+      return res.status(404).json({ success: false, error: "Log not found" });
+    }
+    res.status(200).json({ success: true, data: deletedLog });
+  } catch (error) {
+    console.error("Error deleting log:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

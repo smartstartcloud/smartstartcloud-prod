@@ -13,15 +13,18 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllActionLogs from "../../hooks/useFetchAllActionLogs";
 import { formatDate } from "../../utils/functions";
+import useDeleteObjects from "../../hooks/useDeleteObjects";
 
 const LogList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { logList, loading, error } = useFetchAllActionLogs();
+  const { deleteActionLog } = useDeleteObjects();
+  const [finalLogList, setfinalLogList] = useState([]);
 
     useEffect(() => {
         if (logList) {
-        console.log(logList);
+          setfinalLogList(logList)
         }
     }, [logList]);
 
@@ -55,13 +58,15 @@ const LogList = () => {
         ),
       },
     ];
-    // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-    const handleRowClick = (params) => {
-      console.log(params.row);
-    };
 
     const handleDelete = async (data) => {
-      console.log(data);
+      try {
+        const response = await deleteActionLog(data._id);
+        setfinalLogList((prev) => prev.filter((item) => item._id !== data._id));
+        console.log("Logs deleted:", response);
+      } catch (e) {
+        console.log("Error deleting Logs: ", e.message);
+      }
     };
 
     if (loading) {
@@ -105,7 +110,7 @@ const LogList = () => {
                 },
               },
             }}
-            rows={logList}
+            rows={finalLogList}
             columns={columns}
             getRowId={(row) => row._id}
             slots={{ toolbar: GridToolbar }}
@@ -119,7 +124,6 @@ const LogList = () => {
             }}
             pageSizeOptions={[10, 20, 50, 100]}
             autoHeight
-            onRowClick={handleRowClick} // Add onRowClick handler
           />
         </Box>
       </Box>
