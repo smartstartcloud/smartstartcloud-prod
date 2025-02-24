@@ -14,10 +14,8 @@ import DegreeProfile from "./components/profilePages/degreeProfile";
 import SignupForm from "./components/forms/SignupForm";
 import LoginForm from "./components/forms/LoginForm";
 import useLogout from "./hooks/useLogout";
-import UploadDownload from "./devTest/uploadDownload";
 import StudentProfile from "./components/profilePages/StudentProfile";
 import AllDegree from "./scenes/dashboard/AllDegree";
-import GlobalUploadPage from "./devTest/GlobalUploadPage";
 import ModuleProfile from "./components/profilePages/ModuleProfile";
 import PortalIndex from "./components/Portal/PortalIndex";
 import PortalAll from "./components/Portal/PortalAll";
@@ -27,6 +25,7 @@ import StudentList from "./scenes/studentList";
 import PaymentApproval from "./components/profilePages/PaymentApproval";
 import AgentList from "./scenes/agentList/AgentList";
 import LogList from "./scenes/logList/LogList";
+import GlobalSearch from "./scenes/globalSearch/GlobalSearch";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
@@ -50,6 +49,7 @@ export const App = () => {
               {/* Main app routes */}
               <Route path="/login" element={authUser && !isPortal ? <Navigate to='/task' /> : <LoginForm />} />
               <Route path="/task" element={authUser && !isPortal ? <Dashboard /> : <Navigate to='/login' />} />
+              <Route path="/globalSearch" element={authUser && !isPortal ? <GlobalSearch /> : <Navigate to='/login' />} />
               <Route path="/allDegrees" element={authUser && !isPortal ? <AllDegree /> : <Navigate to='/login' />} />
               <Route path="/allOrders" element={authUser && !isPortal ? <OrderIDList /> : <Navigate to='/login' />} />
               <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />

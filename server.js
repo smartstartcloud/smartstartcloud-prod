@@ -12,6 +12,7 @@ import multer from "multer"; // For file handling
 import fileRoutes from "./routes/files.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import searchRoutes from "./routes/search.routes.js";
 import {
   fileUpload,
   fileDownload,
@@ -88,6 +89,7 @@ app.use("/api/files", fileRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/log", logRoutes);
+app.use("/api/search", searchRoutes);
 
 //Test File Firebase
 const storage = multer.memoryStorage();

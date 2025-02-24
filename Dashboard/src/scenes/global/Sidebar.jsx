@@ -17,6 +17,7 @@ import ListIcon from "@mui/icons-material/List";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Item = ({title, to, icon, selected, setSelected}) => {
   const theme = useTheme()
@@ -144,6 +145,13 @@ const Sidebar = () => {
                 title="Dashboard"
                 to="/task"
                 icon={<HomeOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Search"
+                to="/globalSearch"
+                icon={<SearchIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
