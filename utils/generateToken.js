@@ -30,7 +30,7 @@ const extractToken = (testToken) => {
     const token = testToken.split('=')[1];    
     try {
       // Verify and decode the token
-      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      const decoded = jwt.verify(token, process.env.JWT_KEY);      
       // Extract user ID and role
       const { userId, userRole } = decoded;
       return { userId, userRole };
