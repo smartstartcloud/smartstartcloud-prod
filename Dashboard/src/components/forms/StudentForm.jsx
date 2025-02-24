@@ -25,16 +25,15 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
       studentPassword: studentData.studentPassword || "",
       studentContact: studentData.studentContact || "",
       degreeID: degreeID,
-      groupName: "",
-      tutorName: "",
-      campusLocation: "",
-      universityName: "",
-      courseName: "",
-      year: "",
+      groupName: studentData.groupName || "",
+      tutorName: studentData.tutorName || "",
+      campusLocation: studentData.campusLocation || "",
+      universityName: studentData.universityName || "",
+      courseName: studentData.courseName || "",
+      year: studentData.year || "",
     });
     
     const [isExternalStudent, setIsExternalStudent] = useState(false);
-
 
     useEffect(() => {
       if (studentEditMode) {
@@ -119,11 +118,17 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
             setOpen(false)
         }
         setNewStudent({
-            studentID: '',
-            studentName: '',
-            studentLogin: '',
-            studentPassword: '',
-            studentContact: ''
+          studentID: "",
+          studentName: "",
+          studentLogin: "",
+          studentPassword: "",
+          studentContact: "",
+          groupName: "",
+          tutorName: "",
+          campusLocation: "",
+          universityName: "",
+          courseName: "",
+          year: "",
         });
     };
 
