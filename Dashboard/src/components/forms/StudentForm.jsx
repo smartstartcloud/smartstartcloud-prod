@@ -4,15 +4,16 @@ import {
     Box, CircularProgress, Typography, useTheme, Button, Modal, TextField, Snackbar, IconButton,
     Alert,
     Checkbox,
+    Grid,
 } from '@mui/material';
 import { tokens } from '../../theme';
 import MuiAlert from '@mui/material/Alert';
 import useSendStudentData from '../../hooks/useSendStudentData';
 
-const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) => {
+const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=false}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { sendStudent } = useSendStudentData();
+    const { sendStudent, updateStudent } = useSendStudentData();
     const [formSaved, setFormSaved] = useState(false);
     const [formError, setFormError] = useState(false);
     const [formErrorMessage, setFormErrorMessage] = useState('');
@@ -24,6 +25,8 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
       studentLogin: studentData.studentLogin || "",
       studentPassword: studentData.studentPassword || "",
       studentContact: studentData.studentContact || "",
+      studentOther: studentData.studentOther || "",
+      studentOfficePassword: studentData.studentOfficePassword || "",
       degreeID: degreeID,
       groupName: studentData.groupName || "",
       tutorName: studentData.tutorName || "",
@@ -31,6 +34,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
       universityName: studentData.universityName || "",
       courseName: studentData.courseName || "",
       year: studentData.year || "",
+      isExternal: studentData.isExternal || false,
     });
     
     const [isExternalStudent, setIsExternalStudent] = useState(false);
@@ -38,18 +42,22 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
     useEffect(() => {
       if (studentEditMode) {
         setNewStudent({
-          studentID: studentData.studentID,
-          studentName: studentData.studentName,
-          studentLogin: studentData.studentLogin,
-          studentPassword: studentData.studentPassword,
-          studentContact: studentData.studentContact,
-          degreeID: studentData.degreeID,
+          _id: studentData._id,
+          studentID: studentData.studentID || "",
+          studentName: studentData.studentName || "",
+          studentLogin: studentData.studentLogin || "",
+          studentPassword: studentData.studentPassword || "",
+          studentContact: studentData.studentContact || "",
+          studentOther: studentData.studentOther || "",
+          studentOfficePassword: studentData.studentOfficePassword || "",
+          degreeID: degreeID,
           groupName: studentData.groupName || "",
           tutorName: studentData.tutorName || "",
           campusLocation: studentData.campusLocation || "",
           universityName: studentData.universityName || "",
           courseName: studentData.courseName || "",
           year: studentData.year || "",
+          isExternal: studentData.isExternal || false,
         });
         setIsExternalStudent(!!studentData.universityName); // If university name exists, set external student to true
       } else {
@@ -60,12 +68,15 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           studentPassword: "",
           studentContact: "",
           degreeID: degreeID,
+          studentOther: "",
+          studentOfficePassword: "",
           groupName: "",
           tutorName: "",
           campusLocation: "",
           universityName: "",
           courseName: "",
           year: "",
+          isExternal: false,
         });
         setIsExternalStudent(false);
       }
@@ -103,7 +114,6 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
 
     const handleAddStudent = async () => {        
         setformLoading(true);
-        
         try{
             const response = await sendStudent(newStudent)            
             console.log('Form Data:', newStudent);
@@ -123,47 +133,58 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           studentLogin: "",
           studentPassword: "",
           studentContact: "",
+          degreeID: degreeID,
+          studentOther: "",
+          studentOfficePassword: "",
           groupName: "",
           tutorName: "",
           campusLocation: "",
           universityName: "",
           courseName: "",
           year: "",
+          isExternal: false,
         });
     };
 
     const handleUpdateStudent = async () => {
-      // setformLoading(true);
-      console.log(newStudent);
-      
-
-      // try {
-      //   const response = await updateStudent(newStudent);
-      //   console.log("Form Data:", newStudent);
-      //   console.log("Response Data:", response);
-      //   setFormSaved(true);
-      //   setformLoading(false);
-      // } catch (e) {
-      //   setFormError(true);
-      //   setformLoading(false);
-      //   setFormErrorMessage(e.message);
-      //   console.log("Error submitting form: ", e.message);
-      //   setOpen(false);
-      // }
-      // setNewStudent({
-      //   studentID: "",
-      //   studentName: "",
-      //   studentLogin: "",
-      //   studentPassword: "",
-      //   studentContact: "",
-      // });
+      setformLoading(true);
+      try {        
+        const response = await updateStudent(newStudent);
+        console.log("Form Data:", newStudent);
+        console.log("Response Data:", response);
+        setFormSaved(true);
+        setformLoading(false);
+      } catch (e) {
+        setFormError(true);
+        setformLoading(false);
+        setFormErrorMessage(e.message);
+        console.log("Error submitting form: ", e.message);
+        setOpen(false);
+      }
+      setNewStudent({
+        studentID: studentData.studentID || "",
+        studentName: studentData.studentName || "",
+        studentLogin: studentData.studentLogin || "",
+        studentPassword: studentData.studentPassword || "",
+        studentContact: studentData.studentContact || "",
+        studentOther: studentData.studentOther || "",
+        studentOfficePassword: studentData.studentOfficePassword || "",
+        degreeID: degreeID,
+        groupName: studentData.groupName || "",
+        tutorName: studentData.tutorName || "",
+        campusLocation: studentData.campusLocation || "",
+        universityName: studentData.universityName || "",
+        courseName: studentData.courseName || "",
+        year: studentData.year || "",
+        isExternal: studentData.isExternal || false,
+      });
     };
 
     return (
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
-            width: "400px",
+            width: "600px",
             backgroundColor: "#f7f5f5",
             padding: 3,
             borderRadius: 3,
@@ -172,7 +193,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
             position: "relative",
             maxHeight: "90vh",
             overflowY: "auto",
-            top: "-80px"
+            top: "-80px",
           }}
         >
           <IconButton
@@ -189,132 +210,204 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           <Typography variant="h5" color={colors.grey[50]} sx={{ mb: 2 }}>
             Add New Student
           </Typography>
-          <TextField
-            label="Student ID"
-            fullWidth
-            error={!!errors.studentID}
-            helperText={errors.studentID}
-            value={newStudent.studentID}
-            onChange={(e) => {
-              setNewStudent({ ...newStudent, studentID: e.target.value });
-              setErrors({ ...errors, studentID: "" });
-            }}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Student Name"
-            fullWidth
-            error={!!errors.studentName}
-            helperText={errors.studentName}
-            value={newStudent.studentName}
-            onChange={(e) => {
-              setNewStudent({ ...newStudent, studentName: e.target.value });
-              setErrors({ ...errors, studentName: "" });
-            }}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Student Login"
-            fullWidth
-            error={!!errors.studentLogin}
-            helperText={errors.studentLogin}
-            value={newStudent.studentLogin}
-            onChange={(e) => {
-              setNewStudent({ ...newStudent, studentLogin: e.target.value });
-              setErrors({ ...errors, studentLogin: "" });
-            }}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Student Password"
-            fullWidth
-            error={!!errors.studentPassword}
-            helperText={errors.studentPassword}
-            value={newStudent.studentPassword}
-            onChange={(e) => {
-              setNewStudent({ ...newStudent, studentPassword: e.target.value });
-              setErrors({ ...errors, studentPassword: "" });
-            }}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Student Contact"
-            fullWidth
-            error={!!errors.studentContact}
-            helperText={errors.studentContact}
-            value={newStudent.studentContact}
-            onChange={(e) => {
-              setNewStudent({ ...newStudent, studentContact: e.target.value });
-              setErrors({ ...errors, studentContact: "" });
-            }}
-            sx={{ mb: 2 }}
-          />
-          <TextField label="Group Name" 
-           fullWidth 
-           value={newStudent.groupName} 
-           onChange={(e) => {
-            setNewStudent({ ...newStudent, groupName: e.target.value })
-            setErrors({ ...errors, groupName: "" });
-          }} 
-           sx={{ mb: 2 }} />
-          <TextField label="Tutor Name" fullWidth value={newStudent.tutorName} onChange={(e) => {
-            setNewStudent({ ...newStudent, tutorName: e.target.value })
-            setErrors({ ...errors, tutorName: "" });
-          }} sx={{ mb: 2 }} />
-          <TextField label="Campus Location" fullWidth value={newStudent.campusLocation} onChange={(e) => 
-            {  
-              setNewStudent({ ...newStudent, campusLocation: e.target.value })
-              setErrors({ ...errors, campusLocation: "" });
-            }
-            } sx={{ mb: 2 }} />
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-            <Checkbox
-                checked={isExternalStudent}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student ID"
+                fullWidth
+                error={!!errors.studentID}
+                helperText={errors.studentID}
+                value={newStudent.studentID}
                 onChange={(e) => {
-                  setIsExternalStudent(e.target.checked);
-                  if (!e.target.checked) {
-                    setNewStudent({ ...newStudent, universityName: "", courseName: "", year: "" });
-                  }
+                  setNewStudent({ ...newStudent, studentID: e.target.value });
+                  setErrors({ ...errors, studentID: "" });
                 }}
               />
-              <Typography variant="body1" sx={{ mr: 1 }}>
-                External Student
-              </Typography>
-              
-            </Box>
-            {isExternalStudent && (
-                <>
-                  <TextField
-                    label="University Name"
-                    fullWidth
-                    value={newStudent.universityName}
-                    onChange={(e) =>
-                      setNewStudent({ ...newStudent, universityName: e.target.value })
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    label="Course Name"
-                    fullWidth
-                    value={newStudent.courseName}
-                    onChange={(e) =>
-                      setNewStudent({ ...newStudent, courseName: e.target.value })
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    label="Year"
-                    fullWidth
-                    value={newStudent.year}
-                    onChange={(e) =>
-                      setNewStudent({ ...newStudent, year: e.target.value })
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                </>
-              )}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student Name"
+                fullWidth
+                error={!!errors.studentName}
+                helperText={errors.studentName}
+                value={newStudent.studentName}
+                onChange={(e) => {
+                  setNewStudent({ ...newStudent, studentName: e.target.value });
+                  setErrors({ ...errors, studentName: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student Login"
+                fullWidth
+                error={!!errors.studentLogin}
+                helperText={errors.studentLogin}
+                value={newStudent.studentLogin}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    studentLogin: e.target.value,
+                  });
+                  setErrors({ ...errors, studentLogin: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student Password"
+                fullWidth
+                error={!!errors.studentPassword}
+                helperText={errors.studentPassword}
+                value={newStudent.studentPassword}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    studentPassword: e.target.value,
+                  });
+                  setErrors({ ...errors, studentPassword: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student Contact"
+                fullWidth
+                error={!!errors.studentContact}
+                helperText={errors.studentContact}
+                value={newStudent.studentContact}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    studentContact: e.target.value,
+                  });
+                  setErrors({ ...errors, studentContact: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Other Information"
+                fullWidth
+                error={!!errors.studentOther}
+                helperText={errors.studentOther}
+                value={newStudent.studentOther}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    studentOther: e.target.value,
+                  });
+                  setErrors({ ...errors, studentOther: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Student Office Password"
+                fullWidth
+                error={!!errors.studentOfficePassword}
+                helperText={errors.studentOfficePassword}
+                value={newStudent.studentOfficePassword}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    studentOfficePassword: e.target.value,
+                  });
+                  setErrors({ ...errors, studentOfficePassword: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Group Name"
+                fullWidth
+                value={newStudent.groupName}
+                onChange={(e) => {
+                  setNewStudent({ ...newStudent, groupName: e.target.value });
+                  setErrors({ ...errors, groupName: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Tutor Name"
+                fullWidth
+                value={newStudent.tutorName}
+                onChange={(e) => {
+                  setNewStudent({ ...newStudent, tutorName: e.target.value });
+                  setErrors({ ...errors, tutorName: "" });
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Campus Location"
+                fullWidth
+                value={newStudent.campusLocation}
+                onChange={(e) => {
+                  setNewStudent({
+                    ...newStudent,
+                    campusLocation: e.target.value,
+                  });
+                  setErrors({ ...errors, campusLocation: "" });
+                }}
+              />
+            </Grid>
+          </Grid>
 
-
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Checkbox
+              checked={newStudent.isExternal}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setIsExternalStudent(checked);
+                setNewStudent({
+                  ...newStudent,
+                  isExternal: checked,
+                  ...(!checked && {
+                    universityName: "",
+                    courseName: "",
+                    year: "",
+                  }),
+                });
+              }}
+            />
+            <Typography variant="body1">External Student</Typography>
+          </Box>
+          {isExternalStudent && (
+            <>
+              <TextField
+                label="University Name"
+                fullWidth
+                value={newStudent.universityName}
+                onChange={(e) =>
+                  setNewStudent({
+                    ...newStudent,
+                    universityName: e.target.value,
+                  })
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Course Name"
+                fullWidth
+                value={newStudent.courseName}
+                onChange={(e) =>
+                  setNewStudent({ ...newStudent, courseName: e.target.value })
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Year"
+                fullWidth
+                value={newStudent.year}
+                onChange={(e) =>
+                  setNewStudent({ ...newStudent, year: e.target.value })
+                }
+                sx={{ mb: 2 }}
+              />
+            </>
+          )}
 
           {studentEditMode ? (
             <Button

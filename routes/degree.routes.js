@@ -1,7 +1,7 @@
 import express from "express"
 import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree, updateDegree, getAgentList, getAllAgentList} from '../controllers/degree.controller.js'
 import {authenticate,adminAllowed} from '../middlewares/protect.js'
-import { addStudentInDegree, getAllStudents } from "../controllers/student.controller.js"
+import { addStudentInDegree, getAllStudents, updateStudentInDegree } from "../controllers/student.controller.js"
 
 
 const router = express.Router();
@@ -20,6 +20,7 @@ router.get('/selected/agentID/:degreeAgent',getDegreeByAgent) ;
 router.get('/student/all', getAllStudents);
 router.get('/selected/studentID/:studentID',getStudentByID) ;
 router.post('/addStudentInDegree',addStudentInDegree) ;
+router.put("/updateStudentInDegree", updateStudentInDegree);
 
 router.delete('/deleteDegree/:degreeID',deleteDegree);
 router.delete('/deleteStudent/:studentID/:degreeID',deleteStudentFromDegree);

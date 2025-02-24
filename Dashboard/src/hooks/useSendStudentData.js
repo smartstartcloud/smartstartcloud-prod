@@ -10,12 +10,15 @@ const useSendStudentData = () => {
       studentLogin,
       studentPassword,
       studentContact,
+      studentOfficePassword,
+      studentOther,
       groupName,
       tutorName,
       campusLocation,
       universityName,
       courseName,
-      year
+      year,
+      isExternal, // new field
     }) => {
       try {
         const res = await api.post(`/api/degree/addStudentInDegree`, {
@@ -25,12 +28,15 @@ const useSendStudentData = () => {
           studentLogin,
           studentPassword,
           studentContact,
+          studentOfficePassword,
+          studentOther,
           groupName,
           tutorName,
           campusLocation,
           universityName,
           courseName,
           year,
+          isExternal,
         });
 
         const data = await res.data;
@@ -58,33 +64,41 @@ const useSendStudentData = () => {
     };
 
     const updateStudent = async ({
+      _id,
       degreeID,
       studentID,
       studentName,
       studentLogin,
       studentPassword,
       studentContact,
+      studentOfficePassword,
+      studentOther,
       groupName,
       tutorName,
       campusLocation,
       universityName,
       courseName,
       year,
+      isExternal, // new field
     }) => {
       try {
-        const res = await api.post(`/api/degree/addStudentInDegree`, {
+        const res = await api.put(`/api/degree/updateStudentInDegree`, {
+          _id,
           degreeID,
           studentID,
           studentName,
           studentLogin,
           studentPassword,
           studentContact,
+          studentOfficePassword,
+          studentOther,
           groupName,
           tutorName,
           campusLocation,
           universityName,
           courseName,
           year,
+          isExternal,
         });
 
         const data = await res.data;
