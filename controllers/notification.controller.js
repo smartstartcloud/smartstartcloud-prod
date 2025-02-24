@@ -3,7 +3,7 @@ import User from "../models/user.models.js";
 import { extractToken } from "../utils/generateToken.js";
 
 export const sendNotification = async (req, role, type, message, metadata={}) => {
-    const testToken = req.headers.authorization;
+    const testToken = req.headers.cookie;
     const { userId } = extractToken(testToken);
     // Find users with the given role
     const users = await User.find({ role: { $in: role } }).select("_id");
