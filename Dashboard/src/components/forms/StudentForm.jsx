@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
     Box, CircularProgress, Typography, useTheme, Button, Modal, TextField, Snackbar, IconButton,
     Alert,
+    Checkbox,
 } from '@mui/material';
 import { tokens } from '../../theme';
 import MuiAlert from '@mui/material/Alert';
@@ -24,7 +25,16 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
       studentPassword: studentData.studentPassword || "",
       studentContact: studentData.studentContact || "",
       degreeID: degreeID,
+      groupName: "",
+      tutorName: "",
+      campusLocation: "",
+      universityName: "",
+      courseName: "",
+      year: "",
     });
+    
+    const [isExternalStudent, setIsExternalStudent] = useState(false);
+
 
     useEffect(() => {
       if (studentEditMode) {
@@ -35,7 +45,14 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           studentPassword: studentData.studentPassword,
           studentContact: studentData.studentContact,
           degreeID: studentData.degreeID,
+          groupName: studentData.groupName || "",
+          tutorName: studentData.tutorName || "",
+          campusLocation: studentData.campusLocation || "",
+          universityName: studentData.universityName || "",
+          courseName: studentData.courseName || "",
+          year: studentData.year || "",
         });
+        setIsExternalStudent(!!studentData.universityName); // If university name exists, set external student to true
       } else {
         setNewStudent({
           studentID: "",
@@ -44,9 +61,17 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
           studentPassword: "",
           studentContact: "",
           degreeID: degreeID,
+          groupName: "",
+          tutorName: "",
+          campusLocation: "",
+          universityName: "",
+          courseName: "",
+          year: "",
         });
+        setIsExternalStudent(false);
       }
     }, [studentEditMode, studentData, degreeID]);
+    
 
     const validateForm = () => {
         const newErrors = {};
@@ -134,12 +159,15 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
         <Box
           sx={{
             width: "400px",
-            backgroundColor: colors.grey[900],
+            backgroundColor: "#f7f5f5",
             padding: 3,
             borderRadius: 3,
             mx: "auto",
             mt: "10%",
             position: "relative",
+            maxHeight: "90vh",
+            overflowY: "auto",
+            top: "-80px"
           }}
         >
           <IconButton
@@ -234,6 +262,55 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode}) =>
               setErrors({ ...errors, campusLocation: "" });
             }
             } sx={{ mb: 2 }} />
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Checkbox
+                checked={isExternalStudent}
+                onChange={(e) => {
+                  setIsExternalStudent(e.target.checked);
+                  if (!e.target.checked) {
+                    setNewStudent({ ...newStudent, universityName: "", courseName: "", year: "" });
+                  }
+                }}
+              />
+              <Typography variant="body1" sx={{ mr: 1 }}>
+                External Student
+              </Typography>
+              
+            </Box>
+            {isExternalStudent && (
+                <>
+                  <TextField
+                    label="University Name"
+                    fullWidth
+                    value={newStudent.universityName}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, universityName: e.target.value })
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    label="Course Name"
+                    fullWidth
+                    value={newStudent.courseName}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, courseName: e.target.value })
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    label="Year"
+                    fullWidth
+                    value={newStudent.year}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, year: e.target.value })
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                </>
+              )}
+
+
+
           {studentEditMode ? (
             <Button
               variant="contained"
