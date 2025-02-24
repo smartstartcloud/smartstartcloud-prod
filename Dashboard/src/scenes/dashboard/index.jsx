@@ -36,29 +36,72 @@ const Dashboard = () => {
 
   return (
     <Box m="20px">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Header title="DASHBOARD" subtitle="Welcome to Dashboard" />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Header
+          title={isSuperAdmin ? "DASHBOARD" : "MY DEGREES"}
+          subtitle={
+            isSuperAdmin ? "Welcome to Dashboard" : "Welcome to MY DEGREES"
+          }
+        />
       </Box>
-      
+
       {!isSuperAdmin && (
         <>
           <Box display="flex" gap={2} mb={3}>
-            <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+            <FormControl
+              variant="outlined"
+              size="small"
+              style={{ minWidth: 120 }}
+            >
               <InputLabel>Intake</InputLabel>
-              <Select value={selectedIntake} onChange={handleIntakeChange} label="Intake">
+              <Select
+                value={selectedIntake}
+                onChange={handleIntakeChange}
+                label="Intake"
+              >
                 <MenuItem value="">All</MenuItem>
-                {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month) => (
-                  <MenuItem key={month} value={month}>{month}</MenuItem>
+                {[
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ].map((month) => (
+                  <MenuItem key={month} value={month}>
+                    {month}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
 
-            <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+            <FormControl
+              variant="outlined"
+              size="small"
+              style={{ minWidth: 120 }}
+            >
               <InputLabel>Year</InputLabel>
-              <Select value={selectedYear} onChange={handleYearChange} label="Year">
+              <Select
+                value={selectedYear}
+                onChange={handleYearChange}
+                label="Year"
+              >
                 <MenuItem value="">All</MenuItem>
                 {lastTenYears.map((year) => (
-                  <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+                  <MenuItem key={year} value={year.toString()}>
+                    {year}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>

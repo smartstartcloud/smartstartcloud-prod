@@ -336,7 +336,7 @@ const DegreeProfile = () => {
             mx: "auto",
             backgroundColor: colors.blueAccent[500],
           }}
-          onClick={() => setOpen(true)}
+          onClick={() => handleAdd()}
         >
           Add Student
         </Button>
