@@ -198,42 +198,57 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
             </Grid>
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
-              <Controller
-                name="assignmentName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Assignment Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    sx={{ mb: 2 }}
-                    error={
-                      !!touchedFields.assignmentName && !!errors.assignmentName
+          <Grid item xs={12} sm={8}>
+            <Controller
+              name="assignmentName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Assignment Name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  sx={{ mb: 2 }}
+                  error={!!touchedFields.assignmentName && !!errors.assignmentName}
+                  helperText={
+                    touchedFields.assignmentName && errors.assignmentName
+                      ? errors.assignmentName.message
+                      : null
+                  }
+                  onBlur={(e) => {
+                    field.onBlur();
+                    if (!field.value) {
+                      setError("assignmentName", {
+                        type: "manual",
+                        message: "Assignment Name is required",
+                      });
+                    } else {
+                      clearErrors("assignmentName");
                     }
-                    helperText={
-                      touchedFields.assignmentName && errors.assignmentName
-                        ? errors.assignmentName.message
-                        : null
-                    }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("assignmentName", {
-                          type: "manual",
-                          message: "Assignment Name is required",
-                        });
-                      } else {
-                        clearErrors("assignmentName");
-                      }
-                    }}
-                  />
-                )}
-              />
-            </Grid>
+                  }}
+                />
+              )}
+            />
           </Grid>
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="wordCount"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Word Count"
+                  variant="outlined"
+                  type="number"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
               <Controller
