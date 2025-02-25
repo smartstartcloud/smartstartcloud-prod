@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import {Button, TextField, Typography, Box, Snackbar, CircularProgress, Alert, Grid, useTheme, IconButton, InputAdornment, useMediaQuery} from '@mui/material';
+import {Button, TextField, Typography, Box, Snackbar, CircularProgress, Alert, Grid, Select, MenuItem, useTheme, IconButton, InputAdornment, useMediaQuery} from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { tokens } from '../../theme';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useLogin from '../../hooks/useLogin';
 
 const LoginForm = () => {
+    const isNonMobile = useMediaQuery('(min-width: 600px)')
     const navigate = useNavigate();
 
     const theme = useTheme();
@@ -34,7 +35,7 @@ const LoginForm = () => {
         setFormError(false);
     };
 
-    const { control, handleSubmit, setError, clearErrors, formState: { errors, touchedFields } } = useForm({
+    const { control, handleSubmit, getValues, setError, clearErrors, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
             userName: "",
             password: "",

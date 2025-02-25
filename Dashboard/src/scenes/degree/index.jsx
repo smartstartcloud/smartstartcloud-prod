@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Box, CircularProgress, Grid, TextField, Button, useTheme, Typography, InputAdornment, IconButton, List, ListItem, ListItemText, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -28,6 +28,14 @@ const DegreeBoard = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [searchResult, setSearchResult] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
+
+    // useEffect(
+    //     () => {
+    //         if (filteredDegree) {
+    //             console.log(filteredDegree);                
+    //         } 
+    //     }, [filteredDegree]
+    // )
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {

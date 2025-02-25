@@ -27,6 +27,7 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
       degreeYear: degree.degreeYear,
       moduleName: module.moduleName,
     });
+
     await newPayment.save();
   } catch (error) {
     console.log(error);

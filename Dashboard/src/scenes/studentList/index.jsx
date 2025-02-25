@@ -2,12 +2,15 @@ import {
   Box,
   Typography,
   useTheme,
+  IconButton,
   CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllStudentData from "../../hooks/useFetchAllStudentData";
 
 const StudentList = () => {
@@ -15,6 +18,13 @@ const StudentList = () => {
   const colors = tokens(theme.palette.mode);
   const { student: studentList, loading, error } = useFetchAllStudentData();
   const [currentAvailableID, setCurrentAvailableID] = useState();
+  const [availableIdList, setAvailableIdList] = useState([]);
+
+  // useEffect(() => {
+  //   if (studentList){
+  //     console.log(studentList);
+  //   }
+  // }, [studentList])
 
   useEffect(() => {
     if (studentList) {
@@ -30,6 +40,31 @@ const StudentList = () => {
     { field: "studentContact", headerName: "Contact Number", flex: 1 },
     { field: "studentOfficePassword", headerName: "MS Office Password", flex: 1 },
     { field: "studentOther", headerName: "Other Information", flex: 1 },
+    // {
+    //   field: "actions",
+    //   headerName: "Actions",
+    //   flex: 1,
+    //   renderCell: (params) => (
+    //     <div>
+    //       <IconButton
+    //         onClick={(event) => {
+    //           event.stopPropagation(); // Prevents the row click event
+    //           handleEdit(params.row);
+    //         }}
+    //       >
+    //         <EditOutlinedIcon />
+    //       </IconButton>
+    //       <IconButton
+    //         onClick={(event) => {
+    //           event.stopPropagation(); // Prevents the row click event
+    //           handleDelete(params.row);
+    //         }}
+    //       >
+    //         <DeleteOutlineOutlinedIcon />
+    //       </IconButton>
+    //     </div>
+    //   ),
+    // },
   ];
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleRowClick = (params) => {

@@ -2,6 +2,7 @@ import { useAuthContext } from "../context/AuthContext";
 import useApi from "./useApi";
 
 const useSignup = ( ) => {
+    const {setAuthUser} = useAuthContext();
     const api = useApi()
     // const navigate = useNavigate()
     const signup = async( {email, firstName, lastName, userName, password, gender, role} ) => {
