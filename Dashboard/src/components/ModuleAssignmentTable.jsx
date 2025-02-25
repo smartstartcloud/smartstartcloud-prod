@@ -108,21 +108,28 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
     // updateAssignmentStatus(assignmentId, newValue);
   };
 
+  const handleGroupButtonClick = (tableStatus) => {
+    setTablestatus(tableStatus);
+    if (tableStatus !== "orderID") {
+      setOrderConnectModuleOpen(false);
+    }
+  }
+
   const handleOrderConnectModuleButton = () => {    
-    setOrderConnectModuleOpen(true);
+    setOrderConnectModuleOpen((prev) => !prev);
   }
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={tableStatus === "orderID" ? 6 : 12} gap={2} display="flex">
         <Button
-          onClick={() => setTablestatus("orderID")}
+          onClick={() => handleGroupButtonClick("orderID")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
           Order ID
         </Button>
         <Button
-          onClick={() => setTablestatus("progress")}
+          onClick={() => handleGroupButtonClick("progress")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
@@ -136,7 +143,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
           Payment
         </Button> */}
         <Button
-          onClick={() => setTablestatus("grade")}
+          onClick={() => handleGroupButtonClick("grade")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
