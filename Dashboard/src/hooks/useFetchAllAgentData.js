@@ -11,7 +11,7 @@ const useFetchAllAgentData = () => {
     useEffect(() => {
       const fetchAgentData = async () => {
         try {          
-          const res = await api.get(`/api/degree/agent/all`);               
+          const res = await api.get(`/api/auth/agent/all`);                         
           setAgentList(res.data); // Update state with the Agent data
           setLoading(false); // Mark as not loading anymore
         } catch (error) {

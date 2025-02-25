@@ -12,7 +12,7 @@ const useFetchAgentList = () => {
     useEffect(() => {
             const fetchAgentList = async () => {
             try {
-                const res = await api.get(`/api/degree/agentList`);
+                const res = await api.get(`/api/auth/agentList`);
                 setAgentList(res.data); // Update state with the degree data
                 setLoading(false);   // Mark as not loading anymore
             } catch (error) {

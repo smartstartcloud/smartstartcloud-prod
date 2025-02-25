@@ -1,6 +1,6 @@
 import express from "express"
-import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree, updateDegree, getAgentList, getAllAgentList} from '../controllers/degree.controller.js'
-import {authenticate,adminAllowed} from '../middlewares/protect.js'
+import {newDegree,getAllDegree, getDegreeByYear, getDegreeByID, getDegreeByAgent, getStudentByID, deleteDegree, deleteStudentFromDegree, updateDegree} from '../controllers/degree.controller.js'
+import {authenticate} from '../middlewares/protect.js'
 import { addStudentInDegree, getAllStudents, updateStudentInDegree } from "../controllers/student.controller.js"
 
 
@@ -8,8 +8,6 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.get('/agentlist',getAgentList) ;
-router.get('/agent/all', getAllAgentList)
 router.post("/new",newDegree);
 router.put("/updateDegree/:degree_id", updateDegree);
 

@@ -444,29 +444,3 @@ export const deleteStudentFromDegree = async (req,res)=>{
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
-
-export const getAgentList = async (req,res)=>{
-  try {
-      const user = await User.find({role:"agent"},{_id:1,firstName:1,lastName:1});
-      if(!user){
-          res.status(400).json({error:'Error fetching agent'});
-      }
-      res.status(200).json(user);
-  } catch (error) {
-    console.error("Error fetching agents:", error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-}
-
-export const getAllAgentList = async (req,res)=>{
-  try {
-      const user = await User.find({ role: { $ne: "superAdmin" } }).select("_id firstName lastName email role gender userName");
-      if(!user){
-          res.status(400).json({error:'Error fetching agent'});
-      }
-      res.status(200).json(user);
-  } catch (error) {
-      console.error("Error fetching agents:", error);
-      res.status(500).json({ error: 'Internal Server Error' });
-  }
-}

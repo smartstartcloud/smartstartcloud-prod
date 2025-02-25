@@ -5,56 +5,53 @@ import {
     IconButton,
     CircularProgress,
   } from "@mui/material";
-  import React, { useEffect, useState } from "react";
-  import Header from "../../components/Header";
-  import { tokens } from "../../theme";
-  import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-  import useFetchAllStudentData from "../../hooks/useFetchAllStudentData";
+import React, { useEffect, useState } from "react";
+import Header from "../../components/Header";
+import { tokens } from "../../theme";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import useFetchAllAgentData from "../../hooks/useFetchAllAgentData";
+import useDeleteObjects from "../../hooks/useDeleteObjects";
+
   
   const AgentList = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const { deleteUser } = useDeleteObjects();
     const { agentList, loading, error } = useFetchAllAgentData();
-  
-    // useEffect(() => {
-    //   if (agentList){
-    //     console.log(agentList);
-    //   }
-    // }, [agentList])
+    const [finalAgentList, setFinalAgentList] = useState()
+    useEffect(() => {
+      if (agentList){
+        console.log(agentList);
+        setFinalAgentList(agentList);
+      }
+    }, [agentList])
   
     const columns = [
+      { field: "userID", headerName: "User ID", flex: 1 },
       { field: "firstName", headerName: "First Name", flex: 1 },
       { field: "lastName", headerName: "Last Name", flex: 1 },
       { field: "email", headerName: "Email", flex: 1 },
       { field: "userName", headerName: "User Name", flex: 1 },
       { field: "gender", headerName: "Gender", flex: 1 },
       { field: "role", headerName: "Role", flex: 1 },
-      // {
-      //   field: "actions",
-      //   headerName: "Actions",
-      //   flex: 1,
-      //   renderCell: (params) => (
-      //     <div>
-      //       <IconButton
-      //         onClick={(event) => {
-      //           event.stopPropagation(); // Prevents the row click event
-      //           handleEdit(params.row);
-      //         }}
-      //       >
-      //         <EditOutlinedIcon />
-      //       </IconButton>
-      //       <IconButton
-      //         onClick={(event) => {
-      //           event.stopPropagation(); // Prevents the row click event
-      //           handleDelete(params.row);
-      //         }}
-      //       >
-      //         <DeleteOutlineOutlinedIcon />
-      //       </IconButton>
-      //     </div>
-      //   ),
-      // },
+      {
+        field: "modify",
+        headerName: "Modify",
+        flex: .5,
+        renderCell: (params) => (
+          <div>
+            <IconButton
+              onClick={(event) => {
+                event.stopPropagation(); // Prevents the row click event
+                handleDelete(params.row);
+              }}
+            >
+              <DeleteOutlineOutlinedIcon />
+            </IconButton>
+          </div>
+        ),
+      },
     ];
     // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
     const handleRowClick = (params) => {
@@ -67,6 +64,13 @@ import useFetchAllAgentData from "../../hooks/useFetchAllAgentData";
   
     const handleDelete = async (data) => {
       console.log(data);
+      try {
+        const response = await deleteUser(data._id);
+        setFinalAgentList((prev) => prev.filter((item) => item._id !== data._id));
+        console.log("User deleted:", response);
+      } catch (e) {
+        console.log("Error deleting Logs: ", e.message);
+      }
     };
   
     if (loading) {
@@ -106,7 +110,7 @@ import useFetchAllAgentData from "../../hooks/useFetchAllAgentData";
                 },
               },
             }}
-            rows={agentList}
+            rows={finalAgentList}
             columns={columns}
             getRowId={(row) => row._id}
             slots={{ toolbar: GridToolbar }}

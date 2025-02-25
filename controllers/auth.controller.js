@@ -152,10 +152,13 @@ export const renewPassword = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     // Extract the user ID to delete from the URL parameters
-    const { userId } = req.params;
+    const { userID } = req.params;
+    console.log(userID);
+    
+    
 
     // Attempt to delete the user from the database
-    const deletedUser = await User.findByIdAndDelete(userId);
+    const deletedUser = await User.findByIdAndDelete(userID);
     if (!deletedUser) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -163,7 +166,7 @@ export const deleteUser = async (req, res) => {
     // Construct a descriptive log message
     const logMessage = `User ${
       deletedUser.userName
-    } (ID: ${userId}) was deleted.`;
+    } (ID: ${userID}) was deleted.`;
 
     // Create the log entry (the acting user's ID is extracted within createLog)
     await createLog({
@@ -176,6 +179,37 @@ export const deleteUser = async (req, res) => {
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAgentList = async (req, res) => {
+  try {
+    const user = await User.find(
+      { role: "agent" },
+      { _id: 1, firstName: 1, lastName: 1 }
+    );
+    if (!user) {
+      res.status(400).json({ error: "Error fetching agent" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching agents:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAllUserList = async (req, res) => {
+  try {
+    const user = await User.find({ role: { $ne: "superAdmin" } }).select(
+      "_id userID firstName lastName email role gender userName"
+    );
+    if (!user) {
+      res.status(400).json({ error: "Error fetching agent" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching agents:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
