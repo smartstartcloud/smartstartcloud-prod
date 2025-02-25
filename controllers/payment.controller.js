@@ -246,21 +246,15 @@ const createPaymentLog = (previousData=null, newData, statusUpdate = false) => {
 
     let logString = ''    
     if (statusUpdate) {
-      logString = `Payment STATUS UPDATED TO ${newData.paymentVerificationStatus}`;
+      logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
-    if (
-      previousData.paidAmount &&
-      previousData.paymentMethod &&
-      previousData.totalPaymentDue
-    ) {
-      logString = `A PAYMENT WAS MADE OF ${
-        Number(newData.paidAmount) - Number(previousData.paidAmount)
-      } GBP at ${newData.totalPaymentToDate}. Remaining ${
-        newData.totalPaymentDue
-      } GBP`;
-    } else {
-      logString = `A PAYMENT IS SET FOR ${newData.totalPaymentDue} GBP`;
-    }
+      if (previousData?.paidAmount && previousData?.paymentMethod && previousData?.totalPaymentDue) {
+        logString = `A payment of £${
+          Number(newData.paidAmount) - Number(previousData.paidAmount)
+        } has been made on ${newData.totalPaymentToDate}. Remaining balance: £${newData.totalPaymentDue}.`;
+      } else {
+        logString = `A payment of £${newData.totalPaymentDue} has been scheduled.`;
+      }
     }
 
     const date = new Date().toUTCString()

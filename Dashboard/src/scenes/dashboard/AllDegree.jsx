@@ -41,8 +41,7 @@ const AllDegree = () => {
           <Select value={selectedIntake} onChange={handleIntakeChange} label="Intake">
             <MenuItem value="">All</MenuItem>
             {[
-              "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+              "January",  "June", "September"
             ].map((month) => (
               <MenuItem key={month} value={month}>{month}</MenuItem>
             ))}

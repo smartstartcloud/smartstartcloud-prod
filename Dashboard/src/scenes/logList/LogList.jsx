@@ -33,7 +33,16 @@ const LogList = () => {
       { field: "userName", headerName: "Made By", flex: 1 },
       { field: "message", headerName: "Log Message", flex: 5 },
       { field: "collectionName", headerName: "Collection Affected", flex: 1 },
-      { field: "action", headerName: "Affected By", flex: .75 },
+      {
+        field: "action",
+        headerName: "Affected By",
+        flex: 0.75,
+        renderCell: (params) => {
+          return params.row.collectionName === "Payment" && params.row.action === "update"
+            ? "approved"
+            : params.row.action;
+        },
+      },
       {
         field: "timestamp",
         headerName: "Last Modified",
