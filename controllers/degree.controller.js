@@ -50,7 +50,7 @@ export const newDegree = async (req, res) => {
       await newDegree.save();
 
       // Construct a human-readable log message
-      const logMessage = { degreeName, degreeYear};
+      const logMessage = { degreeName, degreeYear };
 
       // Create the log entry using the updated createLog signature
       await createLog({
@@ -111,7 +111,7 @@ export const updateDegree = async (req, res) => {
       );
 
       // Construct the log message
-      const logMessage = `Degree ${degreeName} (ID: ${degreeID}) was updated.`;
+      const logMessage = {degreeName, degreeID};
       // Create the log entry (user details will be extracted inside createLog)
       await createLog({
         req,
@@ -398,7 +398,7 @@ export const deleteDegree = async (req,res)=>{
     );
 
     // Log the deletion action
-    const logMessage = `Degree with ID ${degreeID} was deleted.`;
+    const logMessage = {degreeID};
     await createLog({
       req,
       collection: "Degree",
@@ -430,7 +430,7 @@ export const deleteStudentFromDegree = async (req,res)=>{
     });
 
     // Log the removal action
-    const logMessage = `Student with ID ${studentID} was removed from Degree ${degreeID}.`;
+    const logMessage = {studentID};
     await createLog({
       req,
       collection: "Degree",
