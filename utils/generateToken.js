@@ -26,7 +26,7 @@ const newAccessToken = app.post("/",async (req,res)=>{
   })
 
 const extractToken = (testToken) => {
-  if(testToken){
+  if(testToken){    
     const token = testToken.split('=')[1];    
     try {
       // Verify and decode the token

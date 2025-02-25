@@ -1,6 +1,7 @@
 import Assignment from "../models/assignment.models.js";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import Order from "../models/order.models.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import { addNewPayment } from "./payment.controller.js";
@@ -371,6 +372,32 @@ export const deleteAssignment = async (req, res) => {
     res.status(200).json({ message: "Assignment deleted successfully" });
   } catch (error) {
     console.error("Error deleting assignment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const linkAssignmentOrderID = async (req, res) => {
+  const { assignmentOrderPairs } = req.body;
+  const filteredAssignmentOrderPairs = assignmentOrderPairs.filter(item => item.assignmentID && item.orderID);
+  try {
+    const updatedAssignments = await Promise.all(
+      filteredAssignmentOrderPairs.map(async ({ assignmentID, orderID }) => {
+        const assignment = await Assignment.findByIdAndUpdate(
+          {_id: assignmentID},
+          { orderID },
+          { new: true }
+        );
+        const order = await Order.findOneAndUpdate(
+          { orderID },
+          { linkStatus: true, assignmentConnected: assignmentID },
+          { new: true }
+        );
+        return assignment;
+      })
+    );    
+    res.status(200).json(updatedAssignments);
+  } catch (error) {
+    console.error("Error linking assignment and order ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

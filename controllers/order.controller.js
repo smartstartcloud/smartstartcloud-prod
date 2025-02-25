@@ -61,7 +61,7 @@ export const newOrder = async (req, res) => {
     }.`;
 
     // Create the log entry using the modified createLog helper
-    await createLog({ req, collection: "Order", action: "create", logMessage });
+    // await createLog({ req, collection: "Order", action: "create", logMessage, isPortal: true });
 
     res.status(201).json({ message: "Order created successfully", orderLog });
   } catch (error) {
