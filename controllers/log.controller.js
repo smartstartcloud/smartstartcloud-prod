@@ -17,8 +17,14 @@ export const createLog = async ({
     const token = req.headers.cookie;
     const { userId } = extractToken(token);
     const user = await User.findById(userId, "firstName lastName userName");
-    const suffixMessage = `Made By ${user.firstName} ${user.lastName}.`;
-    const message = `${logMessage} ${suffixMessage}`;
+    let message = "";
+
+    if (collection === "Degree" && action === "create") {
+      const { degreeName, degreeYear } = logMessage;
+      message = `${user.firstName.toLowerCase()} created ${degreeName} Degree in ${degreeYear}`;
+    } else {
+      message = `${user.firstName} ${user.lastName} performed ${action} on ${collection}`;
+    }
 
     const log = new Log({
       user: userId,

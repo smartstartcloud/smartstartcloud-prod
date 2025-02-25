@@ -13,12 +13,12 @@ const useFetchAllActionLogs = () => {
       try {
         const res = await api.get(`/api/log/AllLogs`);
         
-        setLogList(res.data.data); // Update state with the Agent data
-        setLoading(false); // Mark as not loading anymore
+        setLogList(res.data.data); 
+        setLoading(false); 
       } catch (error) {
         console.error("Error fetching log data: ", error.response.data.error);
         setError(error.response.data.error);
-        setLoading(false); // Even if there's an error, stop the loading state
+        setLoading(false);
       }
     };
 

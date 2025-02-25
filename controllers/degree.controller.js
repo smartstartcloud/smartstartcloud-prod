@@ -50,7 +50,7 @@ export const newDegree = async (req, res) => {
       await newDegree.save();
 
       // Construct a human-readable log message
-      const logMessage = `User created Degree ${degreeName} (ID: ${degreeID}).`;
+      const logMessage = { degreeName, degreeYear};
 
       // Create the log entry using the updated createLog signature
       await createLog({
