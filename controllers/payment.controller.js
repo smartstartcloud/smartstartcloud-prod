@@ -5,6 +5,7 @@ import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
+import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -29,6 +30,14 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
     });
 
     await newPayment.save();
+    const moduleAssignment = await ModuleAssignment.findOne({
+      studentID: studentID,
+      moduleID: module._id,
+    })
+    if (moduleAssignment) {
+      moduleAssignment.modulePayment = newPayment._id;
+      await moduleAssignment.save();
+    }
   } catch (error) {
     console.log(error);
     return null;

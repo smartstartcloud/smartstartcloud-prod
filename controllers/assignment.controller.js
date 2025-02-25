@@ -1,12 +1,13 @@
 import Assignment from "../models/assignment.models.js";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import { addNewPayment } from "./payment.controller.js";
 
 // Function to create a new assignment and update relevant records
 export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
-    try {          
+    try {
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(          
             assignmentList.map(async (assignmentData) => {
@@ -71,8 +72,16 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
 
                 // Create a new Assignment instance
                 for (let i = 0; i < studentList.length; i++) {
+                  const student = await Student.findById(studentList[i], "studentID");
+                  if (!student) {
+                    console.error(`student with ID ${studentList[i]} not found.`);
+                  } else {
+                    console.log(student);
+                  }
+                  
                   // Create a new Assignment instance
                   const newAssignment = new Assignment({
+                    assignmentID: `${student.studentID}_${assignmentData.referenceNumber}`,
                     assignmentName: assignmentData.assignmentName,
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
@@ -121,7 +130,7 @@ export const filterMainAssignments = async(assignments) => {
   return filteredAssignments;
 }
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, moduleCost, degreeDetailsForPayment) => {  
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
@@ -138,15 +147,12 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
             await existingModuleAssignment.save(); // Save the updated document
             // console.log("existingModuleAssignment", existingModuleAssignment);
           }
-        } else {          
-          const modulePaymentList = await addNewPayment(studentList[i], moduleID, moduleCost, degreeDetailsForPayment);
-          
+        } else {
           // If it does not exist, create a new ModuleAssignment document
           const newModuleAssignment = new ModuleAssignment({
             studentID: studentList[i],
             moduleID: moduleID,
             assignments: [sortedUpdatedAssignments[i]], // Initialize with the first assignment
-            modulePayment: modulePaymentList,
           });
           await newModuleAssignment.save();
           // console.log("newModuleAssignment", newModuleAssignment);
