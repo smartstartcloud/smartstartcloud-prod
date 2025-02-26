@@ -39,6 +39,10 @@ const userSchema = new mongo.Schema({
   passRenew: {
     type: Boolean,
   },
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 // Pre-save hook to generate the userID before saving the document

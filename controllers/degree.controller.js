@@ -23,6 +23,8 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
+    const homeLink = `/task/${degreeYear}/${degreeID}`;
+    const dataId = ''
     const degreeDetailsForPayment = { degreeID };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
@@ -33,7 +35,8 @@ export const newDegree = async (req, res) => {
       const populatedModules = await addNewModule(
         degreeModules,
         populatedStudentList,
-        degreeDetailsForPayment
+        degreeDetailsForPayment,
+        homeLink
       );
 
       // Step 1: Create Degree
@@ -44,6 +47,7 @@ export const newDegree = async (req, res) => {
         degreeAgent,
         degreeStudentList: populatedStudentList,
         degreeModules: populatedModules,
+        metadata: {goTo: homeLink, dataId: dataId}
       });
       // console.log(newDegree);
 

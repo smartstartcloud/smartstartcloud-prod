@@ -70,6 +70,9 @@ export const signupUser = async (req, res) => {
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt)
+
+        const homeLink = `/allAgent`;
+        const dataId = ''
         // Create User
         const newUser = new User({
             email,
@@ -79,7 +82,8 @@ export const signupUser = async (req, res) => {
             gender,
             role,
             password: hashPassword,
-            passRenew: passRenew
+            passRenew: passRenew,
+            metadata: {goTo: homeLink, dataId: dataId}
         })
 
         await newUser.save();

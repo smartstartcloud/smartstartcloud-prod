@@ -55,6 +55,10 @@ const studentSchema = new mongo.Schema({
     type: Array,
     default: [],
   },
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 const Student = infoDB.model("Student", studentSchema, "Student");

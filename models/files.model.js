@@ -49,6 +49,10 @@ const fileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    metadata: {
+      type: Object,
+      default: {},
+    }, // Extra data (optional)
   },
   { timestamps: true }
 );

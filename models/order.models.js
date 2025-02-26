@@ -24,6 +24,10 @@ const orderSchema = new mongo.Schema({
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
   },
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 const Order = fileDB.model('Order', orderSchema);

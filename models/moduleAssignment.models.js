@@ -30,6 +30,10 @@ const moduleAssignmentSchema = new mongoose.Schema({
       ref: "File",
     },
   ],
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 }, { timestamps: true });
   
 const ModuleAssignment = infoDB.model(

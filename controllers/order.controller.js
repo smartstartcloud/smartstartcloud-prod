@@ -46,9 +46,14 @@ export const newOrder = async (req, res) => {
         // return res.status(400).json({ error: "Order ID already exists" });
         orderLog.unacceptedOrders = [...orderLog.unacceptedOrders, order];
       } else {
+        const homeLink = `/allOrders`;
+
         // Create a new order document
         const order = new Order({ orderID, referenceNumber, group: userGroup });
-        await order.save();
+        const savedOrder = await order.save();
+        // Update metadata with _id and save again
+        savedOrder.metadata = { goTo: `${homeLink}`, dataId: savedOrder._id };
+        await savedOrder.save();
         orderLog.acceptedOrders = [...orderLog.acceptedOrders, order];
       }
     }
