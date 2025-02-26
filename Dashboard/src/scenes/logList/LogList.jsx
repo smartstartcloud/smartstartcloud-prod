@@ -87,7 +87,7 @@ const LogList = () => {
 
     const handleRowClick = (params) => {
       const {row} = params
-      if(row.metadata){
+      if(row.metadata){        
         const { goTo, dataId } = row.metadata;
         navigate(goTo, {state: {dataId}});
       }
@@ -139,7 +139,7 @@ const LogList = () => {
             }}
             rows={finalLogList}
             columns={columns}
-            getRowId={(row) => row._id}
+            getRowId={(row) => row.logID}
             slots={{ toolbar: GridToolbar }}
             initialState={{
               pagination: {

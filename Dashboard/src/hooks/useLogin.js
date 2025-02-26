@@ -3,6 +3,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from "../context/TokenContext";
 // import { api } from "../utils/axiosInstance";
 import useApi from "./useApi";
+import { checkTokenExpiry } from "../utils/tokenTimeCheck";
 
 const useLogin = () => {
     const api = useApi()
@@ -30,6 +31,8 @@ const useLogin = () => {
             // localStorage
             localStorage.setItem("user-details", JSON.stringify(data))
             localStorage.setItem("access-token", JSON.stringify(data.accessToken))
+            localStorage.setItem("expiresIn", JSON.stringify(data.expiresIn))
+            checkTokenExpiry(data.expiresIn)
             setAccessToken(data.accessToken)            
             setAuthUser(data)
             setToken(data.accessToken)

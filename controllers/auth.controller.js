@@ -23,16 +23,18 @@ export const loginUser = async (req, res) => {
         if (user.passRenew == false) {
             return res.status(401).json({error: "Default password not changed", userName: user.userName});
         }
-        
-        generateRefreshToken(user._id,user.role,res)
-        
+
+        const expiresIn = parseInt(process.env.JWT_REFRESH_EXPIRES_IN, 10);
+        generateRefreshToken(user._id,user.role,res, expiresIn)
 
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
             role: user.role,
             name: user.firstName+" "+user.lastName,
-            accessToken:generateAccessToken(user._id,user.role)
+            accessToken:generateAccessToken(user._id,user.role),
+            expiresIn : {duration: expiresIn, creationTime: Date.now()}
+
         })
 
     } catch (error) {
@@ -68,6 +70,9 @@ export const signupUser = async (req, res) => {
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt)
+
+        const homeLink = `/allAgent`;
+        const dataId = ''
         // Create User
         const newUser = new User({
             email,
@@ -77,7 +82,8 @@ export const signupUser = async (req, res) => {
             gender,
             role,
             password: hashPassword,
-            passRenew: passRenew
+            passRenew: passRenew,
+            metadata: {goTo: homeLink, dataId: dataId}
         })
 
         await newUser.save();
@@ -91,8 +97,10 @@ export const signupUser = async (req, res) => {
           req,
           collection: "User",
           action: "signup",
+          actionToDisplay: "Sign Up User",
           logMessage,
           affectedID: newUser._id,
+          metadata: newUser.metadata,
         });
 
         res.status(200).json({

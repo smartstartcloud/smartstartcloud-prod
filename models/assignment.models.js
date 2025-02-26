@@ -41,6 +41,10 @@ const AssignmentSchema = new mongo.Schema(
     referenceNumber: {
       type: String,
     },
+    metadata: {
+      type: Object,
+      default: {},
+    }, // Extra data (optional)
   },
   { timestamps: true }
 );

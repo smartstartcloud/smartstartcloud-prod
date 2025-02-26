@@ -1,8 +1,13 @@
 import mongo from "mongoose";
 import { infoDB } from "../db/connectMongoDB.js";
 import mongoose from "mongoose";
+import { getNextSequence } from "./counter.models.js";
 
 const moduleStudentFinanceSchema = new mongoose.Schema({
+  financeID: {
+    type: String,
+    unique: true,
+  },
   userID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
@@ -81,6 +86,18 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
     type: Object,
     default: {},
   }, // Extra data (optional)
+});
+
+// Pre-save hook to generate the userID before saving the document
+moduleStudentFinanceSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    // Construct a unique counter key based on role and year
+    const counterKey = `fin`;
+    const seq = await getNextSequence(counterKey);
+    // Format the userID as ROLE-YYYY-NNNN, e.g., ADMIN-2025-0001
+    this.notificationID = `${counterKey.toUpperCase()}-${seq.toString().padStart(4, '0')}`;
+  }
+  next();
 });
 
 const ModuleStudentFinance = infoDB.model(

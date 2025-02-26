@@ -23,6 +23,8 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
+    const homeLink = `/task/${degreeYear}/${degreeID}`;
+    const dataId = ''
     const degreeDetailsForPayment = { degreeID };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
@@ -33,7 +35,8 @@ export const newDegree = async (req, res) => {
       const populatedModules = await addNewModule(
         degreeModules,
         populatedStudentList,
-        degreeDetailsForPayment
+        degreeDetailsForPayment,
+        homeLink
       );
 
       // Step 1: Create Degree
@@ -44,6 +47,7 @@ export const newDegree = async (req, res) => {
         degreeAgent,
         degreeStudentList: populatedStudentList,
         degreeModules: populatedModules,
+        metadata: {goTo: homeLink, dataId: dataId}
       });
       // console.log(newDegree);
 
@@ -57,8 +61,10 @@ export const newDegree = async (req, res) => {
         req,
         collection: "Degree",
         action: "create",
+        actionToDisplay: "Create Degree",
         logMessage,
         affectedID: newDegree._id,
+        metadata: newDegree.metadata,
       });
 
       res.status(200).json(newDegree);
@@ -117,8 +123,10 @@ export const updateDegree = async (req, res) => {
         req,
         collection: "Degree",
         action: "update",
+        actionToDisplay: "Update Degree",
         logMessage,
         affectedID: degree_id,
+        metadata: updatedDegree.metadata,
       });
 
       res.status(200).json(updatedDegree);
@@ -413,6 +421,7 @@ export const deleteDegree = async (req,res)=>{
     await createLog({
       req,
       collection: "Degree",
+      actionToDisplay: "Delete Degree",
       action: "delete",
       logMessage,
     });
@@ -427,7 +436,7 @@ export const deleteDegree = async (req,res)=>{
 export const deleteStudentFromDegree = async (req,res)=>{
   const {studentID,degreeID} = req.params
   try {
-    await Degree.findOne({ degreeID: degreeID }).then(async (degree) => {
+    const degree = await Degree.findOne({ degreeID: degreeID }).then(async (degree) => {
       const newArr = await Promise.all(
         degree.degreeStudentList.filter(
           (item) => item.toHexString() !== studentID
@@ -446,7 +455,9 @@ export const deleteStudentFromDegree = async (req,res)=>{
       req,
       collection: "Degree",
       action: "delete",
+      actionToDisplay: "Delete Student from Degree",
       logMessage,
+      metadata: degree.metadata,
     });
 
     res.status(200).json({ studentID });

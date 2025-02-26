@@ -46,6 +46,7 @@ export async function addNewStudent(studentList) {
           );
           return updatedStudent._id;
         }else{
+          const homeLink = `/allStudent`;
           // Create a new Student instance
           const newStudent = new Student({
             studentName: studentData.studentName,
@@ -67,6 +68,9 @@ export async function addNewStudent(studentList) {
 
         // Save the student to the database and return the saved student's ObjectID
         const savedStudent = await newStudent.save();
+        // Update metadata with _id and save again
+        savedStudent.metadata = { goTo: `${homeLink}`, dataId: savedStudent._id };
+        await savedStudent.save();
         return savedStudent._id;
         }
       })

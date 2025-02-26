@@ -21,6 +21,7 @@ const useLogout = () => {
       // Clear user-related information from localStorage and state
       localStorage.removeItem('user-details');
       localStorage.removeItem('access-token');
+      localStorage.removeItem('expiresIn');
       setAccessToken(null);
       setAuthUser(null);
 

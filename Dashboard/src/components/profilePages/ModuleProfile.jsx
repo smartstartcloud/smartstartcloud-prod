@@ -46,7 +46,7 @@ const ModuleProfile = () => {
   };
 
   useEffect(() => {    
-    if (moduleData) {      
+    if (moduleData) {            
       setMainAssignmentList(extractObjects(moduleData.moduleAssignments));
     }
   }, [moduleData]);
@@ -236,6 +236,7 @@ const ModuleProfile = () => {
           <FileUpload
             setOpen={setOpen}
             open={open}
+            referenceDisplay={moduleCode}
             referenceID={referenceIdToPass}
             referenceCollection={"Module"}
             isModule={true}

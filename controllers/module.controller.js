@@ -5,15 +5,16 @@ import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assign
 import Degree from '../models/degree.models.js';
 
 // New helper function to add the assignment to the Module model
-export const addNewModule = async(moduleList, studentList, degreeDetailsForPayment) =>  {
+export const addNewModule = async(moduleList, studentList, degreeDetailsForPayment, parentLink) =>  {
   try {
-    // Use Promise.all to save all Module concurrently    
+    // Use Promise.all to save all Module concurrently
     const addedModuleIDs = await Promise.all(
       moduleList.map(async (moduleData) => {
         // Finding the current Module in database to see if the ID already exists in database;
         let currentModule = await Module.findOne({
           _id: moduleData._id,
         });
+        const homeLink = `${parentLink}/module/`;
         if (currentModule) {
           const updatedModule = await Module.findOneAndUpdate(
             { _id: moduleData._id }, // Find the student by studentID
@@ -40,8 +41,11 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
               moduleData.moduleCode
             ),
           });
-
           const savedModule = await newModule.save();
+          // Update metadata with _id and save again
+          savedModule.metadata = { goTo: `${homeLink}${savedModule.moduleCode}`, dataId: savedModule._id };
+          await savedModule.save();
+
           await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,

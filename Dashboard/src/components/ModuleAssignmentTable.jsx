@@ -245,6 +245,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
                               )
                             }
                             displayEmpty
+                            disabled
                           >
                             <MenuItem value="">
                               <em>Select Order ID</em>

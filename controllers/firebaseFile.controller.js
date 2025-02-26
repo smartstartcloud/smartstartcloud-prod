@@ -268,11 +268,11 @@ export const listFilesByReferenceID = async (req, res) => {
       files = [...files,...writerFiles];
     }
     if (parentID) {      
-      const moduleFiles = await File.find(
-        { referenceID: parentID },
+      const moduleAssignmentFiles = await File.find(
+        { referenceID: parentID, paymentFlag: true },
         "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
       );
-      files = [...files,...moduleFiles];
+      files = [...files,...moduleAssignmentFiles];
     }
     res.json(files || []);
   } catch (error) {

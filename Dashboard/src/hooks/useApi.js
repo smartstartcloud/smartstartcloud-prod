@@ -31,7 +31,7 @@ const useApi = () => {
                 }
                 if(error.response && error.response.status === 401 && originalRequestUrl === '/newAccessToken'){
                     logout();
-                    console.log('tata by b ye', error.response);
+                    console.log('Logged Out', error.response);
                 }
                 if(error.response && error.response.status === 403 && originalRequestUrl === '/newAccessToken'){
                     console.log('bhul', error.response);
@@ -49,7 +49,10 @@ const useApi = () => {
                         return api.request(error.config);
                         }
                     } catch (refreshError) {
-                        console.error('Error refreshing access token:', refreshError);
+                        logout();
+                        console.error('Error refreshing access token:', refreshError.response.data.error);
+                        console.log('Logging Out...');
+
                     }
                 }
                 return Promise.reject(error);

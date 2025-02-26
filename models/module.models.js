@@ -25,6 +25,10 @@ const moduleSchema = new mongo.Schema({
       ref: "File",
     },
   ],
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 const Module = infoDB.model("Module", moduleSchema, "Module");

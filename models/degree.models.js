@@ -32,6 +32,10 @@ const degreeSchema = new mongo.Schema({
       ref: "Module",
     },
   ],
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 const Degree = infoDB.model("Degree", degreeSchema,"Degree");
 export default Degree;

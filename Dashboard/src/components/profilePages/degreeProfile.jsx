@@ -207,9 +207,9 @@ const DegreeProfile = () => {
                 <Divider sx={{ my: 1, borderColor: colors.grey[700] }} />
                 <Box>
                   {degreeModules && degreeModules.length > 0 ? (
-                    degreeModules.map((module, index) => (
+                    degreeModules.map((module) => (
                       <Typography
-                        key={index}
+                        key={module.moduleCode}
                         variant="body1"
                         color={colors.grey[200]}
                         sx={{

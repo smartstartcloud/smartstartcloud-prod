@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import { infoDB } from "../db/connectMongoDB.js";
+import { getNextSequence } from './counter.models.js';
+
 
 const logSchema = new mongoose.Schema({
+  logID: {
+    type: String,
+    unique: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -41,6 +47,18 @@ const logSchema = new mongoose.Schema({
     type: Object,
     default: {},
   }, // Extra data (optional)
+});
+
+// Pre-save hook to generate the userID before saving the document
+logSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    // Construct a unique counter key based on role and year
+    const counterKey = `log-${this.collectionName}`;
+    const seq = await getNextSequence(counterKey);
+    // Format the userID as ROLE-YYYY-NNNN, e.g., ADMIN-2025-0001
+    this.logID = `${counterKey.toUpperCase()}-${seq.toString().padStart(4, '0')}`;
+  }
+  next();
 });
 
 const Log = infoDB.model("Log", logSchema);
