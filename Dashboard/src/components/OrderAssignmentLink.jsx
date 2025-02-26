@@ -91,7 +91,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
                                             fontWeight: row._id ? "normal" : "bold",
                                         }}
                                     >
-                                        {row.assignmentName || "No Assignment Name"}
+                                        {row.assignmentID || "No Assignment Name"}
                                     </TableCell>
                                     <TableCell
                                         sx={{

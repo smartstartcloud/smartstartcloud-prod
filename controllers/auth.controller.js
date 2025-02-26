@@ -97,8 +97,10 @@ export const signupUser = async (req, res) => {
           req,
           collection: "User",
           action: "signup",
+          actionToDisplay: "Sign Up User",
           logMessage,
           affectedID: newUser._id,
+          metadata: newUser.metadata,
         });
 
         res.status(200).json({

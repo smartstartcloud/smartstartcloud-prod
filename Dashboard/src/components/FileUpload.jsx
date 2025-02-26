@@ -37,7 +37,8 @@ const FileUpload = ({
   orderID = '',
   isPayment = false,
   parentID = '',
-  referenceDisplay=''
+  referenceDisplay='',
+  isModule=false
 }) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
@@ -50,8 +51,6 @@ const FileUpload = ({
   const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);  
   
   const { control } = useForm({});
-  
-  const navigate = useNavigate();
   
   useEffect(() => {
     if (fileList) {
@@ -120,7 +119,8 @@ const FileUpload = ({
       ]);
 
       setTimeout(() => {
-        navigate(0);
+        console.log(response);
+        
         console.log("navigated ");
       }, 1);
       console.log("navigated ");
@@ -140,8 +140,9 @@ const FileUpload = ({
   const handleDelete = async (file) => {
     try {
       const response = await deleteFiles(file._id);
+      setExistingFilteredFiles((prevFiles) =>
+        prevFiles.filter((prevFile) => prevFile._id !== file._id))
       console.log(response.message);
-      navigate(0);
     } catch (error) {
       console.log(error);
     }
@@ -229,7 +230,7 @@ const FileUpload = ({
                         }}
                         fullWidth
                       >
-                        {!isPayment && [
+                        {(!isModule && !isPayment) && [
                             <MenuItem key="assignment" value="assignment">
                               Assignment
                             </MenuItem>,
@@ -243,6 +244,11 @@ const FileUpload = ({
                         {isPayment && (
                           <MenuItem key="payment" value="payment">
                             Payment
+                          </MenuItem>
+                        )}
+                        {isModule && (
+                          <MenuItem key="brief" value="brief">
+                            Module Brief
                           </MenuItem>
                         )}
                       </Select>
@@ -337,7 +343,7 @@ const FileUpload = ({
             )}
 
             <Grid container spacing={2} mt={3}>
-              <Grid item xs={4}>
+              {(!isModule && !isPayment) && (<Grid item xs={4}>
                 <Typography
                   variant="h5"
                   gutterBottom
@@ -347,8 +353,8 @@ const FileUpload = ({
                 >
                   Assignment Files
                 </Typography>
-              </Grid>
-              <Grid item xs={4}>
+              </Grid>)}
+              {!isModule && (<Grid item xs={4}>
                 <Typography
                   variant="h5"
                   gutterBottom
@@ -358,8 +364,8 @@ const FileUpload = ({
                 >
                   Payment Files
                 </Typography>
-              </Grid>
-              <Grid item xs={4}>
+              </Grid>)}
+              {(!isModule && !isPayment) && (<Grid item xs={4}>
                 <Typography
                   variant="h5"
                   gutterBottom
@@ -369,7 +375,18 @@ const FileUpload = ({
                 >
                   Grade Files
                 </Typography>
-              </Grid>
+              </Grid>)}
+              {isModule && <Grid item xs={isModule ? 12 : 4}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  align="center"
+                  sx={{ color: "#1976d2", cursor: "pointer" }}
+                  onClick={() => handleCategoryChange("brief")}
+                >
+                  Module Brief Files
+                </Typography>
+              </Grid>}
             </Grid>
 
             {(existingFilteredFiles.length > 0 ||
