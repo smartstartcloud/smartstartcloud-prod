@@ -23,7 +23,7 @@ export const newDegree = async (req, res) => {
     let currentDegree = await Degree.findOne({
       degreeID: degreeID,
     });
-    const degreeDetailsForPayment = { degreeID, degreeName, degreeYear };
+    const degreeDetailsForPayment = { degreeID };
     if (currentDegree){
       const error = new Error("Degree ID already exists");
       error.code = 11000; // Set the error code
@@ -50,7 +50,7 @@ export const newDegree = async (req, res) => {
       await newDegree.save();
 
       // Construct a human-readable log message
-      const logMessage = `User created Degree ${degreeName} (ID: ${degreeID}).`;
+      const logMessage = { degreeName, degreeYear };
 
       // Create the log entry using the updated createLog signature
       await createLog({
@@ -111,7 +111,7 @@ export const updateDegree = async (req, res) => {
       );
 
       // Construct the log message
-      const logMessage = `Degree ${degreeName} (ID: ${degreeID}) was updated.`;
+      const logMessage = {degreeName, degreeID};
       // Create the log entry (user details will be extracted inside createLog)
       await createLog({
         req,
@@ -224,30 +224,41 @@ const getAssignmentSum = async (moduleList, studentList) => {
 
 export const getDegreeByID = async (req,res)=>{
   const {degreeID} = req.params
+
+  if (!degreeID) {
+    return res.status(400).json({ error: "degreeID is required" });
+  }
   try {
     const degrees = await Degree.findOne({ degreeID })
       .populate("degreeStudentList")
       .populate({
-        path: "degreeModules", // Populate degreeModules
+        path: "degreeModules",
         populate: {
           path: "moduleAssignments", // Populate moduleAssignments within each degreeModule
           model: "Assignment", // Specify the model explicitly if needed
           match: { assignmentNature: "main" }, // Filter for assignments with assignmentNature: "main"
         },
-      });
-    const Agent = await User.find({_id:[degrees.degreeAgent]});
-    const moduleList = degrees.degreeModules;
-    const studentList = degrees.degreeStudentList;
-    const { moduleDetailsList } =
-      await getAssignmentDetailsList(moduleList, studentList);
-    let degreeObject = degrees.toObject();
-    if (Agent.length === 0) {
-        // console.log(`Agent with ID ${x.degreeAgent} not found.`);
-        return; // Skip this degree if no agent is found
+      })
+      .lean(); // Convert Mongoose document to plain JS object 
+
+    if (!degrees) {
+      return res.status(404).json({ error: "Degree not found" });
     }
-    degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
-    degreeObject.moduleDetailsList = moduleDetailsList
-    res.status(200).json(degreeObject);
+
+    const agent = await User.findById(degrees.degreeAgent).select("_id firstName lastName").lean();
+    if (!agent) {
+      return res.status(404).json({ error: "Agent not found" });
+    }
+
+    const moduleList = degrees.degreeModules || [];
+    const studentList = degrees.degreeStudentList || [];
+
+    const { moduleDetailsList } = await getAssignmentDetailsList(moduleList, studentList);
+
+    degrees.degreeAgent = agent; // Assign the agent object
+    degrees.moduleDetailsList = moduleDetailsList; // Assign module details
+
+    res.status(200).json(degrees);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -398,7 +409,7 @@ export const deleteDegree = async (req,res)=>{
     );
 
     // Log the deletion action
-    const logMessage = `Degree with ID ${degreeID} was deleted.`;
+    const logMessage = {degreeID};
     await createLog({
       req,
       collection: "Degree",
@@ -430,7 +441,7 @@ export const deleteStudentFromDegree = async (req,res)=>{
     });
 
     // Log the removal action
-    const logMessage = `Student with ID ${studentID} was removed from Degree ${degreeID}.`;
+    const logMessage = {studentID};
     await createLog({
       req,
       collection: "Degree",

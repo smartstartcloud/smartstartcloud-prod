@@ -3,6 +3,10 @@ import { infoDB } from "../db/connectMongoDB.js";
 
 const AssignmentSchema = new mongo.Schema(
   {
+    assignmentID: {
+      type: String,
+      sparse: true, // Marks this field to allow unique values only when not null
+    },
     orderID: {
       type: String,
       sparse: true, // Marks this field to allow unique values only when not null

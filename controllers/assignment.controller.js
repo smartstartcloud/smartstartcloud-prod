@@ -1,12 +1,14 @@
 import Assignment from "../models/assignment.models.js";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import Order from "../models/order.models.js";
+import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import { addNewPayment } from "./payment.controller.js";
 
 // Function to create a new assignment and update relevant records
 export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode) => {        
-    try {          
+    try {
         // Use Promise.all to save all Assignment concurrently
         const addedAssignmentIDs = await Promise.all(          
             assignmentList.map(async (assignmentData) => {
@@ -71,8 +73,16 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
 
                 // Create a new Assignment instance
                 for (let i = 0; i < studentList.length; i++) {
+                  const student = await Student.findById(studentList[i], "studentID");
+                  if (!student) {
+                    console.error(`student with ID ${studentList[i]} not found.`);
+                  } else {
+                    console.log(student);
+                  }
+                  
                   // Create a new Assignment instance
                   const newAssignment = new Assignment({
+                    assignmentID: `${student.studentID}_${assignmentData.referenceNumber}`,
                     assignmentName: assignmentData.assignmentName,
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
@@ -121,7 +131,7 @@ export const filterMainAssignments = async(assignments) => {
   return filteredAssignments;
 }
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, moduleCost, degreeDetailsForPayment) => {  
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
@@ -138,15 +148,12 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
             await existingModuleAssignment.save(); // Save the updated document
             // console.log("existingModuleAssignment", existingModuleAssignment);
           }
-        } else {          
-          const modulePaymentList = await addNewPayment(studentList[i], moduleID, moduleCost, degreeDetailsForPayment);
-          
+        } else {
           // If it does not exist, create a new ModuleAssignment document
           const newModuleAssignment = new ModuleAssignment({
             studentID: studentList[i],
             moduleID: moduleID,
             assignments: [sortedUpdatedAssignments[i]], // Initialize with the first assignment
-            modulePayment: modulePaymentList,
           });
           await newModuleAssignment.save();
           // console.log("newModuleAssignment", newModuleAssignment);
@@ -224,9 +231,7 @@ export const updateAssignment = async (req, res) => {
 
     if (assignment) {
       // Construct the log message
-      const logMessage = `Assignment ${
-        assignment.assignmentName
-      } (ID: ${assignmentID}) was updated.`;
+      const logMessage = {assignmentName: assignment.assignmentName, assignmentID};
       // Create the log entry using the modified createLog helper
       await createLog({
         req,
@@ -317,9 +322,8 @@ export const newAssignmentManual = async (req, res) => {
 
     if (updateResult) {
       // Construct a descriptive log message
-      const logMessage = `Manual assignment ${assignmentName} (ID: ${
-        createdAssignment._id
-      }) was created for student ${studentID} in module ${moduleCode}.`;
+      const logMessage = { assignmentName,
+        assignmentID:createdAssignment._id, studentID , moduleCode};
 
       // Log the creation event, storing the new assignment's ID as affectedID
       await createLog({
@@ -357,7 +361,7 @@ export const deleteAssignment = async (req, res) => {
     );
 
     // Construct a log message and create a log entry
-    const logMessage = `Assignment with ID ${assignmentID} was deleted.`;
+    const logMessage = {assignmentID} ;
     await createLog({
       req,
       collection: "Assignment",
@@ -368,6 +372,32 @@ export const deleteAssignment = async (req, res) => {
     res.status(200).json({ message: "Assignment deleted successfully" });
   } catch (error) {
     console.error("Error deleting assignment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const linkAssignmentOrderID = async (req, res) => {
+  const { assignmentOrderPairs } = req.body;
+  const filteredAssignmentOrderPairs = assignmentOrderPairs.filter(item => item.assignmentID && item.orderID);
+  try {
+    const updatedAssignments = await Promise.all(
+      filteredAssignmentOrderPairs.map(async ({ assignmentID, orderID }) => {
+        const assignment = await Assignment.findByIdAndUpdate(
+          {_id: assignmentID},
+          { orderID },
+          { new: true }
+        );
+        const order = await Order.findOneAndUpdate(
+          { orderID },
+          { linkStatus: true, assignmentConnected: assignmentID },
+          { new: true }
+        );
+        return assignment;
+      })
+    );    
+    res.status(200).json(updatedAssignments);
+  } catch (error) {
+    console.error("Error linking assignment and order ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

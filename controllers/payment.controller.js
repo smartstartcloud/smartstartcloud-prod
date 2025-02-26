@@ -5,6 +5,7 @@ import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
+import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 export const addNewPayment = async (paymentRequiredInformation, userID) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
@@ -29,6 +30,14 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
     });
 
     await newPayment.save();
+    const moduleAssignment = await ModuleAssignment.findOne({
+      studentID: studentID,
+      moduleID: module._id,
+    })
+    if (moduleAssignment) {
+      moduleAssignment.modulePayment = newPayment._id;
+      await moduleAssignment.save();
+    }
   } catch (error) {
     console.log(error);
     return null;
@@ -165,9 +174,9 @@ export const updatePaymentDetails = async (req, res) => {
       );
 
       // Construct and create a log entry for the payment update
-      const logMessage = `Payment details for payment ID ${
-        payment._id
-      } updated.`;
+      const logMessage = {
+        paymentID: payment._id
+      } ;
       await createLog({
         req,
         collection: "Payment",
@@ -221,9 +230,7 @@ export const updatePaymentStatus = async (req, res) => {
       );
 
       // Log the payment status update action
-      const logMessage = `Payment status for payment ID ${
-        payment._id
-      } updated to "${paymentVerificationStatus}".`;
+      const logMessage = { paymentID: payment._id, paymentVerificationStatus };
       await createLog({
         req,
         collection: "Payment",
@@ -248,21 +255,15 @@ const createPaymentLog = (previousData=null, newData, statusUpdate = false) => {
 
     let logString = ''    
     if (statusUpdate) {
-      logString = `Payment STATUS UPDATED TO ${newData.paymentVerificationStatus}`;
+      logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
-    if (
-      previousData.paidAmount &&
-      previousData.paymentMethod &&
-      previousData.totalPaymentDue
-    ) {
-      logString = `A PAYMENT WAS MADE OF ${
-        Number(newData.paidAmount) - Number(previousData.paidAmount)
-      } GBP at ${newData.totalPaymentToDate}. Remaining ${
-        newData.totalPaymentDue
-      } GBP`;
-    } else {
-      logString = `A PAYMENT IS SET FOR ${newData.totalPaymentDue} GBP`;
-    }
+      if (previousData?.paidAmount && previousData?.paymentMethod && previousData?.totalPaymentDue) {
+        logString = `A payment of £${
+          Number(newData.paidAmount) - Number(previousData.paidAmount)
+        } has been made on ${newData.totalPaymentToDate}. Remaining balance: £${newData.totalPaymentDue}.`;
+      } else {
+        logString = `A payment of £${newData.totalPaymentDue} has been scheduled.`;
+      }
     }
 
     const date = new Date().toUTCString()

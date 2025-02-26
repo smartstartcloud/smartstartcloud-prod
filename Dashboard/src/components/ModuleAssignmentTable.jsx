@@ -17,15 +17,19 @@ import useGetOrderIdList from "../hooks/useGetOrderIdList";
 import useSendAssignmentData from "../hooks/useSendAssignmentData";
 import EditableTextField from "./EditableTextField";
 import EditableTextFieldDynamic from "./EditableTextFieldDynamic";
+import OrderAssignmentLink from "./OrderAssignmentLink";
 
-const ModuleAssignmentTable = ({studentData}) => {
+const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
   const { getOrderIdList } = useGetOrderIdList();
   const [orderIdLists, setOrderIdLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [tableStatus, setTablestatus] = useState("orderID");
   const [assignmentOrderIdLists, setAssignmentOrderIdLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentProgressStatusLists, setAssignmentProgressStatusLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [assignmentGradeLists, setAssignmentGradeLists] = useState({}); // Object to store Order IDs for each moduleCode
-  const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode  
+  const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode
+  const [orderConnectModuleOpen, setOrderConnectModuleOpen] = useState(false);
+  const [assignmentList, setAssignmentList] = useState({});
+  const [referenceNumberToPass, setReferenceNumberToPass] = useState('')
 
   // Function to fetch Order IDs for a given moduleCode
   const fetchOrderIdList = async (referenceNumber) => {
@@ -41,10 +45,20 @@ const ModuleAssignmentTable = ({studentData}) => {
     }
   };
   // Fetch Order IDs when the component mounts or when studentData changes
+
+  const fetchAssignmentList = (referenceNumber, assignment) => {
+    setAssignmentList((prev) => ({
+      ...prev,
+      [referenceNumber]: prev[referenceNumber] ? [...prev[referenceNumber], assignment] : [assignment], 
+    }));
+  }
+
   useEffect(() => {
+    setAssignmentList({})
     studentData.forEach((student) => {
       student.assignmentList.forEach((assignment) => {
         fetchOrderIdList(assignment.referenceNumber);
+        fetchAssignmentList(assignment.referenceNumber, assignment);
       });
     });
   }, [studentData]);
@@ -93,18 +107,29 @@ const ModuleAssignmentTable = ({studentData}) => {
     // Call your function here, for example:
     // updateAssignmentStatus(assignmentId, newValue);
   };
+
+  const handleGroupButtonClick = (tableStatus) => {
+    setTablestatus(tableStatus);
+    if (tableStatus !== "orderID") {
+      setOrderConnectModuleOpen(false);
+    }
+  }
+
+  const handleOrderConnectModuleButton = () => {    
+    setOrderConnectModuleOpen((prev) => !prev);
+  }
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} gap={2} display="flex">
+      <Grid item xs={12} sm={tableStatus === "orderID" ? 6 : 12} gap={2} display="flex">
         <Button
-          onClick={() => setTablestatus("orderID")}
+          onClick={() => handleGroupButtonClick("orderID")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
           Order ID
         </Button>
         <Button
-          onClick={() => setTablestatus("progress")}
+          onClick={() => handleGroupButtonClick("progress")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
@@ -118,13 +143,25 @@ const ModuleAssignmentTable = ({studentData}) => {
           Payment
         </Button> */}
         <Button
-          onClick={() => setTablestatus("grade")}
+          onClick={() => handleGroupButtonClick("grade")}
           color="secondary"
           variant="contained" // or "outlined" based on your styling preference
         >
           Grade
         </Button>
       </Grid>
+      {tableStatus === "orderID" ? (<Grid item xs={12} sm={6} gap={2} display="flex" justifyContent={"flex-end"}>
+        <Button
+          onClick={handleOrderConnectModuleButton}
+          color="secondary"
+          variant="contained" // or "outlined" based on your styling preference
+        >
+          Order Connect
+        </Button>
+      </Grid>) : null}
+      {orderConnectModuleOpen && (<Grid item xs={12}>
+        <OrderAssignmentLink orderIdLists={orderIdLists} assignmentList={assignmentList} assignmentReference={assignmentReference} />
+      </Grid>)}
       <Grid item xs={12}>
         <TableContainer component={Paper}>
           <Table>

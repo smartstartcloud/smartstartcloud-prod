@@ -81,6 +81,22 @@ const AssignmentFieldForm = ({ control, index, refDegreeID }) => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
+              <Controller
+                name={`degreeModules[${index}].assignmentList[${assignmentIndex}].wordCount`}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Word Count"
+                    variant="outlined"
+                    type="number"
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid>
+
+              <Grid item xs={12} sm={3}>
                 <Controller
                   name={`degreeModules[${index}].assignmentList[${assignmentIndex}].assignmentType`}
                   control={control}

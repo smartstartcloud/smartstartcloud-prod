@@ -33,6 +33,7 @@ const ModuleProfile = () => {
   const [referenceIdToPass, setreferenceIdToPass] = useState(moduleId);
   const [mainAssignmentList, setMainAssignmentList] = useState([]);
   const [singleAssignmentList, setSingleAssignmentList] = useState(null);
+  const [assignmentReferenceIdToPass, setAssignmentReferenceIdToPass] = useState('');
   const handleFileOpen = () => {
     setOpen(true);
   };
@@ -56,6 +57,13 @@ const ModuleProfile = () => {
       setSingleAssignmentList(mainAssignmentList[0]);
     }
   }, [mainAssignmentList]); // This will trigger when mainAssignmentList is updated
+
+  useEffect(() => {
+    if (singleAssignmentList) {
+      // Set the first item in single assignment list
+      setAssignmentReferenceIdToPass(singleAssignmentList.referenceNumber);
+    }
+  }, [singleAssignmentList]); // This will trigger when mainAssignmentList is updated
 
   // useEffect(() => {
   //   // Log the single assignment list whenever it changes
@@ -221,7 +229,7 @@ const ModuleProfile = () => {
         </Card>
         {moduleData && moduleData.moduleData && (
           <Box m="20px 0px">
-            <ModuleAssignmentTable studentData={moduleData.moduleData} />
+            <ModuleAssignmentTable studentData={moduleData.moduleData} assignmentReference={assignmentReferenceIdToPass} />
           </Box>
         )}
         {open && (
