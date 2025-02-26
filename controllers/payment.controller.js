@@ -172,10 +172,12 @@ export const updatePaymentDetails = async (req, res) => {
         `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
         { goTo: `/paymentApprovals`, paymentId: payment._id }
       );
-
+      const student = await Student.findById(payment.studentID);
+      
       // Construct and create a log entry for the payment update
       const logMessage = {
-        paymentID: payment._id
+        paymentID: payment._id,
+        studentName: student.studentName
       } ;
       await createLog({
         req,
@@ -227,10 +229,13 @@ export const updatePaymentStatus = async (req, res) => {
           goTo: `/task/${payment.degreeYear}/${payment.degreeID}`,
           dataId: student.studentID,
         }
-      );
-
+      );      
       // Log the payment status update action
-      const logMessage = { paymentID: payment._id, paymentVerificationStatus };
+      const logMessage = {
+        paymentID: payment._id,
+        paymentVerificationStatus,
+        studentName: student.studentName,
+      };
       await createLog({
         req,
         collection: "Payment",

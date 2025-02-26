@@ -88,11 +88,11 @@ export const createLog = async ({
 
       case "Payment":
         if (action === "updateDetails") {
-          const { paymentID } = logMessage;
-          message = `${user.firstName} updated payment details (ID: ${paymentID}).`;
+          const { paymentID, studentName } = logMessage;
+          message = `${user.firstName} updated payment details of ${studentName}.`;
         } else if (action === "update") {
-          const { paymentID, paymentVerificationStatus } = logMessage;
-          message = `${user.firstName} updated payment status (ID: ${paymentID}) to "${paymentVerificationStatus}".`;
+          const { paymentID, paymentVerificationStatus, studentName } = logMessage;
+          message = `${user.firstName} updated payment status of ${studentName} to "${paymentVerificationStatus}".`;
         }
         break;
 
