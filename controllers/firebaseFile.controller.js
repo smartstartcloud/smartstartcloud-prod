@@ -114,7 +114,7 @@ export const fileUpload = async (req, res) => {
 
 export const fileDownload = async (req, res) => {
   try {
-    const { fileID } = req.params;
+    const { fileID } = req.params;    
     const file = await File.findById(fileID);
     if (!file) {
       return res.status(404).json({ message: "File not found" });
@@ -124,13 +124,13 @@ export const fileDownload = async (req, res) => {
     const logMessage = `File "${file.fileName}" (ID: ${
       file._id
     }) was downloaded.`;
-    await createLog({
-      req,
-      collection: "File",
-      action: "download",
-      logMessage,
-      affectedID: file._id,
-    });
+    // await createLog({
+    //   req,
+    //   collection: "File",
+    //   action: "download",
+    //   logMessage,
+    //   affectedID: file._id,
+    // });
 
     // Fetch the file from Firebase using axios
     const firebaseResponse = await axios.get(file.fileUrl, {
