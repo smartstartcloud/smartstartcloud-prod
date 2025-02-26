@@ -30,9 +30,17 @@ const newAccessToken = app.post("/",async (req,res)=>{
     });
   })
 
-const extractToken = (testToken) => {
-  if(testToken){    
-    const token = testToken.split('=')[1];    
+const extractToken = (testToken, isFile=false) => {  
+  if (isFile) {
+    return { userId: '' }; // Return an empty userId for file operations
+  }
+
+  if (testToken) {    
+    const tokenParts = testToken.split('=');
+    if (tokenParts.length < 2) return null; // Handle invalid token format
+
+    const token = tokenParts[1];    
+
     try {
       // Verify and decode the token
       const decoded = jwt.verify(token, process.env.JWT_KEY);      
@@ -44,6 +52,8 @@ const extractToken = (testToken) => {
       return null;
     }
   }
-}
+
+  return null; // Return null if no token is provided
+};
 
 export{generateAccessToken,generateRefreshToken,newAccessToken, extractToken}

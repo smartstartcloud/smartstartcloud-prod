@@ -49,10 +49,15 @@ export const createLog = async ({
   actionToDisplay,
   logMessage,
   metadata = {},
+  isFile = false,
+  userID,
 }) => {
-  try {
+  try {    
     const token = req.headers.cookie;
-    const { userId } = extractToken(token);
+    let { userId } = extractToken(token, isFile);    
+    if (isFile){
+      userId = userID;
+    }    
     const user = await User.findById(userId, "firstName lastName userName");
     let message = "";
 

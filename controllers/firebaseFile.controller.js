@@ -69,6 +69,8 @@ export const fileUpload = async (req, res) => {
       logMessage,
       affectedID: newFile._id,
       actionToDisplay: `Uploaded file "${req.file.originalname}"`,
+      isFile: true,
+      userID: uploadedByUserID,
     });
 
     await newFile.save();
