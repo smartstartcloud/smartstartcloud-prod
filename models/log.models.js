@@ -31,7 +31,6 @@ const logSchema = new mongoose.Schema({
   },
   actionToDisplay: {
     type: String,
-    required: true,
   },
   message: {
     // A human-readable description of what was done

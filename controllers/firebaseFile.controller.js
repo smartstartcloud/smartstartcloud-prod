@@ -27,7 +27,7 @@ export const fileUpload = async (req, res) => {
       uploadedByUserName,
       writerFlag,
       paymentFlag,
-    } = req.body;
+    } = req.body;    
 
     const storageRef = ref(storage, req.file.originalname);
 
@@ -68,6 +68,7 @@ export const fileUpload = async (req, res) => {
       action: "upload",
       logMessage,
       affectedID: newFile._id,
+      actionToDisplay: `Uploaded file "${req.file.originalname}"`,
     });
 
     await newFile.save();
