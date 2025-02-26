@@ -52,6 +52,7 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   },
   paidAmount: {
     type: String,
+    default: "0",
   },
   bankPaymentMethod: {
     type: String,

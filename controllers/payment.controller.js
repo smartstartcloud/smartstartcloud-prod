@@ -7,7 +7,7 @@ import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
-export const addNewPayment = async (paymentRequiredInformation, userID) => {
+export const addNewPayment = async (paymentRequiredInformation, userID, paymentDetails) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
     paymentRequiredInformation;
   // Find the module ID using the moduleCode
@@ -16,7 +16,30 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
   }).select("_id moduleName moduleCode");
   const degree = await Degree.findOne({
     degreeID
-  }).select("degreeName degreeYear");;
+  }).select("degreeName degreeYear");
+  const newDetails = {};
+  
+  if (paymentDetails.modulePrice) newDetails.modulePrice = paymentDetails.modulePrice;
+  if (paymentDetails.totalPaymentDue) newDetails.totalPaymentDue = paymentDetails.totalPaymentDue;
+  if (paymentDetails.totalPaymentToDate) newDetails.totalPaymentToDate = paymentDetails.totalPaymentToDate;
+  if (paymentDetails.paymentMethod) newDetails.paymentMethod = paymentDetails.paymentMethod;
+  if (paymentDetails.paymentStatus) newDetails.paymentStatus = paymentDetails.paymentStatus;
+  if (paymentDetails.paidAmount) newDetails.paidAmount = paymentDetails.paidAmount;
+  if (paymentDetails.otherPaymentMethod) newDetails.otherPaymentMethod = paymentDetails.otherPaymentMethod;
+  if (paymentDetails.bankPaymentMethod) newDetails.bankPaymentMethod = paymentDetails.bankPaymentMethod;
+  if (paymentDetails.cashPaymentMethod) newDetails.cashPaymentMethod = paymentDetails.cashPaymentMethod;
+  if (paymentDetails.referredPaymentMethod) newDetails.referredPaymentMethod = paymentDetails.referredPaymentMethod;
+  if (paymentDetails.paymentVerificationStatus) {
+    newDetails.paymentVerificationStatus =
+      paymentDetails.paymentVerificationStatus === "approved"
+        ? "awaiting approval"
+        : paymentDetails.paymentVerificationStatus;
+  }
+  if (paymentDetails.userID) newDetails.userID = paymentDetails.userID;
+  const paymentLog = createPaymentLog({
+    newData: newDetails,
+    isNew: true,
+  });
   
   try {
     const newPayment = new ModuleStudentFinance({
@@ -27,7 +50,10 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
       degreeName: degree.degreeName,
       degreeYear: degree.degreeYear,
       moduleName: module.moduleName,
+      paymentLog: [paymentLog], // Push paymentLog directly into the document
+      ...newDetails, // Merge newDetails into the model
     });
+    
 
     await newPayment.save();
     const moduleAssignment = await ModuleAssignment.findOne({
@@ -41,63 +67,6 @@ export const addNewPayment = async (paymentRequiredInformation, userID) => {
   } catch (error) {
     console.log(error);
     return null;
-  }
-};
-
-export const getPaymentDetails = async (req, res) => {
-    const { assignmentID, moduleCode, studentID } = req.body;
-    try {
-    // Find the module ID using the moduleCode
-    const module = await Module.findOne({ moduleCode });
-    if (!module) {
-        return res.status(404).json({ error: "Module not found" });
-    }
-
-    // Find all records in ModuleStudentFinance where studentID and moduleID match
-    const finances = await ModuleStudentFinance.find({
-        studentID,
-        moduleID: module._id,
-    });    
-
-    res.status(200).json(finances[0] );
-    } catch (error) {
-        console.error("Error fetching finance data:", error);
-        res.status(500).json({ error: "An error occurred while fetching data" });
-    }
-};
-
-export const getPaymentDetailsAll = async (req, res) => {  
-  try {
-    // Find all records in ModuleStudentFinance where studentID and moduleID match
-    // 1️⃣ Fetch finance data with student details
-    const finances = await ModuleStudentFinance.find()
-      .populate("studentID", "studentName studentID")
-      .lean(); // Convert Mongoose documents to plain JS objects
-
-    // 2️⃣ Extract unique userIDs
-    const userIds = finances.map((finance) => finance.userID);
-
-    // 3️⃣ Fetch user details from the separate `userDB`
-    const users = await User.find({ _id: { $in: userIds } })
-      .select("userName")
-      .lean();
-
-    // 4️⃣ Create a map for quick lookup
-    const userMap = users.reduce((map, user) => {
-      map[user._id.toString()] = user;
-      return map;
-    }, {});
-
-    // 5️⃣ Attach user details to the finance records
-    const enrichedFinances = finances.map((finance) => ({
-      ...finance,
-      user: userMap[finance.userID?.toString()] || null, // Attach user details or null if not found
-    }));
-
-    res.status(200).json(enrichedFinances);
-  } catch (error) {
-    console.error("Error fetching finance data:", error);
-    res.status(500).json({ error: "An error occurred while fetching data" });
   }
 };
 
@@ -151,12 +120,12 @@ export const updatePaymentDetails = async (req, res) => {
       moduleID: module._id,
     });
     if (!finances) {
-      addNewPayment(paymentRequiredInformation, userID);
+      addNewPayment(paymentRequiredInformation, userID, updateDetails);
       return res
        .status(200)
-       .json({ error: "New Payment Created." });
+       .json({ message: "New Payment Created." });
     }
-    const paymentLog = createPaymentLog(finances, updateDetails)
+    const paymentLog = createPaymentLog({previousData: finances, newData: updateDetails})
     
     // Find the specific assignment by its ID and update it
     const payment = await ModuleStudentFinance.findByIdAndUpdate(
@@ -177,7 +146,8 @@ export const updatePaymentDetails = async (req, res) => {
       // Construct and create a log entry for the payment update
       const logMessage = {
         paymentID: payment._id,
-        studentName: student.studentName
+        studentName: student.studentName,
+        paymentLogMessage : paymentLog
       } ;
       await createLog({
         req,
@@ -256,18 +226,18 @@ export const updatePaymentStatus = async (req, res) => {
   }
 };
 
-const createPaymentLog = (previousData=null, newData, statusUpdate = false) => {
-
-    let logString = ''    
+const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew=false}) => {    
+    let logString = ''
+    if (isNew) {
+      logString = `A payment of £${newData.totalPaymentDue} has been scheduled.`;
+    }
     if (statusUpdate) {
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
-      if (previousData?.paidAmount && previousData?.paymentMethod && previousData?.totalPaymentDue) {
+      if (previousData?.paidAmount && previousData?.totalPaymentDue) {
         logString = `A payment of £${
           Number(newData.paidAmount) - Number(previousData.paidAmount)
         } has been made on ${newData.totalPaymentToDate}. Remaining balance: £${newData.totalPaymentDue}.`;
-      } else {
-        logString = `A payment of £${newData.totalPaymentDue} has been scheduled.`;
       }
     }
 
@@ -275,3 +245,60 @@ const createPaymentLog = (previousData=null, newData, statusUpdate = false) => {
     return {date, logString}
     
 }
+
+export const getPaymentDetails = async (req, res) => {
+  const { assignmentID, moduleCode, studentID } = req.body;
+  try {
+    // Find the module ID using the moduleCode
+    const module = await Module.findOne({ moduleCode });
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    // Find all records in ModuleStudentFinance where studentID and moduleID match
+    const finances = await ModuleStudentFinance.find({
+      studentID,
+      moduleID: module._id,
+    });
+
+    res.status(200).json(finances[0]);
+  } catch (error) {
+    console.error("Error fetching finance data:", error);
+    res.status(500).json({ error: "An error occurred while fetching data" });
+  }
+};
+
+export const getPaymentDetailsAll = async (req, res) => {
+  try {
+    // Find all records in ModuleStudentFinance where studentID and moduleID match
+    // 1️⃣ Fetch finance data with student details
+    const finances = await ModuleStudentFinance.find()
+      .populate("studentID", "studentName studentID")
+      .lean(); // Convert Mongoose documents to plain JS objects
+
+    // 2️⃣ Extract unique userIDs
+    const userIds = finances.map((finance) => finance.userID);
+
+    // 3️⃣ Fetch user details from the separate `userDB`
+    const users = await User.find({ _id: { $in: userIds } })
+      .select("userName")
+      .lean();
+
+    // 4️⃣ Create a map for quick lookup
+    const userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = user;
+      return map;
+    }, {});
+
+    // 5️⃣ Attach user details to the finance records
+    const enrichedFinances = finances.map((finance) => ({
+      ...finance,
+      user: userMap[finance.userID?.toString()] || null, // Attach user details or null if not found
+    }));
+
+    res.status(200).json(enrichedFinances);
+  } catch (error) {
+    console.error("Error fetching finance data:", error);
+    res.status(500).json({ error: "An error occurred while fetching data" });
+  }
+};
