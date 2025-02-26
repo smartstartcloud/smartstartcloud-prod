@@ -23,16 +23,18 @@ export const loginUser = async (req, res) => {
         if (user.passRenew == false) {
             return res.status(401).json({error: "Default password not changed", userName: user.userName});
         }
-        
-        generateRefreshToken(user._id,user.role,res)
-        
+
+        const expiresIn = parseInt(process.env.JWT_REFRESH_EXPIRES_IN, 10);
+        generateRefreshToken(user._id,user.role,res, expiresIn)
 
         res.status(200).json({
             _id: user.id,
             userName: user.userName,
             role: user.role,
             name: user.firstName+" "+user.lastName,
-            accessToken:generateAccessToken(user._id,user.role)
+            accessToken:generateAccessToken(user._id,user.role),
+            expiresIn : {duration: expiresIn, creationTime: Date.now()}
+
         })
 
     } catch (error) {
