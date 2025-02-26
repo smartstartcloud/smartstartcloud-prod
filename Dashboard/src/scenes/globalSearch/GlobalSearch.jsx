@@ -13,7 +13,6 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
@@ -50,11 +49,6 @@ const GlobalSearch = () => {
         setIsSearching(false);
         setSearchResult('');
     };
-
-    const handleStudentClick = (studentId) => {
-      navigate(`/task/${studentId}`); // Navigate to student profile page
-    };
-
 
     if (loading) {
         return (
@@ -135,8 +129,7 @@ const GlobalSearch = () => {
               />
             )}
             {results.students && (
-              <GenerateDataGrid title={"Students"} data={results.students} 
-              onClick={() => handleStudentClick(student.studentID)}/>
+              <GenerateDataGrid title={"Students"} data={results.students} />
             )}
             {results.orders && (
               <GenerateDataGrid title={"Orders"} data={results.orders} />
