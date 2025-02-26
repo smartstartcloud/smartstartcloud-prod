@@ -87,9 +87,9 @@ const LogList = () => {
 
     const handleRowClick = (params) => {
       const {row} = params
-      const {goTo, dataId} = row.metadata;
-      if(goTo && dataId){
-        navigate(row.metadata.goTo, {state: {dataId}});
+      if(row.metadata){
+        const { goTo, dataId } = row.metadata;
+        navigate(goTo, {state: {dataId}});
       }
     }
 

@@ -40,7 +40,6 @@ const NotificationCard = ({list = []}) => {
           const {goTo, dataId} = notification.metadata;
           navigate(goTo, { state: { dataId } });
           handleDismiss(id)
-          sendMarkNotificationAsRead(id, authUser._id)
 
         } else {
           console.error(`Notification with ID ${id} not found`);
@@ -50,6 +49,7 @@ const NotificationCard = ({list = []}) => {
 
     const handleDismiss = (id) => {
       setNewList((prev) => prev.filter((item) => item._id !== id));
+      sendMarkNotificationAsRead(id, authUser._id);
     };
     return (
       <Box>
@@ -74,6 +74,9 @@ const NotificationCard = ({list = []}) => {
               elevation: 0,
               sx: {
                 overflow: "visible",
+                overflow: "auto", // Enable scrolling if content overflows
+                maxHeight: "400px", // Set max height to 600px
+                minWidth: "300px", // Adjust width if needed
                 filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                 mt: 1.5,
                 "& .MuiAvatar-root": {

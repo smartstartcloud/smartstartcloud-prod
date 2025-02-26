@@ -38,7 +38,6 @@ export const fetchNewNotification = async (req, res) => {
         isReadBy: { $nin: [userId] }, // Ensure userId is NOT in isReadBy array
       })
         .sort({ createdAt: -1 }) // Latest notifications first
-        .limit(10);
 
       res.status(200).json({ success: true, notifications });
     } catch (error) {
