@@ -10,7 +10,12 @@ const generateAccessToken = (userId,userRole) => {
 
 const generateRefreshToken = (userId,userRole,res) => {
     const token = jwt.sign({userId,userRole},process.env.JWT_KEY,{expiresIn:"1h"})
-    res.cookie('refreshToken',token,{httpOnly: true, maxAge: 60*60*1000, secure: true, sameSite:'strict'}) 
+    res.cookie("refreshToken", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000,
+      secure: true,
+      sameSite: "none",
+    }); 
 };
 
 const newAccessToken = app.post("/",async (req,res)=>{
