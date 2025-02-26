@@ -43,6 +43,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [orderIdToPass, setOrderIdToPass] = useState('');
   const [referenceIdToPass, setReferenceIdToPass] = useState("");
+  const [assignmentDisplayInfo, setAssignmentDisplayInfo] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState(null);
   const [paymentRequiredInformation, setPaymentRequiredInformation] = useState({});
@@ -160,6 +161,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
 
   const handleFileOpen = (assignment) => {
     setReferenceIdToPass(assignment._id);
+    setAssignmentDisplayInfo(assignment.assignmentName);
     setOrderIdToPass(assignment.orderID);
     setOpen(true);
   }
@@ -359,6 +361,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
           setOpen={setOpen}
           open={open}
           referenceID={referenceIdToPass}
+          referenceDisplay={assignmentDisplayInfo}
           referenceCollection={"Assignment"}
           isOrder={false}
           orderID={orderIdToPass}

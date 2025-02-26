@@ -36,7 +36,8 @@ const FileUpload = ({
   isOrder = false,
   orderID = '',
   isPayment = false,
-  parentID = ''
+  parentID = '',
+  referenceDisplay=''
 }) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
@@ -199,7 +200,7 @@ const FileUpload = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      value={referenceID || ""}
+                      value={referenceDisplay || ""}
                       label="Reference ID"
                       variant="outlined"
                       fullWidth
