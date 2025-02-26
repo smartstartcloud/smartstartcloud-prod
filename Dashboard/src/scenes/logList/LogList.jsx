@@ -14,18 +14,20 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllActionLogs from "../../hooks/useFetchAllActionLogs";
 import { formatDate } from "../../utils/functions";
 import useDeleteObjects from "../../hooks/useDeleteObjects";
+import { useNavigate } from "react-router-dom";
 
 const LogList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate();
   const { logList, loading, error } = useFetchAllActionLogs();
   const { deleteActionLog } = useDeleteObjects();
   const [finalLogList, setfinalLogList] = useState([]);
 
     useEffect(() => {
         if (logList) {
-          setfinalLogList(logList)
-        }
+         setfinalLogList(logList)
+        }        
     }, [logList]);
 
     const columns = [
@@ -33,15 +35,20 @@ const LogList = () => {
       { field: "userName", headerName: "Made By", flex: 1 },
       { field: "message", headerName: "Log Message", flex: 5 },
       { field: "collectionName", headerName: "Collection Affected", flex: 1 },
+      // {
+      //   field: "action",
+      //   headerName: "Affected By",
+      //   flex: 0.75,
+      //   renderCell: (params) => {
+      //     return params.row.collectionName === "Payment" && params.row.action === "update"
+      //       ? "approved"
+      //       : params.row.action;
+      //   },
+      // },
       {
-        field: "action",
+        field: "actionToDisplay",
         headerName: "Affected By",
         flex: 0.75,
-        renderCell: (params) => {
-          return params.row.collectionName === "Payment" && params.row.action === "update"
-            ? "approved"
-            : params.row.action;
-        },
       },
       {
         field: "timestamp",
@@ -78,6 +85,14 @@ const LogList = () => {
       }
     };
 
+    const handleRowClick = (params) => {
+      const {row} = params
+      const {goTo, dataId} = row.metadata;
+      if(goTo && dataId){
+        navigate(row.metadata.goTo, {state: {dataId}});
+      }
+    }
+
     if (loading) {
       return (
         <Box
@@ -99,7 +114,10 @@ const LogList = () => {
 
     return (
       <Box m="20px">
-        <Header title={`All User Logs`} subtitle="Here are all the user logs." />
+        <Header
+          title={`All User Logs`}
+          subtitle="Here are all the user logs."
+        />
         <Box sx={{ width: "100%", pt: 1, pb: 3, mx: "auto" }}>
           <DataGrid
             sx={{
@@ -133,6 +151,7 @@ const LogList = () => {
             }}
             pageSizeOptions={[10, 20, 50, 100]}
             autoHeight
+            onRowClick={handleRowClick}
           />
         </Box>
       </Box>

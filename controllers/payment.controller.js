@@ -7,7 +7,7 @@ import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
-export const addNewPayment = async (paymentRequiredInformation, userID, paymentDetails) => {
+export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
     paymentRequiredInformation;
   // Find the module ID using the moduleCode
@@ -17,6 +17,8 @@ export const addNewPayment = async (paymentRequiredInformation, userID, paymentD
   const degree = await Degree.findOne({
     degreeID
   }).select("degreeName degreeYear");
+  const student = await Student.findById(studentID);
+
   const newDetails = {};
   
   if (paymentDetails.modulePrice) newDetails.modulePrice = paymentDetails.modulePrice;
@@ -40,6 +42,9 @@ export const addNewPayment = async (paymentRequiredInformation, userID, paymentD
     newData: newDetails,
     isNew: true,
   });
+  const homeLink = `/task/${degree.degreeYear}/${degreeID}`;
+  const dataId = student.studentID
+
   
   try {
     const newPayment = new ModuleStudentFinance({
@@ -52,6 +57,7 @@ export const addNewPayment = async (paymentRequiredInformation, userID, paymentD
       moduleName: module.moduleName,
       paymentLog: [paymentLog], // Push paymentLog directly into the document
       ...newDetails, // Merge newDetails into the model
+      metadata: {goTo: homeLink, dataId: dataId}
     });
     
 
@@ -64,6 +70,38 @@ export const addNewPayment = async (paymentRequiredInformation, userID, paymentD
       moduleAssignment.modulePayment = newPayment._id;
       await moduleAssignment.save();
     }
+
+    if (newPayment) {
+      await sendNotification(
+        req,
+        ["admin", "finance"],
+        "alert",
+        `Payment Requires Approval for ${newPayment.degreeName} ${newPayment.degreeYear} ${newPayment.moduleName}. The paid amount is ${newPayment.paidAmount}.`,
+        { goTo: `/paymentApprovals`, paymentId: newPayment._id }
+      );
+
+      // Construct and create a log entry for the payment update
+      const logMessage = {
+        paymentID: newPayment._id,
+        studentName: student.studentName,
+        paymentLogMessage: paymentLog.logString,
+      };
+      await createLog({
+        req,
+        collection: "Payment",
+        action: "createPayment",
+        actionToDisplay: "Create Payment",
+        logMessage,
+        affectedID: newPayment._id,
+        metadata: newPayment.metadata
+      });
+
+      res.status(200).json(newPayment);
+    } else {
+      res.status(404).json({ error: "No payment Created" });
+    }
+
+
   } catch (error) {
     console.log(error);
     return null;
@@ -120,10 +158,13 @@ export const updatePaymentDetails = async (req, res) => {
       moduleID: module._id,
     });
     if (!finances) {
-      addNewPayment(paymentRequiredInformation, userID, updateDetails);
-      return res
-       .status(200)
-       .json({ message: "New Payment Created." });
+      return addNewPayment(
+        req,
+        res,
+        paymentRequiredInformation,
+        userID,
+        updateDetails
+      );
     }
     const paymentLog = createPaymentLog({previousData: finances, newData: updateDetails})
     
@@ -136,7 +177,7 @@ export const updatePaymentDetails = async (req, res) => {
     if (payment) {
       await sendNotification(
         req,
-        ["admin"],
+        ["admin", "finance"],
         "alert",
         `Payment Requires Approval for ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName}. The paid amount is ${payment.paidAmount}.`,
         { goTo: `/paymentApprovals`, paymentId: payment._id }
@@ -147,14 +188,16 @@ export const updatePaymentDetails = async (req, res) => {
       const logMessage = {
         paymentID: payment._id,
         studentName: student.studentName,
-        paymentLogMessage : paymentLog
+        paymentLogMessage : paymentLog.logString
       } ;
       await createLog({
         req,
         collection: "Payment",
         action: "updateDetails",
+        actionToDisplay: "Update Payment",
         logMessage,
         affectedID: payment._id,
+        metadata: payment.metadata
       });
 
       res.status(200).json(payment);
@@ -210,8 +253,10 @@ export const updatePaymentStatus = async (req, res) => {
         req,
         collection: "Payment",
         action: "update",
+        actionToDisplay: "Payment Status Update",
         logMessage,
         affectedID: payment._id,
+        metadata: payment.metadata
       });
       
       res.status(200).json(payment);

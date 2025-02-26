@@ -77,6 +77,10 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
       logString: { type: String },
     },
   ],
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 const ModuleStudentFinance = infoDB.model(

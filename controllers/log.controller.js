@@ -46,13 +46,14 @@ export const createLog = async ({
   affectedID,
   collection,
   action,
+  actionToDisplay,
   logMessage,
+  metadata = {},
 }) => {
   try {
     const token = req.headers.cookie;
     const { userId } = extractToken(token);
     const user = await User.findById(userId, "firstName lastName userName");
-
     let message = "";
 
     switch (collection) {
@@ -71,7 +72,8 @@ export const createLog = async ({
 
       case "Assignment":
         if (action === "create") {
-          const { assignmentName, assignmentID, studentID, moduleCode } = logMessage;
+          const { assignmentName, assignmentID, studentID, moduleCode } =
+            logMessage;
           if (studentID && moduleCode) {
             message = `${user.firstName} created manual assignment: ${assignmentName} (ID: ${assignmentID}) for student ${studentID} in module ${moduleCode}.`;
           } else {
@@ -89,10 +91,14 @@ export const createLog = async ({
       case "Payment":
         if (action === "updateDetails") {
           const { paymentID, studentName, paymentLogMessage } = logMessage;
-          message = `${user.firstName} updated payment details of ${studentName}.`;
+          message = `${user.firstName} updated payment details of ${studentName}. ${paymentLogMessage}`;
         } else if (action === "update") {
-          const { paymentID, paymentVerificationStatus, studentName } = logMessage;
+          const { paymentID, paymentVerificationStatus, studentName } =
+            logMessage;
           message = `${user.firstName} updated payment status of ${studentName} to "${paymentVerificationStatus}".`;
+        } else if (action === "createPayment") {
+          const { paymentID, studentName, paymentLogMessage } = logMessage;
+          message = `${user.firstName} created payment details of ${studentName}. ${paymentLogMessage}`;
         }
         break;
 
@@ -107,7 +113,9 @@ export const createLog = async ({
       affectedID,
       collectionName: collection,
       action,
+      actionToDisplay,
       message,
+      metadata,
     });
 
     await log.save();

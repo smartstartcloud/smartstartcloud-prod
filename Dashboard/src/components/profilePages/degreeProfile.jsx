@@ -27,7 +27,7 @@ const DegreeProfile = () => {
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
   const location = useLocation();
-  const dataId = location.state?.dataId || null
+  const dataId = location.state?.dataId || null  
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
 

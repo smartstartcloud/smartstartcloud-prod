@@ -29,11 +29,19 @@ const logSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     required: true,
   },
+  actionToDisplay: {
+    type: String,
+    required: true,
+  },
   message: {
     // A human-readable description of what was done
     type: String,
     required: true,
   },
+  metadata: {
+    type: Object,
+    default: {},
+  }, // Extra data (optional)
 });
 
 const Log = infoDB.model("Log", logSchema);
