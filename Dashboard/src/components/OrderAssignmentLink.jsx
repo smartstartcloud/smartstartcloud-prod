@@ -75,7 +75,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
                         <TableHead>
                         <TableRow>
                             <TableCell align="left" sx={{fontWeight: "bold"}}>Index</TableCell>
-                            <TableCell align="left" sx={{fontWeight: "bold"}}>Assignment ID</TableCell>
+                            <TableCell align="left" sx={{fontWeight: "bold"}}>Assignment Name</TableCell>
                             <TableCell align="left" sx={{fontWeight: "bold"}}>Order ID</TableCell>
                         </TableRow>
                         </TableHead>
@@ -91,7 +91,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
                                             fontWeight: row._id ? "normal" : "bold",
                                         }}
                                     >
-                                        {row._id || "No Assignment Name"}
+                                        {row.assignmentName || "No Assignment Name"}
                                     </TableCell>
                                     <TableCell
                                         sx={{
