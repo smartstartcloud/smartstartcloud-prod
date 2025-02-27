@@ -158,7 +158,32 @@ const Dashboard = () => {
           
         </>
       )}
-      {isSuperAdmin && <SuperAdminCharts />}
+      {isSuperAdmin && 
+      <> 
+       {/* Beautifully Styled Order Box */}
+       <Paper
+            elevation={6}
+            sx={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "#1976D2",
+              color: "white",
+              borderRadius: "12px",
+              maxWidth: "300px",
+              margin: "20px auto",
+            }}
+          >
+            <Typography variant="h5" fontWeight="bold">
+              Total Orders Placed
+            </Typography>
+            <Typography variant="h3" fontWeight="bold" mt={1}>
+              {orderIDLength}
+            </Typography>
+          </Paper>
+          
+      <SuperAdminCharts />
+      
+      </>}
     </Box>
   );
 };
