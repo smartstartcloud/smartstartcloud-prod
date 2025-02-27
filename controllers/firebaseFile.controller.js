@@ -28,12 +28,15 @@ export const fileUpload = async (req, res) => {
       writerFlag,
       paymentFlag,
     } = req.body;    
+    
 
     const storageRef = ref(storage, req.file.originalname);
 
     const metadata = {
       contentType: req.file.mimetype,
     };
+    console.log(metadata);
+    
 
     const uploadTask = await uploadBytesResumable(
       storageRef,
@@ -77,10 +80,10 @@ export const fileUpload = async (req, res) => {
     if (referenceCollection === "Assignment") {
       if (writerFlag) {
         // Add the new file ID to the assignment's `assignmentFile` array
-        const assignment = await Assignment.findOne({ orderID }); // Find the Assignment document by its ID);
-        assignment.fileList.push(newFile._id);
-        // Save the updated assignment
-        await assignment.save();
+        // const assignment = await Assignment.findOne({ orderID }); // Find the Assignment document by its ID);
+        // assignment.fileList.push(newFile._id);
+        // // Save the updated assignment
+        // await assignment.save();
       } else {
         const assignment = await Assignment.findByIdAndUpdate(
           { _id: referenceID }, // Find the Assignment document by its ID

@@ -247,7 +247,7 @@ const PortalAll = () => {
         <Grid container spacing={3} mb={3} justifyContent="left" sx={{pb: 2}}>
           {displayList &&
             displayList.map((order) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={order._id}>
+              <Grid item xs={12} sm={6} md={4} key={order._id}>
                 <OrderCard
                   orderID={order.orderID}
                   referenceNumber={order.referenceNumber}
