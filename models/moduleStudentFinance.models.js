@@ -70,6 +70,7 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   },
   otherPaymentMethod: {
     type: String,
+    enum: ["cash", "bank", "referral", "other"], // Only these values are allowed
   },
   paymentVerificationStatus: {
     type: String,
