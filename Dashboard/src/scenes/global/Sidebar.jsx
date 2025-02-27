@@ -164,13 +164,13 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
-              <Item
+              {<Item
                 title="All Degrees"
                 to="/allDegrees"
                 icon={<StorageOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
-              />
+              />}
               {(isAdmin || !isFinance) && (
                 <Item
                   title="All Orders"
@@ -207,13 +207,13 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
-              <Item
+              {!isFinance && <Item
                 title="All Student"
                 to="/allStudent"
                 icon={<PersonIcon />}
                 selected={selected}
                 setSelected={setSelected}
-              />
+              />}
               {isAdmin && (
                 <Item
                   title="All User Logs"

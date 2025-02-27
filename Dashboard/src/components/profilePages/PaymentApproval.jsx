@@ -24,15 +24,17 @@ const PaymentApproval = () => {
   const [listBankFilter, setBankFilter] = useState([]);
   const [listCashFilter, setCashFilter] = useState([]);
   const [listReferralFilter, setReferralFilter] = useState([]);
-  const [listOtherFilter, setOtherFilter] = useState([]);
-  console.log(paymentData);
-  
+  const [listOtherFilter, setOtherFilter] = useState([]);  
 
   const location = useLocation();
   const dataId = location.state?.dataId || null
   
   useEffect(() => {
-    if (paymentData && paymentData.length > 0) {      
+    if (paymentData && paymentData.length > 0) {   
+      setBankFilter([]);
+      setCashFilter([]);
+      setOtherFilter([]);
+      setReferralFilter([]);
       setTableData([]); // Clear the table data array first
       // Then, populate it with the data from the API response  // This is where you would map over the paymentData array and create objects with the desired properties.
       paymentData.forEach((item) => {
@@ -74,20 +76,83 @@ const PaymentApproval = () => {
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleStatusUpdate = (value) => {
+    console.log(value);
+
+    if (value.paymentMethod === "CASH") {
+      setCashFilter((prev)=> 
+          prev.map((row)=> 
+              row.id === value.id
+                ? {
+                    ...row,
+                    paymentVerificationStatus:
+                      row.paymentVerificationStatus === "awaiting approval"
+                        ? "approved"
+                        : "awaiting approval",
+                  }
+                : row
+          )
+      )
+    }
+    if (value.paymentMethod === "BANK") {
+      setBankFilter((prev)=> 
+          prev.map((row)=> 
+              row.id === value.id
+                ? {
+                    ...row,
+                    paymentVerificationStatus:
+                      row.paymentVerificationStatus === "awaiting approval"
+                        ? "approved"
+                        : "awaiting approval",
+                  }
+                : row
+          )
+      )
+    }
+    if (value.paymentMethod === "REFERRAL") {
+      setReferralFilter((prev)=> 
+          prev.map((row)=> 
+              row.id === value.id
+                ? {
+                    ...row,
+                    paymentVerificationStatus:
+                      row.paymentVerificationStatus === "awaiting approval"
+                        ? "approved"
+                        : "awaiting approval",
+                  }
+                : row
+          )
+      )
+    }
+    if (value.paymentMethod === "OTHER") {
+      setOtherFilter((prev)=> 
+          prev.map((row)=> 
+              row.id === value.id
+                ? {
+                    ...row,
+                    paymentVerificationStatus:
+                      row.paymentVerificationStatus === "awaiting approval"
+                        ? "approved"
+                        : "awaiting approval",
+                  }
+                : row
+          )
+      )
+    }
+    
     updatePaymentStatus(value.id, value.paymentVerificationStatus === "awaiting approval"?"approved":"awaiting approval");
-    setTableData((prev)=> 
-        prev.map((row)=> 
-            row.id === value.id
-              ? {
-                  ...row,
-                  paymentVerificationStatus:
-                    row.paymentVerificationStatus === "awaiting approval"
-                      ? "approved"
-                      : "awaiting approval",
-                }
-              : row
-        )
-    )
+    // setTableData((prev)=> 
+    //     prev.map((row)=> 
+    //         row.id === value.id
+    //           ? {
+    //               ...row,
+    //               paymentVerificationStatus:
+    //                 row.paymentVerificationStatus === "awaiting approval"
+    //                   ? "approved"
+    //                   : "awaiting approval",
+    //             }
+    //           : row
+    //     )
+    // )
   };
 
   const columns = [
@@ -122,7 +187,7 @@ const PaymentApproval = () => {
           }
           onClick={(event) => {
             event.stopPropagation(); // Prevents the row click event
-            handleStatusUpdate(params.row);
+            handleStatusUpdate(params.row);            
           }}
         >
           {params.row.paymentVerificationStatus}

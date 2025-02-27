@@ -13,6 +13,7 @@ import { tokens } from '../theme';
 const PaymentApprovalTable = ({columns, dataId, list, listName}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    
     return (
       <Box sx={{ width: "100%", pt: 1, pb: 3, mx: "auto" }}>
         <Box mb={2}>
