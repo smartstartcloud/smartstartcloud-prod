@@ -42,6 +42,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
      assignmentProgress: "TBA",
      assignmentDeadline: "",
      assignmentGrade: "",
+     wordCount: "",
    },
  });
 
@@ -58,6 +59,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   assignmentProgress: assignmentData?.assignmentProgress || "TBA",
                   assignmentDeadline: assignmentData?.assignmentDeadline || "",
                   assignmentGrade: assignmentData?.assignmentGrade || "",
+                  wordCount: assignmentData?.wordCount || ""
                 });
             } else {              
                 reset({
@@ -69,6 +71,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   assignmentProgress: "TBA",
                   assignmentDeadline: "",
                   assignmentGrade: "",
+                  wordCount: "",
                 });
             }
         }

@@ -13,6 +13,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
 import { useLocation } from "react-router-dom";
+import PaymentApprovalTable from "../PaymentApprovalTable";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -20,6 +21,12 @@ const PaymentApproval = () => {
   const { paymentData, error, loading } = useAllGetPaymentDetails();
   const { updatePaymentStatus } = useSendPaymentData();
   const [tableData, setTableData] = useState([]);
+  const [listBankFilter, setBankFilter] = useState([]);
+  const [listCashFilter, setCashFilter] = useState([]);
+  const [listReferralFilter, setReferralFilter] = useState([]);
+  const [listOtherFilter, setOtherFilter] = useState([]);
+  console.log(paymentData);
+  
 
   const location = useLocation();
   const dataId = location.state?.dataId || null
@@ -39,13 +46,28 @@ const PaymentApproval = () => {
           moduleName: item.moduleName,
           modulePrice: item.modulePrice ? item.modulePrice : 0,
           paidAmount: item.paidAmount ? item.paidAmount : 0,
-          paymentDue: item.paymentDue ? item.paymentDue : 0,
-          paymentToDate: item.paymentToDate,
-          paymentMethod: item.paymentMethod,
+          paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
+          paymentToDate: item.totalPaymentToDate,
+          paymentMethod: item?.paymentMethod
+            ? item.paymentMethod.toString().toUpperCase()
+            : "",
+          paymentMethodDetails:
+            item.paymentMethod === "bank"
+              ? item.bankPaymentMethod
+              : item.paymentMethod === "cash"
+              ? item.cashPaymentMethod
+              : item.paymentMethod === "referral"
+              ? item.referralPaymentMethod
+              : item.paymentMethod === "other"
+              ? item.otherPaymentMethod
+              : null,
           userName: item.user?.userName,
           paymentVerificationStatus: item.paymentVerificationStatus,
         };
-        setTableData((prev) => [...prev, tempObj]);
+        if (item.paymentMethod === "bank") setBankFilter((prev) => [...prev, tempObj]);
+        if (item.paymentMethod === "cash") setCashFilter((prev) => [...prev, tempObj]);
+        if (item.paymentMethod === "referral") setReferralFilter((prev) => [...prev, tempObj]);
+        if (item.paymentMethod === "other") setOtherFilter((prev) => [...prev, tempObj]);
       });
     }
   }, [paymentData]);
@@ -80,6 +102,7 @@ const PaymentApproval = () => {
     { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
     { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
     { field: "paymentMethod", headerName: "Payment Method", flex: 0.5 },
+    { field: "paymentMethodDetails", headerName: "Details", flex: 0.5 },
     { field: "userName", headerName: "Employee", flex: 0.5 },
     {
       field: "paymentVerificationStatus",
@@ -126,61 +149,44 @@ const PaymentApproval = () => {
   if (error) {
     return <div>{error.message}</div>;
   }
-
   return (
     <Box m="20px">
       <Header
         title={`All Payments`}
         subtitle="Here are all the payment to be approved"
       />
-      <Box sx={{ width: "90%", pt: 1, pb: 3, mx: "auto" }}>
-        {/* <Typography
-          variant="h4"
-          sx={{
-            textAlign: "center",
-            mb: 1,
-            color: colors.blueAccent[300],
-            textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-          }}
-        >
-          Current Latest ID: s{currentAvailableID}
-        </Typography> */}
-        <DataGrid
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: colors.blueAccent[200],
-              color: colors.black,
-              fontSize: "16px",
-            },
-            "& .MuiDataGrid-row": {
-              backgroundColor: colors.grey[50],
-              color: colors.black,
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: colors.blueAccent[50],
-                transform: "scale(1.01)",
-                transition: "transform 0.2s",
-              },
-            },
-          }}
-          rows={tableData}
+      {listBankFilter.length > 0 && (
+        <PaymentApprovalTable
+          list={listBankFilter}
           columns={columns}
-          getRowId={(row) => row.id}
-          slots={{ toolbar: GridToolbar }}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-                page: 0, // Initial page index
-              },
-            },
-          }}
-          pageSizeOptions={[10, 20, 50, 100]}
-          autoHeight
-          disableSelectionOnClick // Prevents row selection
-          rowSelectionModel={dataId ? [dataId] : []} // Pre-selects the passed row ID
+          listName={"BANK"}
+          dataId={dataId}
         />
-      </Box>
+      )}
+      {listCashFilter.length > 0 && (
+        <PaymentApprovalTable
+          list={listCashFilter}
+          columns={columns}
+          listName={"CASH"}
+          dataId={dataId}
+        />
+      )}
+      {listReferralFilter.length > 0 && (
+        <PaymentApprovalTable
+          list={listReferralFilter}
+          columns={columns}
+          listName={"REFFERRAL"}
+          dataId={dataId}
+        />
+      )}
+      {listOtherFilter.length > 0 && (
+        <PaymentApprovalTable
+          list={listOtherFilter}
+          columns={columns}
+          listName={"OTHER"}
+          dataId={dataId}
+        />
+      )}
     </Box>
   );
 };

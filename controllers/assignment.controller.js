@@ -24,6 +24,7 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                     assignmentName: assignmentData.assignmentName,
                     assignmentType: assignmentData.assignmentType,
                     assignmentDeadline: assignmentData.assignmentDeadline,
+                    wordCount: assignmentData.wordCount,
                     referenceNumber: assignmentData.referenceNumber,
                     assignmentNature: "main",
                   },
@@ -45,6 +46,7 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                           assignmentName: assignmentData.assignmentName,
                           assignmentType: assignmentData.assignmentType,
                           assignmentDeadline: assignmentData.assignmentDeadline,
+                          wordCount: assignmentData.wordCount,
                           referenceNumber: assignmentData.referenceNumber,
                         },
                         { new: true }
@@ -60,6 +62,7 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                   assignmentName: assignmentData.assignmentName,
                   assignmentType: assignmentData.assignmentType,
                   assignmentDeadline: assignmentData.assignmentDeadline,
+                  wordCount: assignmentData.wordCount,
                   assignmentProgress: "TBA",
                   assignmentGrade: "",
                   assignmentNature: "main",
@@ -77,26 +80,28 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                   if (!student) {
                     console.error(`student with ID ${studentList[i]} not found.`);
                   } else {
-                    console.log(student);
+                    // Create a new Assignment instance
+                    const newAssignment = new Assignment({
+                      assignmentID: `${student.studentID}_${assignmentData.referenceNumber}`,
+                      assignmentName: assignmentData.assignmentName,
+                      assignmentType: assignmentData.assignmentType,
+                      assignmentDeadline: assignmentData.assignmentDeadline,
+                      wordCount: assignmentData.wordCount,
+                      assignmentProgress: "TBA",
+                      assignmentGrade: "",
+                      assignmentNature: "dynamic",
+                      moduleCode: moduleCode,
+                      referenceNumber: assignmentData.referenceNumber,
+                    });
+                    // Save the assignment to the database and collect its ObjectID
+                    const savedAssignment = await newAssignment.save();
+                    assignmentIDs.push(savedAssignment._id); // Collect each saved ID
+                    await updateModuleStudentAssignment(
+                      moduleCode,
+                      studentList[i],
+                      savedAssignment._id
+                    );
                   }
-                  
-                  // Create a new Assignment instance
-                  const newAssignment = new Assignment({
-                    assignmentID: `${student.studentID}_${assignmentData.referenceNumber}`,
-                    assignmentName: assignmentData.assignmentName,
-                    assignmentType: assignmentData.assignmentType,
-                    assignmentDeadline: assignmentData.assignmentDeadline,
-                    assignmentProgress: "TBA",
-                    assignmentGrade: "",
-                    assignmentNature: "dynamic",
-                    moduleCode: moduleCode,
-                    referenceNumber: assignmentData.referenceNumber,
-                  });
-
-                  // Save the assignment to the database and collect its ObjectID
-                  const savedAssignment = await newAssignment.save();
-                  assignmentIDs.push(savedAssignment._id); // Collect each saved ID  
-                  await updateModuleStudentAssignment(moduleCode, studentList[i],savedAssignment._id)                
                 }
               }
               
@@ -131,7 +136,7 @@ export const filterMainAssignments = async(assignments) => {
   return filteredAssignments;
 }
 
-export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList) => {  
+export const createNewModuleStudentAssignment = async (moduleID, studentList, assignmentList, parentLink) => {  
     for (const assignments of assignmentList) {
       const updatedAssignments = await filterMainAssignments(assignments);
       const sortedUpdatedAssignments = updatedAssignments.sort()
@@ -156,6 +161,29 @@ export const createNewModuleStudentAssignment = async (moduleID, studentList, as
             assignments: [sortedUpdatedAssignments[i]], // Initialize with the first assignment
           });
           await newModuleAssignment.save();
+
+          // Update metadata with _id and save again
+          const homeLink = parentLink;          
+          newModuleAssignment.metadata = {
+            goTo: homeLink,
+            parentDataId: newModuleAssignment.studentID,
+            dataId: newModuleAssignment.moduleID,
+          };
+          await newModuleAssignment.save();
+
+          for (const assignment of newModuleAssignment.assignments){
+            const tempAssignment = await Assignment.findById(assignment)
+            if (tempAssignment){
+              tempAssignment.metadata = {
+                goTo: homeLink,
+                grandParentDataId: newModuleAssignment.studentID,
+                parentDataId: newModuleAssignment.moduleID,
+                dataId: tempAssignment._id,
+              };
+              await tempAssignment.save();
+            }
+          }
+
           // console.log("newModuleAssignment", newModuleAssignment);
         }
       }
@@ -204,6 +232,7 @@ export const updateAssignment = async (req, res) => {
       assignmentType,
       assignmentProgress,
       assignmentDeadline,
+      wordCount,
       assignmentGrade,
       assignmentFile,
       assignmentNature,
@@ -218,6 +247,7 @@ export const updateAssignment = async (req, res) => {
     if (assignmentType) updatedFields.assignmentType = assignmentType;
     if (assignmentProgress) updatedFields.assignmentProgress = assignmentProgress;
     if (assignmentDeadline) updatedFields.assignmentDeadline = assignmentDeadline;
+    if (wordCount) updatedFields.wordCount = wordCount;
     if (assignmentGrade) updatedFields.assignmentGrade = assignmentGrade;
     if (assignmentFile) updatedFields.assignmentFile = assignmentFile;
     if (assignmentNature) updatedFields.assignmentNature = assignmentNature;
@@ -257,6 +287,7 @@ async function createNewAssignmentManual(
   assignmentName,
   assignmentType,
   assignmentDeadline,
+  wordCount,
   assignmentProgress,
   assignmentGrade,
   moduleCode,
@@ -267,12 +298,13 @@ async function createNewAssignmentManual(
     assignmentName: assignmentName,
     assignmentType: assignmentType,
     assignmentDeadline: assignmentDeadline,
+    wordCount: wordCount,
     assignmentProgress: assignmentProgress,
     assignmentGrade: assignmentGrade,
     assignmentFile: [], // Default to empty array
     assignmentNature: "manual",
     moduleCode: moduleCode,
-    referenceNumber: referenceNumber
+    referenceNumber: referenceNumber,
   });
   const savedAssignment = await newAssignment.save();
   return savedAssignment;
@@ -296,6 +328,7 @@ export const newAssignmentManual = async (req, res) => {
       assignmentName,
       assignmentType,
       assignmentDeadline,
+      wordCount,
       assignmentProgress,
       assignmentGrade,
     } = req.body;
@@ -309,6 +342,7 @@ export const newAssignmentManual = async (req, res) => {
       assignmentName,
       assignmentType,
       assignmentDeadline,
+      wordCount,
       assignmentProgress,
       assignmentGrade,
       moduleCode

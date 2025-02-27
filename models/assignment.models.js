@@ -20,6 +20,9 @@ const AssignmentSchema = new mongo.Schema(
     assignmentDeadline: {
       type: String,
     },
+    wordCount: {
+      type: String,
+    },
     assignmentProgress: {
       type: String,
     },

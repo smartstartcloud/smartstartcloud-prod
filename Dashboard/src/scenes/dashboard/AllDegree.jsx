@@ -24,7 +24,7 @@ const AllDegree = () => {
     const yearMatch = selectedYear ? year.yearName.endsWith(selectedYear) : true;
     return intakeMatch && yearMatch;
   });
-  filteredYearList = sortByProperty(filteredYearList, "year_id", "dsc");  
+  filteredYearList = sortByProperty(filteredYearList, "year_id", "dsc");
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading data...</div>;
