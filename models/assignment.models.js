@@ -9,7 +9,6 @@ const AssignmentSchema = new mongo.Schema(
     },
     orderID: {
       type: String,
-      sparse: true, // Marks this field to allow unique values only when not null
     },
     assignmentName: {
       type: String,
@@ -53,7 +52,7 @@ const AssignmentSchema = new mongo.Schema(
 );
 
 // Create a unique sparse index on `orderID`
-AssignmentSchema.index({ orderID: 1 }, { unique: true, sparse: true });
+// AssignmentSchema.index({ orderID: 1 }, { unique: true, sparse: true });
 
 const Assignment = infoDB.model("Assignment", AssignmentSchema, "Assignment");
 export default Assignment;

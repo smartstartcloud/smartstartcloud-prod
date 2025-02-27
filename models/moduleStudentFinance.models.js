@@ -23,6 +23,15 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
     ref: "Module",
     required: true,
   },
+  moduleAssignmentID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ModuleAssignment",
+    required: true,
+  },
+  fileList: [{
+    type: mongo.Schema.Types.ObjectId,
+    ref: "File",
+  }],
   assignmentID: {
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
@@ -96,7 +105,9 @@ moduleStudentFinanceSchema.pre('save', async function (next) {
     const counterKey = `fin`;
     const seq = await getNextSequence(counterKey);
     // Format the userID as ROLE-YYYY-NNNN, e.g., ADMIN-2025-0001
-    this.notificationID = `${counterKey.toUpperCase()}-${seq.toString().padStart(4, '0')}`;
+    this.financeID = `${counterKey.toUpperCase()}-${seq
+      .toString()
+      .padStart(4, "0")}`;
   }
   next();
 });

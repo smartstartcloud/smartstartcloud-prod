@@ -31,7 +31,7 @@ const LogList = () => {
     }, [logList]);
 
     const columns = [
-      { field: "_id", headerName: "ID", flex: 0.5 },
+      { field: "logID", headerName: "Index", flex: 0.5 },
       { field: "userName", headerName: "Made By", flex: 1 },
       { field: "message", headerName: "Log Message", flex: 5 },
       { field: "collectionName", headerName: "Collection Affected", flex: 1 },

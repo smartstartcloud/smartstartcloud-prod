@@ -52,11 +52,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   const [referenceIdToPass, setreferenceIdToPass] = useState("");
   
   const { paymentData, loading, error } = useGetPaymentDetails(paymentRequiredInformation);
-  const { moduleAssignmentData } = useFetchModuleAssignmentData(
-    paymentRequiredInformation.studentID,
-    paymentRequiredInformation.moduleId
-  );  
-
+  
   const { updatePayment } = useSendPaymentData();
   
   const [paymentDetails, setPaymentDetails] = useState({
@@ -90,14 +86,15 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
           paymentVerificationStatus:
             paymentData?.paymentVerificationStatus || "awaiting approval",
         });
+        setreferenceIdToPass(paymentData?.moduleAssignmentID); 
       }
     }, [paymentData]);
 
-    useEffect(() => {
-      if (moduleAssignmentData) {
-        setreferenceIdToPass(moduleAssignmentData._id);        
-      }
-    }, [moduleAssignmentData]);
+    // useEffect(() => {
+    //   if (moduleAssignmentData) {
+    //     setreferenceIdToPass(moduleAssignmentData._id);        
+    //   }
+    // }, [moduleAssignmentData]);
 
   const handleChange = (field, value) => {
     

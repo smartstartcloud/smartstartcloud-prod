@@ -8,7 +8,7 @@ import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 
 export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
-  const { degreeID, assignmentID, moduleCode, studentID } =
+  const { degreeID, assignmentID, moduleCode, studentID, moduleId } =
     paymentRequiredInformation;
     
   // Find the module ID using the moduleCode
@@ -18,31 +18,24 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
   const degree = await Degree.findOne({
     degreeID
   }).select("degreeName degreeYear");
+  const moduleAssignment = await ModuleAssignment.findOne({
+    degreeID,
+  }).select("degreeName degreeYear");
   const student = await Student.findById(studentID);
 
-  const newDetails = {};
-  
-  if (paymentDetails.modulePrice) newDetails.modulePrice = paymentDetails.modulePrice;
-  if (paymentDetails.totalPaymentDue) newDetails.totalPaymentDue = paymentDetails.totalPaymentDue;
-  if (paymentDetails.totalPaymentToDate) newDetails.totalPaymentToDate = paymentDetails.totalPaymentToDate;
-  if (paymentDetails.paymentMethod) newDetails.paymentMethod = paymentDetails.paymentMethod;
-  if (paymentDetails.paymentStatus) newDetails.paymentStatus = paymentDetails.paymentStatus;
-  if (paymentDetails.paidAmount) newDetails.paidAmount = paymentDetails.paidAmount;
-  if (paymentDetails.otherPaymentMethod) newDetails.otherPaymentMethod = paymentDetails.otherPaymentMethod;
-  if (paymentDetails.bankPaymentMethod) newDetails.bankPaymentMethod = paymentDetails.bankPaymentMethod;
-  if (paymentDetails.cashPaymentMethod) newDetails.cashPaymentMethod = paymentDetails.cashPaymentMethod;
-  if (paymentDetails.referredPaymentMethod) newDetails.referredPaymentMethod = paymentDetails.referredPaymentMethod;
-  if (paymentDetails.paymentVerificationStatus) {
-    newDetails.paymentVerificationStatus =
+  const newDetails = {
+    ...paymentDetails,
+    paymentVerificationStatus:
       paymentDetails.paymentVerificationStatus === "approved"
         ? "awaiting approval"
-        : paymentDetails.paymentVerificationStatus;
-  }
-  if (paymentDetails.userID) newDetails.userID = paymentDetails.userID;
+        : paymentDetails.paymentVerificationStatus,
+  };
+
   const paymentLog = createPaymentLog({
     newData: newDetails,
     isNew: true,
   });
+
   const homeLink = `/task/${degree.degreeYear}/${degreeID}`;
   const dataId = student.studentID
 
@@ -60,8 +53,7 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
       ...newDetails, // Merge newDetails into the model
       metadata: {goTo: homeLink, dataId: dataId}
     });
-    
-
+        
     await newPayment.save();
     const moduleAssignment = await ModuleAssignment.findOne({
       studentID: studentID,
@@ -110,8 +102,6 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
 };
 
 export const updatePaymentDetails = async (req, res) => {
-  console.log('ashche');
-
   const {
     totalPaymentDue,
     totalPaymentToDate,
@@ -123,7 +113,7 @@ export const updatePaymentDetails = async (req, res) => {
     bankPaymentMethod,
     cashPaymentMethod,
     referredPaymentMethod,
-    paymentRequiredInformation,
+    paymentRequiredInformation,  //Contains {assignmentID, degreeID, moduleCode, moduleId, studentID(_id)}
     paymentVerificationStatus,
     userID
   } = req.body;
@@ -131,29 +121,42 @@ export const updatePaymentDetails = async (req, res) => {
     const updateDetails = {};
     if (paymentAmount) updateDetails.modulePrice = paymentAmount;
     if (totalPaymentDue) updateDetails.totalPaymentDue = totalPaymentDue;
-    if (totalPaymentToDate) updateDetails.totalPaymentToDate = totalPaymentToDate;
+    if (totalPaymentToDate)
+      updateDetails.totalPaymentToDate = totalPaymentToDate;
     if (paymentMethod) updateDetails.paymentMethod = paymentMethod;
-    if (paymentStatus) updateDetails.paymentStatus = paymentStatus
+    if (paymentStatus) updateDetails.paymentStatus = paymentStatus;
     if (paidAmount) updateDetails.paidAmount = paidAmount;
-    if (otherPaymentMethod) updateDetails.otherPaymentMethod = otherPaymentMethod;
+    if (otherPaymentMethod)
+      updateDetails.otherPaymentMethod = otherPaymentMethod;
     if (bankPaymentMethod) updateDetails.bankPaymentMethod = bankPaymentMethod;
     if (cashPaymentMethod) updateDetails.cashPaymentMethod = cashPaymentMethod;
-    if (referredPaymentMethod) updateDetails.referredPaymentMethod = referredPaymentMethod;
+    if (referredPaymentMethod)
+      updateDetails.referredPaymentMethod = referredPaymentMethod;
     if (paymentVerificationStatus) {
       updateDetails.paymentVerificationStatus =
         paymentVerificationStatus === "approved"
           ? "awaiting approval"
           : paymentVerificationStatus;
-    }    
+    }
     if (userID) updateDetails.userID = userID;
-    
+
     // Find the module ID using the moduleCode
-    const module = await Module.findOne({
-      moduleCode: paymentRequiredInformation.moduleCode,
+    const module = await Module.findById({
+      _id: paymentRequiredInformation.moduleId
     });
     if (!module) {
       return res.status(404).json({ error: "Module not found" });
     }
+
+    // Find the module ID using the moduleCode
+    const moduleAssignment = await ModuleAssignment.findOne({
+      moduleID: paymentRequiredInformation.moduleId, studentID: paymentRequiredInformation.studentID
+    }).select("_id");
+    if (!moduleAssignment) {
+      return res.status(404).json({ error: "Module Assignment not found" });
+    }
+
+    updateDetails.moduleAssignmentID = moduleAssignment._id;
 
     // Find all records in ModuleStudentFinance where studentID and moduleID match
     const finances = await ModuleStudentFinance.findOne({
@@ -169,8 +172,11 @@ export const updatePaymentDetails = async (req, res) => {
         updateDetails
       );
     }
-    const paymentLog = createPaymentLog({previousData: finances, newData: updateDetails})
-    
+    const paymentLog = createPaymentLog({
+      previousData: finances,
+      newData: updateDetails,
+    });
+
     // Find the specific assignment by its ID and update it
     const payment = await ModuleStudentFinance.findByIdAndUpdate(
       finances._id,
@@ -186,13 +192,13 @@ export const updatePaymentDetails = async (req, res) => {
         { goTo: `/paymentApprovals`, paymentId: payment._id }
       );
       const student = await Student.findById(payment.studentID);
-      
+
       // Construct and create a log entry for the payment update
       const logMessage = {
         paymentID: payment._id,
         studentName: student.studentName,
-        paymentLogMessage : paymentLog.logString
-      } ;
+        paymentLogMessage: paymentLog.logString,
+      };
       await createLog({
         req,
         collection: "Payment",
@@ -200,7 +206,7 @@ export const updatePaymentDetails = async (req, res) => {
         actionToDisplay: "Update Payment",
         logMessage,
         affectedID: payment._id,
-        metadata: payment.metadata
+        metadata: payment.metadata,
       });
 
       res.status(200).json(payment);
@@ -278,13 +284,11 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
     let logString = ''
     if (isNew) {
       logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
+    } else {
+      logString = `A payment of ${newData.paidAmount} GBP was made.`;
     }
     if (statusUpdate) {
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
-    } else {
-      if (previousData !== null && previousData.paidAmount &&  previousData.totalPaymentDue && newData.totalPaymentDue) {
-        logString = `A payment of ${newData.paidAmount} GBP was made.`;
-      }
     }
 
     const date = new Date().toUTCString()

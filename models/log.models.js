@@ -1,15 +1,15 @@
-import mongoose from 'mongoose';
+import mongo from "mongoose";
 import { infoDB } from "../db/connectMongoDB.js";
 import { getNextSequence } from './counter.models.js';
 
 
-const logSchema = new mongoose.Schema({
+const logSchema = new mongo.Schema({
   logID: {
     type: String,
     unique: true,
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongo.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
@@ -18,7 +18,7 @@ const logSchema = new mongoose.Schema({
     required: true,
   },
   affectedID: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongo.Schema.Types.ObjectId,
     // Optional: set required: true if every log must have an affectedID
     required: false,
   },
@@ -32,7 +32,7 @@ const logSchema = new mongoose.Schema({
   },
   action: {
     // Store details about the change; it can be a string or a more complex object
-    type: mongoose.Schema.Types.Mixed,
+    type: mongo.Schema.Types.Mixed,
     required: true,
   },
   actionToDisplay: {
