@@ -1,5 +1,5 @@
-import { Box, Grid, Select, MenuItem, FormControl, InputLabel, Typography } from "@mui/material";
-import { useState } from "react";
+import { Box, Grid, Select, MenuItem, FormControl, InputLabel, Typography, Paper } from "@mui/material";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import TaskCard from "../../components/TaskCard";
 import { yearFilter } from "../../utils/yearFilter";
@@ -7,12 +7,20 @@ import { useAuthContext } from "../../context/AuthContext";
 import useFetchAgentFilteredDegreeData from "../../hooks/useFetchAgentFilteredDegreeData";
 import SuperAdminCharts from "../../components/profilePages/SuperAdminCharts.jsx";
 import { sortByProperty } from "../../utils/functions.js";
+import useFetchOrderList from "../../hooks/useFetchOrderList";
 
 const Dashboard = () => {
   const { authUser, isSuperAdmin } = useAuthContext();
   const { degree, error, loading } = useFetchAgentFilteredDegreeData(authUser._id);
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [orderIDLength, setorderIDLength] = useState(0);
+  const { orderList} = useFetchOrderList();
+  useEffect(() => {
+    if (orderList && Array.isArray(orderList) && orderList.length > 0) {
+      setorderIDLength(orderList.length);
+    }
+  }, [orderList]);
 
   const yearList = degree ? yearFilter(degree) : [];
 
@@ -49,6 +57,7 @@ const Dashboard = () => {
           }
         />
       </Box>
+       
 
       {!isSuperAdmin && (
         <>
@@ -106,7 +115,6 @@ const Dashboard = () => {
               </Select>
             </FormControl>
           </Box>
-
           <Grid container spacing={2}>
             {filteredYearList.length > 0 ? (
               filteredYearList.map((year, idx) => (
@@ -126,6 +134,28 @@ const Dashboard = () => {
               </Grid>
             )}
           </Grid>
+
+           {/* Beautifully Styled Order Box */}
+           <Paper
+            elevation={6}
+            sx={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "#1976D2",
+              color: "white",
+              borderRadius: "12px",
+              maxWidth: "300px",
+              margin: "20px auto",
+            }}
+          >
+            <Typography variant="h5" fontWeight="bold">
+              Total Orders Placed
+            </Typography>
+            <Typography variant="h3" fontWeight="bold" mt={1}>
+              {orderIDLength}
+            </Typography>
+          </Paper>
+          
         </>
       )}
       {isSuperAdmin && <SuperAdminCharts />}
