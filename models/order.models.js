@@ -23,6 +23,10 @@ const orderSchema = new mongo.Schema({
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
   },
+  fileList: [{
+    type: mongo.Schema.Types.ObjectId,
+    ref: "File",
+  }],
   metadata: {
     type: Object,
     default: {},

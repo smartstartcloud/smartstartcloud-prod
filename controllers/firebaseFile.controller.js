@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import Order from "../models/order.models.js";
 
 const storage = getStorage(app);
 
@@ -34,9 +35,7 @@ export const fileUpload = async (req, res) => {
 
     const metadata = {
       contentType: req.file.mimetype,
-    };
-    console.log(metadata);
-    
+    };    
 
     const uploadTask = await uploadBytesResumable(
       storageRef,
@@ -80,10 +79,10 @@ export const fileUpload = async (req, res) => {
     if (referenceCollection === "Assignment") {
       if (writerFlag) {
         // Add the new file ID to the assignment's `assignmentFile` array
-        // const assignment = await Assignment.findOne({ orderID }); // Find the Assignment document by its ID);
-        // assignment.fileList.push(newFile._id);
-        // // Save the updated assignment
-        // await assignment.save();
+        const order = await Order.findOne({ orderID }); // Find the Assignment document by its ID);
+        order.fileList.push(newFile._id);
+        // Save the updated assignment
+        await order.save();
       } else {
         const assignment = await Assignment.findByIdAndUpdate(
           { _id: referenceID }, // Find the Assignment document by its ID
@@ -109,7 +108,7 @@ export const fileUpload = async (req, res) => {
     await newFile.save();
     res
       .status(201)
-      .json({ message: "File uploaded successfully", fileId: newFile._id });
+      .json({ message: "File uploaded successfully", file: newFile });
   } catch (error) {
     console.log(error.message);
     return res.status(400).send(error.message);
@@ -184,9 +183,15 @@ export const fileDelete = async (req, res) => {
       .catch((error) => {
         console.log(`Firebase file delete error: ` + error.message);
       });
-    const referenceCollection = deletedFile.referenceCollection;
+    const referenceCollection = deletedFile.referenceCollection;    
 
     if (referenceCollection === "Assignment") {
+      if (deletedFile.writerFlag || deletedFile.orderID){
+        await Order.updateMany(
+          { fileList: fileId },
+          { $pull: { fileList: fileId } }
+        );
+      }
       await Assignment.updateMany(
         { fileList: fileId },
         { $pull: { fileList: fileId } }
@@ -256,29 +261,36 @@ export const listFilesByReferenceID = async (req, res) => {
   try {
     const { referenceID, isOrder, orderID, parentID } = req.body;            
     let files;
-    
-    if (!referenceID) {
-      return res.status(400).json({ message: "Reference ID is required" });
-    }
-    files = await File.find(
-      { referenceID },
-      "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
-    );        
-    if (orderID) {      
-      const writerFiles = await File.find(
-        { orderID: orderID },
+    if (isOrder) {
+      files = await File.find(
+        { orderID },
         "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
       );
-      files = [...files,...writerFiles];
-    }
-    if (parentID) {      
-      const moduleAssignmentFiles = await File.find(
-        { referenceID: parentID, paymentFlag: true },
+    } else {
+      if (!referenceID) {
+        return res.status(400).json({ message: "Reference ID is required" });
+      }
+      files = await File.find(
+        { referenceID },
         "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
       );
-      files = [...files,...moduleAssignmentFiles];
-    }    
-    res.json(files || []);
+      if (orderID) {
+        const writerFiles = await File.find(
+          { orderID: orderID },
+          "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
+        );
+        files = [...files, ...writerFiles];
+      }
+      if (parentID) {
+        const moduleAssignmentFiles = await File.find(
+          { referenceID: parentID, paymentFlag: true },
+          "fileName fileType fileCategory createdAt uploadedByUserName writerFlag paymentFlag"
+        );
+        files = [...files, ...moduleAssignmentFiles];
+      }   
+    }
+     
+    res.status(200).json(files || []);
   } catch (error) {
     res
       .status(500)

@@ -88,6 +88,7 @@ const useUploadFiles = () => {
     try {
       const res = await api.delete(`/api/files/delete/${fileID}`);
       const data = await res.data;
+      
       if (data.error) {
         throw new Error(data.error);
       }
