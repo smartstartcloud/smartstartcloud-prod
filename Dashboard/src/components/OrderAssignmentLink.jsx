@@ -9,9 +9,9 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
     const [assignmentOrderPairs, setAssignmentOrderPairs] = useState([]);
     const {sendAssignmentOrderIDList} = useSendAssignmentOrderIDList()
 
-    // useEffect(() => {
-    //     console.log(orderIdLists, assignmentList, assignmentReference);
-    //   }, [orderIdLists, assignmentList]);
+    useEffect(() => {
+        console.log(orderIdLists, assignmentList, assignmentReference);
+      }, [orderIdLists, assignmentList]);
 
     const handleOrderConnect = () => {
         const newArray = assignmentList[assignmentReference].map((row, index) => ({
@@ -39,7 +39,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
             justifyContent="space-between"
             mb={2}
             >
-            <Card
+            {orderIdLists.length>0 && assignmentList.length>0 ? (<Card
             sx={{
                 width: "100%",
                 p: 2,
@@ -106,7 +106,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Card>
+            </Card>): <Typography variant="h3" color={colors.grey[100]}>No Data</Typography>}
         </Box>
     </Box>
   );
