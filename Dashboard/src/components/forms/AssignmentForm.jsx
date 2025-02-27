@@ -82,9 +82,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
 
     const onSubmitAssignment = async (data) => {
         setformLoading(true);
-        try{
-          console.log(data);
-          
+        try{          
           const response = await sendAssignment(data, editMode)
           console.log("Form Data:", data);
           console.log("Response Data:", response);
@@ -164,7 +162,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            {/* <Grid item xs={12} sm={4}>
               <Controller
                 name="studentID"
                 control={control}
@@ -178,27 +176,10 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     fullWidth
                     required
                     sx={{ mb: 2 }}
-                    error={!!touchedFields.studentID && !!errors.studentID}
-                    helperText={
-                      touchedFields.studentID && errors.studentID
-                        ? errors.studentID.message
-                        : null
-                    }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("studentID", {
-                          type: "manual",
-                          message: "Student ID is required",
-                        });
-                      } else {
-                        clearErrors("studentID");
-                      }
-                    }}
                   />
                 )}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={4}>
               <OrderSelect control={control} editMode={editMode} />
             </Grid>

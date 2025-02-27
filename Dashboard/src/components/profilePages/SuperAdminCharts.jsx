@@ -16,6 +16,7 @@ const SuperAdminCharts = () => {
   const [chartData, setChartData] = useState([]);
   const [paymentDetailsData, setPaymentDetailsData] = useState({});
   const { paymentData, error, loading } = useAllGetPaymentDetails();
+  
   useEffect(() => {
     if (paymentData && chartStatus) {
       dataFilter(paymentData, chartStatus);      

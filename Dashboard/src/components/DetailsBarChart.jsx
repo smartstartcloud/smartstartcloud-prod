@@ -26,25 +26,28 @@ const DetailsBarChart = ({ data, headLine, type}) => {
     keys.push(uniqueIds);
     const tempObj = {module}
     uniqueIds.forEach((id) => {
+      
       if (type === "status") {
         count = item.moduleProgress.filter((item) => item === id).length;
-      } else if (type === "grade") {
-        item.moduleGrade.forEach((grade) => {
-          const numericGrade = parseInt(grade, 10);
-          const range = uniqueIds.find((range) => {
-            const [min, max] = range.split("-").map(Number);
-            return numericGrade >= min && numericGrade <= max;
-          });
-          if (range) tempObj[range]++;
-        });
       }
       tempObj[id] = count;
     });
 
+    if (type === "grade") {
+      item.moduleGrade.forEach((grade) => {
+        const numericGrade = parseInt(grade, 10);
+        const range = uniqueIds.find((range) => {
+          const [min, max] = range.split("-").map(Number);
+          return numericGrade >= min && numericGrade <= max;
+        });
+        if (range) tempObj[range]++;
+      });
+    }
+
     return tempObj;
   });  
   keys = [...new Set(keys.flat())];  
-
+  // console.log(type, refactorData)
   return (
     <Box
       sx={{

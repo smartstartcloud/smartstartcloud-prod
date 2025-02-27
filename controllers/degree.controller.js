@@ -117,7 +117,7 @@ export const updateDegree = async (req, res) => {
       );
 
       // Construct the log message
-      const logMessage = {degreeName, degreeID};
+      const logMessage = {degreeName, degreeYear};
       // Create the log entry (user details will be extracted inside createLog)
       await createLog({
         req,
@@ -182,14 +182,14 @@ export const getDegreeByYear = async (req,res)=>{
       const Agent = await User.find({_id:[x.degreeAgent]});
       const moduleList = x.degreeModules;
       const studentList = x.degreeStudentList
-      const degreeSum = await getAssignmentSum(moduleList, studentList);
+      // const degreeSum = await getAssignmentSum(moduleList, studentList);
       if (Agent.length === 0) {
           // console.log(`Agent with ID ${x.degreeAgent} not found.`);
           return; // Skip this degree if no agent is found
       }
       const degreeObject = x.toObject();
       degreeObject.degreeAgent = {"_id":Agent[0]._id,"firstName":Agent[0].firstName,"lastName":Agent[0].lastName};
-      degreeObject.degreeSum = degreeSum
+      // degreeObject.degreeSum = degreeSum
       fillAgentDegree.push(degreeObject);
     })
   )
@@ -281,7 +281,7 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
       moduleID: { $in: moduleList.map((module) => module._id) },
     }).populate(
       "assignments",
-      "assignmentPayment assignmentGrade assignmentProgress"
+      "assignmentGrade assignmentProgress"
     );
     const moduleDetailsList = moduleList.map((module) => {
       return {_id:module._id, modulecode:module.moduleCode, moduleName: module.moduleName, modulePayment: [], moduleGrade: [], moduleProgress: [], moduleSum : 0};
@@ -301,14 +301,6 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
         );
         if (moduleDetails) {          
           moduleAssignment.assignments.forEach((assignment) => {
-            // Calculate sum of assignmentPayment
-            if (
-              assignment.assignmentPayment &&
-              assignment.assignmentPayment !== "N/A"
-            ) {
-              moduleDetails.moduleSum += Number(assignment.assignmentPayment);
-            }
-
             // Collect assignmentGrade
             if (
               assignment.assignmentGrade &&

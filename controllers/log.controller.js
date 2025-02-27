@@ -66,13 +66,13 @@ export const createLog = async ({
       case "Degree":
         if (action === "create") {
           const { degreeName, degreeYear } = logMessage;
-          message = `${user.firstName} <strong>added</strong> a new degree: ${degreeName} ${formatDateString(degreeYear)}.`;
+          message = `${user.firstName} added a new degree: ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "update") {
-          const { degreeName, degreeID } = logMessage;
-          message = `${user.firstName} <strong>updated</strong> the degree: ${degreeName} ${formatDateString(degreeYear)}.`;
+          const { degreeName, degreeYear } = logMessage;
+          message = `${user.firstName} updated the degree: ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "delete") {
           const { degreeName, degreeYear } = logMessage;
-          message = `${user.firstName} <strong>deleted</strong> the degree ${degreeName} ${formatDateString(degreeYear)}.`;
+          message = `${user.firstName} deleted the degree ${degreeName} ${formatDateString(degreeYear)}.`;
         }
         break;
 

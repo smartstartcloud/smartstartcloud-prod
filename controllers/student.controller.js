@@ -21,7 +21,7 @@ export async function addNewStudent(studentList, parentLink) {
         let currentStudent = await Student.findOne({
           studentID: studentData.studentID,
         });
-        if (currentStudent) {
+        if (currentStudent) {          
           // Update the current student with the new data
           const updatedStudent = await Student.findOneAndUpdate(
             { _id: currentStudent._id }, // Find the student by studentID

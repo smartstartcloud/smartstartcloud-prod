@@ -232,7 +232,7 @@ export const updatePaymentStatus = async (req, res) => {
     if (paymentVerificationStatus)      
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
 
-    const paymentLog = createPaymentLog(updateDetails, true);   
+    const paymentLog = createPaymentLog({newData: updateDetails, isNew: true});   
 
     // Find the specific assignment by its ID and update it
     const payment = await ModuleStudentFinance.findByIdAndUpdate(
@@ -282,13 +282,15 @@ export const updatePaymentStatus = async (req, res) => {
 
 const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew=false}) => {    
     let logString = ''
-    if (isNew) {
-      logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
-    } else {
-      logString = `A payment of ${newData.paidAmount} GBP was made.`;
-    }
+    
     if (statusUpdate) {
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
+    } else {
+      if (isNew) {
+        logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
+      } else {
+        logString = `A payment of ${newData.paidAmount} GBP was made.`;
+      }
     }
 
     const date = new Date().toUTCString()

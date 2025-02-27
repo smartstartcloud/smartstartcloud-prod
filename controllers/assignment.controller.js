@@ -261,9 +261,7 @@ export const updateAssignment = async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    if (assignment) {    
-      console.log(assignment);
-        
+    if (assignment) {            
       // Construct the log message
       const logMessage = {assignmentName: assignment.assignmentName, assignmentID : assignment.assignmentID};
       // Create the log entry using the modified createLog helper

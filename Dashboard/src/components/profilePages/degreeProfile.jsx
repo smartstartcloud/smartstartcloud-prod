@@ -323,27 +323,20 @@ const DegreeProfile = () => {
             Analytics
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <DetailsBarChart
                 data={degree.moduleDetailsList}
                 headLine="Status Chart"
                 type="status"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <DetailsBarChart
                 data={degree.moduleDetailsList}
                 headLine="Grade Chart"
                 type="grade"
               />
             </Grid>
-            {/* <Grid item xs={12} sm={4}>
-              <DetailsBarChart
-                data={degree.moduleDetailsList}
-                headLine="Payment Chart"
-                type="payment"
-              />
-            </Grid> */}
           </Grid>
         </Box>
       )}

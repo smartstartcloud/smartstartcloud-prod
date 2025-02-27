@@ -9,7 +9,7 @@ import { sortByProperty } from "../../utils/functions";
 const AllDegree = () => {
   const { degree, error, loading } = useFetchAllDegreeData();
   const [selectedIntake, setSelectedIntake] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");  
 
   const yearList = degree ? yearFilter(degree) : [];
 

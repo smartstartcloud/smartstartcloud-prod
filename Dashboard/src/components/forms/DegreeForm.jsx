@@ -111,7 +111,7 @@ const DegreeForm = ({editPage=false}) => {
               universityName: student.universityName || "",
               courseName: student.courseName || "",
               year: student.year || "",
-              isExternal: student.isExternal || "",
+              isExternal: student.isExternal || false,
               
             })) || [],
           degreeModules:

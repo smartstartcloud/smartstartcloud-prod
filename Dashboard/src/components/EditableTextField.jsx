@@ -26,6 +26,9 @@ const EditableTextField = ({
           handleDropdownChange(row.assignmentList[0]._id, value); // Use updated value
         }
       }}
+      onBlur={(event) => {
+        handleDropdownChange(row.assignmentList[0]._id, value); // Use updated value
+      }}
       sx={{ mb: 2 }}
     />
   );
