@@ -1,5 +1,5 @@
 import {Box,Button,CircularProgress,Grid,IconButton,InputAdornment,List,ListItem,ListItemText,Paper,TextField,Typography,useTheme} from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import useFetchOrderList from "../../hooks/useFetchOrderList";
 import { tokens } from "../../theme";
@@ -23,6 +23,13 @@ const OrderIDList = () => {
   const [suggestions, setSuggestions] = useState([]);
 
   const [searchTermByRef, setSearchTermByRef] = useState("");
+
+  const [orderIDLength, setOrderIDLength] = useState(0);
+  useEffect(() => {
+    if (orderList && Array.isArray(orderList) && orderList.length > 0) {
+      setOrderIDLength(orderList.length);
+    }
+  }, [orderList]);
 
   const handleIDClick = (orderID) => {
     setOpen(true);
@@ -113,6 +120,28 @@ const OrderIDList = () => {
           title={"PORTAL"}
           subtitle={"Welcome to Portal for Order ID LIST"}
         />
+      </Box>
+      <Box>
+        {/* Beautifully Styled Order Box */}
+        <Paper
+            elevation={6}
+            sx={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "#1976D2",
+              color: "white",
+              borderRadius: "12px",
+              maxWidth: "300px",
+              margin: "20px auto",
+            }}
+          >
+            <Typography variant="h5" fontWeight="bold">
+              Total Orders Placed
+            </Typography>
+            <Typography variant="h3" fontWeight="bold" mt={1}>
+              {orderIDLength}
+            </Typography>
+          </Paper>
       </Box>
       <Box>
         {open && (

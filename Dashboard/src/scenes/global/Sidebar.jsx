@@ -49,7 +49,7 @@ const Sidebar = () => {
 
   // Use `useMediaQuery` to detect screen size
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  
   // Automatically collapse the sidebar for mobile
   useEffect(() => {
     setIsCollapsed(isMobile);
@@ -164,13 +164,13 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
-              {<Item
+              {(isAdmin || !isFinance) && (<Item
                 title="All Degrees"
                 to="/allDegrees"
                 icon={<StorageOutlinedIcon />}
                 selected={selected}
                 setSelected={setSelected}
-              />}
+              />)}
               {(isAdmin || !isFinance) && (
                 <Item
                   title="All Orders"
@@ -207,7 +207,7 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               )}
-              {!isFinance && <Item
+              {(isAdmin || !isFinance) && <Item
                 title="All Student"
                 to="/allStudent"
                 icon={<PersonIcon />}

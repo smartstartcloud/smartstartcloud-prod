@@ -14,13 +14,6 @@ const Dashboard = () => {
   const { degree, error, loading } = useFetchAgentFilteredDegreeData(authUser._id);
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
-  const [orderIDLength, setorderIDLength] = useState(0);
-  const { orderList} = useFetchOrderList();
-  useEffect(() => {
-    if (orderList && Array.isArray(orderList) && orderList.length > 0) {
-      setorderIDLength(orderList.length);
-    }
-  }, [orderList]);
 
   const yearList = degree ? yearFilter(degree) : [];
 
@@ -134,56 +127,11 @@ const Dashboard = () => {
               </Grid>
             )}
           </Grid>
-
-           {/* Beautifully Styled Order Box */}
-           <Paper
-            elevation={6}
-            sx={{
-              padding: "20px",
-              textAlign: "center",
-              backgroundColor: "#1976D2",
-              color: "white",
-              borderRadius: "12px",
-              maxWidth: "300px",
-              margin: "20px auto",
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              Total Orders Placed
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" mt={1}>
-              {orderIDLength}
-            </Typography>
-          </Paper>
-          
         </>
       )}
       {isSuperAdmin && 
-      <> 
-       {/* Beautifully Styled Order Box */}
-       <Paper
-            elevation={6}
-            sx={{
-              padding: "20px",
-              textAlign: "center",
-              backgroundColor: "#1976D2",
-              color: "white",
-              borderRadius: "12px",
-              maxWidth: "300px",
-              margin: "20px auto",
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              Total Orders Placed
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" mt={1}>
-              {orderIDLength}
-            </Typography>
-          </Paper>
-          
-      <SuperAdminCharts />
-      
-      </>}
+        <SuperAdminCharts />
+      }
     </Box>
   );
 };
