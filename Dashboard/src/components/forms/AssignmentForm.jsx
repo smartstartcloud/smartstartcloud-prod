@@ -43,10 +43,13 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
      assignmentDeadline: "",
      assignmentGrade: "",
      wordCount: "",
+     referenceNumber: "",
    },
  });
 
-    useEffect(() => {      
+    useEffect(() => {  
+      console.log("Student Data: ", assignmentData);
+          
         if (studentData && studentData) {
             if (editMode) {
                 reset({
@@ -59,7 +62,8 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   assignmentProgress: assignmentData?.assignmentProgress || "TBA",
                   assignmentDeadline: assignmentData?.assignmentDeadline || "",
                   assignmentGrade: assignmentData?.assignmentGrade || "",
-                  wordCount: assignmentData?.wordCount || ""
+                  wordCount: assignmentData?.wordCount || "",
+                  referenceNumber: assignmentData?.referenceNumber || "",
                 });
             } else {              
                 reset({
@@ -72,6 +76,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                   assignmentDeadline: "",
                   assignmentGrade: "",
                   wordCount: "",
+                  referenceNumber: "",
                 });
             }
         }
@@ -80,14 +85,14 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
     const onSubmitAssignment = async (data) => {
         setformLoading(true);
         try{
+          console.log(data);
+          
           const response = await sendAssignment(data, editMode)
-          // const response = "await sendAssignment(data)";
           console.log("Form Data:", data);
           console.log("Response Data:", response);
           setFormSaved(true);
           setformLoading(false);
 
-          navigate(0);
         }catch (e) {
             setFormError(true);
             setformLoading(false)

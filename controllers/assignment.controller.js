@@ -224,7 +224,7 @@ export const updateModuleStudentAssignment = async (moduleCode, studentID, assig
 export const updateAssignment = async (req, res) => {
   try {
     const { assignmentID } = req.params;
-
+    
     const {
       moduleCode,
       orderID,
@@ -235,6 +235,7 @@ export const updateAssignment = async (req, res) => {
       wordCount,
       assignmentGrade,
       assignmentFile,
+      referenceNumber,
       assignmentNature,
     } = req.body;    
 
@@ -248,25 +249,29 @@ export const updateAssignment = async (req, res) => {
     if (assignmentProgress) updatedFields.assignmentProgress = assignmentProgress;
     if (assignmentDeadline) updatedFields.assignmentDeadline = assignmentDeadline;
     if (wordCount) updatedFields.wordCount = wordCount;
+    if (referenceNumber) updatedFields.referenceNumber = referenceNumber;
     if (assignmentGrade) updatedFields.assignmentGrade = assignmentGrade;
     if (assignmentFile) updatedFields.assignmentFile = assignmentFile;
     if (assignmentNature) updatedFields.assignmentNature = assignmentNature;
 
     // Find the specific assignment by its ID and update it
     const assignment = await Assignment.findByIdAndUpdate(
-      assignmentID,
+      {_id: assignmentID},
       { $set: updatedFields },
       { new: true } // Return the updated document
     );
 
-    if (assignment) {
+    if (assignment) {    
+      console.log(assignment);
+        
       // Construct the log message
-      const logMessage = {assignmentName: assignment.assignmentName, assignmentID};
+      const logMessage = {assignmentName: assignment.assignmentName, assignmentID : assignment.assignmentID};
       // Create the log entry using the modified createLog helper
       await createLog({
         req,
         collection: "Assignment",
         action: "update",
+        actionToDisplay: "Update Assignment",
         logMessage,
         affectedID: assignment._id,
       });
@@ -395,7 +400,7 @@ export const deleteAssignment = async (req, res) => {
     );
 
     // Construct a log message and create a log entry
-    const logMessage = {assignmentID} ;
+    const logMessage = {assignmentID: deletedAssignment.assignmentID, assignmentName: deletedAssignment.assignment} ;
     await createLog({
       req,
       collection: "Assignment",

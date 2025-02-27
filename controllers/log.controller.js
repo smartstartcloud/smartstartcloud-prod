@@ -1,5 +1,6 @@
 import Log from '../models/log.models.js';
 import User from '../models/user.models.js';
+import { formatDateString } from '../utils/functions.js';
 import { extractToken } from '../utils/generateToken.js';
 
 /**
@@ -54,7 +55,7 @@ export const createLog = async ({
 }) => {
   try {    
     const token = req.headers.cookie;
-    let { userId } = extractToken(token, isFile);    
+    let { userId } = extractToken(token, isFile);        
     if (isFile){
       userId = userID;
     }    
@@ -84,12 +85,12 @@ export const createLog = async ({
           } else {
             message = `${user.firstName} created assignment: ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
           }
-        } else if (action === "update") {
-          const { assignmentName, assignmentID, degreeName, degreeYear } = logMessage;
-          message = `${user.firstName} updated assignment: ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
+        } else if (action === "update") {          
+          const { assignmentName, assignmentID } = logMessage;
+          message = `${user.firstName} updated assignment: ${assignmentName}.`;
         } else if (action === "delete") {
-          const { assignmentID } = logMessage;
-          message = `${user.firstName} deleted assignment ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
+          const { assignmentID, assignmentName } = logMessage;
+          message = `${user.firstName} deleted assignment ${assignmentName}.`;
         }
         break;
 
@@ -121,7 +122,7 @@ export const createLog = async ({
       actionToDisplay,
       message,
       metadata,
-    });
+    });    
 
     await log.save();
     return log;

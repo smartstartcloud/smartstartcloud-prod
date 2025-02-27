@@ -10,6 +10,7 @@ import ModuleAssignment from "../models/moduleAssignment.models.js";
 export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
   const { degreeID, assignmentID, moduleCode, studentID } =
     paymentRequiredInformation;
+    
   // Find the module ID using the moduleCode
   const module = await Module.findOne({
     moduleCode,
@@ -109,6 +110,8 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
 };
 
 export const updatePaymentDetails = async (req, res) => {
+  console.log('ashche');
+
   const {
     totalPaymentDue,
     totalPaymentToDate,
@@ -274,15 +277,13 @@ export const updatePaymentStatus = async (req, res) => {
 const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew=false}) => {    
     let logString = ''
     if (isNew) {
-      logString = `A payment of £${newData.totalPaymentDue} has been scheduled.`;
+      logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
     }
     if (statusUpdate) {
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
-      if (previousData.paidAmount && previousData.paymentMethod && previousData.totalPaymentDue) {
+      if (previousData !== null && previousData.paidAmount &&  previousData.totalPaymentDue && newData.totalPaymentDue) {
         logString = `A payment of ${newData.paidAmount} GBP was made.`;
-      } else {
-        logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
       }
     }
 

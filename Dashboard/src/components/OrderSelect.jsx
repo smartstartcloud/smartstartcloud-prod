@@ -39,7 +39,22 @@ const OrderSelect = ({ control, editMode }) => {
     <Grid item xs={12} sm={12}>
       <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
-          <TextField
+        <Controller
+            name="referenceNumber"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Ref No"
+                variant="outlined"
+                fullWidth
+                required
+                sx={{ mb: 2 }}
+              />
+            )}
+          />
+          {/* <TextField
+          name="referenceNumber"
             label="Reference Number"
             variant="outlined"
             fullWidth
@@ -50,7 +65,7 @@ const OrderSelect = ({ control, editMode }) => {
               setSelectError(false); // Clear error on reference number change
             }}
             sx={{ mb: 2 }}
-          />
+          /> */}
         </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
@@ -94,8 +109,6 @@ const OrderSelect = ({ control, editMode }) => {
             )}
           />
         </Grid>
-
-        
       </Grid>
     </Grid>
   );

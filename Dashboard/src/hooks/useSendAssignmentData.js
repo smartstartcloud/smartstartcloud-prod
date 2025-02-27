@@ -3,9 +3,22 @@ import useApi from "./useApi"
 const useSendAssignmentData = () => {
     const api = useApi()
     let res;
-    const sendAssignment = async({assignmentID, studentID, moduleCode, orderID, assignmentName, assignmentType, assignmentProgress, assignmentDeadline, wordCount, assignmentGrade}, editMode) => {        
+
+    const sendAssignment = async({
+      moduleCode,
+      orderID,
+      assignmentName,
+      assignmentType,
+      assignmentProgress,
+      assignmentDeadline,
+      wordCount,
+      assignmentGrade,
+      assignmentID,
+      referenceNumber,
+      studentID,
+    }, editMode) => {        
         try {
-            if (editMode) {
+            if (editMode) {              
                 res = await api.put(
                   `/api/module/updateAssignment/${assignmentID}`,
                   {
@@ -17,12 +30,13 @@ const useSendAssignmentData = () => {
                     assignmentDeadline,
                     wordCount,
                     assignmentGrade,
+                    referenceNumber,
+                    studentID,
                   }
                 );
 
             } else {
                 res = await api.post(`/api/module/newAssignment`, {
-                  studentID,
                   moduleCode,
                   orderID,
                   assignmentName,
@@ -31,6 +45,9 @@ const useSendAssignmentData = () => {
                   assignmentDeadline,
                   wordCount,
                   assignmentGrade,
+                  assignmentID,
+                  referenceNumber,
+                  studentID,
                 });
             }
             const data = await res.data;
