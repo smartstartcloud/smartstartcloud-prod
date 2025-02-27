@@ -65,31 +65,31 @@ export const createLog = async ({
       case "Degree":
         if (action === "create") {
           const { degreeName, degreeYear } = logMessage;
-          message = `${user.firstName} added a new degree: ${degreeName} (${degreeYear}).`;
+          message = `${user.firstName} <strong>added</strong> a new degree: ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "update") {
           const { degreeName, degreeID } = logMessage;
-          message = `${user.firstName} updated the degree: ${degreeName} (ID: ${degreeID}).`;
+          message = `${user.firstName} <strong>updated</strong> the degree: ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "delete") {
           const { degreeID } = logMessage;
-          message = `${user.firstName} deleted the degree with ID: ${degreeID}.`;
+          message = `${user.firstName} <strong>deleted</strong> the degree ${degreeName} ${formatDateString(degreeYear)}.`;
         }
         break;
 
       case "Assignment":
         if (action === "create") {
-          const { assignmentName, assignmentID, studentID, moduleCode } =
+          const { assignmentName, assignmentID, studentID, moduleCode, degreeName, degreeYear} =
             logMessage;
           if (studentID && moduleCode) {
-            message = `${user.firstName} created manual assignment: ${assignmentName} (ID: ${assignmentID}) for student ${studentID} in module ${moduleCode}.`;
+            message = `${user.firstName} created manual assignment: ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)} for student ${studentID} in module ${moduleCode}.`;
           } else {
-            message = `${user.firstName} created assignment: ${assignmentName} (ID: ${assignmentID}).`;
+            message = `${user.firstName} created assignment: ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
           }
         } else if (action === "update") {
-          const { assignmentName, assignmentID } = logMessage;
-          message = `${user.firstName} updated assignment: ${assignmentName} (ID: ${assignmentID}).`;
+          const { assignmentName, assignmentID, degreeName, degreeYear } = logMessage;
+          message = `${user.firstName} updated assignment: ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "delete") {
           const { assignmentID } = logMessage;
-          message = `${user.firstName} deleted assignment with ID: ${assignmentID}.`;
+          message = `${user.firstName} deleted assignment ${assignmentName} in ${degreeName} ${formatDateString(degreeYear)}.`;
         }
         break;
 

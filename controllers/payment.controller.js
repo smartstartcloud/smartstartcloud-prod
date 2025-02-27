@@ -279,10 +279,10 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
     if (statusUpdate) {
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
-      if (previousData?.paidAmount && previousData?.totalPaymentDue) {
-        logString = `A payment of £${
-          Number(newData.paidAmount) - Number(previousData.paidAmount)
-        } has been made on ${newData.totalPaymentToDate}. Remaining balance: £${newData.totalPaymentDue}.`;
+      if (previousData.paidAmount && previousData.paymentMethod && previousData.totalPaymentDue) {
+        logString = `A payment of ${newData.paidAmount} GBP was made.`;
+      } else {
+        logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
       }
     }
 
