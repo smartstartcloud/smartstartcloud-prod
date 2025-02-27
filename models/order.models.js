@@ -5,7 +5,6 @@ const orderSchema = new mongo.Schema({
   orderID: {
     type: String,
     required: true,
-    unique: true,
   },
   referenceNumber: {
     type: String,
