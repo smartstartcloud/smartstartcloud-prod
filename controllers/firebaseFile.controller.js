@@ -72,7 +72,6 @@ export const fileUpload = async (req, res) => {
       isFile: true,
       userID: uploadedByUserID,
     });
-
     await newFile.save();
 
     if (referenceCollection === "Assignment") {
@@ -95,14 +94,16 @@ export const fileUpload = async (req, res) => {
         { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
         { new: true } // Return updated document
       );
+      newFile.metadata = module.metadata
     } else if (referenceCollection === "ModuleAssignment") {
       const moduleAssignment = await ModuleAssignment.findByIdAndUpdate(
         { _id: referenceID }, // Find the Module document by its ID
         { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
         { new: true } // Return updated document
       );
+      newFile.metadata = moduleAssignment.metadata;
     }
-
+    await newFile.save();
     res
       .status(201)
       .json({ message: "File uploaded successfully", fileId: newFile._id });

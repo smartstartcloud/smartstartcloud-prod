@@ -31,7 +31,7 @@ export const newDegree = async (req, res) => {
       error.code = 11000; // Set the error code
       throw error; // Throw the error object
     } else {
-      const populatedStudentList = await addNewStudent(degreeStudentList);
+      const populatedStudentList = await addNewStudent(degreeStudentList, homeLink);
       const populatedModules = await addNewModule(
         degreeModules,
         populatedStudentList,

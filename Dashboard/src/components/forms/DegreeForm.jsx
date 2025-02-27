@@ -118,6 +118,7 @@ const DegreeForm = ({editPage=false}) => {
                   referenceNumber: assignment.referenceNumber || "",
                   assignmentType: assignment.assignmentType || "", // Placeholder for assignment type if needed
                   assignmentDeadline: assignment.assignmentDeadline || "", // Placeholder for deadline if needed
+                  wordCount: assignment.wordCount || "",
                 })) || [],
             })) || [],
         });

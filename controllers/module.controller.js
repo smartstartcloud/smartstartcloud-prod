@@ -14,7 +14,6 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
         let currentModule = await Module.findOne({
           _id: moduleData._id,
         });
-        const homeLink = `${parentLink}/module/`;
         if (currentModule) {
           const updatedModule = await Module.findOneAndUpdate(
             { _id: moduleData._id }, // Find the student by studentID
@@ -38,20 +37,20 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
             moduleAssignments: await newAssignmentDynamic(
               moduleData.assignmentList,
               studentList,
-              moduleData.moduleCode
+              moduleData.moduleCode,
             ),
           });
           const savedModule = await newModule.save();
-          // Update metadata with _id and save again
+          // Update metadata with _id and save again          
+          const homeLink = `${parentLink}/module/`;
           savedModule.metadata = { goTo: `${homeLink}${savedModule.moduleCode}`, dataId: savedModule._id };
           await savedModule.save();
-
+          
           await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
             savedModule.moduleAssignments,
-            moduleData.moduleCost,
-            degreeDetailsForPayment
+            parentLink
           );
           return savedModule._id;
         }

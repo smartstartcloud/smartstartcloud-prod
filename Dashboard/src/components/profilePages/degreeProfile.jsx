@@ -239,36 +239,6 @@ const DegreeProfile = () => {
               </Box>
             </Grid>
           </Grid>
-          {/* <Grid container spacing={2} mt={2}>
-            {degree.moduleDetailsList && (
-              <Grid item xs={12} sm={6}>
-                <DetailsBarChart
-                  data={degree.moduleDetailsList}
-                  headLine={"Status Chart"}
-                  type={"status"}
-                />
-              </Grid>
-            )}
-            {degree.moduleDetailsList && (
-              <Grid item xs={12} sm={6}>
-                <DetailsBarChart
-                  data={degree.moduleDetailsList}
-                  headLine={"Grade Chart"}
-                  type={"grade"}
-                />
-              </Grid>
-            )}
-            {degree.moduleDetailsList && (
-              <Grid item xs={12} sm={6}>
-                <DetailsBarChart
-                  data={degree.moduleDetailsList}
-                  headLine={"Payment Chart"}
-                  type={"payment"}
-                />
-              </Grid>
-            )}
-          </Grid> */}
-
           <IconButton
             onClick={handleDegreeDelete}
             sx={{
