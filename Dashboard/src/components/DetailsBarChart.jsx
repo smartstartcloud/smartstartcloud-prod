@@ -4,11 +4,12 @@ import { tokens } from '../theme';
 import { ResponsiveBar } from '@nivo/bar';
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 
-const DetailsPieChart = ({ data, headLine, type}) => {
+const DetailsBarChart = ({ data, headLine, type}) => {
   const [onClickCollapse, setOnClickCollapse] = useState(false);
   const handleOnClickCollapse = () => {
     setOnClickCollapse(!onClickCollapse);
   }
+  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   let keys = []
@@ -19,7 +20,8 @@ const DetailsPieChart = ({ data, headLine, type}) => {
     if (type === "status") {
         uniqueIds = [...new Set(item.moduleProgress)];
     } else if (type === "grade") {
-        uniqueIds = [...new Set(item.moduleGrade)];
+        // uniqueIds = [...new Set(item.moduleGrade)];
+        uniqueIds = ['0-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91-100']
     }
     keys.push(uniqueIds);
     const tempObj = {module}
@@ -27,20 +29,27 @@ const DetailsPieChart = ({ data, headLine, type}) => {
       if (type === "status") {
         count = item.moduleProgress.filter((item) => item === id).length;
       } else if (type === "grade") {
-        count = item.moduleGrade.filter((item) => item === id).length;
+        item.moduleGrade.forEach((grade) => {
+          const numericGrade = parseInt(grade, 10);
+          const range = uniqueIds.find((range) => {
+            const [min, max] = range.split("-").map(Number);
+            return numericGrade >= min && numericGrade <= max;
+          });
+          if (range) tempObj[range]++;
+        });
       }
       tempObj[id] = count;
     });
 
     return tempObj;
-  });
+  });  
   keys = [...new Set(keys.flat())];  
 
   return (
     <Box
       sx={{
         p: 2,
-        backgroundColor: colors.blueAccent[800],
+        backgroundColor: colors.grey[900],
         borderRadius: 2,
         height: "auto",
         transition: "height 0.3s ease", // Smooth transition for height change
@@ -53,7 +62,12 @@ const DetailsPieChart = ({ data, headLine, type}) => {
         <IconButton
           aria-label="delete"
           onClick={handleOnClickCollapse}
-          sx={{ color: colors.grey[200], p: 0, transform: onClickCollapse ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 0.3s ease" }}
+          sx={{
+            color: colors.grey[200],
+            p: 0,
+            transform: onClickCollapse ? "rotate(0deg)" : "rotate(180deg)",
+            transition: "transform 0.3s ease",
+          }}
         >
           <ExpandCircleDownIcon />
         </IconButton>
@@ -78,13 +92,29 @@ const DetailsPieChart = ({ data, headLine, type}) => {
             from: "color",
             modifiers: [["darker", 1.6]],
           }}
+          theme={{
+            axis: {
+              ticks: {
+                text: { fill: colors.grey[200] }, // Axis tick label color
+              },
+              domain: {
+                line: { stroke: colors.grey[600] }, // Axis line color
+              },
+            },
+            grid: {
+              line: { stroke: colors.grey[800] }, // Grid line color
+            },
+            labels: {
+              text: { fill: colors.grey[200] }, // Label font color
+            },
+          }}
           axisTop={null}
           axisRight={null}
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "ModuleName",
+            legend: "Module Name",
             legendPosition: "middle",
             legendOffset: 32,
             truncateTickAt: 0,
@@ -110,4 +140,4 @@ const DetailsPieChart = ({ data, headLine, type}) => {
   );
 };
 
-export default DetailsPieChart
+export default DetailsBarChart

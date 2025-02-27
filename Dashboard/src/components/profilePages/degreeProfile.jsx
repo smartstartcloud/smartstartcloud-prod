@@ -33,7 +33,7 @@ const DegreeProfile = () => {
 
   // useEffect(() => {
   //   if (degree){
-  //     console.log(degree);   
+  //     console.log(degree.moduleDetailsList);   
   //   }
   // }, [degree])
 
@@ -337,13 +337,13 @@ const DegreeProfile = () => {
                 type="grade"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            {/* <Grid item xs={12} sm={4}>
               <DetailsBarChart
                 data={degree.moduleDetailsList}
                 headLine="Payment Chart"
                 type="payment"
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         </Box>
       )}
