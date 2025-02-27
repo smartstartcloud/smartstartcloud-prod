@@ -103,7 +103,16 @@ const DegreeForm = ({editPage=false}) => {
               studentContact: student.studentContact || "",
               studentLogin: student.studentLogin || "",
               studentPassword: student.studentPassword || "",
-              studentAssignmentList: student.studentAssignment || [],
+              studentOfficePassword: student.studentOfficePassword || "",
+              studentOther: student.studentOther || "",
+              groupName: student.groupName || "",
+              tutorName: student.tutorName || "",
+              campusLocation: student.campusLocation || "",
+              universityName: student.universityName || "",
+              courseName: student.courseName || "",
+              year: student.year || "",
+              isExternal: student.isExternal || "",
+              
             })) || [],
           degreeModules:
             degree?.degreeModules?.map((module) => ({

@@ -39,7 +39,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
             justifyContent="space-between"
             mb={2}
             >
-            {orderIdLists.length>0 && assignmentList.length>0 ? (<Card
+            <Card
             sx={{
                 width: "100%",
                 p: 2,
@@ -106,7 +106,7 @@ const OrderAssignmentLink = ({orderIdLists, assignmentList, assignmentReference}
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Card>): <Typography variant="h3" color={colors.grey[100]}>No Data</Typography>}
+            </Card>
         </Box>
     </Box>
   );

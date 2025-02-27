@@ -374,7 +374,7 @@ export const getStudentByID = async (req,res)=>{
 export const deleteDegree = async (req,res)=>{
   try {
     const { degreeID } = req.params;
-    await Degree.findOneAndDelete({ degreeID: degreeID }).then(
+    const deletedDegree = await Degree.findOneAndDelete({ degreeID: degreeID }).then(
       async (degree) => {
         await Promise.all(
           degree.degreeModules.map(async (moduleID) => {
@@ -417,7 +417,7 @@ export const deleteDegree = async (req,res)=>{
     );
 
     // Log the deletion action
-    const logMessage = {degreeID};
+    const logMessage = {degreeName: deletedDegree.degreeName, degreeYear: deletedDegree.degreeYear};
     await createLog({
       req,
       collection: "Degree",
@@ -450,7 +450,7 @@ export const deleteStudentFromDegree = async (req,res)=>{
     });
 
     // Log the removal action
-    const logMessage = {studentID};
+    const logMessage = {degreeName: degree.degreeName, degreeYear: degree.degreeYear};
     await createLog({
       req,
       collection: "Degree",

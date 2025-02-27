@@ -71,7 +71,7 @@ export const createLog = async ({
           const { degreeName, degreeID } = logMessage;
           message = `${user.firstName} <strong>updated</strong> the degree: ${degreeName} ${formatDateString(degreeYear)}.`;
         } else if (action === "delete") {
-          const { degreeID } = logMessage;
+          const { degreeName, degreeYear } = logMessage;
           message = `${user.firstName} <strong>deleted</strong> the degree ${degreeName} ${formatDateString(degreeYear)}.`;
         }
         break;
