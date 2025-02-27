@@ -13,15 +13,17 @@ import { Controller } from "react-hook-form";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
 
 const OrderSelect = ({ control, editMode }) => {
-  const [refNo, setRefNo] = useState(""); 
+  const [refNo, setRefNo] = useState("");  
   const [orderIds, setOrderIds] = useState([]);
   const [selectError, setSelectError] = useState(false);
 
   const { getOrderIdList } = useGetOrderIdList();
 
-  const handleFetchOrderIds = async () => {
+  const handleFetchOrderIds = async (e) => {    
     try {        
-      const response = await getOrderIdList(refNo);
+      const response = await getOrderIdList(e);
+      console.log(response);
+      
       setOrderIds(response.orderIDs);
       setSelectError(false); // Clear error when order IDs are fetched
     } catch (error) {
@@ -49,6 +51,13 @@ const OrderSelect = ({ control, editMode }) => {
                 variant="outlined"
                 fullWidth
                 required
+                onBlur={(e) => {
+                  handleFetchOrderIds(e.target.value); // Call your function
+                }}
+                onChange={(e) => {
+                  setRefNo(e.target.value);
+                  setSelectError(false); // Clear error on reference number change
+                }}
                 sx={{ mb: 2 }}
               />
             )}
@@ -85,7 +94,7 @@ const OrderSelect = ({ control, editMode }) => {
                   variant="outlined"
                   fullWidth
                   displayEmpty
-                  disabled={!refNo || orderIds.length === 0} // Disable when no refNo
+                  disabled={orderIds.length === 0} // Disable when no refNo
                   onClick={handleSelectClick} // Show error when clicked without refNo
                 >
                   {orderIds.length === 0 ? (
