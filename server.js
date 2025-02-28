@@ -40,7 +40,7 @@ const commonSources = [
   "https://portal.smartstart.cloud",
   "portal.smartstart.cloud",
   "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
-  "https://staging.smartstart.cloud"
+  "https://staging.smartstart.cloud",
 ];
 
 // Add development-specific sources
@@ -48,21 +48,15 @@ if (isDevelopment) {
   commonSources.push("http://portal.localhost:3000", "http://localhost:3000");
 }
 
-// //CSP Configuration
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: commonSources,
-//         connectSrc: commonSources,
-//       },
-//     },
-//   })
-// );
-// Remove CSP restrictions from helmet
+//CSP Configuration
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disable CSP
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: commonSources,
+        connectSrc: commonSources,
+      },
+    },
   })
 );
 
@@ -70,21 +64,21 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.set("trust proxy", 1); // Trust Heroku's proxy
-// app.use(
-//   cors({
-//     origin: [
-//       "http://portal.localhost:3000",
-//       "http://localhost:3000",
-//       "https://www.smartstart.cloud",
-//       "https://smartstart.cloud",
-//       "https://portal.smartstart.cloud",
-//       "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
-//       "https://staging.smartstart.cloud"
-//     ],
-//     credentials: true,
-//   })
-// );
+app.set("trust proxy", 1); // Trust Heroku's proxy
+app.use(
+  cors({
+    origin: [
+      "http://portal.localhost:3000",
+      "http://localhost:3000",
+      "https://www.smartstart.cloud",
+      "https://smartstart.cloud",
+      "https://portal.smartstart.cloud",
+      "https://smartstartcloud-prod-ce5fd15fc35b.herokuapp.com",
+      "https://staging.smartstart.cloud",
+    ],
+    credentials: true,
+  })
+);
 
 // API Routes
 app.use("/api/auth", authRoutes);
