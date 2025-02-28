@@ -24,6 +24,31 @@ import logRoutes from "./routes/log.routes.js";
 // Initialize express app
 const app = express();
 
+// ✅ 1. Fix CORS: Allow all origins and handle preflight requests
+app.use(cors({
+  origin: "*",  // Allows all origins
+  methods: "GET, POST, PUT, DELETE, OPTIONS",
+  allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  credentials: true, // Allows cookies
+}));
+
+// ✅ 3. Remove CSP restrictions from Helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Disables CSP restrictions
+  })
+);
+// New Code End
+
+
+// ✅ 2. Handle OPTIONS preflight requests manually
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.sendStatus(200);
+});
+
 //To deploy Frontend and Backend in save Heroku App
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,11 +85,6 @@ if (isDevelopment) {
 //   })
 // );
 // Remove CSP restrictions from helmet
-app.use(
-  helmet({
-    contentSecurityPolicy: false, // Disable CSP
-  })
-);
 
 // Middleware
 app.use(cookieParser());
