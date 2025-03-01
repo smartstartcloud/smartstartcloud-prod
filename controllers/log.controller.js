@@ -59,7 +59,7 @@ export const createLog = async ({
     if (isFile){
       userId = userID;
     }    
-    const user = await User.findById(userId, "firstName lastName userName");
+    const user = await User.findById(userId, "firstName lastName userName");    
     let message = "";
 
     switch (collection) {
