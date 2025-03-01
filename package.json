@@ -1,0 +1,8 @@
+{
+  "name": "smartstartcloud-prod",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node backend/index.js",
+    "heroku-postbuild": "npm install --prefix backend && npm install --prefix Dashboard && npm run build --prefix Dashboard"
+  }
+}
