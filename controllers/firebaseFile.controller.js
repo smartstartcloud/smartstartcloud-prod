@@ -28,22 +28,14 @@ export const fileUpload = async (req, res) => {
       uploadedByUserName,
       writerFlag,
       paymentFlag,
+      fileName,
+      fileType,
+      fileUrl,
     } = req.body;    
-    
 
-    const storageRef = ref(storage, req.file.originalname);
-
-    const metadata = {
-      contentType: req.file.mimetype,
-    };    
-
-    const uploadTask = await uploadBytesResumable(
-      storageRef,
-      req.file.buffer,
-      metadata
-    );
-
-    const downloadURL = await getDownloadURL(uploadTask.ref);
+    if (!fileUrl) {
+      return res.status(400).json({ error: "File URL is required" });
+    }
 
     // Save the file data to MongoDB
     const newFile = new File({
@@ -53,24 +45,22 @@ export const fileUpload = async (req, res) => {
       fileCategory,
       uploadedByUserID,
       uploadedByUserName,
-      fileName: req.file.originalname,
-      fileType: req.file.mimetype,
-      fileUrl: downloadURL,
+      fileName,
+      fileType,
+      fileUrl,
       ...(writerFlag && { writerFlag }),
       ...(paymentFlag && { paymentFlag }),
     });
 
     // Create a log entry for the file upload
-    const logMessage = `File "${
-      req.file.originalname
-    }" uploaded successfully for ${referenceCollection} with reference ID ${referenceID}.`;
+    const logMessage = `File "${fileName}" uploaded successfully for ${referenceCollection} with reference ID ${referenceID}.`;
     await createLog({
       req,
       collection: "File",
       action: "upload",
       logMessage,
       affectedID: newFile._id,
-      actionToDisplay: `Uploaded file "${req.file.originalname}"`,
+      actionToDisplay: `Uploaded file "${fileName}"`,
       isFile: true,
       userID: uploadedByUserID,
     });
@@ -166,27 +156,58 @@ export const fileDelete = async (req, res) => {
   try {
     const fileId = req.params.id;
     if (!fileId) {
-      return res.status(400).json({ message: "File ID not found" });
+      return res.status(400).json({ message: "File ID not provided." });
     }
 
-    // Find the file by ID and delete it from Mongo
-    const deletedFile = await File.findByIdAndDelete(fileId);
+    // Find the file metadata in MongoDB
+    const deletedFile = await File.findById(fileId);
     if (!deletedFile) {
-      return res.status(404).json({ message: "File not found" });
+      return res.status(404).json({ message: "File not found in database." });
     }
-    // Find the file by fileName and delete it from Firebase
-    const storageRef = ref(storage, deletedFile.fileName);
-    deleteObject(storageRef)
-      .then(() => {
-        console.log(`${deletedFile.fileName} deleted from Firebase`);
-      })
-      .catch((error) => {
-        console.log(`Firebase file delete error: ` + error.message);
-      });
-    const referenceCollection = deletedFile.referenceCollection;    
 
+    // Extract Firebase file URL
+    const fileUrl = deletedFile.fileUrl;
+    if (!fileUrl) {
+      return res
+        .status(404)
+        .json({ message: "File URL not found in metadata" });
+    }
+
+    // Get the Firebase storage reference from the file URL
+    // ✅ Corrected Extraction of Firebase File Path
+    const matches = fileUrl.match(/\/o\/(.*?)\?/);
+    const filePath =
+      matches && matches[1] ? decodeURIComponent(matches[1]) : null;
+      
+    if (!filePath) {
+      console.error("Invalid Firebase file path:", fileUrl);
+      return res
+        .status(500)
+        .json({ message: "Failed to extract Firebase path" });
+    }
+
+    // Create a reference to the file in Firebase Storage
+    const storageRef = ref(storage, decodeURIComponent(filePath));
+
+    // Step 1: Delete File from Firebase Storage
+    try {
+      await deleteObject(storageRef);
+      console.log(`File "${deletedFile.fileName}" deleted from Firebase`);
+    } catch (error) {
+      console.error("Firebase file delete error:", error.message);
+      return res.status(500).json({
+        message: "Failed to delete file from Firebase",
+        error: error.message,
+      });
+    }
+
+    // Step 2: Delete File Metadata from MongoDB
+    await File.findByIdAndDelete(fileId);
+
+    // Step 3: Remove file references in relevant collections
+    const referenceCollection = deletedFile.referenceCollection;
     if (referenceCollection === "Assignment") {
-      if (deletedFile.writerFlag || deletedFile.orderID){
+      if (deletedFile.writerFlag || deletedFile.orderID) {
         await Order.updateMany(
           { fileList: fileId },
           { $pull: { fileList: fileId } }
@@ -201,43 +222,32 @@ export const fileDelete = async (req, res) => {
         { fileList: fileId },
         { $pull: { fileList: fileId } }
       );
-      return res.status(200).json({
-        success: true,
-        message: "File deleted and file references updated successfully",
-        deletedFile,
-      });
     } else if (referenceCollection === "ModuleAssignment") {
       await ModuleAssignment.updateMany(
         { fileList: fileId },
         { $pull: { fileList: fileId } }
       );
-
-      // Construct a log message and create a log entry
-      const logMessage = `File "${deletedFile.fileName}" (ID: ${
-        deletedFile._id
-      }) was deleted.`;
-      await createLog({
-        req,
-        collection: "File",
-        action: "delete",
-        logMessage,
-        affectedID: deletedFile._id,
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "File deleted and file references updated successfully",
-        deletedFile,
-      });
-    } else {
-      console.error(`Model for collection "${referenceCollection}" not found.`);
-      return res.status(404).json({
-        success: false,
-        message: `Model for collection "${referenceCollection}" not found.`,
-      });
     }
+
+    // Step 4: Log the deletion event
+    const logMessage = `File "${deletedFile.fileName}" (ID: ${deletedFile.fileID}) was deleted.`;
+    await createLog({
+      req,
+      collection: "File",
+      action: "delete",
+      actionToDisplay: "File Deleted",
+      logMessage,
+      affectedID: deletedFile._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      message:
+        "File deleted from Firebase and MongoDB, and references updated successfully.",
+      deletedFile,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting file:", error);
     res
       .status(500)
       .json({ message: "Error deleting file", error: error.message });
