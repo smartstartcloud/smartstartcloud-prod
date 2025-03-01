@@ -25,6 +25,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "backend": "file:../backend",
     "cors": "^2.8.5",
     "d3-array": "^3.2.4",
     "d3-scale": "^4.0.2",
@@ -53,6 +54,7 @@
     "build": "react-scripts build",
     "dev": "react-scripts start"
   },
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": [
       "react-app",
