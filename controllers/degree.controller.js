@@ -366,50 +366,61 @@ export const getStudentByID = async (req,res)=>{
 export const deleteDegree = async (req,res)=>{
   try {
     const { degreeID } = req.params;
-    const deletedDegree = await Degree.findOneAndDelete({ degreeID: degreeID }).then(
-      async (degree) => {
-        await Promise.all(
-          degree.degreeModules.map(async (moduleID) => {
-            await Module.findOneAndDelete({ _id: moduleID }).then(
-              async (module) => {
-                const allMixSchema = await ModuleAssignment.find({
-                  moduleID: module._id,
-                });
-                await Promise.all(
-                  allMixSchema.map(async (allMix) => {
-                    // Delete the associated payment data first
-                    if (allMix.modulePayment) {
-                      await ModuleStudentFinance.findOneAndDelete({
-                        _id: allMix.modulePayment,
-                      });
-                    }
+    // Find and delete the degree
+    const deletedDegree = await Degree.findOneAndDelete({ degreeID: degreeID });
 
-                    // Then delete the ModuleAssignment
-                    await ModuleAssignment.findOneAndDelete({
-                      _id: allMix._id,
-                    });
-                  })
-                );
-                await Promise.all(
-                  module.moduleAssignments.map(
-                    async (moduleAssignmentsIDArr) => {
-                      await Promise.all(
-                        moduleAssignmentsIDArr.map(async (id) => {
-                          await Assignment.findOneAndDelete({ _id: id });
-                        })
-                      );
-                    }
-                  )
-                );
-              }
+    if (!deletedDegree) {
+      console.log("No degree found with the provided degreeID.");
+      return;
+    }
+
+    // Delete associated modules
+    await Promise.all(
+      deletedDegree.degreeModules.map(async (moduleID) => {
+        const module = await Module.findOneAndDelete({ _id: moduleID });
+
+        if (!module) {
+          console.log(`No module found with ID ${moduleID}`);
+          return;
+        }
+
+        // Delete associated ModuleAssignments
+        const allMixSchema = await ModuleAssignment.find({
+          moduleID: module._id,
+        });
+
+        await Promise.all(
+          allMixSchema.map(async (allMix) => {
+            // Delete associated payment data
+            if (allMix.modulePayment) {
+              await ModuleStudentFinance.findOneAndDelete({
+                _id: allMix.modulePayment,
+              });
+            }
+
+            // Delete the ModuleAssignment
+            await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
+          })
+        );
+
+        // Delete the assignments associated with the module
+        await Promise.all(
+          module.moduleAssignments.map(async (moduleAssignmentsIDArr) => {
+            await Promise.all(
+              moduleAssignmentsIDArr.map(async (id) => {
+                await Assignment.findOneAndDelete({ _id: id });
+              })
             );
           })
         );
-      }
+      })
     );
 
     // Log the deletion action
-    const logMessage = {degreeName: deletedDegree.degreeName, degreeYear: deletedDegree.degreeYear};
+    const logMessage = {
+      degreeName: deletedDegree.degreeName,
+      degreeYear: deletedDegree.degreeYear,
+    };
     await createLog({
       req,
       collection: "Degree",

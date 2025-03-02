@@ -33,6 +33,7 @@ const fileSchema = new mongoose.Schema(
     },
     fileCategory: {
       type: String,
+      enum: ["assignment", "payment", "grades", "submissionEvidence", "brief"],
       required: true,
     },
     writerFlag: {
