@@ -7,8 +7,9 @@ const useApi = () => {
     const { logout } = useLogout(); // Call useLogout here
     const backendURL = switchBackendURL()
     const api = axios.create({
-        baseURL: backendURL,
-        withCredentials: true,
+      // baseURL: backendURL,
+      baseURL: '/api',
+      withCredentials: true,
     });    
     useEffect(()=>{
         // Request interceptor
