@@ -25,6 +25,7 @@ const customScrollbarStyles = {
 const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
   const [files, setFiles] = useState([]);
   const [orderID, setOrderID] = useState(orderIDPass);
+  const [activeDisplayCategory, setActiveDisplayCategory] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [existingFiles, setExistingFiles] = useState([]);
   const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
@@ -97,14 +98,11 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
   };
 
   const handleCategoryChange = (category) => {
-    console.log(existingFiles);
-    
     const filteredFiles = existingFiles.filter(
       (file) => file.fileCategory === category
     );
-    console.log(filteredFiles);
-
     setExistingFilteredFiles(filteredFiles);
+    setActiveDisplayCategory(category)
   };
   return (
     <Card raised style={{ padding: "20px", borderRadius: "10px" }}>
@@ -216,7 +214,15 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
               variant="h5"
               gutterBottom
               align="center"
-              sx={{ color: "#1976d2", cursor: "pointer" }}
+              sx={{
+                color: activeDisplayCategory === "assignment" ? "#1976d2" : "#000", // Change color if active
+                cursor: "pointer",
+                fontWeight:
+                  activeDisplayCategory === "assignment" ? "bold" : "normal", // Add bold text if active
+                backgroundColor:
+                  activeDisplayCategory === "assignment" ? "#e3f2fd" : "transparent", // Optional background highlight
+                padding: activeDisplayCategory === "assignment" ? "5px" : "0", // Optional padding to indicate click
+              }}
               onClick={() => handleCategoryChange("assignment")}
             >
               Assignment Files

@@ -47,6 +47,7 @@ const FileUpload = ({
   const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
   const [progress, setProgress] = useState(0);
   const [category, setCategory] = useState("");
+  const [activeDisplayCategory, setActiveDisplayCategory] = useState("");
   const [uploadStatus, setUploadStatus] = useState({});
   const [uploadTimeline, setUploadTimeline] = useState([]);
   const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
@@ -156,6 +157,7 @@ const FileUpload = ({
       (file) => file.fileCategory === category
     );
     setExistingFilteredFiles(filteredFiles);
+    setActiveDisplayCategory(category);
   };
 
   return (
@@ -239,6 +241,12 @@ const FileUpload = ({
                             </MenuItem>,
                             <MenuItem key="grades" value="grades">
                               Grades
+                            </MenuItem>,
+                            <MenuItem
+                              key="submissionEvidence"
+                              value="submissionEvidence"
+                            >
+                              Submission Evidence
                             </MenuItem>,
                           ]}
                         {isPayment && (
@@ -327,8 +335,8 @@ const FileUpload = ({
                               color="primary"
                               onClick={() => handleUpload(file)}
                             >
-                              {(Number(progress) > 0 &&
-                              Number(progress) < 100) ? (
+                              {Number(progress) > 0 &&
+                              Number(progress) < 100 ? (
                                 <CircularProgressWithLabel
                                   value={Number(progress)}
                                 />
@@ -351,12 +359,28 @@ const FileUpload = ({
 
             <Grid container spacing={2} mt={3}>
               {!isModule && !isPayment && (
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Typography
                     variant="h5"
                     gutterBottom
                     align="center"
-                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    sx={{
+                      color:
+                        activeDisplayCategory === "assignment"
+                          ? "#1976d2"
+                          : "#000", // Change color if active
+                      cursor: "pointer",
+                      fontWeight:
+                        activeDisplayCategory === "assignment"
+                          ? "bold"
+                          : "normal", // Add bold text if active
+                      backgroundColor:
+                        activeDisplayCategory === "assignment"
+                          ? "#e3f2fd"
+                          : "transparent", // Optional background highlight
+                      padding:
+                        activeDisplayCategory === "assignment" ? "5px" : "0", // Optional padding to indicate click
+                    }}
                     onClick={() => handleCategoryChange("assignment")}
                   >
                     Assignment Files
@@ -364,12 +388,26 @@ const FileUpload = ({
                 </Grid>
               )}
               {!isModule && (
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Typography
                     variant="h5"
                     gutterBottom
                     align="center"
-                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    sx={{
+                      color:
+                        activeDisplayCategory === "payment"
+                          ? "#1976d2"
+                          : "#000", // Change color if active
+                      cursor: "pointer",
+                      fontWeight:
+                        activeDisplayCategory === "payment" ? "bold" : "normal", // Add bold text if active
+                      backgroundColor:
+                        activeDisplayCategory === "payment"
+                          ? "#e3f2fd"
+                          : "transparent", // Optional background highlight
+                      padding:
+                        activeDisplayCategory === "payment" ? "5px" : "0", // Optional padding to indicate click
+                    }}
                     onClick={() => handleCategoryChange("payment")}
                   >
                     Payment Files
@@ -377,15 +415,57 @@ const FileUpload = ({
                 </Grid>
               )}
               {!isModule && !isPayment && (
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Typography
                     variant="h5"
                     gutterBottom
                     align="center"
-                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    sx={{
+                      color:
+                        activeDisplayCategory === "grades" ? "#1976d2" : "#000", // Change color if active
+                      cursor: "pointer",
+                      fontWeight:
+                        activeDisplayCategory === "grades" ? "bold" : "normal", // Add bold text if active
+                      backgroundColor:
+                        activeDisplayCategory === "grades"
+                          ? "#e3f2fd"
+                          : "transparent", // Optional background highlight
+                      padding: activeDisplayCategory === "grades" ? "5px" : "0", // Optional padding to indicate click
+                    }}
                     onClick={() => handleCategoryChange("grades")}
                   >
                     Grade Files
+                  </Typography>
+                </Grid>
+              )}
+              {!isModule && !isPayment && (
+                <Grid item xs={3}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    sx={{
+                      color:
+                        activeDisplayCategory === "submissionEvidence"
+                          ? "#1976d2"
+                          : "#000", // Change color if active
+                      cursor: "pointer",
+                      fontWeight:
+                        activeDisplayCategory === "submissionEvidence"
+                          ? "bold"
+                          : "normal", // Add bold text if active
+                      backgroundColor:
+                        activeDisplayCategory === "submissionEvidence"
+                          ? "#e3f2fd"
+                          : "transparent", // Optional background highlight
+                      padding:
+                        activeDisplayCategory === "submissionEvidence"
+                          ? "5px"
+                          : "0", // Optional padding to indicate click
+                    }}
+                    onClick={() => handleCategoryChange("submissionEvidence")}
+                  >
+                    Submission Evidence Files
                   </Typography>
                 </Grid>
               )}
@@ -395,7 +475,25 @@ const FileUpload = ({
                     variant="h5"
                     gutterBottom
                     align="center"
-                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    sx={{
+                      color:
+                        activeDisplayCategory === "brief"
+                          ? "#1976d2"
+                          : "#000", // Change color if active
+                      cursor: "pointer",
+                      fontWeight:
+                        activeDisplayCategory === "brief"
+                          ? "bold"
+                          : "normal", // Add bold text if active
+                      backgroundColor:
+                        activeDisplayCategory === "brief"
+                          ? "#e3f2fd"
+                          : "transparent", // Optional background highlight
+                      padding:
+                        activeDisplayCategory === "brief"
+                          ? "5px"
+                          : "0", // Optional padding to indicate click
+                    }}
                     onClick={() => handleCategoryChange("brief")}
                   >
                     Module Brief Files
