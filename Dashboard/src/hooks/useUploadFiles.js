@@ -1,31 +1,71 @@
 import React from "react";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import useApi from "./useApi";
 import useGetUserInfo from "./useGetUserInfo";
+import { app } from "../utils/firebaseConfig";
+
+const storage = getStorage(app);
 
 const useUploadFiles = () => {
   const api = useApi();
   const { userID, userFullName } = useGetUserInfo();  
 
   // Upload function remains unchanged
-  const uploadFiles = async (formData) => {    
-    formData.append("uploadedByUserID", userID);
-    formData.append("uploadedByUserName", userFullName);
+  const uploadFiles = async (formData, setProgress) => {
+    if (!formData.has("file")) throw new Error("No file selected");
+    const file = formData.get("file"); // Extract file from formData
+
     try {
-      const res = await api.post(
-        `/api/files/fileUpload`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
+      // 🔹 Validate required properties BEFORE uploading to Firebase
+      const requiredFields = ["referenceCollection", "fileCategory"];
+      for (const field of requiredFields) {
+        if (!formData.has(field) || !formData.get(field).trim()) {
+          throw new Error(`Missing required field: ${field}`);
         }
-      );
-      const data = await res.data;
-      if (data.error) {
-        throw new Error(data.error);
       }
-      console.log("File uploaded successfully", data);
-      return data;
+      
+      // Step 1: Upload File to Firebase Storage
+      const storageRef = ref(storage, `uploads/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setProgress(progress.toFixed(2)); // Update progress UI
+            console.log(`Upload is ${progress}% done`);
+          },
+          (error) => {
+            console.error("Upload failed:", error);
+            reject(new Error("File upload failed"));
+          },
+          async () => {
+            // Step 2: Get File Download URL
+            const fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log("File uploaded to Firebase:", fileUrl);
+
+            // Step 3: Append file URL to existing formData
+            formData.append("fileName", file.name);
+            formData.append("fileType", file.type);
+            formData.append("fileUrl", fileUrl);
+            formData.append("uploadedByUserID", userID);
+            formData.append("uploadedByUserName", userFullName);
+
+            // Step 4: Send Updated FormData to Backend
+            const res = await api.post(`/api/files/fileUpload`, formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            const data = res.data;
+            if (data.error) throw new Error(data.error);
+
+            console.log("File metadata saved successfully:", data);
+            resolve(data);
+          }
+        );
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
       throw new Error("File upload failed");

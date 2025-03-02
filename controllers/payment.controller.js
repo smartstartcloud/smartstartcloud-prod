@@ -287,9 +287,9 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
       if (isNew) {
-        logString = `A payment is set for ${newData.totalPaymentDue} GBP`;
+        logString = `A payment is due for ${newData.totalPaymentDue} GBP.`;
       } else {
-        logString = `A payment of ${newData.paidAmount} GBP was made.`;
+        logString = `A payment of ${newData.paidAmount} GBP was made. At ${newData.totalPaymentToDate}`;
       }
     }
 

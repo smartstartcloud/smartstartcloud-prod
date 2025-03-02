@@ -19,6 +19,7 @@ import Paper from '@mui/material/Paper';
 import useUploadFiles from '../hooks/useUploadFiles';
 import useFetchFileList from '../hooks/useFetchFileList';
 import { formatDate } from '../utils/functions';
+import CircularProgressWithLabel from './CircularProgressWithLabel';
 
 const customScrollbarStyles = {
   '&::-webkit-scrollbar': {
@@ -44,14 +45,14 @@ const FileUpload = ({
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
   const [existingFilteredFiles, setExistingFilteredFiles] = useState([]);
+  const [progress, setProgress] = useState(0);
   const [category, setCategory] = useState("");
   const [uploadStatus, setUploadStatus] = useState({});
   const [uploadTimeline, setUploadTimeline] = useState([]);
   const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
-  const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);  
+  const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);
   
   const { control } = useForm({});
-  
   useEffect(() => {
     if (fileList) {
       setExistingFiles(fileList);
@@ -90,7 +91,6 @@ const FileUpload = ({
     formData.append("referenceID", referenceID);
     formData.append("fileCategory", category);
     formData.append("referenceCollection", referenceCollection);
-    formData.append("fileType", file.type);
     if (isPayment){
       formData.append("paymentFlag", true);
     }
@@ -101,7 +101,7 @@ const FileUpload = ({
       formData.append("writerFlag", true);
     }
     try {
-      const response = await uploadFiles(formData);
+      const response = await uploadFiles(formData, setProgress);
       setUploadStatus((prevStatus) => ({
         ...prevStatus,
         [file.name]: true,
@@ -147,7 +147,6 @@ const FileUpload = ({
       console.log(error);
     }
   };
-
   const handleCloseModal = () => {
     setOpen(false);
   };
@@ -230,7 +229,8 @@ const FileUpload = ({
                         }}
                         fullWidth
                       >
-                        {(!isModule && !isPayment) && [
+                        {!isModule &&
+                          !isPayment && [
                             <MenuItem key="assignment" value="assignment">
                               Assignment
                             </MenuItem>,
@@ -239,7 +239,7 @@ const FileUpload = ({
                             </MenuItem>,
                             <MenuItem key="grades" value="grades">
                               Grades
-                            </MenuItem>
+                            </MenuItem>,
                           ]}
                         {isPayment && (
                           <MenuItem key="payment" value="payment">
@@ -327,7 +327,14 @@ const FileUpload = ({
                               color="primary"
                               onClick={() => handleUpload(file)}
                             >
-                              <CloudUploadIcon />
+                              {(Number(progress) > 0 &&
+                              Number(progress) < 100) ? (
+                                <CircularProgressWithLabel
+                                  value={Number(progress)}
+                                />
+                              ) : (
+                                <CloudUploadIcon />
+                              )}
                             </IconButton>
                           ) : (
                             <IconButton color="primary">
@@ -343,50 +350,58 @@ const FileUpload = ({
             )}
 
             <Grid container spacing={2} mt={3}>
-              {(!isModule && !isPayment) && (<Grid item xs={4}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => handleCategoryChange("assignment")}
-                >
-                  Assignment Files
-                </Typography>
-              </Grid>)}
-              {!isModule && (<Grid item xs={4}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => handleCategoryChange("payment")}
-                >
-                  Payment Files
-                </Typography>
-              </Grid>)}
-              {(!isModule && !isPayment) && (<Grid item xs={4}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => handleCategoryChange("grades")}
-                >
-                  Grade Files
-                </Typography>
-              </Grid>)}
-              {isModule && <Grid item xs={isModule ? 12 : 4}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  align="center"
-                  sx={{ color: "#1976d2", cursor: "pointer" }}
-                  onClick={() => handleCategoryChange("brief")}
-                >
-                  Module Brief Files
-                </Typography>
-              </Grid>}
+              {!isModule && !isPayment && (
+                <Grid item xs={4}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    onClick={() => handleCategoryChange("assignment")}
+                  >
+                    Assignment Files
+                  </Typography>
+                </Grid>
+              )}
+              {!isModule && (
+                <Grid item xs={4}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    onClick={() => handleCategoryChange("payment")}
+                  >
+                    Payment Files
+                  </Typography>
+                </Grid>
+              )}
+              {!isModule && !isPayment && (
+                <Grid item xs={4}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    onClick={() => handleCategoryChange("grades")}
+                  >
+                    Grade Files
+                  </Typography>
+                </Grid>
+              )}
+              {isModule && (
+                <Grid item xs={isModule ? 12 : 4}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                    onClick={() => handleCategoryChange("brief")}
+                  >
+                    Module Brief Files
+                  </Typography>
+                </Grid>
+              )}
             </Grid>
 
             {(existingFilteredFiles.length > 0 ||
