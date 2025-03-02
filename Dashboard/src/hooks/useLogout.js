@@ -8,7 +8,8 @@ const useLogout = () => {
   const { setAuthUser } = useAuthContext(); // To update the authenticated user state
   const { setAccessToken } = useTokenContext(); // To update the access token state
   const navigate = useNavigate();
-  const baseURL = switchBackendURL()
+  // const baseURL = switchBackendURL()
+  const baseURL = '/api'
 
   const logout = async () => {
     try {
@@ -19,16 +20,16 @@ const useLogout = () => {
       console.log(data);
 
       // Clear user-related information from localStorage and state
-      localStorage.removeItem('user-details');
-      localStorage.removeItem('access-token');
-      localStorage.removeItem('expiresIn');
+      localStorage.removeItem("user-details");
+      localStorage.removeItem("access-token");
+      localStorage.removeItem("expiresIn");
       setAccessToken(null);
       setAuthUser(null);
 
       // Redirect to the login page or another appropriate route
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error("Error logging out:", error);
       // Optionally, display an error message or handle the error as needed
     }
   };

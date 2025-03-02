@@ -4,9 +4,6 @@
 			"path": "./"
 		},
 		{
-			"path": "./backend"
-		},
-		{
 			"path": "./Dashboard"
 		}
 	],

@@ -43,10 +43,10 @@ const __dirname = path.dirname(__filename);
 
 const production = process.env.NODE_ENV === "production";
 if (production) {  
-  console.log(path.join(__dirname, "../Dashboard/build"));
-  app.use(express.static(path.join(__dirname, "../Dashboard/build"))); //To connect react app
+  console.log(path.join(__dirname, "Dashboard/build"));
+  app.use(express.static(path.join(__dirname, "Dashboard/build"))); //To connect react app
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Dashboard/build", "index.html")); //To connect react app
+    res.sendFile(path.join(__dirname, "Dashboard/build", "index.html")); //To connect react app
   });
 }
 
