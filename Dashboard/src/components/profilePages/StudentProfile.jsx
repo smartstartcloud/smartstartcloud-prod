@@ -119,7 +119,7 @@ const StudentProfile = () => {
                 Student Information
               </Typography>
               <Grid container spacing={2} mb={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={7}>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Typography
@@ -195,7 +195,7 @@ const StudentProfile = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={5}>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Typography
