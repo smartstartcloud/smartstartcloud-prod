@@ -54,7 +54,7 @@ const StudentFieldForm = ({ control }) => {
 
   const populateStudentData = (data) => {
     const studentListToPopulate = data.slice(1);
-    for (let student of studentListToPopulate) {
+    for (let student of studentListToPopulate) {      
       appendStudent({
         studentID: student[0],
         studentName: student[1],
@@ -66,10 +66,10 @@ const StudentFieldForm = ({ control }) => {
         groupName: student[7],
         tutorName: student[8],
         campusLocation: student[9],
-        universityName: student[10] || "",
-        courseName: student[11] || "",
-        year: student[12] || "",
-        isExternal: student[13] === "true",
+        isExternal: student[10].toLowerCase() === "yes",
+        universityName: student[11] || "",
+        courseName: student[12] || "",
+        year: student[13] || "",
       });
     }
   };
@@ -152,7 +152,8 @@ const StudentFieldForm = ({ control }) => {
                     control={control}
                     render={({ field }) => (
                       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                        <Checkbox {...field} checked={field.value} />
+                        <Checkbox onChange={()=>{console.log(field.value);
+                        }} {...field} checked={field.value} />
                         <Tooltip title="Is the student external?">
                           <Typography variant="body1">External Student</Typography>
                         </Tooltip>

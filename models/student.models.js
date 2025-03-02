@@ -38,6 +38,10 @@ const studentSchema = new mongo.Schema({
   campusLocation: {
     type: String,
   },
+  isExternal: {
+    type: Boolean,
+    default: false,
+  },
   universityName: {
     type: String,
   },
@@ -46,10 +50,6 @@ const studentSchema = new mongo.Schema({
   },
   year: {
     type: String,
-  },
-  isExternal: {
-    type: Boolean,
-    default: false
   },
   studentAssignment: {
     type: Array,
