@@ -269,7 +269,7 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
-                          color="error"
+                          color="error" disabled
                           onClick={() => handleDelete(file)}
                         >
                           <DeleteOutlineOutlinedIcon />
