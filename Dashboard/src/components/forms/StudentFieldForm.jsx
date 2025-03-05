@@ -66,7 +66,7 @@ const StudentFieldForm = ({ control }) => {
         groupName: student[7],
         tutorName: student[8],
         campusLocation: student[9],
-        isExternal: student[10].toLowerCase() === "yes",
+        isExternal: student[10]?.toLowerCase() === "yes",
         universityName: student[11] || "",
         courseName: student[12] || "",
         year: student[13] || "",
