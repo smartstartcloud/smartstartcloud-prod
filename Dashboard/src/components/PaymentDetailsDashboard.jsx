@@ -5,6 +5,8 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 const PaymentDetailsDashboard = ({data, type}) => {
   const {dataName, dataDetails} = data;
+  console.log(data);
+  
   
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
@@ -12,7 +14,9 @@ const PaymentDetailsDashboard = ({data, type}) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (dataDetails && dataDetails.length > 0) {      
+    console.log(dataDetails);
+
+    if (dataDetails && dataDetails.length > 0) {            
       setTableData([]);
       dataDetails.forEach((item) => {
         const tempObj = {
@@ -28,6 +32,8 @@ const PaymentDetailsDashboard = ({data, type}) => {
         };
         setTableData((prev) => [...prev, tempObj]);
       });
+    } else {
+      setTableData([]);
     }
   }, [dataDetails]);
   
@@ -59,6 +65,10 @@ const PaymentDetailsDashboard = ({data, type}) => {
         0
       )
     : 0;
+
+    const totalPriceDueTemp = Array.isArray(dataDetails)
+    ? dataDetails.reduce((sum, item) => sum + Number(item.totalPaymentDue || 0), 0)
+    : 0;    
 
   const columns = [
     { field: "studentID", headerName: "sID", flex: 0.25 },
@@ -117,10 +127,10 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 component="div"
                 sx={{ fontWeight: "bold" }}
               >
-                {"Expected Amount"}
+                {"Collected Amount"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {totalModulePriceTemp}
+                {totalPaidPriceTemp}
               </Typography>
             </Box>
           </Grid>
@@ -132,10 +142,10 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 component="div"
                 sx={{ fontWeight: "bold" }}
               >
-                {"Paid Amount (Approved)"}
+                {"Total Due Amount"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {totalApprovedPriceTemp}
+                {totalPriceDueTemp}
               </Typography>
             </Box>
           </Grid>
@@ -147,10 +157,10 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 component="div"
                 sx={{ fontWeight: "bold" }}
               >
-                {"Paid Amount (Awaiting)"}
+                {"Percentage Collected"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {totalWaitingApprovalPriceTemp}
+                {((totalPaidPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
               </Typography>
             </Box>
           </Grid>
