@@ -6,6 +6,8 @@ import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
+import { enumToString } from "../utils/functions.js";
+import File from "../models/files.model.js";
 
 export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
   const { degreeID, assignmentID, moduleCode, studentID, moduleId } =
@@ -103,6 +105,8 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
 
 export const updatePaymentDetails = async (req, res) => {
   const {
+    paymentPlan,
+    note,
     totalPaymentDue,
     totalPaymentToDate,
     paymentMethod,
@@ -113,12 +117,14 @@ export const updatePaymentDetails = async (req, res) => {
     bankPaymentMethod,
     cashPaymentMethod,
     referredPaymentMethod,
-    paymentRequiredInformation,  //Contains {assignmentID, degreeID, moduleCode, moduleId, studentID(_id)}
+    paymentRequiredInformation, //Contains {assignmentID, degreeID, moduleCode, moduleId, studentID(_id)}
     paymentVerificationStatus,
-    userID
+    userID,
   } = req.body;
   try {
     const updateDetails = {};
+    if (paymentPlan) updateDetails.paymentPlan = paymentPlan;
+    if (note) updateDetails.note = note;
     if (paymentAmount) updateDetails.modulePrice = paymentAmount;
     if (totalPaymentDue) updateDetails.totalPaymentDue = totalPaymentDue;
     if (totalPaymentToDate)
@@ -287,7 +293,9 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
       logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
     } else {
       if (isNew) {
-        logString = `A payment is due for ${newData.totalPaymentDue} GBP.`;
+        logString = `A payment is due for ${
+          newData.totalPaymentDue
+        } GBP. ${enumToString('paymentPlan', newData.paymentPlan)}. ${newData.note}`;
       } else {
         logString = `A payment of ${newData.paidAmount} GBP was made. At ${newData.totalPaymentToDate}`;
       }
@@ -330,11 +338,16 @@ export const getPaymentDetailsAll = async (req, res) => {
 
     // 2️⃣ Extract unique userIDs
     const userIds = finances.map((finance) => finance.userID);
+    const fileIds = finances.flatMap((finance) => finance.fileList || []);    
 
     // 3️⃣ Fetch user details from the separate `userDB`
     const users = await User.find({ _id: { $in: userIds } })
       .select("userName")
       .lean();
+
+    const files = await File.find({ _id: { $in: fileIds } })
+      .select("fileName fileType fileUrl updatedAt")
+      .lean();    
 
     // 4️⃣ Create a map for quick lookup
     const userMap = users.reduce((map, user) => {
@@ -342,10 +355,18 @@ export const getPaymentDetailsAll = async (req, res) => {
       return map;
     }, {});
 
+    const fileMap = files.reduce((map, file) => {
+      map[file._id.toString()] = file;
+      return map;
+    }, {});    
+
     // 5️⃣ Attach user details to the finance records
     const enrichedFinances = finances.map((finance) => ({
       ...finance,
       user: userMap[finance.userID?.toString()] || null, // Attach user details or null if not found
+      files: (finance.fileList || []).map(
+        (fileId) => fileMap[fileId.toString()] || null
+      ), // Attach file details or null if not found
     }));
 
     res.status(200).json(enrichedFinances);

@@ -23,3 +23,30 @@ export const formatDateString = (dateString) => {
   // Combine the formatted month and year with a space
   return `${formattedMonth} ${year}`;
 }
+
+export const enumToString = (type, value) => {
+  switch (type) {
+    case "paymentPlan":
+      return value === "year"
+        ? "Whole year plan"
+        : value === "installment"
+        ? "Whole year - 2 instalment plan"
+        : "Individual plan";
+    case "otherPaymentMethod":
+      return value === "cash"
+        ? "CASH"
+        : value === "bank"
+        ? "CASH"
+        : value === "referral"
+        ? "CASH"
+        : "other";
+    case "paymentVerificationStatus":
+      return value === "approved"
+        ? "APPROVED"
+        : value === "awaiting approval"
+        ? "PENDING"
+        : "No Status";
+    default:
+      return value;
+  }
+}

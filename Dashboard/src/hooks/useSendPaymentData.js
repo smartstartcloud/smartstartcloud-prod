@@ -7,6 +7,8 @@ const useSendPaymentData = () => {
   const { authUser } = useAuthContext();  
   const updatePayment = async (
     {
+      paymentPlan,
+      note,
       totalPaymentDue,
       totalPaymentToDate,
       paymentMethod,
@@ -20,9 +22,11 @@ const useSendPaymentData = () => {
       paymentVerificationStatus,
     },
     paymentRequiredInformation
-  ) => {    
+  ) => {
     try {
       const res = await api.put(`/api/module/updatePaymentData`, {
+        paymentPlan,
+        note,
         totalPaymentDue,
         totalPaymentToDate,
         paymentMethod,

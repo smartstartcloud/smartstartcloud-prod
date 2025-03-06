@@ -56,6 +56,8 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   const { updatePayment } = useSendPaymentData();
   
   const [paymentDetails, setPaymentDetails] = useState({
+    paymentPlan: "",
+    note: "",
     totalPaymentDue: "",
     totalPaymentToDate: "",
     paymentMethod: "",
@@ -72,6 +74,8 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
     useEffect(() => {
       if (paymentData) {        
         setPaymentDetails({
+          paymentPlan: paymentData?.paymentPlan || "",
+          note: paymentData?.note || "",
           totalPaymentDue: paymentData?.totalPaymentDue || "",
           totalPaymentToDate: paymentData?.totalPaymentToDate || "",
           paymentMethod: paymentData?.paymentMethod || "",
@@ -97,25 +101,24 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
     // }, [moduleAssignmentData]);
 
   const handleChange = (field, value) => {
-    
     setPaymentDetails({ ...paymentDetails, [field]: value });
-    if (field === "paidAmount") {      
-      setPaymentDetails({
-        ...paymentDetails,
-        totalPaymentDue: (
-          Number(paymentDetails.paymentAmount) - Number(value)
-        ).toString(),
-        [field]: value,
-      });
-    } else if ( field === "paymentAmount"){
-      setPaymentDetails({
-        ...paymentDetails,
-        totalPaymentDue: (
-          Number(value) - Number(paymentDetails.paidAmount)
-        ).toString(),
-        [field]: value,
-      });
-    }
+    // if (field === "paidAmount") {      
+    //   setPaymentDetails({
+    //     ...paymentDetails,
+    //     totalPaymentDue: (
+    //       Number(paymentDetails.paymentAmount) - Number(value)
+    //     ).toString(),
+    //     [field]: value,
+    //   });
+    // } else if ( field === "paymentAmount"){
+    //   setPaymentDetails({
+    //     ...paymentDetails,
+    //     totalPaymentDue: (
+    //       Number(value) - Number(paymentDetails.paidAmount)
+    //     ).toString(),
+    //     [field]: value,
+    //   });
+    // }
   };
 
   const handleSubmit = async () => {
@@ -185,6 +188,46 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
             <Typography variant="h5" color={colors.grey[50]} sx={{ mb: 2 }}>
               Add Payment Details Form
             </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="payment-status-label">
+                    Payment Plan
+                  </InputLabel>
+                  <Select
+                    labelId="payment-plan-label"
+                    id="payment-plan"
+                    label="Payment plan"
+                    value={paymentDetails.paymentPlan}
+                    onChange={(e) =>
+                      handleChange("paymentPlan", e.target.value)
+                    }
+                    variant="outlined"
+                    fullWidth
+                    required
+                    sx={{ mb: 2 }}
+                  >
+                    <MenuItem value="year">Whole year plan</MenuItem>
+                    <MenuItem value="installment">
+                      Whole year - 2 instalment plan
+                    </MenuItem>
+                    <MenuItem value="individual">Individual plan</MenuItem>
+                    {/* <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
+                  <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
+                  <MenuItem value="COMPLETED">COMPLETED</MenuItem> */}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Payment Note"
+                  fullWidth
+                  value={paymentDetails.note}
+                  onChange={(e) => handleChange("note", e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+              </Grid>
+            </Grid>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <TextField

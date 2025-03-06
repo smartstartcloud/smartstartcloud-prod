@@ -28,10 +28,12 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
     ref: "ModuleAssignment",
     required: true,
   },
-  fileList: [{
-    type: mongo.Schema.Types.ObjectId,
-    ref: "File",
-  }],
+  fileList: [
+    {
+      type: mongo.Schema.Types.ObjectId,
+      ref: "File",
+    },
+  ],
   assignmentID: {
     type: mongo.Schema.Types.ObjectId,
     ref: "Assignment",
@@ -47,6 +49,15 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   },
   moduleName: {
     type: String,
+  },
+  paymentPlan: {
+    type: String,
+    enum: ["year", "installment", "individual"],
+    default: "year",
+  },
+  note: {
+    type: String,
+    default: "",
   },
   modulePrice: {
     type: String,
