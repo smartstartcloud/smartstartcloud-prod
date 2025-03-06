@@ -53,7 +53,7 @@ export const sortByProperty = (array, property, order = "asc") => {
 }
 
 // Converts enum values to their corresponding string representations.
-export const enumToString = (type, value) => {  
+export const enumToString = (type, value) => {    
   switch (type) {
     case "paymentPlan":
       return value === "year"
@@ -65,15 +65,17 @@ export const enumToString = (type, value) => {
       return value === "cash"
         ? "CASH"
         : value === "bank"
-        ? "CASH"
+        ? "BANK"
         : value === "referral"
-        ? "CASH"
-        : "other";
+        ? "REFERRAL"
+        : "OTHER";
     case "paymentVerificationStatus":
       return value === "approved"
         ? "APPROVED"
         : value === "awaiting approval"
         ? "PENDING"
+        : value === "rejected"
+        ? "REJECTED"
         : "No Status";
     default:
       return value;

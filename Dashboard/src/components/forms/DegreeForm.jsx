@@ -33,10 +33,7 @@ import useFetchSingleDegreeData from '../../hooks/useFetchSingleDegreeData';
 
 
 const currentYear = new Date().getFullYear();
-const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-];
+const months = ["January", "June", "September"];
 const DegreeForm = ({editPage=false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -279,7 +276,7 @@ const DegreeForm = ({editPage=false}) => {
                 <MenuItem value="" disabled>
                   Select Year
                 </MenuItem>
-                {Array.from({ length: 30 }, (_, i) => (
+                {Array.from({ length: 10 }, (_, i) => (
                   <MenuItem key={i} value={currentYear - i}>
                     {currentYear - i}
                   </MenuItem>

@@ -34,7 +34,7 @@ import {
 import { tokens } from '../../theme';
 import useGetPaymentDetails from '../../hooks/useGetPaymentDetails';
 import useSendPaymentData from '../../hooks/useSendPaymentData';
-import { formatDate } from '../../utils/functions';
+import { enumToString, formatDate } from '../../utils/functions';
 import { useAuthContext } from '../../context/AuthContext';
 import FileUpload from '../FileUpload';
 import useFetchModuleAssignmentData from '../../hooks/useFetchModuleAssignmentData';
@@ -320,12 +320,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
               <Grid item xs={6} display="flex" alignItems="center">
                 <Chip
                   label={
-                    paymentDetails.paymentVerificationStatus ===
-                    "awaiting approval"
-                      ? "Pending"
-                      : paymentDetails.paymentVerificationStatus === "approved"
-                      ? "Approved"
-                      : "No Status"
+                    enumToString('paymentVerificationStatus', paymentDetails.paymentVerificationStatus)
                   }
                   sx={{
                     width: "100%",
@@ -333,7 +328,8 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                     mb: 2,
                     backgroundColor:
                       paymentDetails.paymentVerificationStatus ===
-                      "awaiting approval"
+                        "awaiting approval" ||
+                      paymentDetails.paymentVerificationStatus === "rejected"
                         ? "#db4f4a" // Red for awaiting approval
                         : paymentDetails.paymentVerificationStatus ===
                           "approved"

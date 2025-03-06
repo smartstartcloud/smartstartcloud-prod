@@ -62,10 +62,18 @@ const useSendPaymentData = () => {
     }
   };
 
-  const updatePaymentStatus = async (id, paymentVerificationStatus) => {    
-    try {      
+  const updatePaymentStatus = async (
+    id,
+    paymentVerificationStatus,
+    approvalNote='',
+    approvedBy=null
+  ) => {
+    try {
       const res = await api.put(`/api/module/updatePaymentStatus`, {
-        id, paymentVerificationStatus
+        id,
+        paymentVerificationStatus,
+        approvalNote,
+        approvedBy
       });
       const data = await res.data;
       if (data.error) {

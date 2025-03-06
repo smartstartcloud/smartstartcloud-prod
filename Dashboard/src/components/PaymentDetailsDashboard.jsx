@@ -5,8 +5,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 const PaymentDetailsDashboard = ({data, type}) => {
   const {dataName, dataDetails} = data;
-  console.log(data);
-  
   
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
@@ -14,8 +12,6 @@ const PaymentDetailsDashboard = ({data, type}) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    console.log(dataDetails);
-
     if (dataDetails && dataDetails.length > 0) {            
       setTableData([]);
       dataDetails.forEach((item) => {

@@ -140,7 +140,8 @@ export const updatePaymentDetails = async (req, res) => {
       updateDetails.referredPaymentMethod = referredPaymentMethod;
     if (paymentVerificationStatus) {
       updateDetails.paymentVerificationStatus =
-        paymentVerificationStatus === "approved"
+        paymentVerificationStatus === "approved" ||
+        paymentVerificationStatus === "rejected"
           ? "awaiting approval"
           : paymentVerificationStatus;
     }
@@ -230,20 +231,43 @@ export const updatePaymentDetails = async (req, res) => {
 export const updatePaymentStatus = async (req, res) => {  
   const {
     paymentVerificationStatus,
+    approvalNote,
+    approvedBy,
     id
-  } = req.body;
-  
+  } = req.body;  
   try {
     const updateDetails = {};
-    if (paymentVerificationStatus)      
+    if (paymentVerificationStatus)
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
 
-    const paymentLog = createPaymentLog({newData: updateDetails, isNew: true});   
+    const paymentLog = createPaymentLog({
+      newData: updateDetails,
+      statusUpdate: true,
+    });
+    let approvalNoteLog = null;
+    if (paymentVerificationStatus === "rejected") {
+      approvalNoteLog = {
+        date: new Date().toUTCString(),
+        approvalStatus: paymentVerificationStatus,
+        approvalNote,
+        approvedBy,
+      };
+    }
 
+    // Construct the update object dynamically
+    const updateFields = {
+      $set: updateDetails,
+      $push: { paymentLog: paymentLog }, // Always push paymentLog
+    };
+
+    // Only add approvalNoteLog if it's not null
+    if (approvalNoteLog) {
+      updateFields.$push.approvalNoteLog = approvalNoteLog;
+    }
     // Find the specific assignment by its ID and update it
     const payment = await ModuleStudentFinance.findByIdAndUpdate(
       id,
-      { $set: updateDetails, $push: { paymentLog } },
+      updateFields,
       { new: true } // Return the updated document
     );
     if (payment) {
@@ -254,10 +278,10 @@ export const updatePaymentStatus = async (req, res) => {
         "alert",
         `Payment for Student : ${student.studentID} and Degree ${payment.degreeName} ${payment.degreeYear} ${payment.moduleName} is ${paymentVerificationStatus}. The paid amount is ${payment.paidAmount}.`,
         {
-          goTo: `/task/${payment.degreeYear}/${payment.degreeID}`,
-          dataId: student.studentID,
+          goTo: payment.metadata.goTo,
+          dataId: payment.metadata.dataId,
         }
-      );      
+      );
       // Log the payment status update action
       const logMessage = {
         paymentID: payment._id,
@@ -271,10 +295,10 @@ export const updatePaymentStatus = async (req, res) => {
         actionToDisplay: "Payment Status Update",
         logMessage,
         affectedID: payment._id,
-        metadata: payment.metadata
+        metadata: payment.metadata,
       });
-      
-      res.status(200).json(payment);
+
+      res.status(200).json({data: payment, message: 'PaymentStatus Updated Successfully'});
     } else {
       res
         .status(404)

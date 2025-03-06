@@ -94,13 +94,21 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   },
   paymentVerificationStatus: {
     type: String,
-    enum: ["approved", "awaiting approval"], // Only these values are allowed
+    enum: ["approved", "awaiting approval", "rejected"], // Only these values are allowed
     default: "awaiting approval",
   },
   paymentLog: [
     {
       date: { type: Date },
       logString: { type: String },
+    },
+  ],
+  approvalNoteLog: [
+    {
+      date: { type: Date },
+      approvalStatus: { type: String, enum: ["approved", "awaiting approval", "rejected"] }, // Only these values are allowed
+      approvalNote: { type: String },
+      approvedBy: { type: String }, // Only these values are allowed
     },
   ],
   metadata: {
