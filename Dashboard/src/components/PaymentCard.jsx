@@ -42,6 +42,10 @@ const PaymentCard = ({id='', name, data, type}) => {
         0
       )
     : 0;
+
+    const totalPriceDueTemp = Array.isArray(data)
+    ? data.reduce((sum, item) => sum + Number(item.totalPaymentDue || 0), 0)
+    : 0;   
     
   return (
     <Card
@@ -108,10 +112,10 @@ const PaymentCard = ({id='', name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {"Expected Amount"}
+              {"Collected Amount"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {totalModulePriceTemp}
+              {totalPaidPriceTemp}
             </Typography>
           </Box>
           <Box
@@ -125,10 +129,10 @@ const PaymentCard = ({id='', name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {"Paid Amount (Approved)"}
+              {"Due Amount"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {totalApprovedPriceTemp}
+              {totalPriceDueTemp}
             </Typography>
           </Box>
           <Box
@@ -142,10 +146,10 @@ const PaymentCard = ({id='', name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {"Paid Amount (Awaiting Approval)"}
+              {"Percentage Collected"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {totalWaitingApprovalPriceTemp}
+              {((totalPaidPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
             </Typography>
           </Box>
         </CardContent>

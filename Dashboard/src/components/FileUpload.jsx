@@ -39,7 +39,8 @@ const FileUpload = ({
   isPayment = false,
   parentID = '',
   referenceDisplay='',
-  isModule=false
+  isModule=false,
+  viewOnly = false
 }) => {
   const theme = useTheme();
   const [files, setFiles] = useState([]);
@@ -194,168 +195,170 @@ const FileUpload = ({
           </IconButton>
 
           <CardContent>
-            <Grid container spacing={2} mb={2}>
-              <Grid item xs={12} sm={4}>
-                <Controller
-                  name="referenceID"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      value={referenceDisplay || ""}
-                      label="Reference ID"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      disabled
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {/* Select dropdown for order IDs */}
-                <Controller
-                  name="category"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                      <InputLabel>Select File Category</InputLabel>
-                      <Select
+            {!viewOnly && <>
+              <Grid container spacing={2} mb={2}>
+                <Grid item xs={12} sm={4}>
+                  <Controller
+                    name="referenceID"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
                         {...field}
-                        label="Select File Category"
+                        value={referenceDisplay || ""}
+                        label="Reference ID"
                         variant="outlined"
-                        value={category} // Set value from state
-                        onChange={(e) => {
-                          setCategory(e.target.value); // Update state when value changes
-                          field.onChange(e); // Update react-hook-form value
-                        }}
                         fullWidth
-                      >
-                        {!isModule &&
-                          !isPayment && [
-                            <MenuItem key="assignment" value="assignment">
-                              Assignment
-                            </MenuItem>,
+                        required
+                        disabled
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {/* Select dropdown for order IDs */}
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                        <InputLabel>Select File Category</InputLabel>
+                        <Select
+                          {...field}
+                          label="Select File Category"
+                          variant="outlined"
+                          value={category} // Set value from state
+                          onChange={(e) => {
+                            setCategory(e.target.value); // Update state when value changes
+                            field.onChange(e); // Update react-hook-form value
+                          }}
+                          fullWidth
+                        >
+                          {!isModule &&
+                            !isPayment && [
+                              <MenuItem key="assignment" value="assignment">
+                                Assignment
+                              </MenuItem>,
+                              <MenuItem key="payment" value="payment">
+                                Payment
+                              </MenuItem>,
+                              <MenuItem key="grades" value="grades">
+                                Grades
+                              </MenuItem>,
+                              <MenuItem
+                                key="submissionEvidence"
+                                value="submissionEvidence"
+                              >
+                                Submission Evidence
+                              </MenuItem>,
+                            ]}
+                          {isPayment && (
                             <MenuItem key="payment" value="payment">
                               Payment
-                            </MenuItem>,
-                            <MenuItem key="grades" value="grades">
-                              Grades
-                            </MenuItem>,
-                            <MenuItem
-                              key="submissionEvidence"
-                              value="submissionEvidence"
-                            >
-                              Submission Evidence
-                            </MenuItem>,
-                          ]}
-                        {isPayment && (
-                          <MenuItem key="payment" value="payment">
-                            Payment
-                          </MenuItem>
-                        )}
-                        {isModule && (
-                          <MenuItem key="brief" value="brief">
-                            Module Brief
-                          </MenuItem>
-                        )}
-                      </Select>
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={2}>
-              <Grid item sm={12}>
-                <Box>
-                  <input type="file" onChange={handleFileChange} hidden />
-                  <Box
-                    onClick={handleClick}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    sx={{
-                      border: "2px dashed #cccccc",
-                      borderRadius: "10px",
-                      padding: "20px",
-                      textAlign: "center",
-                      cursor: "pointer",
-                      marginTop: "10px",
-                      height: "200px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: theme.palette.background.default,
-                      color: theme.palette.text.secondary,
-                      "&:hover": {
-                        borderColor: theme.palette.primary.main,
-                      },
-                    }}
-                  >
-                    <Typography>
-                      Drag and drop a file here or click to upload
-                    </Typography>
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
-
-            {files.length > 0 && (
-              <TableContainer
-                component={Paper}
-                sx={{
-                  marginTop: "20px",
-                  marginBottom: "20px",
-                  ...customScrollbarStyles,
-                }}
-              >
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">File Name</TableCell>
-                      <TableCell align="center">Download</TableCell>
-                      <TableCell align="center">Upload</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {files.map((file, index) => (
-                      <TableRow key={index}>
-                        <TableCell align="center">{file.name}</TableCell>
-                        <TableCell align="center">
-                          <IconButton
-                            color="secondary"
-                            onClick={() => handleDownload(file)}
-                          >
-                            <CloudDownloadIcon />
-                          </IconButton>
-                        </TableCell>
-                        <TableCell align="center">
-                          {!uploadStatus[file.name] ? (
-                            <IconButton
-                              color="primary"
-                              onClick={() => handleUpload(file)}
-                            >
-                              {Number(progress) > 0 &&
-                              Number(progress) < 100 ? (
-                                <CircularProgressWithLabel
-                                  value={Number(progress)}
-                                />
-                              ) : (
-                                <CloudUploadIcon />
-                              )}
-                            </IconButton>
-                          ) : (
-                            <IconButton color="primary">
-                              <DoneIcon />
-                            </IconButton>
+                            </MenuItem>
                           )}
-                        </TableCell>
+                          {isModule && (
+                            <MenuItem key="brief" value="brief">
+                              Module Brief
+                            </MenuItem>
+                          )}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={2}>
+                <Grid item sm={12}>
+                  <Box>
+                    <input type="file" onChange={handleFileChange} hidden />
+                    <Box
+                      onClick={handleClick}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      sx={{
+                        border: "2px dashed #cccccc",
+                        borderRadius: "10px",
+                        padding: "20px",
+                        textAlign: "center",
+                        cursor: "pointer",
+                        marginTop: "10px",
+                        height: "200px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: theme.palette.background.default,
+                        color: theme.palette.text.secondary,
+                        "&:hover": {
+                          borderColor: theme.palette.primary.main,
+                        },
+                      }}
+                    >
+                      <Typography>
+                        Drag and drop a file here or click to upload
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              {files.length > 0 && (
+                <TableContainer
+                  component={Paper}
+                  sx={{
+                    marginTop: "20px",
+                    marginBottom: "20px",
+                    ...customScrollbarStyles,
+                  }}
+                >
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">File Name</TableCell>
+                        <TableCell align="center">Download</TableCell>
+                        <TableCell align="center">Upload</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
+                    </TableHead>
+                    <TableBody>
+                      {files.map((file, index) => (
+                        <TableRow key={index}>
+                          <TableCell align="center">{file.name}</TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              color="secondary"
+                              onClick={() => handleDownload(file)}
+                            >
+                              <CloudDownloadIcon />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="center">
+                            {!uploadStatus[file.name] ? (
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleUpload(file)}
+                              >
+                                {Number(progress) > 0 &&
+                                Number(progress) < 100 ? (
+                                  <CircularProgressWithLabel
+                                    value={Number(progress)}
+                                  />
+                                ) : (
+                                  <CloudUploadIcon />
+                                )}
+                              </IconButton>
+                            ) : (
+                              <IconButton color="primary">
+                                <DoneIcon />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </>}
 
             <Grid container spacing={2} mt={3}>
               {!isModule && !isPayment && (
@@ -477,22 +480,15 @@ const FileUpload = ({
                     align="center"
                     sx={{
                       color:
-                        activeDisplayCategory === "brief"
-                          ? "#1976d2"
-                          : "#000", // Change color if active
+                        activeDisplayCategory === "brief" ? "#1976d2" : "#000", // Change color if active
                       cursor: "pointer",
                       fontWeight:
-                        activeDisplayCategory === "brief"
-                          ? "bold"
-                          : "normal", // Add bold text if active
+                        activeDisplayCategory === "brief" ? "bold" : "normal", // Add bold text if active
                       backgroundColor:
                         activeDisplayCategory === "brief"
                           ? "#e3f2fd"
                           : "transparent", // Optional background highlight
-                      padding:
-                        activeDisplayCategory === "brief"
-                          ? "5px"
-                          : "0", // Optional padding to indicate click
+                      padding: activeDisplayCategory === "brief" ? "5px" : "0", // Optional padding to indicate click
                     }}
                     onClick={() => handleCategoryChange("brief")}
                   >

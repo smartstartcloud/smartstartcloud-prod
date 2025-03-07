@@ -14,10 +14,15 @@ import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
 import { useLocation } from "react-router-dom";
 import PaymentApprovalTable from "../PaymentApprovalTable";
+import { enumToString } from "../../utils/functions";
+import FileUpload from "../FileUpload";
+import FileView from "../FileView";
+import { useAuthContext } from "../../context/AuthContext";
 
 const PaymentApproval = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const {authUser} = useAuthContext()
   const { paymentData, error, loading } = useAllGetPaymentDetails();
   const { updatePaymentStatus } = useSendPaymentData();
   const [tableData, setTableData] = useState([]);
@@ -25,12 +30,15 @@ const PaymentApproval = () => {
   const [listCashFilter, setCashFilter] = useState([]);
   const [listReferralFilter, setReferralFilter] = useState([]);
   const [listOtherFilter, setOtherFilter] = useState([]);  
+  const [fileViewModalOpen, setFileViewModalOpen] = useState(false);
+  const [filesToSend, setFilesToSend] = useState([]);
+  const [dataToSend, setDataToSend] = useState({});
 
   const location = useLocation();
   const dataId = location.state?.dataId || null
   
-  useEffect(() => {
-    if (paymentData && paymentData.length > 0) {   
+  useEffect(() => {    
+    if (paymentData && paymentData.length > 0) {         
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -40,19 +48,19 @@ const PaymentApproval = () => {
       paymentData.forEach((item) => {
         const tempObj = {
           id: item._id,
+          financeID: item.financeID,
           studentID: item.studentID?.studentID,
           studentName: item.studentID?.studentName,
           degreeID: item.degreeID,
           degreeYear: item.degreeYear,
           degreeName: item.degreeName,
           moduleName: item.moduleName,
+          files: item.files,
           modulePrice: item.modulePrice ? item.modulePrice : 0,
           paidAmount: item.paidAmount ? item.paidAmount : 0,
           paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
           paymentToDate: item.totalPaymentToDate,
-          paymentMethod: item?.paymentMethod
-            ? item.paymentMethod.toString().toUpperCase()
-            : "",
+          paymentMethod: item.paymentMethod,
           paymentMethodDetails:
             item.paymentMethod === "bank"
               ? item.bankPaymentMethod
@@ -65,6 +73,7 @@ const PaymentApproval = () => {
               : null,
           userName: item.user?.userName,
           paymentVerificationStatus: item.paymentVerificationStatus,
+          approvalNoteLog: item.approvalNoteLog,
         };
         if (item.paymentMethod === "bank") setBankFilter((prev) => [...prev, tempObj]);
         if (item.paymentMethod === "cash") setCashFilter((prev) => [...prev, tempObj]);
@@ -75,87 +84,59 @@ const PaymentApproval = () => {
   }, [paymentData]);
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  const handleStatusUpdate = (value) => {
-    console.log(value);
+  const handleViewFile = (value) => {
+    setFileViewModalOpen(true);
+    setFilesToSend(value.files);
+    setDataToSend(value);
+  }
 
-    if (value.paymentMethod === "CASH") {
-      setCashFilter((prev)=> 
-          prev.map((row)=> 
-              row.id === value.id
-                ? {
-                    ...row,
-                    paymentVerificationStatus:
-                      row.paymentVerificationStatus === "awaiting approval"
-                        ? "approved"
-                        : "awaiting approval",
-                  }
-                : row
-          )
-      )
-    }
-    if (value.paymentMethod === "BANK") {
-      setBankFilter((prev)=> 
-          prev.map((row)=> 
-              row.id === value.id
-                ? {
-                    ...row,
-                    paymentVerificationStatus:
-                      row.paymentVerificationStatus === "awaiting approval"
-                        ? "approved"
-                        : "awaiting approval",
-                  }
-                : row
-          )
-      )
-    }
-    if (value.paymentMethod === "REFERRAL") {
-      setReferralFilter((prev)=> 
-          prev.map((row)=> 
-              row.id === value.id
-                ? {
-                    ...row,
-                    paymentVerificationStatus:
-                      row.paymentVerificationStatus === "awaiting approval"
-                        ? "approved"
-                        : "awaiting approval",
-                  }
-                : row
-          )
-      )
-    }
-    if (value.paymentMethod === "OTHER") {
-      setOtherFilter((prev)=> 
-          prev.map((row)=> 
-              row.id === value.id
-                ? {
-                    ...row,
-                    paymentVerificationStatus:
-                      row.paymentVerificationStatus === "awaiting approval"
-                        ? "approved"
-                        : "awaiting approval",
-                  }
-                : row
-          )
-      )
-    }
-    
-    updatePaymentStatus(value.id, value.paymentVerificationStatus === "awaiting approval"?"approved":"awaiting approval");
-    // setTableData((prev)=> 
-    //     prev.map((row)=> 
-    //         row.id === value.id
-    //           ? {
-    //               ...row,
-    //               paymentVerificationStatus:
-    //                 row.paymentVerificationStatus === "awaiting approval"
-    //                   ? "approved"
-    //                   : "awaiting approval",
-    //             }
-    //           : row
-    //     )
-    // )
+  const handleStatusButton = (value, note, type) => {
+    handleStatusUpdate(value, note, type);
+    setFileViewModalOpen(false)
   };
 
+  const handleStatusUpdate = async(value, note, type) =>  {
+    value.paymentVerificationStatus = type
+    const paymentMethodMap = {
+      cash: setCashFilter,
+      bank: setBankFilter,
+      referral: setReferralFilter,
+      other: setOtherFilter,
+    };
+    
+    const setter = paymentMethodMap[value.paymentMethod];
+    if (setter) {
+      setter((prev) =>
+        prev.map((row) =>
+          row.id === value.id
+            ? {
+                ...row,
+                paymentVerificationStatus: type
+              }
+            : row
+        )
+      );
+    }
+
+    try {
+      const response = await updatePaymentStatus(
+        value.id,
+        value.paymentVerificationStatus,
+        note,
+        authUser.name
+      );
+      console.log("Response Data:", response);
+    } catch (error) {
+      console.log("Error submitting form: ", error.message);
+    }
+    
+
+  };
+
+
+
   const columns = [
+    { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
     { field: "studentName", headerName: "Student Name", flex: 0.5 },
     { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
@@ -166,19 +147,25 @@ const PaymentApproval = () => {
     { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
     { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
     { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
-    { field: "paymentMethod", headerName: "Payment Method", flex: 0.5 },
+    {
+      field: "paymentMethod",
+      headerName: "Payment Method",
+      flex: 0.5,
+      valueGetter: (params) => enumToString("otherPaymentMethod", params),
+    },
     { field: "paymentMethodDetails", headerName: "Details", flex: 0.5 },
     { field: "userName", headerName: "Employee", flex: 0.5 },
     {
       field: "paymentVerificationStatus",
       headerName: "Verification Status",
-      flex: 1,
+      flex: 0.5,
       renderCell: (params) => (
         <Button
           variant={
-            params.row.paymentVerificationStatus !== "approved"
-              ? "outlined"
-              : "contained"
+            params.row.paymentVerificationStatus === "approved" ||
+            params.row.paymentVerificationStatus === "rejected"
+              ? "contained"
+              : "outlined"
           }
           color={
             params.row.paymentVerificationStatus !== "approved"
@@ -187,10 +174,10 @@ const PaymentApproval = () => {
           }
           onClick={(event) => {
             event.stopPropagation(); // Prevents the row click event
-            handleStatusUpdate(params.row);            
+            handleViewFile(params.row);
           }}
         >
-          {params.row.paymentVerificationStatus}
+          View File
         </Button>
       ),
     },
@@ -250,6 +237,16 @@ const PaymentApproval = () => {
           columns={columns}
           listName={"OTHER"}
           dataId={dataId}
+        />
+      )}
+
+      {fileViewModalOpen && (
+        <FileView
+          setOpen={setFileViewModalOpen}
+          open={fileViewModalOpen}
+          fileList={filesToSend}
+          dataToSend={dataToSend}
+          statusUpdate={handleStatusButton}
         />
       )}
     </Box>
