@@ -186,7 +186,7 @@ const SuperAdminCharts = () => {
             <BarChart data={chartData} type={chartStatus} />
           </Box>
         </Grid> */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12}>
           <PaymentDetailsDashboard
             data={paymentDetailsData}
             type={chartStatus}

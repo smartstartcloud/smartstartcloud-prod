@@ -156,7 +156,8 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 {"Percentage Collected"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {((totalPaidPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
+                {((totalPaidPriceTemp / totalModulePriceTemp) * 100).toFixed(2)}{" "}
+                %
               </Typography>
             </Box>
           </Grid>
@@ -180,6 +181,9 @@ const PaymentDetailsDashboard = ({data, type}) => {
                       transform: "scale(1.01)",
                       transition: "transform 0.2s",
                     },
+                  },
+                  "& .MuiDataGrid-cell": {
+                    fontSize: "15px", // Increase cell font size
                   },
                 }}
                 rows={tableData}
