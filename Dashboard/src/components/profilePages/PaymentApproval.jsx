@@ -38,7 +38,8 @@ const PaymentApproval = () => {
   const dataId = location.state?.dataId || null
   
   useEffect(() => {    
-    if (paymentData && paymentData.length > 0) {         
+    if (paymentData && paymentData.length > 0) {     
+      console.log(paymentData);
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -111,7 +112,16 @@ const PaymentApproval = () => {
           row.id === value.id
             ? {
                 ...row,
-                paymentVerificationStatus: type
+                paymentVerificationStatus: type,
+                approvalNoteLog: [
+                  ...row.approvalNoteLog,
+                  {
+                    approvalStatus: type,
+                    approvalNote: note,
+                    approvedBy: authUser.name,
+                    date: new Date().toISOString(),
+                  },
+                ],
               }
             : row
         )
