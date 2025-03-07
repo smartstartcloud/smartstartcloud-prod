@@ -21,6 +21,8 @@ const AllDegree = () => {
   
   let filteredYearList = yearList.filter((year) => {
     const intakeMatch = selectedIntake ? year.yearName.startsWith(selectedIntake) : true;
+    console.log(intakeMatch);
+    
     const yearMatch = selectedYear ? year.yearName.endsWith(selectedYear) : true;
     return intakeMatch && yearMatch;
   });

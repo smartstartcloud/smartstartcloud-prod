@@ -51,3 +51,33 @@ export const sortByProperty = (array, property, order = "asc") => {
     return 0;
   });
 }
+
+// Converts enum values to their corresponding string representations.
+export const enumToString = (type, value) => {    
+  switch (type) {
+    case "paymentPlan":
+      return value === "year"
+        ? "Whole year plan"
+        : value === "installment"
+        ? "Whole year - 2 instalment plan"
+        : "Individual plan";
+    case "otherPaymentMethod":
+      return value === "cash"
+        ? "CASH"
+        : value === "bank"
+        ? "BANK"
+        : value === "referral"
+        ? "REFERRAL"
+        : "OTHER";
+    case "paymentVerificationStatus":
+      return value === "approved"
+        ? "APPROVED"
+        : value === "awaiting approval"
+        ? "PENDING"
+        : value === "rejected"
+        ? "REJECTED"
+        : "No Status";
+    default:
+      return value;
+  }
+};

@@ -14,6 +14,7 @@ import axios from "axios";
 import Module from "../models/module.models.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
 import Order from "../models/order.models.js";
+import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 
 const storage = getStorage(app);
 
@@ -93,7 +94,24 @@ export const fileUpload = async (req, res) => {
         { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
         { new: true } // Return updated document
       );
-      newFile.metadata = moduleAssignment.metadata;
+      if (moduleAssignment) {
+        newFile.metadata = moduleAssignment.metadata;
+
+        // Find all finance records where moduleAssignmentID matches referenceID
+        const financeRecords = await ModuleStudentFinance.find({
+          moduleAssignmentID: referenceID,
+        });
+        // Update each finance record by adding the new file ID to fileList
+        await Promise.all(
+          financeRecords.map(async (finance) => {
+            await ModuleStudentFinance.findByIdAndUpdate(
+              finance._id,
+              { $push: { fileList: newFile._id } },
+              { new: true }
+            );
+          })
+        );
+      }
     }
     await newFile.save();
     res
@@ -224,6 +242,10 @@ export const fileDelete = async (req, res) => {
       );
     } else if (referenceCollection === "ModuleAssignment") {
       await ModuleAssignment.updateMany(
+        { fileList: fileId },
+        { $pull: { fileList: fileId } }
+      );
+      await ModuleStudentFinance.updateMany(
         { fileList: fileId },
         { $pull: { fileList: fileId } }
       );
