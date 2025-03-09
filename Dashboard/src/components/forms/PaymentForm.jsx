@@ -35,9 +35,7 @@ import { tokens } from '../../theme';
 import useGetPaymentDetails from '../../hooks/useGetPaymentDetails';
 import useSendPaymentData from '../../hooks/useSendPaymentData';
 import { enumToString, formatDate } from '../../utils/functions';
-import { useAuthContext } from '../../context/AuthContext';
 import FileUpload from '../FileUpload';
-import useFetchModuleAssignmentData from '../../hooks/useFetchModuleAssignmentData';
 
 const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {     
   const theme = useTheme();
@@ -66,6 +64,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
     paidAmount: "",
     otherPaymentMethod: "", // Additional field for "Other"
     bankPaymentMethod: "", // Additional field for "Bank Transfer",
+    bankPayeeName: "",
     cashPaymentMethod: "", // Additional field for "Collect Payment"
     referredPaymentMethod: "", // Additional field for "Referred Payment"
     paymentVerificationStatus: "",
@@ -84,6 +83,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
           paidAmount: paymentData?.paidAmount || "",
           otherPaymentMethod: paymentData?.otherPaymentMethod || "",
           bankPaymentMethod: paymentData?.bankPaymentMethod || "",
+          bankPayeeName: paymentData?.bankPayeeName || "",
           cashPaymentMethod: paymentData?.cashPaymentMethod || "",
           referredPaymentMethod: paymentData?.referredPaymentMethod || "",
           paymentLog: paymentData?.paymentLog || [],
@@ -319,9 +319,10 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
               </Grid>
               <Grid item xs={6} display="flex" alignItems="center">
                 <Chip
-                  label={
-                    enumToString('paymentVerificationStatus', paymentDetails.paymentVerificationStatus)
-                  }
+                  label={enumToString(
+                    "paymentVerificationStatus",
+                    paymentDetails.paymentVerificationStatus
+                  )}
                   sx={{
                     width: "100%",
                     borderRadius: 1,
@@ -419,6 +420,21 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                 )}
               </Grid>
             </Grid>
+            {paymentDetails.paymentMethod === "bank" && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Payer Name"
+                    fullWidth
+                    value={paymentDetails.bankPayeeName}
+                    onChange={(e) =>
+                      handleChange("bankPayeeName", e.target.value)
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                </Grid>
+              </Grid>
+            )}
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Button

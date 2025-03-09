@@ -115,6 +115,7 @@ export const updatePaymentDetails = async (req, res) => {
     paidAmount,
     otherPaymentMethod,
     bankPaymentMethod,
+    bankPayeeName,
     cashPaymentMethod,
     referredPaymentMethod,
     paymentRequiredInformation, //Contains {assignmentID, degreeID, moduleCode, moduleId, studentID(_id)}
@@ -135,6 +136,7 @@ export const updatePaymentDetails = async (req, res) => {
     if (otherPaymentMethod)
       updateDetails.otherPaymentMethod = otherPaymentMethod;
     if (bankPaymentMethod) updateDetails.bankPaymentMethod = bankPaymentMethod;
+    if (bankPayeeName) updateDetails.bankPayeeName = bankPayeeName;
     if (cashPaymentMethod) updateDetails.cashPaymentMethod = cashPaymentMethod;
     if (referredPaymentMethod)
       updateDetails.referredPaymentMethod = referredPaymentMethod;
