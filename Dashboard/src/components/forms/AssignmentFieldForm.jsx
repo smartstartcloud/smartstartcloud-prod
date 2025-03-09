@@ -81,20 +81,20 @@ const AssignmentFieldForm = ({ control, index, refDegreeID }) => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-              <Controller
-                name={`degreeModules[${index}].assignmentList[${assignmentIndex}].wordCount`}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Word Count"
-                    variant="outlined"
-                    type="number"
-                    fullWidth
-                  />
-                )}
-              />
-            </Grid>
+                <Controller
+                  name={`degreeModules[${index}].assignmentList[${assignmentIndex}].wordCount`}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Word Count"
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
 
               <Grid item xs={12} sm={3}>
                 <Controller
@@ -122,11 +122,11 @@ const AssignmentFieldForm = ({ control, index, refDegreeID }) => {
                       <DatePicker
                         {...field}
                         label="Assignment Deadline"
-                        inputFormat="MM/dd/yyyy" // Custom date format
+                        inputFormat="dd/MM/yyyy" // Custom date format
                         value={field.value ? new Date(field.value) : null} // Ensure the value is a Date object
                         onChange={(newValue) => {
                           field.onChange(
-                            newValue ? format(newValue, "MM/dd/yyyy") : ""
+                            newValue ? format(newValue, "dd/MM/yyyy") : ""
                           );
                         }}
                         renderInput={(params) => (

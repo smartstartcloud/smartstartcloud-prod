@@ -82,6 +82,9 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   bankPaymentMethod: {
     type: String,
   },
+  bankPayeeName: {
+    type: String,
+  },
   cashPaymentMethod: {
     type: String,
   },
@@ -106,7 +109,10 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   approvalNoteLog: [
     {
       date: { type: Date },
-      approvalStatus: { type: String, enum: ["approved", "awaiting approval", "rejected"] }, // Only these values are allowed
+      approvalStatus: {
+        type: String,
+        enum: ["approved", "awaiting approval", "rejected"],
+      }, // Only these values are allowed
       approvalNote: { type: String },
       approvedBy: { type: String }, // Only these values are allowed
     },
