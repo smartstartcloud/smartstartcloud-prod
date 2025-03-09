@@ -185,56 +185,58 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
             </Grid>
           </Grid>
           <Grid container spacing={2}>
-          <Grid item xs={12} sm={8}>
-            <Controller
-              name="assignmentName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Assignment Name"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  sx={{ mb: 2 }}
-                  error={!!touchedFields.assignmentName && !!errors.assignmentName}
-                  helperText={
-                    touchedFields.assignmentName && errors.assignmentName
-                      ? errors.assignmentName.message
-                      : null
-                  }
-                  onBlur={(e) => {
-                    field.onBlur();
-                    if (!field.value) {
-                      setError("assignmentName", {
-                        type: "manual",
-                        message: "Assignment Name is required",
-                      });
-                    } else {
-                      clearErrors("assignmentName");
+            <Grid item xs={12} sm={8}>
+              <Controller
+                name="assignmentName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Assignment Name"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    sx={{ mb: 2 }}
+                    error={
+                      !!touchedFields.assignmentName && !!errors.assignmentName
                     }
-                  }}
-                />
-              )}
-            />
+                    helperText={
+                      touchedFields.assignmentName && errors.assignmentName
+                        ? errors.assignmentName.message
+                        : null
+                    }
+                    onBlur={(e) => {
+                      field.onBlur();
+                      if (!field.value) {
+                        setError("assignmentName", {
+                          type: "manual",
+                          message: "Assignment Name is required",
+                        });
+                      } else {
+                        clearErrors("assignmentName");
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Controller
+                name="wordCount"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Word Count"
+                    variant="outlined"
+                    type="number"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Controller
-              name="wordCount"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Word Count"
-                  variant="outlined"
-                  type="number"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
@@ -302,7 +304,9 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
                     <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
                     <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-                    <MenuItem value="NOT TAKING ASSIGNMENT">NOT TAKING ASSIGNMENT</MenuItem>
+                    <MenuItem value="NOT TAKING ASSIGNMENT">
+                      NOT TAKING ASSIGNMENT
+                    </MenuItem>
                   </Select>
                 )}
               />
@@ -320,11 +324,11 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     <DatePicker
                       {...field}
                       label="Assignment Deadline"
-                      inputFormat="MM/dd/yyyy" // Custom date format
+                      inputFormat="dd/MM/yyyy" // Custom date format
                       value={field.value ? new Date(field.value) : null} // Ensure the value is a Date object
                       onChange={(newValue) => {
                         field.onChange(
-                          newValue ? format(newValue, "MM/dd/yyyy") : ""
+                          newValue ? format(newValue, "dd/MM/yyyy") : ""
                         );
                       }}
                       renderInput={(params) => (

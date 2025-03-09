@@ -297,7 +297,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                   <DatePicker
                     sx={{ width: "100%", mb: 2 }}
                     label="Total Payment to Date"
-                    inputFormat="MM/dd/yyyy" // Custom date format
+                    inputFormat="dd/MM/yyyy" // Custom date format
                     value={
                       paymentDetails.totalPaymentToDate
                         ? new Date(paymentDetails.totalPaymentToDate)
@@ -306,7 +306,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                     onChange={(newValue) =>
                       handleChange(
                         "totalPaymentToDate",
-                        newValue ? format(newValue, "MM/dd/yyyy") : null
+                        newValue ? format(newValue, "dd/MM/yyyy") : null
                       )
                     }
                     slots={{
