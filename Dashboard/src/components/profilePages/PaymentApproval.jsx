@@ -18,6 +18,7 @@ import { enumToString } from "../../utils/functions";
 import FileUpload from "../FileUpload";
 import FileView from "../FileView";
 import { useAuthContext } from "../../context/AuthContext";
+import { formatDateString } from "../../utils/yearFilter";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -39,7 +40,6 @@ const PaymentApproval = () => {
   
   useEffect(() => {    
     if (paymentData && paymentData.length > 0) {     
-      console.log(paymentData);
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -72,6 +72,7 @@ const PaymentApproval = () => {
               : item.paymentMethod === "other"
               ? item.otherPaymentMethod
               : null,
+          bankPayeeName: item.paymentMethod === "bank" ? item.bankPayeeName : null,
           userName: item.user?.userName,
           paymentVerificationStatus: item.paymentVerificationStatus,
           approvalNoteLog: item.approvalNoteLog,
@@ -149,8 +150,12 @@ const PaymentApproval = () => {
     { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
     { field: "studentName", headerName: "Student Name", flex: 0.5 },
-    { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
-    { field: "degreeYear", headerName: "Degree Year", flex: 0.5 },
+    {
+      field: "degreeYear",
+      headerName: "Degree Year",
+      flex: 0.5,
+      valueGetter: (params) => formatDateString(params),
+    },
     { field: "degreeName", headerName: "Degree Name", flex: 0.5 },
     { field: "moduleName", headerName: "Module Name", flex: 0.5 },
     { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
@@ -164,6 +169,59 @@ const PaymentApproval = () => {
       valueGetter: (params) => enumToString("otherPaymentMethod", params),
     },
     { field: "paymentMethodDetails", headerName: "Details", flex: 0.5 },
+    { field: "userName", headerName: "Employee", flex: 0.5 },
+    {
+      field: "paymentVerificationStatus",
+      headerName: "Verification Status",
+      flex: 0.5,
+      renderCell: (params) => (
+        <Button
+          variant={
+            params.row.paymentVerificationStatus === "approved" ||
+            params.row.paymentVerificationStatus === "rejected"
+              ? "contained"
+              : "outlined"
+          }
+          color={
+            params.row.paymentVerificationStatus !== "approved"
+              ? "error"
+              : "success"
+          }
+          onClick={(event) => {
+            event.stopPropagation(); // Prevents the row click event
+            handleViewFile(params.row);
+          }}
+        >
+          View File
+        </Button>
+      ),
+    },
+  ];
+
+  const bankColumns = [
+    { field: "financeID", headerName: "ID", flex: 0.25 },
+    { field: "studentID", headerName: "sID", flex: 0.25 },
+    { field: "studentName", headerName: "Student Name", flex: 0.5 },
+    {
+      field: "degreeYear",
+      headerName: "Degree Year",
+      flex: 0.5,
+      valueGetter: (params) => formatDateString(params),
+    },
+    { field: "degreeName", headerName: "Degree Name", flex: 0.5 },
+    { field: "moduleName", headerName: "Module Name", flex: 0.5 },
+    { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
+    { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
+    { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
+    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
+    {
+      field: "paymentMethod",
+      headerName: "Payment Method",
+      flex: 0.5,
+      valueGetter: (params) => enumToString("otherPaymentMethod", params),
+    },
+    { field: "paymentMethodDetails", headerName: "Details", flex: 0.5 },
+    { field: "bankPayeeName", headerName: "Payee Name", flex: 0.5 },
     { field: "userName", headerName: "Employee", flex: 0.5 },
     {
       field: "paymentVerificationStatus",
@@ -220,7 +278,7 @@ const PaymentApproval = () => {
       {listBankFilter.length > 0 && (
         <PaymentApprovalTable
           list={listBankFilter}
-          columns={columns}
+          columns={bankColumns}
           listName={"BANK"}
           dataId={dataId}
         />
