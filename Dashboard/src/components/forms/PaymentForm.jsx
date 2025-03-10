@@ -233,11 +233,13 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                 <TextField
                   label="Payment Amount"
                   fullWidth
+                  type="number"
                   value={paymentDetails.paymentAmount}
                   onChange={(e) =>
                     handleChange("paymentAmount", e.target.value)
                   }
                   sx={{ mb: 2 }}
+                  inputProps={{ min: 0 }} // Optional: Prevents negative values
                 />
               </Grid>
 
@@ -245,9 +247,11 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                 <TextField
                   label="Paid Amount"
                   fullWidth
+                  type="number"
                   value={paymentDetails.paidAmount}
                   onChange={(e) => handleChange("paidAmount", e.target.value)}
                   sx={{ mb: 2 }}
+                  inputProps={{ min: 0 }} // Optional: Prevents negative values
                 />
               </Grid>
             </Grid>
@@ -256,6 +260,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                 <TextField
                   label="Total Payment Due"
                   fullWidth
+                  type="number"
                   value={paymentDetails.totalPaymentDue}
                   onChange={(e) =>
                     handleChange("totalPaymentDue", e.target.value)

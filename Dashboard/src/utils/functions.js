@@ -15,7 +15,7 @@ export const formatDate = (isoString) => {
     second: "2-digit",
     timeZoneName: "short",
   };
-  return new Intl.DateTimeFormat("en-US", options).format(new Date(isoString));
+  return new Intl.DateTimeFormat("en-GB", options).format(new Date(isoString));
 };
 
 // Function to parse a year ID string into a Date object

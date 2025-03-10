@@ -14,11 +14,12 @@ import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
 import { useLocation } from "react-router-dom";
 import PaymentApprovalTable from "../PaymentApprovalTable";
-import { enumToString } from "../../utils/functions";
+import { enumToString, formatDate } from "../../utils/functions";
 import FileUpload from "../FileUpload";
 import FileView from "../FileView";
 import { useAuthContext } from "../../context/AuthContext";
 import { formatDateString } from "../../utils/yearFilter";
+import { format } from "date-fns";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -115,7 +116,9 @@ const PaymentApproval = () => {
                 ...row,
                 paymentVerificationStatus: type,
                 approvalNoteLog: [
-                  ...row.approvalNoteLog,
+                  ...(Array.isArray(row.approvalNoteLog)
+                    ? row.approvalNoteLog
+                    : []),
                   {
                     approvalStatus: type,
                     approvalNote: note,
@@ -161,7 +164,12 @@ const PaymentApproval = () => {
     { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
     { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
     { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
-    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
+    {
+      field: "paymentToDate",
+      headerName: "Payment To Date",
+      flex: 0.5,
+      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+    },
     {
       field: "paymentMethod",
       headerName: "Payment Method",
