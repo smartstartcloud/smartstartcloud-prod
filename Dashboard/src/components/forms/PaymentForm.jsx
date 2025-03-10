@@ -419,7 +419,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
-                    label="Payer Name"
+                    label="Payee Name"
                     fullWidth
                     value={paymentDetails.bankPayeeName}
                     onChange={(e) =>
