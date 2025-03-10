@@ -1,5 +1,10 @@
 // Function to format ISO date strings
 export const formatDate = (isoString) => {
+  if (!isoString) return "Invalid Date"; // Handle null/undefined cases
+
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "Invalid Date"; // Handle invalid dates
+
   const options = {
     year: "numeric",
     month: "long",
@@ -9,7 +14,21 @@ export const formatDate = (isoString) => {
     second: "2-digit",
     timeZoneName: "short",
   };
-  return new Intl.DateTimeFormat("en-US", options).format(new Date(isoString));
+
+  return new Intl.DateTimeFormat("en-GB", options).format(date);
+};
+
+export const formatDateShort = (isoString) => {
+  if (!isoString) return "Invalid Date"; // Handle null/undefined cases
+
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "Invalid Date"; // Handle invalid dates
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
 };
 
 // convert "january_2025" to "JANUARY 2025"

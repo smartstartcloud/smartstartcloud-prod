@@ -59,7 +59,14 @@ const FileView = ({
     if (dataToSend) {
       setData(dataToSend);
     }
-  }, [fileList, dataToSend, data]);
+  }, [fileList, dataToSend]);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      
+    }
+  }, [data]);
 
   const handleDownload = async (file) => {
     downloadFiles(file, true);
@@ -103,28 +110,30 @@ const FileView = ({
           </IconButton>
 
           <CardContent>
-            {files.length > 0 && (
-              <Box mt={3}>
-                <Box width="100%" display="flex" justifyContent="space-between">
+            <Box mt={3}>
+              <Box width="100%" display="flex" justifyContent="space-between">
+                {files.length > 0 && (
                   <Typography variant="h3" gutterBottom>
                     File Management
                   </Typography>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{
-                      color:
-                        data.paymentVerificationStatus !== "approved"
-                          ? "error.main"
-                          : "success.main",
-                    }}
-                  >
-                    {enumToString(
-                      "paymentVerificationStatus",
-                      data.paymentVerificationStatus
-                    )}
-                  </Typography>
-                </Box>
+                )}
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    color:
+                      data.paymentVerificationStatus !== "approved"
+                        ? "error.main"
+                        : "success.main",
+                  }}
+                >
+                  {enumToString(
+                    "paymentVerificationStatus",
+                    data.paymentVerificationStatus
+                  )}
+                </Typography>
+              </Box>
+              {files.length > 0 && (
                 <Grid
                   my={1}
                   container
@@ -202,104 +211,104 @@ const FileView = ({
                     </Grid>
                   ))}
                 </Grid>
-                <Box>
-                  {data.approvalNoteLog && data.approvalNoteLog.length > 0 ? (
-                    <TableContainer
-                      component={Paper}
-                      sx={{ maxHeight: "220px", overflowX: "auto" }}
-                    >
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={{ width: "20%" }}>
-                              <b>Date</b>
-                            </TableCell>
-                            <TableCell sx={{ width: "10%" }}>
-                              <b>User</b>
-                            </TableCell>
-                            <TableCell sx={{ width: "50%" }}>
-                              <b>Message</b>
-                            </TableCell>
-                            <TableCell sx={{ width: "10%" }}>
-                              <b>Status</b>
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {[...data.approvalNoteLog]
-                            .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort descending by date
-                            .map((row, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{formatDate(row.date)}</TableCell>
-                                <TableCell>{row.approvedBy}</TableCell>
-                                <TableCell>{row.approvalNote}</TableCell>
-                                <TableCell>{row.approvalStatus}</TableCell>
-                              </TableRow>
-                            ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  ) : (
-                    <Typography
-                      variant="h5"
-                      color={colors.grey[50]}
-                      sx={{ mb: 2 }}
-                    >
-                      NO DATA
-                    </Typography>
-                  )}
-                </Box>
-                <Box sx={{ width: "100%", maxWidth: 500, mx: "auto", mt: 5 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Take a Note
+              )}
+              <Box>
+                {data.approvalNoteLog && data.approvalNoteLog.length > 0 ? (
+                  <TableContainer
+                    component={Paper}
+                    sx={{ maxHeight: "220px", overflowX: "auto" }}
+                  >
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ width: "20%" }}>
+                            <b>Date</b>
+                          </TableCell>
+                          <TableCell sx={{ width: "10%" }}>
+                            <b>User</b>
+                          </TableCell>
+                          <TableCell sx={{ width: "50%" }}>
+                            <b>Message</b>
+                          </TableCell>
+                          <TableCell sx={{ width: "10%" }}>
+                            <b>Status</b>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {[...data.approvalNoteLog]
+                          .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort descending by date
+                          .map((row, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{formatDate(row.date)}</TableCell>
+                              <TableCell>{row.approvedBy}</TableCell>
+                              <TableCell>{row.approvalNote}</TableCell>
+                              <TableCell>{row.approvalStatus}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Typography
+                    variant="h5"
+                    color={colors.grey[50]}
+                    sx={{ mb: 2 }}
+                  >
+                    NO PAYMEN LOGS
                   </Typography>
-                  <TextField
-                    label="Your Note"
-                    variant="outlined"
-                    multiline
-                    rows={1}
-                    fullWidth
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                  />
-                  <Typography variant="body1" sx={{ mt: 2 }}>
-                    Currently Logged in: {authUser.name}
-                  </Typography>
-                </Box>
-                <Box
-                  width="100%"
-                  display="flex"
-                  justifyContent="center"
-                  gap={5}
-                  mt={3}
-                >
-                  <Button
-                    variant={"contained"}
-                    color={"success"}
-                    sx={{ minWidth: "100px" }}
-                    onClick={() => statusUpdate(data, note, "approved")}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant={"contained"}
-                    color={"error"}
-                    sx={{ minWidth: "100px" }}
-                    onClick={() => statusUpdate(data, note, "rejected")}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    variant={"outlined"}
-                    color={"error"}
-                    sx={{ minWidth: "100px" }}
-                    onClick={handleCloseModal}
-                  >
-                    Cancel
-                  </Button>
-                </Box>
+                )}
               </Box>
-            )}
+              <Box sx={{ width: "100%", maxWidth: 500, mx: "auto", mt: 5 }}>
+                <Typography variant="h6" gutterBottom>
+                  Take a Note
+                </Typography>
+                <TextField
+                  label="Your Note"
+                  variant="outlined"
+                  multiline
+                  rows={1}
+                  fullWidth
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                  Currently Logged in: {authUser.name}
+                </Typography>
+              </Box>
+              <Box
+                width="100%"
+                display="flex"
+                justifyContent="center"
+                gap={5}
+                mt={3}
+              >
+                <Button
+                  variant={"contained"}
+                  color={"success"}
+                  sx={{ minWidth: "100px" }}
+                  onClick={() => statusUpdate(data, note, "approved")}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant={"contained"}
+                  color={"error"}
+                  sx={{ minWidth: "100px" }}
+                  onClick={() => statusUpdate(data, note, "rejected")}
+                >
+                  Reject
+                </Button>
+                <Button
+                  variant={"outlined"}
+                  color={"error"}
+                  sx={{ minWidth: "100px" }}
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
       </Container>
