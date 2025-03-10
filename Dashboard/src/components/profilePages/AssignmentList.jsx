@@ -279,26 +279,19 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
                         "assignmentGrade",
                       ].map((key) => (
                         <TableCell key={key}>
-                          {/* <Tooltip
-                            title={
-                              key === "assignmentProgress"
-                                ? renderTooltipContent(assignment)
-                                : ""
-                            } // Conditionally render the tooltip content
-                            arrow
-                            interactive={key === "assignmentProgress"}
-                          > */}
-                          {/* Ensure that assignment[key] is rendered properly */}
                           <span>
                             {assignment[key] !== undefined
-                              ? key === "assignmentPayment"
+                              ? key === "assignmentDeadline"
+                                ? new Date(assignment[key]).toLocaleDateString(
+                                    "en-GB"
+                                  )
+                                : key === "assignmentPayment"
                                 ? assignment[key] === 0
                                   ? "NOT PAID"
                                   : assignment[key]
                                 : assignment[key]
                               : "N/A"}
                           </span>
-                          {/* </Tooltip> */}
                         </TableCell>
                       ))}
                       <TableCell>
@@ -365,7 +358,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
           referenceCollection={"Assignment"}
           isOrder={false}
           orderID={orderIdToPass}
-          parentID = {moduleStudentID}
+          parentID={moduleStudentID}
         />
       )}
       {paymentOpen && (
