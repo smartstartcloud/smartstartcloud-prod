@@ -324,11 +324,11 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     <DatePicker
                       {...field}
                       label="Assignment Deadline"
-                      inputFormat="dd/MM/yyyy" // Custom date format
+                      format="dd/MM/yyyy" // Custom date format
                       value={field.value ? new Date(field.value) : null} // Ensure the value is a Date object
                       onChange={(newValue) => {
                         field.onChange(
-                          newValue ? format(newValue, "dd/MM/yyyy") : ""
+                          newValue || ""
                         );
                       }}
                       renderInput={(params) => (

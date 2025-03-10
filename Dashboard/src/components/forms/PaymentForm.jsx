@@ -297,22 +297,17 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                   <DatePicker
                     sx={{ width: "100%", mb: 2 }}
                     label="Total Payment to Date"
-                    inputFormat="dd/MM/yyyy" // Custom date format
+                    format="dd/MM/yyyy" // Custom date format
                     value={
                       paymentDetails.totalPaymentToDate
                         ? new Date(paymentDetails.totalPaymentToDate)
                         : null
                     } // Ensure the value is a Date object
                     onChange={(newValue) =>
-                      handleChange(
-                        "totalPaymentToDate",
-                        newValue ? format(newValue, "dd/MM/yyyy") : null
-                      )
+                      handleChange("totalPaymentToDate", newValue || null)
                     }
-                    slots={{
-                      textField: (params) => (
-                        <TextField {...params} fullWidth variant="outlined" />
-                      ),
+                    slotProps={{
+                      textField: { fullWidth: true, variant: "outlined" },
                     }}
                   />
                 </LocalizationProvider>
