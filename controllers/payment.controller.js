@@ -6,7 +6,7 @@ import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
-import { enumToString } from "../utils/functions.js";
+import { enumToString, formatDate, formatDateShort } from "../utils/functions.js";
 import File from "../models/files.model.js";
 
 export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
@@ -323,7 +323,9 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
           newData.totalPaymentDue
         } GBP. ${enumToString('paymentPlan', newData.paymentPlan)}. ${newData.note}`;
       } else {
-        logString = `A payment of ${newData.paidAmount} GBP was made. At ${newData.totalPaymentToDate}`;
+        logString = `A payment of ${
+          newData.paidAmount
+        } GBP was made. At ${formatDateShort(newData.totalPaymentToDate)}`;
       }
     }
 

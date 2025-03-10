@@ -59,7 +59,14 @@ const FileView = ({
     if (dataToSend) {
       setData(dataToSend);
     }
-  }, [fileList, dataToSend, data]);
+  }, [fileList, dataToSend]);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      
+    }
+  }, [data]);
 
   const handleDownload = async (file) => {
     downloadFiles(file, true);
