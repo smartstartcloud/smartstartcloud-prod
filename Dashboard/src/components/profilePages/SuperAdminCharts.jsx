@@ -140,12 +140,16 @@ const SuperAdminCharts = () => {
       <Box display="flex" gap={2} mb={3}>
         <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
           <InputLabel>Intake</InputLabel>
-          <Select value={selectedIntake} onChange={handleIntakeChange} label="Intake">
+          <Select
+            value={selectedIntake}
+            onChange={handleIntakeChange}
+            label="Intake"
+          >
             <MenuItem value="">All</MenuItem>
-            {[
-              "January",  "June", "September"
-            ].map((month) => (
-              <MenuItem key={month} value={month}>{month}</MenuItem>
+            {["January", "June", "September"].map((month) => (
+              <MenuItem key={month} value={month}>
+                {month}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -155,13 +159,41 @@ const SuperAdminCharts = () => {
           <Select value={selectedYear} onChange={handleYearChange} label="Year">
             <MenuItem value="">All</MenuItem>
             {lastTenYears.map((year) => (
-              <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+              <MenuItem key={year} value={year.toString()}>
+                {year}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
       </Box>
+      <Grid container spacing={2} mb={2}>
+        {filteredYearList && filteredYearList.length > 0 ? (
+          filteredYearList.map(({ degreeID, dataName, data }, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={3}
+              key={index}
+              onClick={() => handlePaymentCardClick(dataName, data)}
+            >
+              <Box display="flex" flexDirection="column" gap={2}>
+                <PaymentCard
+                  id={degreeID}
+                  name={dataName}
+                  data={data}
+                  type={chartStatus}
+                />
+              </Box>
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={12}>
+            <Typography variant="h5">No Data</Typography>
+          </Grid>
+        )}
+      </Grid>
       {/* Additional */}
-      
+
       {/* <Grid container spacing={2} mb={5}>
         <Grid item xs={12} gap={2} display="flex">
           <Button
@@ -246,32 +278,6 @@ const SuperAdminCharts = () => {
           )}
         </Grid>
       )} */}
-      <Grid container spacing={2}>
-          {filteredYearList && filteredYearList.length > 0 ? (
-            filteredYearList.map(({ degreeID, dataName, data }, index) => (
-              <Grid
-                item
-                xs={12}
-                sm={3}
-                key={index}
-                onClick={() => handlePaymentCardClick(dataName, data)}
-              >
-                <Box display="flex" flexDirection="column" gap={2}>
-                  <PaymentCard
-                    id={degreeID}
-                    name={dataName}
-                    data={data}
-                    type={chartStatus}
-                  />
-                </Box>
-              </Grid>
-            ))
-          ) : (
-            <Grid item xs={12}>
-              <Typography variant="h5">No Data</Typography>
-            </Grid>
-          )}
-        </Grid>
     </Box>
   );
 };
