@@ -286,26 +286,17 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     fullWidth
                     required
                     sx={{ mb: 2 }}
-                    // error={
-                    //   !!touchedFields.assignmentProgress &&
-                    //   !!errors.assignmentProgress
-                    // }
-                    // helperText={
-                    //   touchedFields.assignmentProgress &&
-                    //   errors.assignmentProgress
-                    //     ? errors.assignmentProgress.message
-                    //     : null
-                    // }
                   >
                     <MenuItem value="TBA">TO BE ASSIGNED</MenuItem>
                     <MenuItem value="ORDER ID ASSIGNED">
                       ORDER ID ASSIGNED
                     </MenuItem>
+                    <MenuItem value="FILE READY TO UPLOAD">FILE READY TO UPLOAD</MenuItem>
                     <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
-                    <MenuItem value="IN REVIEW">IN REVIEW</MenuItem>
-                    <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-                    <MenuItem value="NOT TAKING ASSIGNMENT">
-                      NOT TAKING ASSIGNMENT
+                    <MenuItem value="WAITING TO BE GRADED">WAITING TO BE GRADED</MenuItem>
+                    <MenuItem value="PASSED">PASSED</MenuItem>
+                    <MenuItem value="FAILED">
+                      FAILED
                     </MenuItem>
                   </Select>
                 )}
@@ -327,9 +318,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                       format="dd/MM/yyyy" // Custom date format
                       value={field.value ? new Date(field.value) : null} // Ensure the value is a Date object
                       onChange={(newValue) => {
-                        field.onChange(
-                          newValue || ""
-                        );
+                        field.onChange(newValue || "");
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -357,6 +346,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                     variant="outlined"
                     fullWidth
                     sx={{ mb: 2 }}
+                    type="number"
                   />
                 )}
               />

@@ -15,11 +15,9 @@ const DynamicBreadcrumbs = () => {
     return (
       <Breadcrumbs aria-label="breadcrumb">
         {/* Home Link */}
-        <Link component={RouterLink} underline="none" color="inherit">
-          <Typography variant="h5" color="text.secondary">
-            Home
-          </Typography>
-        </Link>
+        <Typography variant="h5" color="text.secondary">
+          Home
+        </Typography>
 
         {/* Dynamically Generated Breadcrumb Links */}
         {pathnames.map((value, index) => {
