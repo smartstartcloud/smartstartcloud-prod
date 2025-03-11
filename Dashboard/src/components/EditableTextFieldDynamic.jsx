@@ -15,7 +15,7 @@ const EditableTextFieldDynamic = ({
 
   return (
     <TextField
-      type="text"
+      type="number"
       variant="outlined"
       fullWidth
       label={label}
