@@ -40,7 +40,7 @@ const PaymentApproval = () => {
   const dataId = location.state?.dataId || null
   
   useEffect(() => {    
-    if (paymentData && paymentData.length > 0) {     
+    if (paymentData && paymentData.length > 0) {           
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -50,6 +50,7 @@ const PaymentApproval = () => {
       paymentData.forEach((item) => {
         const tempObj = {
           id: item._id,
+          moduleAssignmentID: item.moduleAssignmentID,
           financeID: item.financeID,
           studentID: item.studentID?.studentID,
           studentName: item.studentID?.studentName,
@@ -87,7 +88,7 @@ const PaymentApproval = () => {
   }, [paymentData]);
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  const handleViewFile = (value) => {
+  const handleViewFile = (value) => {    
     setFileViewModalOpen(true);
     setFilesToSend(value.files);
     setDataToSend(value);
