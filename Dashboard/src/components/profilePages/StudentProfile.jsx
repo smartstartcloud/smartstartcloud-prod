@@ -100,10 +100,10 @@ const StudentProfile = () => {
         flexDirection="column"
         maxWidth="1000px"
       >
-        <Box display="flex" justifyContent="space-between" mb={2}>
+        <Box display="flex" flexDirection="column" justifyContent="space-between" mb={2}>
           <Card
             sx={{
-              width: "70%",
+              width: "100%",
               p: 2,
               background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
               boxShadow: 6,
@@ -331,7 +331,7 @@ const StudentProfile = () => {
             </CardContent>
           </Card>
 
-          <Box sx={{ marginLeft: "20px", width: "30%" }}>
+          <Box sx={{marginTop: 2, width: "100%" }}>
             <Typography
               variant="h4"
               color={colors.grey[100]}
@@ -341,7 +341,7 @@ const StudentProfile = () => {
             </Typography>
             <Grid container spacing={2}>
               {degreeModules.map((module) => (
-                <Grid item xs={12} key={module._id}>
+                <Grid item xs={12} md={3} key={module._id}>
                   <Card
                     onClick={() =>
                       handleModuleClick(module._id, module.moduleName)
