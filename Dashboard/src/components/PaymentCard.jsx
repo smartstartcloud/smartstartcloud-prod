@@ -76,7 +76,7 @@ const PaymentCard = ({id='', name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {type === "degree" ? "Degree Name" : "Year Name"}
+              {type === "degree" ? "Degree Name" : "For Payment Year"}
             </Typography>
             <Typography variant="subtitle1" component="div">
               {name}
@@ -112,10 +112,10 @@ const PaymentCard = ({id='', name, data, type}) => {
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {"Collected Amount"}
+              {"Collected Amount (Approved Amount)"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {totalPaidPriceTemp}
+              {totalApprovedPriceTemp}
             </Typography>
           </Box>
           <Box
@@ -149,7 +149,7 @@ const PaymentCard = ({id='', name, data, type}) => {
               {"Percentage Collected"}
             </Typography>
             <Typography variant="subtitle1" component="div">
-              {((totalPaidPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
+              {((totalApprovedPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
             </Typography>
           </Box>
         </CardContent>

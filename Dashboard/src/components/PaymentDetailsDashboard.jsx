@@ -2,9 +2,10 @@ import { Box, Button, Grid, Paper, Typography, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../theme';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { format } from "date-fns";
 
 const PaymentDetailsDashboard = ({data, type}) => {
-  const {dataName, dataDetails} = data;
+  const {dataYear, dataMonth, dataDetails} = data;  
   
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
@@ -73,7 +74,9 @@ const PaymentDetailsDashboard = ({data, type}) => {
     { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
     { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
     { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
-    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
+    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5, 
+      valueGetter: (params) => format(params, "dd/MM/yyyy") 
+    },
     {
       field: "paymentVerificationStatus",
       headerName: "Verification Status",
@@ -108,10 +111,11 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 component="div"
                 sx={{ fontWeight: "bold" }}
               >
-                {type === "degree" ? "Degree Name" : "Year Name"}
+                {/* {type === "degree" ? "Degree Name" : "Year Name"} */}
+                Timeline
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {dataName}
+                {dataMonth} {dataYear}
               </Typography>
             </Box>
           </Grid>
