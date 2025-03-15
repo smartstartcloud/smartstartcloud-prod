@@ -73,9 +73,7 @@ const StudentProfile = () => {
         }
     };
 
-    useEffect(() => {
-        console.log(student);
-        
+    useEffect(() => {        
         if (degreeModules.length > 0 && student) {
             handleModuleClick(degreeModules[0]._id, degreeModules[0].moduleName);
         }
@@ -341,7 +339,7 @@ const StudentProfile = () => {
             </Typography>
             <Grid container spacing={2}>
               {degreeModules.map((module) => (
-                <Grid item xs={12} md={3} key={module._id}>
+                <Grid item xs={12} md={4} key={module._id}>
                   <Card
                     onClick={() =>
                       handleModuleClick(module._id, module.moduleName)
