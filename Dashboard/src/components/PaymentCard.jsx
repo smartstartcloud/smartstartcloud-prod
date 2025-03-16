@@ -6,6 +6,13 @@ import {
   CardContent,
   Typography,
   useTheme,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper
 } from "@mui/material";
 import { tokens } from '../theme';
 
@@ -43,7 +50,7 @@ const PaymentCard = ({id='', name, data, type}) => {
       )
     : 0;
 
-    const totalPriceDueTemp = Array.isArray(data)
+  const totalPriceDueTemp = Array.isArray(data)
     ? data.reduce((sum, item) => sum + Number(item.totalPaymentDue || 0), 0)
     : 0;   
     
@@ -51,7 +58,6 @@ const PaymentCard = ({id='', name, data, type}) => {
     <Card
       sx={{
         minWidth: "100%",
-        // background: `linear-gradient(210deg, ${colors.blueAccent[500]}, ${colors.blueAccent[700]})`,
         background: colors.blueAccent[800],
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
         borderRadius: "10px",
@@ -65,17 +71,8 @@ const PaymentCard = ({id='', name, data, type}) => {
     >
       <CardActionArea>
         <CardContent>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="baseline"
-            mb={2}
-          >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
+          <Box display="flex" justifyContent="space-between" alignItems="baseline" mb={2}>
+            <Typography variant="h5" component="div" sx={{ fontWeight: "bold" }}>
               {type === "degree" ? "Degree Name" : "For Payment Year"}
             </Typography>
             <Typography variant="subtitle1" component="div">
@@ -83,17 +80,8 @@ const PaymentCard = ({id='', name, data, type}) => {
             </Typography>
           </Box>
           {type === "degree" && (
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="baseline"
-              mb={2}
-            >
-              <Typography
-                variant="h5"
-                component="div"
-                sx={{ fontWeight: "bold" }}
-              >
+            <Box display="flex" justifyContent="space-between" alignItems="baseline" mb={2}>
+              <Typography variant="h5" component="div" sx={{ fontWeight: "bold" }}>
                 Degree ID
               </Typography>
               <Typography variant="subtitle1" component="div">
@@ -101,57 +89,42 @@ const PaymentCard = ({id='', name, data, type}) => {
               </Typography>
             </Box>
           )}
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="baseline"
-            mb={2}
-          >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
-              {"Collected Amount (Approved Amount)"}
-            </Typography>
-            <Typography variant="subtitle1" component="div">
-              {totalApprovedPriceTemp}
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="baseline"
-            mb={2}
-          >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
-              {"Due Amount"}
-            </Typography>
-            <Typography variant="subtitle1" component="div">
-              {totalPriceDueTemp}
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="baseline"
-            mb={2}
-          >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
-              {"Percentage Collected"}
-            </Typography>
-            <Typography variant="subtitle1" component="div">
-              {((totalApprovedPriceTemp/totalModulePriceTemp)*100).toFixed(2)} %
-            </Typography>
-          </Box>
+          <TableContainer component={Paper} sx={{ background: colors.blueAccent[800], color: colors.grey[50] }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "bold", color: colors.grey[50] }}>Description</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: "bold", color: colors.grey[50] }}>Amount</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
+                    Total Approved Amount
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.greenAccent[300] }}>
+                    {totalApprovedPriceTemp}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
+                    Due Amount
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.redAccent[400] }}>
+                    {totalPriceDueTemp}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
+                    Percentage Collected
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.blueAccent[100] }}>
+                    {((totalApprovedPriceTemp / totalModulePriceTemp) * 100).toFixed(2)} %
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </CardContent>
       </CardActionArea>
     </Card>
