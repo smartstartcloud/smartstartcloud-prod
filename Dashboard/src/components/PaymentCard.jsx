@@ -89,7 +89,7 @@ const PaymentCard = ({id='', name, data, type}) => {
               </Typography>
             </Box>
           )}
-          <TableContainer component={Paper} sx={{ background: colors.blueAccent[800], color: colors.grey[50] }}>
+          <TableContainer component={Paper} sx={{ background: colors.grey[900], color: colors.grey[50] }}>
             <Table>
               <TableHead>
                 <TableRow>

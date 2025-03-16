@@ -4,7 +4,7 @@ import { tokens } from '../theme';
 import { DataGrid } from "@mui/x-data-grid";
 
 const PaymentDetailsDashboard = ({data, type}) => {
-  const {dataYear, dataMonth, dataDetails} = data;  
+  const {dataYear, dataMonth, dataDetails} = data;
   
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
@@ -13,34 +13,33 @@ const PaymentDetailsDashboard = ({data, type}) => {
 
   useEffect(() => {
     if (dataDetails && dataDetails.length > 0) {            
-      const degreeMap = {};
-
+      setTableData([]); 
       dataDetails.forEach((item) => {
-        const degreeID = item.degreeID;
-        const degreeName = item.degreeName;
-        const approvedAmount = item.paymentVerificationStatus === "approved" ? Number(item.paidAmount || 0) : 0;
-
-        if (!degreeMap[degreeID]) {
-          degreeMap[degreeID] = {
-            degreeID,
-            degreeName,
-            approvedAmount: 0,
-          };
-        }
-        
-        degreeMap[degreeID].approvedAmount += approvedAmount;
-      });
-
-      setTableData(Object.values(degreeMap));
+        const tempObj = {
+          id: item._id,
+          financeID: item.financeID,
+          degreeID: item.degreeID,
+          degreeName: item.degreeName,
+          studentName: item.studentID?.studentName,
+          moduleName: item.moduleName,
+          modulePrice: item.modulePrice ? item.modulePrice : 0,
+          paidAmount: item.paidAmount ? item.paidAmount : 0,
+          paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
+          paymentToDate: item.totalPaymentToDate,
+          paymentVerificationStatus: item.paymentVerificationStatus,
+        };        
+        setTableData((prev) => [...prev, tempObj]);
+      })
     } else {
       setTableData([]);
     }
   }, [dataDetails]);
-  
+ 
   const columns = [
+    { field: "financeID", headerName: "Payment ID", flex: 0.5 },
     { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
     { field: "degreeName", headerName: "Degree Name", flex: 1 },
-    { field: "approvedAmount", headerName: "Approved Amount", flex: 0.5 },
+    { field: "paidAmount", headerName: "Approved Amount", flex: 0.5 },
   ];
   
   return (
@@ -88,7 +87,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
                 {/* Total due amount calculation can be added here if needed */}
-              {/* </Typography>
+          {/* </Typography>
             </Box>
           </Grid> */}
 
@@ -103,7 +102,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
                 {/* Percentage calculation can be added here if needed */}
-              {/* </Typography>
+          {/* </Typography>
             </Box>
           </Grid> */}
         </Grid>
@@ -137,7 +136,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 }}
                 rows={tableData}
                 columns={columns}
-                getRowId={(row) => row.degreeID}
+                getRowId={(row) => row.financeID}
                 initialState={{
                   pagination: {
                     paginationModel: {
