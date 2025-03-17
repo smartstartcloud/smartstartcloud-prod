@@ -8,6 +8,7 @@ import AssignmentList from './AssignmentList';
 import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import { enumToString } from '../../utils/functions';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -43,6 +44,7 @@ const StudentProfile = () => {
     const [selectedModuleName, setSelectedModuleName] = useState(degreeModules[0]?.moduleName || "");
     const [assignmentList, setAssignmentList] = useState([]);
     const [moduleStudentID, setModuleStudentID] = useState('');
+    const [moduleStudentPaymentPlan, setModuleStudentPaymentPlan] = useState('');
     const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
@@ -60,6 +62,9 @@ const StudentProfile = () => {
         try {
             const response = await fetchAssignmentList(moduleId, _id);  
             setModuleStudentID(response.moduleStudentID);
+            if (response.modulePaymentPlan) {
+              setModuleStudentPaymentPlan(response.modulePaymentPlan);
+            }
             if (Array.isArray(response.data)) {
                 setAssignmentList([{ moduleName, moduleId }, ...response.data]);                
             } else {
@@ -252,6 +257,21 @@ const StudentProfile = () => {
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
                         {campusLocation}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Payment Plan:
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6" color={colors.grey[100]}>
+                        {enumToString("paymentPlan", moduleStudentPaymentPlan)}
                       </Typography>
                     </Grid>
                   </Grid>
