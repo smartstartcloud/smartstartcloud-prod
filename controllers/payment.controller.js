@@ -358,15 +358,25 @@ export const getPaymentDetails = async (req, res) => {
 
 export const getPaymentDetailsAll = async (req, res) => {
   try {
+    const { verificationStatus } = req.query; // Catch the query parameter
+    let query = {}; // Default to fetching all records
+
+    if (verificationStatus && verificationStatus !== "all") {
+      query.paymentVerificationStatus = verificationStatus;
+    }
+
+    // Ensure paymentToDate is not empty, not null, and not blank
+    query.totalPaymentToDate = { $ne: null, $ne: "", $exists: true };
+
     // Find all records in ModuleStudentFinance where studentID and moduleID match
     // 1️⃣ Fetch finance data with student details
-    const finances = await ModuleStudentFinance.find()
+    const finances = await ModuleStudentFinance.find(query)
       .populate("studentID", "studentName studentID")
       .lean(); // Convert Mongoose documents to plain JS objects
 
     // 2️⃣ Extract unique userIDs
     const userIds = finances.map((finance) => finance.userID);
-    const fileIds = finances.flatMap((finance) => finance.fileList || []);    
+    const fileIds = finances.flatMap((finance) => finance.fileList || []);
 
     // 3️⃣ Fetch user details from the separate `userDB`
     const users = await User.find({ _id: { $in: userIds } })
@@ -375,7 +385,7 @@ export const getPaymentDetailsAll = async (req, res) => {
 
     const files = await File.find({ _id: { $in: fileIds } })
       .select("fileName fileType fileUrl updatedAt")
-      .lean();    
+      .lean();
 
     // 4️⃣ Create a map for quick lookup
     const userMap = users.reduce((map, user) => {
@@ -386,7 +396,7 @@ export const getPaymentDetailsAll = async (req, res) => {
     const fileMap = files.reduce((map, file) => {
       map[file._id.toString()] = file;
       return map;
-    }, {});    
+    }, {});
 
     // 5️⃣ Attach user details to the finance records
     const enrichedFinances = finances.map((finance) => ({

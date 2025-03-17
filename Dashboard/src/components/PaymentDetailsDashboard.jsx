@@ -1,10 +1,10 @@
 import { Box, Button, Grid, Paper, Typography, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../theme';
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
 const PaymentDetailsDashboard = ({data, type}) => {
-  const {dataName, dataDetails} = data;
+  const {dataYear, dataMonth, dataDetails} = data;
   
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
@@ -13,11 +13,13 @@ const PaymentDetailsDashboard = ({data, type}) => {
 
   useEffect(() => {
     if (dataDetails && dataDetails.length > 0) {            
-      setTableData([]);
+      setTableData([]); 
       dataDetails.forEach((item) => {
         const tempObj = {
           id: item._id,
-          studentID: item.studentID?.studentID,
+          financeID: item.financeID,
+          degreeID: item.degreeID,
+          degreeName: item.degreeName,
           studentName: item.studentID?.studentName,
           moduleName: item.moduleName,
           modulePrice: item.modulePrice ? item.modulePrice : 0,
@@ -25,98 +27,41 @@ const PaymentDetailsDashboard = ({data, type}) => {
           paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
           paymentToDate: item.totalPaymentToDate,
           paymentVerificationStatus: item.paymentVerificationStatus,
-        };
+        };        
         setTableData((prev) => [...prev, tempObj]);
-      });
+      })
     } else {
       setTableData([]);
     }
   }, [dataDetails]);
-  
-  // Check if data is defined and is an array
-  const totalModulePriceTemp = Array.isArray(dataDetails)
-    ? dataDetails.reduce((sum, item) => sum + Number(item.modulePrice || 0), 0)
-    : 0;
-
-  const totalPaidPriceTemp = Array.isArray(dataDetails)
-    ? dataDetails.reduce((sum, item) => sum + Number(item.paidAmount || 0), 0)
-    : 0;
-
-  const totalApprovedPriceTemp = Array.isArray(dataDetails)
-    ? dataDetails.reduce(
-        (sum, item) =>
-          item.paymentVerificationStatus === "approved"
-            ? sum + Number(item.paidAmount || 0)
-            : sum,
-        0
-      )
-    : 0;
-
-  const totalWaitingApprovalPriceTemp = Array.isArray(dataDetails)
-    ? dataDetails.reduce(
-        (sum, item) =>
-          item.paymentVerificationStatus === "awaiting approval"
-            ? sum + Number(item.paidAmount || 0)
-            : sum,
-        0
-      )
-    : 0;
-
-    const totalPriceDueTemp = Array.isArray(dataDetails)
-    ? dataDetails.reduce((sum, item) => sum + Number(item.totalPaymentDue || 0), 0)
-    : 0;    
-
+ 
   const columns = [
-    { field: "studentID", headerName: "sID", flex: 0.25 },
-    { field: "studentName", headerName: "Student Name", flex: 0.5 },
-    { field: "moduleName", headerName: "Module Name", flex: 0.5 },
-    { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
-    { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
-    { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
-    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
-    {
-      field: "paymentVerificationStatus",
-      headerName: "Verification Status",
-      flex: 0.75,
-      renderCell: (params) => (
-        <Button
-          variant={
-            params.row.paymentVerificationStatus !== "approved"
-              ? "outlined"
-              : "contained"
-          }
-          color={
-            params.row.paymentVerificationStatus !== "approved"
-              ? "error"
-              : "success"
-          }
-        >
-          {params.row.paymentVerificationStatus}
-        </Button>
-      ),
-    },
+    { field: "financeID", headerName: "Payment ID", flex: 0.5 },
+    { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
+    { field: "degreeName", headerName: "Degree Name", flex: 1 },
+    { field: "paidAmount", headerName: "Approved Amount", flex: 0.5 },
   ];
   
   return (
     <Paper elevation={3} sx={{ height: "100%", overflow: "auto" }}>
       <Box p={2}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={3}>
-            <Box display="flex" justifyContent="flex-start">
+          <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+            <Box display="flex" justifyContent="center">
               <Typography
                 variant="h5"
                 component="div"
-                sx={{ fontWeight: "bold" }}
+                sx={{ fontWeight: "bold", textAlign: "center" }}
               >
-                {type === "degree" ? "Degree Name" : "Year Name"}
+                Timeline
               </Typography>
-              <Typography variant="subtitle1" component="div" ml={2}>
-                {dataName}
+              <Typography variant="h6" component="div" ml={2}>
+                {dataMonth} {dataYear}
               </Typography>
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
             <Box display="flex" justifyContent="flex-start">
               <Typography
                 variant="h5"
@@ -126,12 +71,12 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 {"Collected Amount"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {totalPaidPriceTemp}
+                {tableData.reduce((sum, item) => sum + item.approvedAmount, 0)}
               </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
             <Box display="flex" justifyContent="flex-start">
               <Typography
                 variant="h5"
@@ -141,12 +86,12 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 {"Total Due Amount"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {totalPriceDueTemp}
-              </Typography>
+                {/* Total due amount calculation can be added here if needed */}
+          {/* </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
             <Box display="flex" justifyContent="flex-start">
               <Typography
                 variant="h5"
@@ -156,11 +101,10 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 {"Percentage Collected"}
               </Typography>
               <Typography variant="subtitle1" component="div" ml={2}>
-                {((totalPaidPriceTemp / totalModulePriceTemp) * 100).toFixed(2)}{" "}
-                %
-              </Typography>
+                {/* Percentage calculation can be added here if needed */}
+          {/* </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -171,6 +115,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
                     backgroundColor: colors.blueAccent[200],
                     color: colors.black,
                     fontSize: "16px",
+                    fontWeight: "bold",
                   },
                   "& .MuiDataGrid-row": {
                     backgroundColor: colors.grey[50],
@@ -185,10 +130,13 @@ const PaymentDetailsDashboard = ({data, type}) => {
                   "& .MuiDataGrid-cell": {
                     fontSize: "15px", // Increase cell font size
                   },
+                  "& .MuiDataGrid-cell[data-field='approvedAmount']": {
+                    fontWeight: "bold",
+                  },
                 }}
                 rows={tableData}
                 columns={columns}
-                getRowId={(row) => row.id}
+                getRowId={(row) => row.financeID}
                 initialState={{
                   pagination: {
                     paginationModel: {

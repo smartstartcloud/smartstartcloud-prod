@@ -3,6 +3,7 @@ import Module from '../models/module.models.js';
 import mongoose from 'mongoose';
 import { createNewModuleStudentAssignment, newAssignmentDynamic } from './assignment.controller.js';
 import Degree from '../models/degree.models.js';
+import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 
 // New helper function to add the assignment to the Module model
 export const addNewModule = async(moduleList, studentList, degreeDetailsForPayment, parentLink) =>  {
@@ -74,7 +75,18 @@ export const getAssignment = async (req, res) => {
     }).populate("assignments");
 
     if (moduleAssignment) {
-      res.status(200).json(moduleAssignment);
+      const paymentInfo = await ModuleStudentFinance.findOne({
+        moduleAssignmentID: moduleAssignment._id,
+      }).select("paymentPlan");
+      if (paymentInfo) {
+        moduleAssignment.paymentPlan = paymentInfo.paymentPlan;
+      }
+      // Convert moduleAssignment to a plain object before modifying
+      const assignmentData = moduleAssignment.toObject();
+      if (paymentInfo) {
+        assignmentData.paymentPlan = paymentInfo.paymentPlan;
+      }
+      res.status(200).json(assignmentData);
     } else {
       res.status(404).json({ error: "No module found for the provided student and module" });
     }

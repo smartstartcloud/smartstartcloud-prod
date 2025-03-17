@@ -28,6 +28,7 @@ import { enumToString, formatDate } from "../utils/functions";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { useAuthContext } from "../context/AuthContext";
 import { tokens } from "../theme";
+import FileUpload from '../components/FileUpload';
 
 const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
@@ -51,20 +52,23 @@ const FileView = ({
   const { downloadFiles } = useUploadFiles();
   const [data, setData] = useState({})
   const [note, setNote] = useState("");
+  const [referenceIdToPass, setreferenceIdToPass] = useState("");
+  const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
 
-  useEffect(() => {    
-    if (fileList) {
+  useEffect(() => {
+    console.log(fileList);
+    
+    if (fileList) {      
       setFiles(fileList);
     }
     if (dataToSend) {
+      setreferenceIdToPass(dataToSend.moduleAssignmentID);
       setData(dataToSend);
     }
   }, [fileList, dataToSend]);
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
-      
+    if (data) {      
     }
   }, [data]);
 
@@ -307,10 +311,27 @@ const FileView = ({
                 >
                   Cancel
                 </Button>
+                <Button
+                  variant={"contained"}
+                  color={"secondary"}
+                  sx={{ minWidth: "100px" }}
+                  onClick={() => setFileUploadModalOpen(true)}
+                >
+                  Upload File
+                </Button>
               </Box>
             </Box>
           </CardContent>
         </Card>
+        {fileUploadModalOpen && (
+          <FileUpload
+            setOpen={setFileUploadModalOpen}
+            open={fileUploadModalOpen}
+            referenceID={referenceIdToPass}
+            referenceCollection={"ModuleAssignment"}
+            isPayment={true}
+          />
+        )}
       </Container>
     </Modal>
   );

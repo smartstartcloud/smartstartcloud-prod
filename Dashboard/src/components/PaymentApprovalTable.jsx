@@ -15,7 +15,7 @@ const PaymentApprovalTable = ({columns, dataId, list, listName}) => {
     const colors = tokens(theme.palette.mode);
     
     return (
-      <Box sx={{ width: "100%", pt: 1, pb: 3, mx: "auto" }}>
+      <Box sx={{ width: "97%", pt: 1, pb: 3 }}>
         <Box mb={2}>
           <Typography variant="h3">{listName}</Typography>
         </Box>

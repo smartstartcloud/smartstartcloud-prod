@@ -3,104 +3,129 @@ import React, { useEffect, useState } from "react";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails.js";
 import { tokens } from "../../theme.js";
 import PaymentCard from "../PaymentCard.jsx";
-import { formatDateString, yearFilter } from "../../utils/yearFilter.js";
+import { formatDateString, formatDateStringYearOnly, yearFilter } from "../../utils/yearFilter.js";
 import BarChart from "../../components/BarChart.jsx";
 import PaymentDetailsDashboard from "../PaymentDetailsDashboard.jsx";
 import { sortByProperty } from "../../utils/functions.js";
+import { format } from "date-fns";
+import { monthNamesFull } from "../../data/globalStaticData.js";
+
 
 
 const SuperAdminCharts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [chartStatus, setChartStatus] = useState("degree");
+  const [chartStatus, setChartStatus] = useState("year");
   const [groupedData, setGroupedData] = useState([]);
   const [filteredYearList, setFilteredYearList] = useState([]);
+  const [clickedPaymentList, setClickedPaymentList] = useState([]);
+  const [filteredClickedPaymentList, setfilteredClickedPaymentList] = useState({});
   const [chartData, setChartData] = useState([]);
   const [paymentDetailsData, setPaymentDetailsData] = useState({});
-  const { paymentData, error, loading } = useAllGetPaymentDetails();
+  const { paymentData, error, loading } = useAllGetPaymentDetails("approved");
 
+  const [openSelectedIntake, setOpenSelectedIntake] = useState(false);
   const [selectedIntake, setSelectedIntake] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");  
- 
-  useEffect(() => {        
+  const [selectedYear, setSelectedYear] = useState("");
+
+  useEffect(() => {
     if (paymentData && chartStatus) {
-      dataFilter(paymentData, chartStatus);      
+      dataFilter(paymentData, chartStatus);
     }
   }, [paymentData, chartStatus]);
 
   const dataFilter = (paymentData, chartStatus) => {
-    if (chartStatus === "degree") {
-      const groupedData = paymentData.reduce((acc, item) => {
-        const { degreeID, degreeName, degreeYear } = item;
-
-        // Check if the degreeID group exists
-        let group = acc.find((group) => group.degreeID === degreeID);
-        if (!group) {
-          // If not, create a new group
-          group = {
-            degreeID,
-            dataName : degreeName,
-            dataYear: degreeYear,
-            data: [],
-          };
-          acc.push(group);
-        }
-
-        // Add the current item to the degreeData array
-        group.data.push(item);
-
-        return acc;
-      }, []);
-      setGroupedData(groupedData);      
-      setChartData([]);
-      // barChartData(groupedData);
-    }
-    // if (chartStatus === "year") {    
+    // if (chartStatus === "degree") {
     //   const groupedData = paymentData.reduce((acc, item) => {
-    //     const { degreeYear } = item;
-    //     // Check if the degreeYear group exists
-    //     let group = acc.find((group) => group.dataName === degreeYear);        
-    //     if (!group) {          
+    //     const { degreeID, degreeName, degreeYear } = item;
+
+    //     // Check if the degreeID group exists
+    //     let group = acc.find((group) => group.degreeID === degreeID);
+    //     if (!group) {
     //       // If not, create a new group
     //       group = {
-    //         dataName: degreeYear,
+    //         degreeID,
+    //         dataName : degreeName,
+    //         dataYear: degreeYear,
     //         data: [],
     //       };
     //       acc.push(group);
     //     }
 
-    //     // Add the current item to the yearData array
+    //     // Add the current item to the degreeData array
     //     group.data.push(item);
+
     //     return acc;
-    //   }, []);      
+    //   }, []);
     //   setGroupedData(groupedData);
-    //   setChartData([])
-    //   barChartData(groupedData);
+    //   setChartData([]);
+    //   // barChartData(groupedData);
     // }
+    if (chartStatus === "year") {
+      const groupedData = paymentData.reduce((acc, item) => {
+        const { degreeYear, totalPaymentToDate } = item;
+        const paymentYear = format(totalPaymentToDate, "yyyy");
+
+        // Check if the degreeYear group exists
+        let group = acc.find((group) => group.dataYear === paymentYear);
+        if (!group) {
+          // If not, create a new group
+          group = {
+            dataName: paymentYear,
+            dataYear: paymentYear,
+            data: [],
+          };
+          acc.push(group);
+        }
+
+        // Add the current item to the yearData array
+        group.data.push(item);
+
+        return acc;
+      }, []);
+      setGroupedData(groupedData);
+      setChartData([]);
+      // barChartData(groupedData);
+    }
   };
 
-  
   const yearList = groupedData || [];
+
   const handleIntakeChange = (event) => setSelectedIntake(event.target.value);
   const handleYearChange = (event) => setSelectedYear(event.target.value);
 
   const currentYear = new Date().getFullYear();
   const lastTenYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
-  
+
   useEffect(() => {
     let filtered = yearList.filter((data) => {
-      const intakeMatch = selectedIntake ? data.dataYear.startsWith(selectedIntake.toString().toLowerCase()) : true;    
-      const yearMatch = selectedYear ? data.dataYear.endsWith(selectedYear) : true;
-      return intakeMatch && yearMatch;
+      // const intakeMatch = selectedIntake ? data.dataYear.startsWith(selectedIntake.toString().toLowerCase()) : true;
+      const yearMatch = selectedYear === data.dataYear;
+      return yearMatch;
     });
-    
-    filtered = sortByProperty(filtered, "dataYear", "dsc");
-    setFilteredYearList(filtered);
-    setPaymentDetailsData({})
-  }, [yearList, selectedIntake, selectedYear]); // Dependencies to re-run the effect
 
-  // const barChartData = (paymentData) => {        
+    // filtered = sortByProperty(filtered, "dataYear", "dsc");
+    setFilteredYearList(filtered);
+    setOpenSelectedIntake(false);
+    setClickedPaymentList([]);
+    setPaymentDetailsData({});
+    setfilteredClickedPaymentList({});
+  }, [yearList, selectedYear]); // Dependencies to re-run the effect
+
+  useEffect(() => {    
+    let filtered = clickedPaymentList.filter((data) => {      
+      const intakeMatch = selectedIntake === format(data.totalPaymentToDate, "MMMM");
+      return intakeMatch;
+    });
+    setfilteredClickedPaymentList({
+      dataYear: selectedYear,
+      dataMonth: selectedIntake,
+      dataDetails: filtered,
+    });
+  }, [selectedIntake]); // Dependencies to re-run the effect
+
+  // const barChartData = (paymentData) => {
   //   paymentData.forEach((element) => {
   //     const totalPaidPriceTemp = Array.isArray(element.data)
   //       ? element.data.reduce(
@@ -116,8 +141,9 @@ const SuperAdminCharts = () => {
   //   });
   // };
 
-  const handlePaymentCardClick = (dataName, data) => {
-    setPaymentDetailsData({ dataName, dataDetails: data });
+  const handlePaymentCardClick = (data) => {
+    setOpenSelectedIntake(true);
+    setClickedPaymentList(data)
   };
 
   if (loading) {
@@ -138,21 +164,27 @@ const SuperAdminCharts = () => {
     <Box pb={2}>
       {/* Additional */}
       <Box display="flex" gap={2} mb={3}>
-        <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
-          <InputLabel>Intake</InputLabel>
-          <Select
-            value={selectedIntake}
-            onChange={handleIntakeChange}
-            label="Intake"
+        {openSelectedIntake && (
+          <FormControl
+            variant="outlined"
+            size="small"
+            style={{ minWidth: 120 }}
           >
-            <MenuItem value="">All</MenuItem>
-            {["January", "June", "September"].map((month) => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Intake</InputLabel>
+            <Select
+              value={selectedIntake}
+              onChange={handleIntakeChange}
+              label="Intake"
+            >
+              <MenuItem value="">All</MenuItem>
+              {monthNamesFull.map((month) => (
+                <MenuItem key={month} value={month}>
+                  {month}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
 
         <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
           <InputLabel>Year</InputLabel>
@@ -166,26 +198,23 @@ const SuperAdminCharts = () => {
           </Select>
         </FormControl>
       </Box>
-      <Grid container spacing={2} mb={2}>
+      <Grid container spacing={2} mb={2} display="flex" justifyContent="center">
         {filteredYearList && filteredYearList.length > 0 ? (
-          filteredYearList.map(({ degreeID, dataName, data }, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={3}
-              key={index}
-              onClick={() => handlePaymentCardClick(dataName, data)}
-            >
-              <Box display="flex" flexDirection="column" gap={2}>
-                <PaymentCard
-                  id={degreeID}
-                  name={dataName}
-                  data={data}
-                  type={chartStatus}
-                />
-              </Box>
-            </Grid>
-          ))
+          filteredYearList.map(
+            ({ degreeID, dataName, dataYear, data }, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                key={index}
+                onClick={() => handlePaymentCardClick(data)}
+              >
+                <Box display="flex" flexDirection="column" gap={2}>
+                  <PaymentCard name={dataYear} data={data} type={chartStatus} />
+                </Box>
+              </Grid>
+            )
+          )
         ) : (
           <Grid item xs={12}>
             <Typography variant="h5">No Data</Typography>
@@ -218,12 +247,12 @@ const SuperAdminCharts = () => {
             <BarChart data={chartData} type={chartStatus} />
           </Box>
         </Grid> */}
-        <Grid item xs={12}>
+        {Object.keys(filteredClickedPaymentList).length > 0 && <Grid item xs={12}>
           <PaymentDetailsDashboard
-            data={paymentDetailsData}
+            data={filteredClickedPaymentList}
             type={chartStatus}
           />
-        </Grid>
+        </Grid>}
       </Grid>
       {/* {chartStatus === "degree" && (
         <Grid container spacing={2}>
