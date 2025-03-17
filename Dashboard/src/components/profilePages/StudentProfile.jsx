@@ -8,6 +8,7 @@ import AssignmentList from './AssignmentList';
 import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import { enumToString } from '../../utils/functions';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -43,6 +44,7 @@ const StudentProfile = () => {
     const [selectedModuleName, setSelectedModuleName] = useState(degreeModules[0]?.moduleName || "");
     const [assignmentList, setAssignmentList] = useState([]);
     const [moduleStudentID, setModuleStudentID] = useState('');
+    const [moduleStudentPaymentPlan, setModuleStudentPaymentPlan] = useState('');
     const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
@@ -60,6 +62,9 @@ const StudentProfile = () => {
         try {
             const response = await fetchAssignmentList(moduleId, _id);  
             setModuleStudentID(response.moduleStudentID);
+            if (response.modulePaymentPlan) {
+              setModuleStudentPaymentPlan(response.modulePaymentPlan);
+            }
             if (Array.isArray(response.data)) {
                 setAssignmentList([{ moduleName, moduleId }, ...response.data]);                
             } else {
@@ -73,9 +78,7 @@ const StudentProfile = () => {
         }
     };
 
-    useEffect(() => {
-        console.log(student);
-        
+    useEffect(() => {        
         if (degreeModules.length > 0 && student) {
             handleModuleClick(degreeModules[0]._id, degreeModules[0].moduleName);
         }
@@ -100,10 +103,10 @@ const StudentProfile = () => {
         flexDirection="column"
         maxWidth="1000px"
       >
-        <Box display="flex" justifyContent="space-between" mb={2}>
+        <Box display="flex" flexDirection="column" justifyContent="space-between" mb={2}>
           <Card
             sx={{
-              width: "70%",
+              width: "100%",
               p: 2,
               background: `linear-gradient(145deg, ${colors.greenAccent[700]}, ${colors.greenAccent[500]})`,
               boxShadow: 6,
@@ -256,6 +259,21 @@ const StudentProfile = () => {
                         {campusLocation}
                       </Typography>
                     </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Payment Plan:
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6" color={colors.grey[100]}>
+                        {enumToString("paymentPlan", moduleStudentPaymentPlan)}
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
@@ -331,7 +349,7 @@ const StudentProfile = () => {
             </CardContent>
           </Card>
 
-          <Box sx={{ marginLeft: "20px", width: "30%" }}>
+          <Box sx={{marginTop: 2, width: "100%" }}>
             <Typography
               variant="h4"
               color={colors.grey[100]}
@@ -341,7 +359,7 @@ const StudentProfile = () => {
             </Typography>
             <Grid container spacing={2}>
               {degreeModules.map((module) => (
-                <Grid item xs={12} key={module._id}>
+                <Grid item xs={12} md={4} key={module._id}>
                   <Card
                     onClick={() =>
                       handleModuleClick(module._id, module.moduleName)

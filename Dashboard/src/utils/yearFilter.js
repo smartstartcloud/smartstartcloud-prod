@@ -13,15 +13,23 @@ export const yearFilter = (degree) => {
 
 // convert "january_2025" to "JANUARY 2025"
 export const formatDateString = (dateString) => {    
-        // Split the input string by underscore
-        const [month, year] = dateString.split('_');
+    // Split the input string by underscore
+    const [month, year] = dateString.split('_');
 
-        // Capitalize the first letter of the month and lowercase the rest
-        const formattedMonth = month.charAt(0).toUpperCase() + month.slice(1).toLowerCase();
+    // Capitalize the first letter of the month and lowercase the rest
+    const formattedMonth = month.charAt(0).toUpperCase() + month.slice(1).toLowerCase();
 
-        // Combine the formatted month and year with a space
-        return `${formattedMonth} ${year}`;
-    }
+    // Combine the formatted month and year with a space
+    return `${formattedMonth} ${year}`;
+}
+
+// from degree_year return the year only "january_2025" to "2025"
+export const formatDateStringYearOnly = (dateString) => {    
+    // Split the input string by underscore
+    const [month, year] = dateString.split('_');
+    // Combine the formatted month and year with a space
+    return year;
+}
 
 export const degreeFilter = (degree, degreeYear) => {
     const yearName = degreeYear

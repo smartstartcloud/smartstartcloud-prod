@@ -40,7 +40,7 @@ const PaymentApproval = () => {
   const dataId = location.state?.dataId || null
   
   useEffect(() => {    
-    if (paymentData && paymentData.length > 0) {     
+    if (paymentData && paymentData.length > 0) {           
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -50,6 +50,7 @@ const PaymentApproval = () => {
       paymentData.forEach((item) => {
         const tempObj = {
           id: item._id,
+          moduleAssignmentID: item.moduleAssignmentID,
           financeID: item.financeID,
           studentID: item.studentID?.studentID,
           studentName: item.studentID?.studentName,
@@ -87,7 +88,7 @@ const PaymentApproval = () => {
   }, [paymentData]);
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  const handleViewFile = (value) => {
+  const handleViewFile = (value) => {    
     setFileViewModalOpen(true);
     setFilesToSend(value.files);
     setDataToSend(value);
@@ -147,8 +148,6 @@ const PaymentApproval = () => {
 
   };
 
-
-
   const columns = [
     { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
@@ -184,6 +183,13 @@ const PaymentApproval = () => {
       flex: 0.5,
       renderCell: (params) => (
         <Button
+          sx={{
+            fontSize: { xs: 10, lg: 12 },
+            minWidth: "auto", // Prevents it from being too wide
+            maxWidth: "100%", // Ensures it doesn't exceed the column
+            // whiteSpace: "nowrap", // Prevents text from wrapping
+            overflow: "hidden", // Hides overflow if necessary
+          }}
           variant={
             params.row.paymentVerificationStatus === "approved" ||
             params.row.paymentVerificationStatus === "rejected"
@@ -200,7 +206,7 @@ const PaymentApproval = () => {
             handleViewFile(params.row);
           }}
         >
-          View File
+          View
         </Button>
       ),
     },
@@ -221,7 +227,12 @@ const PaymentApproval = () => {
     { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
     { field: "paidAmount", headerName: "Paid Amount", flex: 0.5 },
     { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
-    { field: "paymentToDate", headerName: "Payment To Date", flex: 0.5 },
+    {
+      field: "paymentToDate",
+      headerName: "Payment To Date",
+      flex: 0.5,
+      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+    },
     {
       field: "paymentMethod",
       headerName: "Payment Method",
@@ -237,6 +248,13 @@ const PaymentApproval = () => {
       flex: 0.5,
       renderCell: (params) => (
         <Button
+          sx={{
+            fontSize: { xs: 10, lg: 12 },
+            minWidth: "auto", // Prevents it from being too wide
+            maxWidth: "100%", // Ensures it doesn't exceed the column
+            // whiteSpace: "nowrap", // Prevents text from wrapping
+            overflow: "hidden", // Hides overflow if necessary
+          }}
           variant={
             params.row.paymentVerificationStatus === "approved" ||
             params.row.paymentVerificationStatus === "rejected"
@@ -253,7 +271,7 @@ const PaymentApproval = () => {
             handleViewFile(params.row);
           }}
         >
-          View File
+          View
         </Button>
       ),
     },
