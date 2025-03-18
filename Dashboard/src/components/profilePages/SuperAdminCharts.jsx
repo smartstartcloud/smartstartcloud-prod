@@ -18,6 +18,7 @@ const SuperAdminCharts = () => {
 
   const [chartStatus, setChartStatus] = useState("year");
   const [groupedData, setGroupedData] = useState([]);
+  const [initialView, setInitialView] = useState(true);
   const [filteredYearList, setFilteredYearList] = useState([]);
   const [clickedPaymentList, setClickedPaymentList] = useState([]);
   const [filteredClickedPaymentList, setfilteredClickedPaymentList] = useState({});
@@ -28,6 +29,22 @@ const SuperAdminCharts = () => {
   const [openSelectedIntake, setOpenSelectedIntake] = useState(false);
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+
+  const dateToday = new Date();
+  const options = { month: "long", year: "numeric" };
+  const formattedDate = dateToday.toLocaleDateString("en-GB", options);
+
+  useEffect(() => {
+    if (formattedDate && initialView) {
+      const [month, year] = formattedDate.split(" ");
+      setSelectedYear(year);
+      setSelectedIntake(month);
+      if (filteredYearList.length > 0) {
+        handlePaymentCardClick(filteredYearList[0].data);
+      }
+    }
+  }, [formattedDate, filteredYearList]);
+  
 
   useEffect(() => {
     if (paymentData && chartStatus) {
@@ -92,8 +109,16 @@ const SuperAdminCharts = () => {
 
   const yearList = groupedData || [];
 
-  const handleIntakeChange = (event) => setSelectedIntake(event.target.value);
-  const handleYearChange = (event) => setSelectedYear(event.target.value);
+  const handleIntakeChange = (event) => {
+    setInitialView(false);
+    setSelectedIntake(event.target.value);
+  };
+
+  const handleYearChange = (event) => {
+    setInitialView(false);
+    setSelectedIntake("");
+    setSelectedYear(event.target.value);
+  };
 
   const currentYear = new Date().getFullYear();
   const lastTenYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
@@ -104,8 +129,8 @@ const SuperAdminCharts = () => {
       const yearMatch = selectedYear === data.dataYear;
       return yearMatch;
     });
-
     // filtered = sortByProperty(filtered, "dataYear", "dsc");
+    
     setFilteredYearList(filtered);
     setOpenSelectedIntake(false);
     setClickedPaymentList([]);
@@ -114,16 +139,17 @@ const SuperAdminCharts = () => {
   }, [yearList, selectedYear]); // Dependencies to re-run the effect
 
   useEffect(() => {    
-    let filtered = clickedPaymentList.filter((data) => {      
-      const intakeMatch = selectedIntake === format(data.totalPaymentToDate, "MMMM");
+    let filtered = clickedPaymentList.filter((data) => {
+      const intakeMatch =
+        selectedIntake === format(data.totalPaymentToDate, "MMMM");
       return intakeMatch;
-    });
+    });    
     setfilteredClickedPaymentList({
       dataYear: selectedYear,
       dataMonth: selectedIntake,
       dataDetails: filtered,
     });
-  }, [selectedIntake]); // Dependencies to re-run the effect
+  }, [selectedIntake, clickedPaymentList]); // Dependencies to re-run the effect
 
   // const barChartData = (paymentData) => {
   //   paymentData.forEach((element) => {
@@ -141,7 +167,7 @@ const SuperAdminCharts = () => {
   //   });
   // };
 
-  const handlePaymentCardClick = (data) => {
+  const handlePaymentCardClick = (data) => {    
     setOpenSelectedIntake(true);
     setClickedPaymentList(data)
   };
@@ -247,7 +273,7 @@ const SuperAdminCharts = () => {
             <BarChart data={chartData} type={chartStatus} />
           </Box>
         </Grid> */}
-        {Object.keys(filteredClickedPaymentList).length > 0 && <Grid item xs={12}>
+        {( selectedIntake && Object.keys(filteredClickedPaymentList).length > 0) && <Grid item xs={12}>
           <PaymentDetailsDashboard
             data={filteredClickedPaymentList}
             type={chartStatus}

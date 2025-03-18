@@ -4,8 +4,7 @@ import { tokens } from '../theme';
 import { DataGrid } from "@mui/x-data-grid";
 
 const PaymentDetailsDashboard = ({data, type}) => {
-  const {dataYear, dataMonth, dataDetails} = data;
-  
+  const {dataYear, dataMonth, dataDetails} = data;  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
 
