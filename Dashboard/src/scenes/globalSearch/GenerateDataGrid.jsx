@@ -1,19 +1,53 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
+import { formatDateString } from "../../utils/yearFilter.js";
+import { enumToString, formatDate } from "../../utils/functions.js";
+import { format } from "date-fns";
 
 const GenerateDataGrid = ({title, data}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     // Helper function to generate columns dynamically based on data keys
     const generateColumns = (dataArray) => {
-        if (!dataArray || dataArray.length === 0) return [];
-        const keys = Object.keys(dataArray[0]);
-        return keys.map((key) => ({
+      if (!dataArray || dataArray.length === 0) return [];
+      const excludeArray = [
+        "_id",
+        "metadata",
+        "assignmentNature",
+        "referenceCollection",
+        "fileCategory",
+      ]; // Add keys you want to exclude
+      const yearFormatKey = ["degreeYear"];
+      const dateFormatKey = ["totalPaymentToDate", "assignmentDeadline"];
+      const enumToStringKey = [
+        "assignmentProgress",
+        "paymentPlan",
+        "paymentMethod",
+        "paymentVerificationStatus",
+        "paymentStatus",
+      ];
+      const keys = Object.keys(dataArray[0]).filter(
+        (key) => !excludeArray.includes(key)
+      );
+      keys.forEach((key) => {
+        if (yearFormatKey.includes(key)){            
+        }
+      })
+      return keys.map((key) => ({
         field: key,
         headerName: key.charAt(0).toUpperCase() + key.slice(1),
         flex: 1,
-        }));
+        ...(yearFormatKey.includes(key) && {
+          valueGetter: (params) => formatDateString(params),
+        }), // Apply valueGetter conditionally
+        ...(dateFormatKey.includes(key) && {
+          valueGetter: (params) => formatDate(params),
+        }), // Apply valueGetter conditionally
+        ...(enumToStringKey.includes(key) && {
+          valueGetter: (params) => enumToString(key, params),
+        }), // Apply valueGetter conditionally
+      }));
     };
 
     if (!data || data.length === 0) return null;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useApi from "./useApi"; // Adjust the import as necessary
 
-const useGlobalSearch = (searchQuery) => {
+const useGlobalSearch = (searchQuery) => {  
   const api = useApi();
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
