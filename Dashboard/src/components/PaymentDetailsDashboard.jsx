@@ -193,7 +193,8 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 }}
                 pageSizeOptions={[5, 10, 20]}
                 autoHeight
-                onRowClick={handleRowClick}
+                disableSelectionOnClick // Prevents row selection
+                // onRowClick={handleRowClick}
               />
             </Box>
           </Grid>
