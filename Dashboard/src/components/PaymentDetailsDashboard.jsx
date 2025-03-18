@@ -1,17 +1,20 @@
 import { Box, Button, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../theme';
 import { DataGrid } from "@mui/x-data-grid";
+import { format } from "date-fns";
 
 const PaymentDetailsDashboard = ({data, type}) => {
   const {dataYear, dataMonth, dataDetails} = data;  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);  
+  const navigate = useNavigate();
 
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (dataDetails && dataDetails.length > 0) {            
+    if (dataDetails && dataDetails.length > 0) {                        
       setTableData([]); 
       dataDetails.forEach((item) => {
         const tempObj = {
@@ -19,6 +22,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
           financeID: item.financeID,
           degreeID: item.degreeID,
           degreeName: item.degreeName,
+          studentID: item.studentID?.studentID,
           studentName: item.studentID?.studentName,
           moduleName: item.moduleName,
           modulePrice: item.modulePrice ? item.modulePrice : 0,
@@ -26,6 +30,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
           paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
           paymentToDate: item.totalPaymentToDate,
           paymentVerificationStatus: item.paymentVerificationStatus,
+          metadata: item.metadata
         };        
         setTableData((prev) => [...prev, tempObj]);
       })
@@ -33,11 +38,54 @@ const PaymentDetailsDashboard = ({data, type}) => {
       setTableData([]);
     }
   }, [dataDetails]);
+
+  const handleRowClick = (params) => {
+    const { row } = params;
+    console.log(row);
+    
+    if (row.metadata) {
+      const { goTo, dataId } = row.metadata;
+      navigate(goTo, { state: { dataId } });
+    }
+  };
  
   const columns = [
+    { field: "financeID", headerName: "Payment ID", flex: 0.5 },
     { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
-    { field: "degreeName", headerName: "Degree Name", flex: 1 },
+    { field: "degreeName", headerName: "Degree Name", flex: 0.5 },
     { field: "paidAmount", headerName: "Approved Amount", flex: 0.5 },
+    { field: "studentID", headerName: "sID", flex: 0.25 },
+    { field: "studentName", headerName: "Student Name", flex: 0.5 },
+    { field: "moduleName", headerName: "Module Name", flex: 0.5 },
+    { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
+    { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
+    {
+      field: "paymentToDate",
+      headerName: "Payment To Date",
+      flex: 0.5,
+      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+    },
+    {
+      field: "paymentVerificationStatus",
+      headerName: "Verification Status",
+      flex: 0.75,
+      renderCell: (params) => (
+        <Button
+          variant={
+            params.row.paymentVerificationStatus !== "approved"
+              ? "outlined"
+              : "contained"
+          }
+          color={
+            params.row.paymentVerificationStatus !== "approved"
+              ? "error"
+              : "success"
+          }
+        >
+          {params.row.paymentVerificationStatus}
+        </Button>
+      ),
+    },
   ];
   
   return (
@@ -145,7 +193,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 }}
                 pageSizeOptions={[5, 10, 20]}
                 autoHeight
-                disableSelectionOnClick // Prevents row selection
+                onRowClick={handleRowClick}
               />
             </Box>
           </Grid>
