@@ -36,7 +36,6 @@ const PaymentDetailsDashboard = ({data, type}) => {
   }, [dataDetails]);
  
   const columns = [
-    { field: "financeID", headerName: "Payment ID", flex: 0.5 },
     { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
     { field: "degreeName", headerName: "Degree Name", flex: 1 },
     { field: "paidAmount", headerName: "Approved Amount", flex: 0.5 },

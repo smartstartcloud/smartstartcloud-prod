@@ -201,7 +201,7 @@ const SuperAdminCharts = () => {
       <Grid container spacing={2} mb={2} display="flex" justifyContent="center">
         {filteredYearList && filteredYearList.length > 0 ? (
           filteredYearList.map(
-            ({ degreeID, dataName, dataYear, data }, index) => (
+            ({ dataYear, data }, index) => (
               <Grid
                 item
                 xs={12}
