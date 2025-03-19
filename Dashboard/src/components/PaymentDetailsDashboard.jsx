@@ -2,7 +2,7 @@ import { Box, Button, Grid, Paper, Typography, useTheme } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../theme';
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { format } from "date-fns";
 
 const PaymentDetailsDashboard = ({data, type}) => {
@@ -183,6 +183,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 rows={tableData}
                 columns={columns}
                 getRowId={(row) => row.financeID}
+                slots={{ toolbar: GridToolbar }}
                 initialState={{
                   pagination: {
                     paginationModel: {
