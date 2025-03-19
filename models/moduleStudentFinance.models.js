@@ -74,6 +74,7 @@ const moduleStudentFinanceSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
+    enum: ["PP", "NP", "PAID"], // Only these values are allowed
   },
   paidAmount: {
     type: String,

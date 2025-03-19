@@ -8,12 +8,8 @@ export function extractObjects(nestedArray) {
 export const formatDate = (isoString) => {
   const options = {
     year: "numeric",
-    month: "long",
+    month: "numeric",
     day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZoneName: "short",
   };
   return new Intl.DateTimeFormat("en-GB", options).format(new Date(isoString));
 };
@@ -53,15 +49,32 @@ export const sortByProperty = (array, property, order = "asc") => {
 }
 
 // Converts enum values to their corresponding string representations.
-export const enumToString = (type, value) => {
+export const enumToString = (type, value) => {  
   if (!value) return "No value";
   switch (type) {
+    case "assignmentProgress":
+      return value === "TBA"
+        ? "To Be Announced"
+        : value === "ORDER ID ASSIGNED"
+        ? "Order ID Assigned"
+        : value === "FILE READY TO UPLOAD"
+        ? "File Ready To Upload"
+        : value === "FILE UPLOADED"
+        ? "File Upload"
+        : value === "WAITING TO BE GRADED"
+        ? "Waiting To Be Graded"
+        : value === "PASSED"
+        ? "Passed"
+        : value === "FAILED"
+        ? "Failed"
+        : "No Status";
     case "paymentPlan":
       return value === "year"
         ? "Whole year plan"
         : value === "installment"
         ? "Whole year - 2 instalment plan"
         : "Individual plan";
+    case "paymentMethod":
     case "otherPaymentMethod":
       return value === "cash"
         ? "CASH"
@@ -77,6 +90,14 @@ export const enumToString = (type, value) => {
         ? "PENDING"
         : value === "rejected"
         ? "REJECTED"
+        : "No Status";
+    case "paymentStatus":
+      return value === "PP"
+        ? "Partially Paid"
+        : value === "NP"
+        ? "Not Paid"
+        : value === "PAID"
+        ? "Paid"
         : "No Status";
     default:
       return value;

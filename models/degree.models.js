@@ -26,8 +26,6 @@ const degreeSchema = new mongo.Schema({
   ],
   degreeModules: [
     {
-      // moduleName: { type: String}, // Name of the module
-      // moduleCode: { type: String}  // Code of the module
       type: mongo.Schema.Types.ObjectId,
       ref: "Module",
     },
