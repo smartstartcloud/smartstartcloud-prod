@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { tokens } from '../theme';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { format } from "date-fns";
+import CustomDataToolbar from './CustomDataToolBar';
 
 const PaymentDetailsDashboard = ({data, type}) => {
   const {dataYear, dataMonth, dataDetails} = data;  
@@ -14,26 +15,46 @@ const PaymentDetailsDashboard = ({data, type}) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (dataDetails && dataDetails.length > 0) {                        
-      setTableData([]); 
-      dataDetails.forEach((item) => {
-        const tempObj = {
-          id: item._id,
-          financeID: item.financeID,
-          degreeID: item.degreeID,
-          degreeName: item.degreeName,
-          studentID: item.studentID?.studentID,
-          studentName: item.studentID?.studentName,
-          moduleName: item.moduleName,
-          modulePrice: item.modulePrice ? item.modulePrice : 0,
-          paidAmount: item.paidAmount ? item.paidAmount : 0,
-          paymentDue: item.totalPaymentDue ? item.totalPaymentDue : 0,
-          paymentToDate: item.totalPaymentToDate,
-          paymentVerificationStatus: item.paymentVerificationStatus,
-          metadata: item.metadata
-        };        
-        setTableData((prev) => [...prev, tempObj]);
-      })
+    if (dataDetails && dataDetails.length > 0) {
+      const formattedData = dataDetails.map((item) => ({
+        id: item._id,
+        financeID: item.financeID,
+        degreeID: item.degreeID,
+        degreeName: item.degreeName,
+        studentID: item.studentID?.studentID,
+        studentName: item.studentID?.studentName,
+        moduleName: item.moduleName,
+        modulePrice: item.modulePrice || 0,
+        paidAmount: item.paidAmount || 0,
+        paymentDue: item.totalPaymentDue || 0,
+        paymentToDate: item.totalPaymentToDate,
+        paymentVerificationStatus: item.paymentVerificationStatus,
+        metadata: item.metadata,
+      }));
+      // Calculate totals
+      const totalPaidAmount = formattedData.reduce(
+        (sum, row) => sum + Number(row.paidAmount),
+        0
+      );
+      const totalDueAmount = formattedData.reduce(
+        (sum, row) => sum + Number(row.paymentDue),
+        0
+      );
+
+      const totalModulePrice = formattedData.reduce(
+        (sum, row) => sum + Number(row.modulePrice),
+        0
+      );
+
+      // Append a footer row
+      const totalRow = {
+        financeID: `Total in`,
+        degreeID: `${dataMonth} ${dataYear}`,
+        modulePrice: totalModulePrice,
+        paidAmount: totalPaidAmount, // Total Paid Amount
+        paymentDue: totalDueAmount, // Total Due Amount
+      };
+      setTableData([...formattedData, totalRow]);
     } else {
       setTableData([]);
     }
@@ -63,28 +84,40 @@ const PaymentDetailsDashboard = ({data, type}) => {
       field: "paymentToDate",
       headerName: "Payment To Date",
       flex: 0.5,
-      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+      valueGetter: (params) => {
+        if (!params) return ""; // Handle empty values gracefully
+        return format(params, "dd/MM/yyyy"); // Ensure it's a valid date
+      },
     },
     {
       field: "paymentVerificationStatus",
       headerName: "Verification Status",
       flex: 0.75,
-      renderCell: (params) => (
-        <Button
-          variant={
-            params.row.paymentVerificationStatus !== "approved"
-              ? "outlined"
-              : "contained"
+      renderCell: (params) => {
+        if (!params.row.paymentVerificationStatus) 
+          return (
+            <Typography></Typography>
+          ); //
+          else {
+            return (
+              <Button
+                variant={
+                  params.row.paymentVerificationStatus !== "approved"
+                    ? "outlined"
+                    : "contained"
+                }
+                color={
+                  params.row.paymentVerificationStatus !== "approved"
+                    ? "error"
+                    : "success"
+                }
+              >
+                {params.row.paymentVerificationStatus}
+              </Button>
+            );
           }
-          color={
-            params.row.paymentVerificationStatus !== "approved"
-              ? "error"
-              : "success"
-          }
-        >
-          {params.row.paymentVerificationStatus}
-        </Button>
-      ),
+          
+      },
     },
   ];
   
@@ -179,11 +212,18 @@ const PaymentDetailsDashboard = ({data, type}) => {
                   "& .MuiDataGrid-cell[data-field='approvedAmount']": {
                     fontWeight: "bold",
                   },
+                  "& .MuiDataGrid-row:last-child": {
+                    backgroundColor: colors.blueAccent[900], // Highlight last row
+                    fontWeight: "bold",
+                  },
                 }}
                 rows={tableData}
                 columns={columns}
                 getRowId={(row) => row.financeID}
-                slots={{ toolbar: GridToolbar }}
+                slots={{ toolbar: CustomDataToolbar }}
+                slotProps={{
+                  toolbar: { onRefresh: () => console.log("Refresh clicked!") }, // Pass function for refresh
+                }}
                 initialState={{
                   pagination: {
                     paginationModel: {
