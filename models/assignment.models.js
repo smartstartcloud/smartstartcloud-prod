@@ -24,6 +24,7 @@ const AssignmentSchema = new mongo.Schema(
     },
     assignmentProgress: {
       type: String,
+      enum: ["TBA", "ORDER ID ASSIGNED", "FILE READY TO UPLOAD", "FILE UPLOADED", "WAITING TO BE GRADED","PASSED", "FAILED",]
     },
     assignmentGrade: {
       type: String,

@@ -10,10 +10,25 @@ import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 // Helper function to build query and select string based on all string fields
 const buildSearchQuery = (model, searchQuery) => {
   const regex = new RegExp(searchQuery, "i");
+  const excludeArray = [
+    "_id",
+    "metadata",
+    "assignmentNature",
+    "referenceCollection",
+    "fileCategory",
+  ]; // Add keys you want to exclude
   // Extract only fields with instance "String" (ignoring ObjectId and others)
   let stringFields = Object.keys(model.schema.paths)
     .filter((key) => model.schema.paths[key].instance === "String")
     .filter((field) => field !== "password");
+
+  // Adding metadata field
+  stringFields.push("metadata");
+
+  // Remove excluded fields from final list
+  stringFields = stringFields.filter((key) => !excludeArray.includes(key));
+  console.log(stringFields);
+  
   // Build an array of OR conditions for each string field
   const conditions = stringFields.map((field) => ({ [field]: regex }));
   // Return the query object and a space-separated string of selected fields
