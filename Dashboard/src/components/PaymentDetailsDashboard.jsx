@@ -41,16 +41,16 @@ const PaymentDetailsDashboard = ({data, type}) => {
         0
       );
 
-      const totalModulePrice = formattedData.reduce(
-        (sum, row) => sum + Number(row.modulePrice),
-        0
-      );
+      // const totalModulePrice = formattedData.reduce(
+      //   (sum, row) => sum + Number(row.modulePrice),
+      //   0
+      // );
 
       // Append a footer row
       const totalRow = {
         financeID: `Total in`,
         degreeID: `${dataMonth} ${dataYear}`,
-        modulePrice: totalModulePrice,
+        // modulePrice: totalModulePrice,
         paidAmount: totalPaidAmount, // Total Paid Amount
         paymentDue: totalDueAmount, // Total Due Amount
       };
