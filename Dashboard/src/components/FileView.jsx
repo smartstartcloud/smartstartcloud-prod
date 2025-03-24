@@ -29,6 +29,8 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { useAuthContext } from "../context/AuthContext";
 import { tokens } from "../theme";
 import FileUpload from '../components/FileUpload';
+import { formatDateString } from "../utils/yearFilter";
+import { format } from "date-fns";
 
 const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
@@ -55,8 +57,7 @@ const FileView = ({
   const [referenceIdToPass, setreferenceIdToPass] = useState("");
   const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
 
-  useEffect(() => {
-    console.log(fileList);
+  useEffect(() => {    
     
     if (fileList) {      
       setFiles(fileList);
@@ -68,7 +69,7 @@ const FileView = ({
   }, [fileList, dataToSend]);
 
   useEffect(() => {
-    if (data) {      
+    if (data) {
     }
   }, [data]);
 
@@ -136,6 +137,92 @@ const FileView = ({
                     data.paymentVerificationStatus
                   )}
                 </Typography>
+              </Box>
+              <Box>
+                {data && Object.keys(data).length > 1 && (
+                  <Card
+                    sx={{
+                      width: "100%",
+                      p: 1,
+                      my: 2,
+                      background: `${colors.grey[800]}`,
+                      boxShadow: 6,
+                      borderRadius: 4,
+                      "&:hover": {
+                        boxShadow: 12,
+                      },
+                    }}
+                  >
+                    <CardContent>
+                      <Typography
+                        variant="h4"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold", mb: 1 }}
+                      >
+                        Payment Information
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={4}>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Student Name:</strong> {data.studentName}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Degree Year:</strong>{" "}
+                              {formatDateString(data.degreeYear)}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Degree Name:</strong> {data.degreeName}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Module Price:</strong> {data.modulePrice}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Paid Amount:</strong> {data.paidAmount}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Payment Date:</strong>{" "}
+                              {format(data.paymentToDate, "dd/MM/yyyy")}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Paid Through:</strong>{" "}
+                              {data.paymentMethodDetails}
+                            </Typography>
+                          </Box>
+                          {data.bankPayeeName && (
+                            <Box sx={{ mb: 1 }}>
+                              <Typography variant="h5" color={colors.grey[200]}>
+                                <strong>Payee Name:</strong>{" "}
+                                {data.bankPayeeName}
+                              </Typography>
+                            </Box>
+                          )}
+                          <Box sx={{ mb: 1 }}>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Employee:</strong> {data.userName}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                )}
               </Box>
               {files.length > 0 && (
                 <Grid
