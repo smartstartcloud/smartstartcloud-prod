@@ -12,7 +12,11 @@ export const yearFilter = (degree) => {
 }
 
 // convert "january_2025" to "JANUARY 2025"
-export const formatDateString = (dateString) => {    
+export const formatDateString = (dateString) => {
+    // Check if the dateString is valid
+    if (dateString === undefined) {
+        return "Invalid Date";
+    }
     // Split the input string by underscore
     const [month, year] = dateString.split('_');
 
