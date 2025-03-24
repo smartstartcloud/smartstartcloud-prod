@@ -95,7 +95,7 @@ export const enumToString = (type, value) => {
       return value === "PP"
         ? "Partially Paid"
         : value === "NP"
-        ? "Not Paid"
+        ? "Outstanding"
         : value === "PAID"
         ? "Paid"
         : "No Status";

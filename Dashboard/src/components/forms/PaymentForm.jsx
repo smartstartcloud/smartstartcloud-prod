@@ -286,7 +286,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
                     required
                     sx={{ mb: 2 }}
                   >
-                    <MenuItem value="NP">NOT PAID</MenuItem>
+                    <MenuItem value="NP">OUTSTANDING</MenuItem>
                     <MenuItem value="PP">PARTIALLY PAID</MenuItem>
                     <MenuItem value="PAID">PAID</MenuItem>
                     {/* <MenuItem value="FILE UPLOADED">FILE UPLOADED</MenuItem>
