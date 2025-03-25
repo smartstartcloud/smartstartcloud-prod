@@ -26,6 +26,7 @@ import PaymentApproval from "./components/profilePages/PaymentApproval";
 import AgentList from "./scenes/agentList/AgentList";
 import LogList from "./scenes/logList/LogList";
 import GlobalSearch from "./scenes/globalSearch/GlobalSearch";
+import UserProfilePage from "./components/profilePages/UserProfilePage";
 
 export const App = () => {
   const [theme, colorMode] = useMode();
@@ -54,6 +55,7 @@ export const App = () => {
               <Route path="/allOrders" element={authUser && !isPortal ? <OrderIDList /> : <Navigate to='/login' />} />
               <Route path="/welcome" element={authUser && !isPortal ? <Welcome /> : <Navigate to='/login' />} />
               <Route path="/renew" element={authUser && !isPortal ? <Navigate to='/' /> : <RenewPassword />} />
+              <Route path="/editProfile" element={authUser && !isPortal ? <UserProfilePage /> : <Navigate to='/' />} />
               <Route path="/signup" element={isAdmin ? <SignupForm /> : <Navigate to='/' />} />
               <Route path="/add-degree" element={authUser && !isPortal ? <DegreeForm /> : <Navigate to='/login' />} />
               <Route path="/allStudent" element={authUser && !isPortal ? <StudentList /> : <Navigate to='/login' />} />

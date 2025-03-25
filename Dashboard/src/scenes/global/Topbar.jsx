@@ -12,6 +12,7 @@ import Logo from '../global/SmartstartLogo-removebg-preview.png'
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationCard from '../../components/NotificationCard'
 import useFetchAllNotifications from '../../hooks/useFetchAllNotifications'
+import SettingsCard from '../../components/SettingsCard'
 
 const Topbar = ({ logOut }) => {
   const theme = useTheme();
@@ -119,9 +120,7 @@ const Topbar = ({ logOut }) => {
                     )}
                   </IconButton>
                   {authUser && [
-                    <IconButton>
-                      <SettingsOutlinedIcon />
-                    </IconButton>,
+                    <SettingsCard />,
                     <NotificationCard list={notifications} />,
                   ]}
                 </MenuItem>
@@ -165,6 +164,7 @@ const Topbar = ({ logOut }) => {
               </IconButton>
               {authUser && (
                 <>
+                  <SettingsCard />
                   <NotificationCard list={notifications} />
                   <Box display="flex" alignItems="center" gap="8px">
                     <PersonOutlinedIcon />
