@@ -1,6 +1,4 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-// import { api } from '../utils/axiosInstance';
 import useApi from "./useApi";
 
 const useFetchUserInfo = (userId) => {
@@ -10,24 +8,26 @@ const useFetchUserInfo = (userId) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUserInfo = async (userId) => {
+    if (!userId) return;
+
+    const fetchUserInfo = async () => {
+      setLoading(true);
       try {
-        // Get user by userID
-        const res = await api.get(`/api/user/selected/userID/${userId}`, {
+        const res = await api.get(`/api/auth/user/${userId}`, {
           headers: {
             "Content-Type": "application/json",
           },
         });
-        setUser(res.data); // Update state with the user data
-        setLoading(false); // Mark as not loading anymore
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-        setError(error);
-        setLoading(false); // Even if there's an error, stop the loading state
+        setUser(res.data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUserInfo(userId); // Call the async function within useEffect
+    fetchUserInfo();
   }, [userId]);
 
   return { user, loading, error };

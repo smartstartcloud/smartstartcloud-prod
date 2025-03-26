@@ -117,6 +117,48 @@ export const signupUser = async (req, res) => {
     
 }
 
+// In user.controller.js
+export const updateUser = async (req, res) => {
+  try {
+    const { userID } = req.params;
+    const updateFields = req.body;
+
+    const user = await User.findOne({ _id: userID });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // ✅ If password update is requested, verify oldPassword first
+    if (updateFields.password && updateFields.oldPassword) {
+      const isValidOldPassword = await bcrypt.compare(
+        updateFields.oldPassword,
+        user.password
+      );
+
+      if (!isValidOldPassword) {
+        return res.status(401).json({ error: "Incorrect old password" });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      updateFields.password = await bcrypt.hash(updateFields.password, salt);
+    }
+
+    // Remove oldPassword from the payload to avoid accidental saving
+    delete updateFields.oldPassword;
+
+    // Proceed with updating the user
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userID },
+      { $set: updateFields },
+      { new: true }
+    ).select("-password");    
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update user" });
+  }
+};
+
 export const logoutUser = async (req, res) => {
     try {
         res.cookie("refreshToken", "", {maxAge: 0})
@@ -218,6 +260,27 @@ export const getAllUserList = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching agents:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get user by userID (not _id)
+export const getUserByUserID = async (req, res) => {
+  try {
+    const { userID } = req.params;    
+    if (!userID) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const user = await User.findOne({ _id: userID }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user by userID:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

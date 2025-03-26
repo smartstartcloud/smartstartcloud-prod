@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Button,
@@ -23,6 +23,7 @@ import useSignup from "../../hooks/useSignup";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import useFetchUserInfo from "../../hooks/UseFetchUserInfo";
+import useLogout from "../../hooks/useLogout";
 
 const UserProfilePage = () => {
   const location = useLocation();
@@ -33,16 +34,62 @@ const UserProfilePage = () => {
   const [formError, setFormError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isEdit, setIsEdit] = useState(false)
+  const [isEdit, setIsEdit] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const  {logout} = useLogout()
 
-  //   const { user, loading, error } = useFetchUserInfo()
+  const { user, loading: dataloading, error } = useFetchUserInfo(userID);
 
-  const { signup } = useSignup();
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    setError,
+    clearErrors,
+    reset,
+    watch,
+    formState: { errors, touchedFields },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+      oldPassword: "",
+      password: "",
+      passwordConfirmation: "",
+      gender: "male",
+      role: "agent",
+    },
+  });
 
-  const navigate = useNavigate();
+  const password = watch("password");
+  const passwordConfirmation = watch("passwordConfirmation");
+  const oldPassword = watch("oldPassword");
+  // useEffect to pre-fill form data
+  useEffect(() => {
+    if (user) {      
+      reset({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        userName: user.userName || "",
+        email: user.email || "",
+        gender: user.gender || "male",
+        role: user.role || "agent",
+        oldPassword: "",
+        password: "", // Leave blank by default
+        passwordConfirmation: "",
+      });
+    }
+  }, [user, reset]);
 
+  const { updateUser } = useSignup();
+
+  const handleToggleOldPasswordVisibility = () => {
+    setShowOldPassword(!showOldPassword);
+  };
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -59,46 +106,24 @@ const UserProfilePage = () => {
     setFormError(false);
   };
 
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    setError,
-    clearErrors,
-    formState: { errors, touchedFields },
-  } = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      userName: "",
-      email: "",
-      password: "",
-      passwordConfirmation: "",
-      gender: "male",
-      role: "agent",
-    },
-  });
-
   const onSubmit = async (data) => {
-    setLoading(true);
+    setLoading(true);    
     try {
-      const response = await signup(data);
-      console.log("Response Data:", response);
+      const payload = {
+        ...data,
+        userID, // passed from location.state
+      };
+      const response = await updateUser(payload);
+      console.log("Updated:", response);
       setformSuccess(true);
-      setLoading(false);
-
-      if (data.role === "agent") {
-        navigate("/welcome", {
-          state: {
-            userName: data.userName,
-            password: data.password,
-          },
-        });
-      }
+      logout();
     } catch (e) {
       setFormError(true);
+      console.log(e);
+      
+      setErrorMessage(`${e.message}. ${e.response.data.error}` || "Something went wrong.");
+    } finally {
       setLoading(false);
-      setErrorMessage(e.message);
     }
   };
   return (
@@ -215,23 +240,7 @@ const UserProfilePage = () => {
                     fullWidth
                     required
                     sx={{ mb: 2 }}
-                    error={!!touchedFields.userName && !!errors.userName}
-                    helperText={
-                      touchedFields.userName && errors.userName
-                        ? errors.userName.message
-                        : null
-                    }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("userName", {
-                          type: "manual",
-                          message: "User Name is required",
-                        });
-                      } else {
-                        clearErrors("userName");
-                      }
-                    }}
+                    disabled
                   />
                 )}
               />
@@ -254,23 +263,7 @@ const UserProfilePage = () => {
                     variant="outlined"
                     fullWidth
                     required
-                    error={!!touchedFields.email && !!errors.email}
-                    helperText={
-                      touchedFields.email && errors.email
-                        ? errors.email.message
-                        : null
-                    }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("email", {
-                          type: "manual",
-                          message: "Email is required",
-                        });
-                      } else {
-                        clearErrors("email");
-                      }
-                    }}
+                    disabled
                     sx={{ mb: 2 }}
                   />
                 )}
@@ -318,16 +311,71 @@ const UserProfilePage = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <Controller
-                name="password"
+                name="oldPassword"
                 control={control}
+                rules={{
+                  validate: (value) => {
+                    if (password || passwordConfirmation) {
+                      return value ? true : "Old password is required";
+                    }
+                    return true;
+                  },
+                }}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Password"
+                    label="Old Password"
+                    variant="outlined"
+                    type={showOldPassword ? "text" : "password"}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleToggleOldPasswordVisibility}
+                            edge="end"
+                          >
+                            {showOldPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    error={!!errors.oldPassword}
+                    helperText={
+                      errors.oldPassword ? errors.oldPassword.message : null
+                    }
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  validate: (value) => {
+                    if (oldPassword || passwordConfirmation) {
+                      if (!value) return "New Password is required";
+                      if (value === oldPassword)
+                        return "Passwords can not match the previous password";
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="New Password"
                     variant="outlined"
                     type={showPassword ? "text" : "password"}
                     fullWidth
-                    required
                     sx={{ mb: 2 }}
                     InputProps={{
                       endAdornment: (
@@ -341,23 +389,10 @@ const UserProfilePage = () => {
                         </InputAdornment>
                       ),
                     }}
-                    error={!!touchedFields.password && !!errors.password}
+                    error={!!errors.password}
                     helperText={
-                      touchedFields.password && errors.password
-                        ? errors.password.message
-                        : null
+                      errors.password ? errors.password.message : null
                     }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("password", {
-                          type: "manual",
-                          message: "Password is required",
-                        });
-                      } else {
-                        clearErrors("password");
-                      }
-                    }}
                   />
                 )}
               />
@@ -367,9 +402,14 @@ const UserProfilePage = () => {
                 name="passwordConfirmation"
                 control={control}
                 rules={{
-                  required: "Password confirmation is required",
-                  validate: (value) =>
-                    value === getValues("password") || "Passwords do not match",
+                  validate: (value) => {
+                    if (oldPassword || password) {
+                      if (!value) return "Password confirmation is required";
+                      if (value !== getValues("password"))
+                        return "Passwords do not match";
+                    }
+                    return true;
+                  },
                 }}
                 render={({ field }) => (
                   <TextField
@@ -378,7 +418,6 @@ const UserProfilePage = () => {
                     variant="outlined"
                     type={showConfirmPassword ? "text" : "password"}
                     fullWidth
-                    required
                     sx={{ mb: 2 }}
                     InputProps={{
                       endAdornment: (
@@ -392,27 +431,12 @@ const UserProfilePage = () => {
                         </InputAdornment>
                       ),
                     }}
-                    error={
-                      !!touchedFields.passwordConfirmation &&
-                      !!errors.passwordConfirmation
-                    }
+                    error={!!errors.passwordConfirmation}
                     helperText={
-                      touchedFields.passwordConfirmation &&
                       errors.passwordConfirmation
                         ? errors.passwordConfirmation.message
                         : null
                     }
-                    onBlur={(e) => {
-                      field.onBlur();
-                      if (!field.value) {
-                        setError("passwordConfirmation", {
-                          type: "manual",
-                          message: "Password Confirmation is required",
-                        });
-                      } else {
-                        clearErrors("passwordConfirmation");
-                      }
-                    }}
                   />
                 )}
               />
@@ -426,7 +450,7 @@ const UserProfilePage = () => {
                     {...field}
                     variant="outlined"
                     fullWidth
-                    required
+                    disabled
                     displayEmpty
                     sx={{ mb: 2 }}
                   >
@@ -459,7 +483,7 @@ const UserProfilePage = () => {
             {loading ? (
               <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
             ) : (
-              "Submit"
+              "Update"
             )}
           </Button>
           {/* <Link to="/login" style={{ textDecoration: 'none' }}>
