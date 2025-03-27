@@ -39,6 +39,12 @@ const userSchema = new mongo.Schema({
   passRenew: {
     type: Boolean,
   },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires : {
+    type: Date,
+  },
   metadata: {
     type: Object,
     default: {},
