@@ -2,6 +2,7 @@ import User from "../models/user.models.js";
 import bcrypt from "bcryptjs"
 import {generateAccessToken, generateRefreshToken} from "../utils/generateToken.js";
 import { createLog } from "./log.controller.js";
+import crypto from "crypto";
 
 export const loginUser = async (req, res) => {
     try {
@@ -117,6 +118,48 @@ export const signupUser = async (req, res) => {
     
 }
 
+// In user.controller.js
+export const updateUser = async (req, res) => {
+  try {
+    const { userID } = req.params;
+    const updateFields = req.body;
+
+    const user = await User.findOne({ _id: userID });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // ✅ If password update is requested, verify oldPassword first
+    if (updateFields.password && updateFields.oldPassword) {
+      const isValidOldPassword = await bcrypt.compare(
+        updateFields.oldPassword,
+        user.password
+      );
+
+      if (!isValidOldPassword) {
+        return res.status(401).json({ error: "Incorrect old password" });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      updateFields.password = await bcrypt.hash(updateFields.password, salt);
+    }
+
+    // Remove oldPassword from the payload to avoid accidental saving
+    delete updateFields.oldPassword;
+
+    // Proceed with updating the user
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userID },
+      { $set: updateFields },
+      { new: true }
+    ).select("-password");    
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update user" });
+  }
+};
+
 export const logoutUser = async (req, res) => {
     try {
         res.cookie("refreshToken", "", {maxAge: 0})
@@ -219,5 +262,89 @@ export const getAllUserList = async (req, res) => {
   } catch (error) {
     console.error("Error fetching agents:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get user by userID (not _id)
+export const getUserByUserID = async (req, res) => {
+  try {
+    const { userID } = req.params;    
+    if (!userID) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const user = await User.findOne({ _id: userID }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user by userID:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email, frontendURL } = req.body;
+  
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // 🔑 Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const tokenExpiry = Date.now() + 1000 * 60 * 10; // 10 minutes
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = tokenExpiry;
+    
+    await user.save();
+
+    // 📧 Send email with reset link
+    const resetUrl = `${frontendURL}/reset-password/${resetToken}`;
+    console.log(resetUrl);
+    
+    // await sendEmail(
+    //   user.email,
+    //   "Reset Your Password",
+    //   `Reset here: ${resetUrl}`
+    // );
+
+    res.status(200).json({ message: "Password reset email sent" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+  console.log(token, newPassword);
+  
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });    
+
+    if (!user)
+      return res.status(400).json({ error: "Invalid or expired token" });
+
+    // 🔐 Hash and update password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    user.passRenew = true;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

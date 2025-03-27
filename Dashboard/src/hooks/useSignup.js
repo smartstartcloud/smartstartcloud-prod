@@ -49,7 +49,13 @@ const useSignup = ( ) => {
         
     }
 
-    return {signup}
+    const updateUser = async (userData) => {
+      const { userID, ...rest } = userData;
+      const res = await api.put(`/api/auth/user/update/${userID}`, rest);      
+      return res.data;
+    };
+
+    return { signup, updateUser };
 }
 
 export default useSignup
