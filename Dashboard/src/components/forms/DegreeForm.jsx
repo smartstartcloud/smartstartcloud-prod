@@ -343,7 +343,7 @@ const DegreeForm = ({editPage=false}) => {
         >
           Please use this{" "}
           <a
-            href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/edit?usp=sharing"
+            href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/export?format=xlsx"
             target="_blank"
           >
             template
@@ -459,7 +459,9 @@ const DegreeForm = ({editPage=false}) => {
               color: colors.grey[900],
               "&:hover": { backgroundColor: colors.grey[100] },
             }}
-            onClick={() => appendModule({ moduleName: "", moduleCode: "", moduleCost: "" })}
+            onClick={() =>
+              appendModule({ moduleName: "", moduleCode: "", moduleCost: "" })
+            }
             startIcon={<AddIcon />}
           >
             Add Module
