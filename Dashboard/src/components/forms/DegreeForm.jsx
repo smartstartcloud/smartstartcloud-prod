@@ -336,7 +336,7 @@ const DegreeForm = ({editPage=false}) => {
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Degree Students
         </Typography>
-        <Typography
+        {/* <Typography
           variant="p"
           gutterBottom
           sx={{ mt: 4, mb: 2, paddingTop: 2, paddingBottom: 2 }}
@@ -345,6 +345,20 @@ const DegreeForm = ({editPage=false}) => {
           <a
             href="https://docs.google.com/spreadsheets/d/15mkFlq3AB5YjgpTVgOyv3wNd-GzGKO1sBJqifltg7As/export?format=xlsx"
             target="_blank"
+          >
+            template
+          </a>{" "}
+          when uploading students in bulk using a CSV file.
+        </Typography> */}
+        <Typography
+          variant="body1"
+          gutterBottom
+          sx={{ mt: 4, mb: 2, paddingTop: 2, paddingBottom: 2 }}
+        >
+          Please use this{" "}
+          <a
+            href="../../static/templates/student_bulk_template.xlsx"
+            download="student_bulk_template.xlsx"
           >
             template
           </a>{" "}
