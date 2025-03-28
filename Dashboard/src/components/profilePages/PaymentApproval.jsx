@@ -151,7 +151,7 @@ const PaymentApproval = () => {
   const columns = [
     { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
-    // { field: "studentName", headerName: "Student Name", flex: 0.5 },
+    { field: "studentName", headerName: "Student Name", flex: 0.5 },
     {
       field: "degreeYear",
       headerName: "Degree Year",
@@ -215,7 +215,7 @@ const PaymentApproval = () => {
   const bankColumns = [
     { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
-    // { field: "studentName", headerName: "Student Name", flex: 0.5 },
+    { field: "studentName", headerName: "Student Name", flex: 0.5 },
     {
       field: "degreeYear",
       headerName: "Degree Year",
