@@ -113,8 +113,8 @@ const useDeleteObjects = () => {
     
     const deletePayment = async (paymentID) => {
       try {
-        res = await api.delete(`/payment/deletePayment/${paymentID}`);
-        const data = await res.data;
+        res = await api.delete(`/api/module/deletePayment/${paymentID}`);
+        const data = await res.data;        
         if (data.error) {
           throw new Error(data.error);
         }

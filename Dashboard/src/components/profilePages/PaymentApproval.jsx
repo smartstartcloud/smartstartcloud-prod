@@ -154,7 +154,8 @@ const PaymentApproval = () => {
     if (!window.confirm("Are you sure you want to delete this payment?")) return;
 
     try {
-      await deletePayment(id);
+      const response = await deletePayment(id);
+      alert("Payment Details deleted:", response.message);
 
       const paymentMethodMap = {
         bank: setBankFilter,

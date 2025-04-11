@@ -338,7 +338,6 @@ export const deletePaymentDetails = async (req, res) => {
   try {
     const { paymentID } = req.params;
     console.log("Attempting to delete payment:", paymentID);
-    
     const deleted = await ModuleStudentFinance.findByIdAndDelete(paymentID);
     if (!deleted) {
       return res.status(404).json({ message: "Payment not found" });
