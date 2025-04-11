@@ -3,7 +3,7 @@ import {getAssignment, getModuleAssignmentData, getModuleData} from '../controll
 const router = express.Router();
 import {authenticate} from '../middlewares/protect.js'
 import { deleteAssignment, linkAssignmentOrderID, newAssignmentManual, updateAssignment } from "../controllers/assignment.controller.js";
-import { getPaymentDetails, getPaymentDetailsAll, updatePaymentDetails, updatePaymentStatus } from "../controllers/payment.controller.js";
+import { getPaymentDetails, getPaymentDetailsAll, updatePaymentDetails, updatePaymentStatus, deletePaymentDetails } from "../controllers/payment.controller.js";
 
 router.use(authenticate);
 
@@ -19,6 +19,7 @@ router.get("/getPaymentData/all", getPaymentDetailsAll);
 router.post("/getPaymentData", getPaymentDetails);
 router.put("/updatePaymentData", updatePaymentDetails);
 router.put("/updatePaymentStatus", updatePaymentStatus);
+router.delete("/deletePayment/:paymentID", deletePaymentDetails);
 
 router.post("/linkAssignmentOrderID", linkAssignmentOrderID);
 

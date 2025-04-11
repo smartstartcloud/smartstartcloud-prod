@@ -334,6 +334,22 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
     
 }
 
+export const deletePaymentDetails = async (req, res) => {
+  try {
+    const { paymentID } = req.params;
+    console.log("Attempting to delete payment:", paymentID);
+    
+    const deleted = await ModuleStudentFinance.findByIdAndDelete(paymentID);
+    if (!deleted) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    res.status(200).json({ message: "Payment deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting payment", error });
+  }
+};
+
 export const getPaymentDetails = async (req, res) => {
   const { assignmentID, moduleCode, studentID } = req.body;
   try {
