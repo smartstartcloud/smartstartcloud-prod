@@ -12,6 +12,7 @@ import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
+import useDeletePayment from "../../hooks/useDeleteObjects";
 import { useLocation } from "react-router-dom";
 import PaymentApprovalTable from "../PaymentApprovalTable";
 import { enumToString, formatDate } from "../../utils/functions";
@@ -27,6 +28,7 @@ const PaymentApproval = () => {
   const {authUser} = useAuthContext()
   const { paymentData, error, loading } = useAllGetPaymentDetails();
   const { updatePaymentStatus } = useSendPaymentData();
+  const { deletePayment } = useDeletePayment();
   const [tableData, setTableData] = useState([]);
   const [listBankFilter, setBankFilter] = useState([]);
   const [listCashFilter, setCashFilter] = useState([]);
@@ -148,6 +150,29 @@ const PaymentApproval = () => {
 
   };
 
+  const handleDeletePayment = async (id, method) => {
+    if (!window.confirm("Are you sure you want to delete this payment?")) return;
+
+    try {
+      const response = await deletePayment(id);
+      alert("Payment Details deleted:", response.message);
+
+      const paymentMethodMap = {
+        bank: setBankFilter,
+        cash: setCashFilter,
+        referral: setReferralFilter,
+        other: setOtherFilter,
+      };
+
+      const setter = paymentMethodMap[method];
+      if (setter) {
+        setter((prev) => prev.filter((row) => row.id !== id));
+      }
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
+  };
+
   const columns = [
     { field: "financeID", headerName: "ID", flex: 0.25 },
     { field: "studentID", headerName: "sID", flex: 0.25 },
@@ -207,6 +232,24 @@ const PaymentApproval = () => {
           }}
         >
           View
+        </Button>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 0.4,
+      renderCell: (params) => (
+        <Button
+          color="error"
+          variant="outlined"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeletePayment(params.row.id, params.row.paymentMethod);
+          }}
+        >
+          Delete
         </Button>
       ),
     },
@@ -272,6 +315,24 @@ const PaymentApproval = () => {
           }}
         >
           View
+        </Button>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 0.4,
+      renderCell: (params) => (
+        <Button
+          color="error"
+          variant="outlined"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeletePayment(params.row.id, params.row.paymentMethod);
+          }}
+        >
+          Delete
         </Button>
       ),
     },
