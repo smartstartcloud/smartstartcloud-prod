@@ -86,8 +86,8 @@ export async function addNewStudent(studentList, parentLink) {
   }
 }
 
-export const addStudentInDegree = async (req,res)=>{
-  try{
+export const addStudentInDegree = async (req, res) => {
+  try {
     const {
       degreeID,
       studentName,
@@ -105,50 +105,59 @@ export const addStudentInDegree = async (req,res)=>{
       year,
       isExternal,
       studentAssignment, // optional
-    } = req.body;    
-    let currentStudent = await Student.findOne({studentID});
-    if(currentStudent){
-      return res.status(400).json({error:"Student ID already exists"});
-    }else{
-      // Create a new Student instance
-      const newStudent = new Student({
-        studentName,
-        studentID,
-        studentContact,
-        studentLogin,
-        studentPassword,
-        studentOfficePassword,
-        studentOther,
-        groupName,
-        tutorName,
-        campusLocation,
-        universityName,
-        courseName,
-        year,
-        isExternal,
-        studentAssignment: studentAssignment || [],
-      });
-    const savedStudent = await newStudent.save();
-    if(savedStudent){
-      await Degree.findOneAndUpdate({ degreeID: degreeID },{ $push: { degreeStudentList: savedStudent._id } } ).then(result => {
-        if (result.matchedCount === 0) {
-          console.log("No document found with the given _id.");
-        } else {
-          res.status(200).json({value:"Student added successfully"});
-        }
-      })
-      .catch(err => {
-        console.error("Error adding student:", err);
-      });
+    } = req.body;
+
+    // 1. Check if degree exists before anything else
+    const degree = await Degree.findOne({ degreeID });
+    if (!degree) {
+      return res.status(404).json({ error: "Degree not found" });
     }
 
+    // 2. Check for existing student ID
+    const existingStudent = await Student.findOne({ studentID });
+    if (existingStudent) {
+      return res.status(400).json({ error: "Student ID already exists" });
     }
-    }catch (error) {
-      console.error("Error adding student:", error);
-      throw new Error('Failed to add student');
-    }
-  
-}
+
+    // 3. Create and save new student
+    const newStudent = new Student({
+      studentName,
+      studentID,
+      studentContact,
+      studentLogin,
+      studentPassword,
+      studentOfficePassword,
+      studentOther,
+      groupName,
+      tutorName,
+      campusLocation,
+      universityName,
+      courseName,
+      year,
+      isExternal,
+      studentAssignment: studentAssignment || [],
+    });
+
+    const savedStudent = await newStudent.save();
+
+    // 4. Update degree with student ID
+    degree.degreeStudentList.push(savedStudent._id);
+    await degree.save();
+
+    // 5. Update student's metadata with degree info
+    savedStudent.metadata = {
+      goTo: degree?.metadata?.goTo || "",
+      dataId: savedStudent._id,
+    };
+    await savedStudent.save();
+
+    return res.status(200).json({ value: "Student added successfully" });
+  } catch (error) {
+    console.error("Error adding student:", error);
+    return res.status(500).json({ error: "Failed to add student" });
+  }
+};
+
 
 export const updateStudentInDegree = async (req, res) => {
   try {
