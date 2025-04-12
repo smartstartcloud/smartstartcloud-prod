@@ -105,8 +105,7 @@ export const addStudentInDegree = async (req,res)=>{
       year,
       isExternal,
       studentAssignment, // optional
-    } = req.body;
-    
+    } = req.body;    
     let currentStudent = await Student.findOne({studentID});
     if(currentStudent){
       return res.status(400).json({error:"Student ID already exists"});
