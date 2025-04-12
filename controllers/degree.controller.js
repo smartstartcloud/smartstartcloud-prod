@@ -416,6 +416,13 @@ export const deleteDegree = async (req,res)=>{
       })
     );
 
+    // Delete associated students
+    await Promise.all(
+      deletedDegree.degreeStudentList.map(async (studentID) => {
+        const student = await Student.findOneAndDelete({ _id: studentID });
+      })
+    );
+
     // Log the deletion action
     const logMessage = {
       degreeName: deletedDegree.degreeName,

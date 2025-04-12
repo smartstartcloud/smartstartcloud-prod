@@ -59,6 +59,7 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
               } else {
                 // Store main assignments
                 const newAssignmentMain = new Assignment({
+                  assignmentID: `main_${assignmentData.referenceNumber}`,
                   assignmentName: assignmentData.assignmentName,
                   assignmentType: assignmentData.assignmentType,
                   assignmentDeadline: assignmentData.assignmentDeadline,
