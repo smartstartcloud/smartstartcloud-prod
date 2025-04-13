@@ -9,6 +9,10 @@ import {
   Typography,
   useTheme,
   Checkbox,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { Controller, useFieldArray } from "react-hook-form";
 import { tokens } from "../../theme";
@@ -115,16 +119,73 @@ const StudentFieldForm = ({ control }) => {
               <Grid container spacing={2}>
                 {/** Student Information Fields */}
                 {[
-                  { name: "studentID", label: "Student ID", tooltip: "Student ID", sm: 4 },
-                  { name: "studentName", label: "Student Name", tooltip: "Enter Student Name", sm: 4, required: true },
-                  { name: "studentContact", label: "Student Contact", tooltip: "Enter Student Contact", sm: 4 },
-                  { name: "studentLogin", label: "Student Username", tooltip: "Enter Student Username", sm: 6 },
-                  { name: "studentPassword", label: "Student Password", tooltip: "Enter Student Password", sm: 3 },
-                  { name: "studentOfficePassword", label: "Student Office Password", tooltip: "Enter Student Office Password", sm: 3 },
-                  { name: "studentOther", label: "Student Other Information", tooltip: "Enter Student Other Information", sm: 6 },
-                  { name: "groupName", label: "Group Name", tooltip: "Enter Group Name", sm: 6 },
-                  { name: "tutorName", label: "Tutor Name", tooltip: "Enter Tutor Name", sm: 6 },
-                  { name: "campusLocation", label: "Campus Location", tooltip: "Enter Campus Location", sm: 6 },
+                  {
+                    name: "studentStatus",
+                    label: "Student Status",
+                    tooltip: "Student Status",
+                    sm: 2,
+                  },
+                  {
+                    name: "studentID",
+                    label: "Student ID",
+                    tooltip: "Student ID",
+                    sm: 2,
+                  },
+                  {
+                    name: "studentName",
+                    label: "Student Name",
+                    tooltip: "Enter Student Name",
+                    sm: 4,
+                    required: true,
+                  },
+                  {
+                    name: "studentContact",
+                    label: "Student Contact",
+                    tooltip: "Enter Student Contact",
+                    sm: 4,
+                  },
+                  {
+                    name: "studentLogin",
+                    label: "Student Username",
+                    tooltip: "Enter Student Username",
+                    sm: 6,
+                  },
+                  {
+                    name: "studentPassword",
+                    label: "Student Password",
+                    tooltip: "Enter Student Password",
+                    sm: 3,
+                  },
+                  {
+                    name: "studentOfficePassword",
+                    label: "Student Office Password",
+                    tooltip: "Enter Student Office Password",
+                    sm: 3,
+                  },
+                  {
+                    name: "studentOther",
+                    label: "Student Other Information",
+                    tooltip: "Enter Student Other Information",
+                    sm: 6,
+                  },
+                  {
+                    name: "groupName",
+                    label: "Group Name",
+                    tooltip: "Enter Group Name",
+                    sm: 6,
+                  },
+                  {
+                    name: "tutorName",
+                    label: "Tutor Name",
+                    tooltip: "Enter Tutor Name",
+                    sm: 6,
+                  },
+                  {
+                    name: "campusLocation",
+                    label: "Campus Location",
+                    tooltip: "Enter Campus Location",
+                    sm: 6,
+                  },
                 ].map(({ name, label, tooltip, sm, required }) => (
                   <Grid item xs={12} sm={sm} key={name}>
                     <Controller
@@ -132,13 +193,33 @@ const StudentFieldForm = ({ control }) => {
                       control={control}
                       render={({ field }) => (
                         <Tooltip title={tooltip}>
-                          <TextField
-                            {...field}
-                            label={label}
-                            variant="outlined"
-                            fullWidth
-                            required={required}
-                          />
+                          {name === "studentStatus" ? (
+                            <FormControl fullWidth required={required}>
+                              <InputLabel id={`student-status-label-${index}`}>
+                                {label}
+                              </InputLabel>
+                              <Select
+                                {...field}
+                                labelId={`student-status-label-${index}`}
+                                label={label}
+                              >
+                                <MenuItem value="">
+                                  <em>None</em>
+                                </MenuItem>
+                                <MenuItem value="active">ACTIVE</MenuItem>
+                                <MenuItem value="inactive">INACTIVE</MenuItem>
+                                <MenuItem value="withdrawn">WITHDRAWN</MenuItem>
+                              </Select>
+                            </FormControl>
+                          ) : (
+                            <TextField
+                              {...field}
+                              label={label}
+                              variant="outlined"
+                              fullWidth
+                              required={required}
+                            />
+                          )}
                         </Tooltip>
                       )}
                     />
@@ -151,11 +232,20 @@ const StudentFieldForm = ({ control }) => {
                     name={`degreeStudentList[${index}].isExternal`}
                     control={control}
                     render={({ field }) => (
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                        <Checkbox onChange={()=>{console.log(field.value);
-                        }} {...field} checked={field.value} />
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                      >
+                        <Checkbox
+                          onChange={() => {
+                            console.log(field.value);
+                          }}
+                          {...field}
+                          checked={field.value}
+                        />
                         <Tooltip title="Is the student external?">
-                          <Typography variant="body1">External Student</Typography>
+                          <Typography variant="body1">
+                            External Student
+                          </Typography>
                         </Tooltip>
                       </Box>
                     )}
@@ -223,6 +313,7 @@ const StudentFieldForm = ({ control }) => {
         }}
         onClick={() =>
           appendStudent({
+            studentStatus: "",
             studentID: "",
             studentName: "",
             studentContact: "",

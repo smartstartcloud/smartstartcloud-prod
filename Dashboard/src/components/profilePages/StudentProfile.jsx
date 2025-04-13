@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Divider,} from '@mui/material';
+import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Divider, Chip,} from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';
@@ -23,6 +23,7 @@ const StudentProfile = () => {
 
     const {
       _id,
+      studentStatus,
       studentName,
       studentContact,
       studentLogin,
@@ -78,7 +79,7 @@ const StudentProfile = () => {
         }
     };
 
-    useEffect(() => {        
+    useEffect(() => {              
         if (degreeModules.length > 0 && student) {
             handleModuleClick(degreeModules[0]._id, degreeModules[0].moduleName);
         }
@@ -103,7 +104,12 @@ const StudentProfile = () => {
         flexDirection="column"
         maxWidth="1000px"
       >
-        <Box display="flex" flexDirection="column" justifyContent="space-between" mb={2}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          mb={2}
+        >
           <Card
             sx={{
               width: "100%",
@@ -114,13 +120,39 @@ const StudentProfile = () => {
             }}
           >
             <CardContent>
-              <Typography
-                variant="h3"
-                color={colors.grey[100]}
-                sx={{ fontWeight: "bold", mb: 2 }}
-              >
-                Student Information
-              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography
+                    variant="h3"
+                    color={colors.grey[100]}
+                    sx={{ fontWeight: "bold", mb: 2 }}
+                  >
+                    Student Information
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  display="flex"
+                  justifyContent="flex-end"
+                  textAlign="right"
+                >
+                  <Chip
+                    variant="filled"
+                    color={
+                      studentStatus === "active"
+                        ? "success"
+                        : studentStatus === "inactive"
+                        ? "error"
+                        : "info"
+                    }
+                    label={enumToString("studentStatus", studentStatus)}
+                    sx={{ fontSize: "15px"}}
+                  />
+                </Grid>
+              </Grid>
+
               <Grid container spacing={2} mb={2}>
                 <Grid item xs={12} sm={6}>
                   <Grid container spacing={2}>
@@ -349,7 +381,7 @@ const StudentProfile = () => {
             </CardContent>
           </Card>
 
-          <Box sx={{marginTop: 2, width: "100%" }}>
+          <Box sx={{ marginTop: 2, width: "100%" }}>
             <Typography
               variant="h4"
               color={colors.grey[100]}

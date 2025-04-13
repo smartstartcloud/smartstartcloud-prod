@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   MenuItem,
@@ -12,10 +12,15 @@ import {
 import { Controller } from "react-hook-form";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
 
-const OrderSelect = ({ control, editMode }) => {
+const OrderSelect = ({ control, editMode }) => {  
   const [refNo, setRefNo] = useState("");  
   const [orderIds, setOrderIds] = useState([]);
   const [selectError, setSelectError] = useState(false);
+
+  useEffect(() => {
+    console.log(refNo);
+    
+  }, [refNo]);
 
   const { getOrderIdList } = useGetOrderIdList();
 
@@ -52,9 +57,11 @@ const OrderSelect = ({ control, editMode }) => {
                 fullWidth
                 required
                 onBlur={(e) => {
+                  field.onBlur(e)
                   handleFetchOrderIds(e.target.value); // Call your function
                 }}
                 onChange={(e) => {
+                  field.onChange(e); // Call RHF's onChange
                   setRefNo(e.target.value);
                   setSelectError(false); // Clear error on reference number change
                 }}

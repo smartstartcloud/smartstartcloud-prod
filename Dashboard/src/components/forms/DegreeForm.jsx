@@ -94,6 +94,7 @@ const DegreeForm = ({editPage=false}) => {
           degreeAgent: degree?.degreeAgent._id || "",
           degreeStudentList:
             degree?.degreeStudentList.map((student) => ({
+              studentStatus: student.studentStatus,
               _id: student._id,
               studentID: student.studentID || "",
               studentName: student.studentName || "",
@@ -109,7 +110,6 @@ const DegreeForm = ({editPage=false}) => {
               courseName: student.courseName || "",
               year: student.year || "",
               isExternal: student.isExternal || false,
-              
             })) || [],
           degreeModules:
             degree?.degreeModules?.map((module) => ({

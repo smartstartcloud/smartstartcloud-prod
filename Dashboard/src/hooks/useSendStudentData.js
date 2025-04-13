@@ -5,6 +5,7 @@ const useSendStudentData = () => {
     const api = useApi()
     const sendStudent = async ({
       degreeID,
+      studentStatus,
       studentID,
       studentName,
       studentLogin,
@@ -23,6 +24,7 @@ const useSendStudentData = () => {
       try {
         const res = await api.post(`/api/degree/addStudentInDegree`, {
           degreeID,
+          studentStatus,
           studentID,
           studentName,
           studentLogin,
@@ -66,6 +68,7 @@ const useSendStudentData = () => {
     const updateStudent = async ({
       _id,
       degreeID,
+      studentStatus,
       studentID,
       studentName,
       studentLogin,
@@ -85,6 +88,7 @@ const useSendStudentData = () => {
         const res = await api.put(`/api/degree/updateStudentInDegree`, {
           _id,
           degreeID,
+          studentStatus,
           studentID,
           studentName,
           studentLogin,

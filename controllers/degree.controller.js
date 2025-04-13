@@ -416,6 +416,13 @@ export const deleteDegree = async (req,res)=>{
       })
     );
 
+    // Delete associated students
+    await Promise.all(
+      deletedDegree.degreeStudentList.map(async (studentID) => {
+        const student = await Student.findOneAndDelete({ _id: studentID });
+      })
+    );
+
     // Log the deletion action
     const logMessage = {
       degreeName: deletedDegree.degreeName,
@@ -437,23 +444,42 @@ export const deleteDegree = async (req,res)=>{
 }
 
 export const deleteStudentFromDegree = async (req,res)=>{
-  const {studentID,degreeID} = req.params
+  const {studentID,degreeID} = req.params  
   try {
-    const degree = await Degree.findOne({ degreeID: degreeID }).then(async (degree) => {
-      const newArr = await Promise.all(
-        degree.degreeStudentList.filter(
-          (item) => item.toHexString() !== studentID
-        )
-      );
-      await Degree.updateOne(
-        { degreeID: degreeID },
-        { $set: { degreeStudentList: newArr } }
-      );
-      await ModuleAssignment.deleteMany({ studentID: studentID });
-    });
+    // Find all module assignments by studentID
+    const modules = await ModuleAssignment.find({ studentID: studentID });
+    // Delete related assignments
+    await Promise.all(
+      modules.map(async (mod) => {        
+        await Promise.all(
+          mod.assignments.map(async (assignmentId) => {
+            await Assignment.findByIdAndDelete(assignmentId);
+          })
+        );
+      })
+    );
+
+    // Delete the module assignments
+    await ModuleAssignment.deleteMany({ studentID: studentID });
+
+    await Student.findByIdAndDelete({_id: studentID});
+
+    const degree = await Degree.findOne({ degreeID: degreeID });
+    const newArr = await Promise.all(
+      degree.degreeStudentList.filter(
+        (item) => item.toHexString() !== studentID
+      )
+    );
+    await Degree.updateOne(
+      { degreeID: degreeID },
+      { $set: { degreeStudentList: newArr } }
+    );
 
     // Log the removal action
-    const logMessage = {degreeName: degree.degreeName, degreeYear: degree.degreeYear};
+    const logMessage = {
+      degreeName: degree.degreeName,
+      degreeYear: degree.degreeYear,
+    };
     await createLog({
       req,
       collection: "Degree",

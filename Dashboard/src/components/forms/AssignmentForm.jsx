@@ -47,7 +47,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
    },
  });
 
-    useEffect(() => {            
+    useEffect(() => {    
         if (studentData && studentData) {
             if (editMode) {
                 reset({
