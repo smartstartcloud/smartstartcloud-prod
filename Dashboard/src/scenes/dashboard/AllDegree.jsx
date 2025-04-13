@@ -1,13 +1,36 @@
 import { Box, Grid, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import useFetchAllDegreeData from "../../hooks/useFetchAllDegreeData";
 import TaskCard from "../../components/TaskCard";
 import { yearFilter } from "../../utils/yearFilter";
-import { sortByProperty } from "../../utils/functions";
+import { extractStudentStatus, sortByProperty } from "../../utils/functions";
 
 const AllDegree = () => {
   const { degree, error, loading } = useFetchAllDegreeData();
+  const [studentStatusStack, setStudentStatusStack] = useState({totalActive: 0, totalInactive: 0, totalWithdrawn: 0});
+
+  useEffect (() => {
+    if (degree && degree.length > 0){
+      let totalActive = 0
+      let totalInactive = 0
+      let totalWithdrawn = 0
+      degree.map((individualDegree) => {
+        const { active, inactive, withdrawn } = extractStudentStatus(
+          individualDegree.degreeStudentList
+        );
+        totalActive += active;
+        totalInactive += inactive;
+        totalWithdrawn += withdrawn;
+      });
+      setStudentStatusStack({
+        totalActive,
+        totalInactive,
+        totalWithdrawn,
+      });
+    }  
+  }, [degree])
+  
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");  
 
@@ -21,7 +44,6 @@ const AllDegree = () => {
   
   let filteredYearList = yearList.filter((year) => {
     const intakeMatch = selectedIntake ? year.yearName.startsWith(selectedIntake) : true;
-    console.log(intakeMatch);
     
     const yearMatch = selectedYear ? year.yearName.endsWith(selectedYear) : true;
     return intakeMatch && yearMatch;
@@ -33,19 +55,31 @@ const AllDegree = () => {
 
   return (
     <Box m="20px">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Header title="ALL YEARS" subtitle="All existing years are displayed." />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Header
+          title="ALL YEARS"
+          subtitle="All existing years are displayed."
+        />
       </Box>
-      
+
       <Box display="flex" gap={2} mb={3}>
         <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
           <InputLabel>Intake</InputLabel>
-          <Select value={selectedIntake} onChange={handleIntakeChange} label="Intake">
+          <Select
+            value={selectedIntake}
+            onChange={handleIntakeChange}
+            label="Intake"
+          >
             <MenuItem value="">All</MenuItem>
-            {[
-              "January",  "June", "September"
-            ].map((month) => (
-              <MenuItem key={month} value={month}>{month}</MenuItem>
+            {["January", "June", "September"].map((month) => (
+              <MenuItem key={month} value={month}>
+                {month}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -55,7 +89,9 @@ const AllDegree = () => {
           <Select value={selectedYear} onChange={handleYearChange} label="Year">
             <MenuItem value="">All</MenuItem>
             {lastTenYears.map((year) => (
-              <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+              <MenuItem key={year} value={year.toString()}>
+                {year}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

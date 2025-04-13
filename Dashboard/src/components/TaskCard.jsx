@@ -7,33 +7,65 @@ import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
 import { useNavigate } from 'react-router-dom';
 
-const TaskCard = ({yearId, taskName, taskDetails, taskAgents, filterByAgent=null}) => {
+const TaskCard = ({
+  yearId,
+  taskName,
+  taskDetails,
+  taskAgents,
+  filterByAgent = null,
+  studentStatusStack,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate()  
+  const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`/task/${yearId}`, {state: filterByAgent});
+    navigate(`/task/${yearId}`, { state: filterByAgent });
   };
 
-  const agentList = [...new Set(taskAgents.map((agent) => (`${agent.firstName} ${agent.lastName}`)))]
-  
+  const agentList = [
+    ...new Set(
+      taskAgents.map((agent) => `${agent.firstName} ${agent.lastName}`)
+    ),
+  ];  
+
   return (
-    <Card onClick={handleClick} sx={{ width: '100%', background: colors.grey[100] }} >
+    <Card
+      onClick={handleClick}
+      sx={{ width: "100%", background: colors.grey[100] }}
+    >
       <CardActionArea>
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div" color={colors.grey[900]}>
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="div"
+            color={colors.grey[900]}
+          >
             {taskName}
           </Typography>
           <Typography variant="body2" color={colors.grey[900]}>
             Total number of degrees: {taskDetails}
           </Typography>
           <Typography variant="body2" color={colors.grey[900]}>
-            All Agents: {agentList?.join(', ')}
+            All Agents: {agentList?.join(", ")}
           </Typography>
+          {studentStatusStack && (
+            <>
+              <Typography variant="body2" color={colors.grey[900]}>
+                Active Students: {studentStatusStack?.totalActive}
+              </Typography>
+              <Typography variant="body2" color={colors.grey[900]}>
+                Inactive Students: {studentStatusStack?.totalInactive}
+              </Typography>
+              <Typography variant="body2" color={colors.grey[900]}>
+                Withdrawn Students: {studentStatusStack?.totalWithdrawn}
+              </Typography>
+            </>
+          )}
         </CardContent>
       </CardActionArea>
     </Card>
-  )
-}
+  );
+};
 
 export default TaskCard

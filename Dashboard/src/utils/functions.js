@@ -52,6 +52,12 @@ export const sortByProperty = (array, property, order = "asc") => {
 export const enumToString = (type, value) => {  
   if (!value) return "No value";
   switch (type) {
+    case "studentStatus":
+      return value === "active"
+        ? "ACTIVE"
+        : value === "inactive"
+        ? "INACTIVE"
+        : "WITHDRAWN";
     case "assignmentProgress":
       return value === "TBA"
         ? "To Be Announced"
@@ -74,7 +80,6 @@ export const enumToString = (type, value) => {
         : value === "installment"
         ? "Whole year - 2 instalment plan"
         : "Individual plan";
-    case "paymentMethod":
     case "otherPaymentMethod":
       return value === "cash"
         ? "CASH"
@@ -103,3 +108,18 @@ export const enumToString = (type, value) => {
       return value;
   }
 };
+
+export const extractStudentStatus = (studentList) => {
+  let active = 0;
+  let inactive = 0;
+  let withdrawn = 0;
+  studentList.map((student) => {
+    switch(student.studentStatus){
+      case ('active') : return active ++
+      case ('inactive') : return inactive ++
+      case ('withdrawn') : return withdrawn ++
+      default : return active ++
+    }
+  })
+  return {active, inactive, withdrawn}
+}

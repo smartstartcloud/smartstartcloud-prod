@@ -6,7 +6,7 @@ import { yearFilter } from "../../utils/yearFilter";
 import { useAuthContext } from "../../context/AuthContext";
 import useFetchAgentFilteredDegreeData from "../../hooks/useFetchAgentFilteredDegreeData";
 import SuperAdminCharts from "../../components/profilePages/SuperAdminCharts.jsx";
-import { sortByProperty } from "../../utils/functions.js";
+import { extractStudentStatus, sortByProperty } from "../../utils/functions.js";
 import useFetchOrderList from "../../hooks/useFetchOrderList";
 
 const Dashboard = () => {
@@ -14,6 +14,29 @@ const Dashboard = () => {
   const { degree, error, loading } = useFetchAgentFilteredDegreeData(authUser._id);
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+
+  const [studentStatusStack, setStudentStatusStack] = useState({totalActive: 0, totalInactive: 0, totalWithdrawn: 0});
+
+  useEffect (() => {
+    if (degree && degree.length > 0){
+      let totalActive = 0
+      let totalInactive = 0
+      let totalWithdrawn = 0
+      degree.map((individualDegree) => {
+        const { active, inactive, withdrawn } = extractStudentStatus(
+          individualDegree.degreeStudentList
+        );
+        totalActive += active;
+        totalInactive += inactive;
+        totalWithdrawn += withdrawn;
+      });
+      setStudentStatusStack({
+        totalActive,
+        totalInactive,
+        totalWithdrawn,
+      });
+    }  
+  }, [degree])
 
   const yearList = degree ? yearFilter(degree) : [];
 
@@ -50,7 +73,6 @@ const Dashboard = () => {
           }
         />
       </Box>
-       
 
       {!isSuperAdmin && (
         <>
@@ -118,6 +140,7 @@ const Dashboard = () => {
                     taskDetails={year.degreeList.length}
                     taskAgents={year.agentList}
                     filterByAgent={true}
+                    studentStatusStack={studentStatusStack}
                   />
                 </Grid>
               ))
@@ -129,9 +152,7 @@ const Dashboard = () => {
           </Grid>
         </>
       )}
-      {isSuperAdmin && 
-        <SuperAdminCharts />
-      }
+      {isSuperAdmin && <SuperAdminCharts />}
     </Box>
   );
 };

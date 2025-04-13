@@ -28,6 +28,7 @@ export async function addNewStudent(studentList, parentLink) {
             { _id: currentStudent._id }, // Find the student by studentID
             {
               studentName: studentData.studentName,
+              studentStatus: studentData.studentStatus,
               studentID: studentData.studentID,
               studentContact: studentData.studentContact,
               studentLogin: studentData.studentLogin,
@@ -51,6 +52,7 @@ export async function addNewStudent(studentList, parentLink) {
           // Create a new Student instance
           const newStudent = new Student({
             studentName: studentData.studentName,
+            studentStatus: studentData.studentStatus,
             studentID: studentData.studentID,
             studentContact: studentData.studentContact,
             studentLogin: studentData.studentLogin,
@@ -91,6 +93,7 @@ export const addStudentInDegree = async (req, res) => {
   try {
     const {
       degreeID,
+      studentStatus,
       studentName,
       studentID,
       studentContact,
@@ -123,6 +126,7 @@ export const addStudentInDegree = async (req, res) => {
     // 3. Create and save new student
     const newStudent = new Student({
       studentName,
+      studentStatus,
       studentID,
       studentContact,
       studentLogin,
@@ -168,6 +172,7 @@ export const updateStudentInDegree = async (req, res) => {
       _id, // Required for updating an existing student
       degreeID,
       studentName,
+      studentStatus,
       studentID,
       studentContact,
       studentLogin,
@@ -183,6 +188,8 @@ export const updateStudentInDegree = async (req, res) => {
       isExternal,
       studentAssignment, // Optional
     } = req.body;
+    console.log(studentStatus);
+    
 
     // Ensure _id is provided
     if (!_id) {
@@ -200,6 +207,7 @@ export const updateStudentInDegree = async (req, res) => {
     // Update only provided fields
     const updatedFields = {};
     if (studentName) updatedFields.studentName = studentName || "";
+    if (studentStatus) updatedFields.studentStatus = studentStatus || "";
     if (studentID) updatedFields.studentID = studentID || "";
     if (studentContact) updatedFields.studentContact = studentContact || "";
     if (studentLogin) updatedFields.studentLogin = studentLogin || "";
