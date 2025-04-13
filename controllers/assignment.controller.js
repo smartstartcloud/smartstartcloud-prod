@@ -286,34 +286,6 @@ export const updateAssignment = async (req, res) => {
   }
 };
 
-async function createNewAssignmentManual(
-  orderID,
-  assignmentName,
-  assignmentType,
-  assignmentDeadline,
-  wordCount,
-  assignmentProgress,
-  assignmentGrade,
-  moduleCode,
-  referenceNumber
-) {
-  const newAssignment = new Assignment({
-    orderID: orderID,
-    assignmentName: assignmentName,
-    assignmentType: assignmentType,
-    assignmentDeadline: assignmentDeadline,
-    wordCount: wordCount,
-    assignmentProgress: assignmentProgress,
-    assignmentGrade: assignmentGrade,
-    assignmentFile: [], // Default to empty array
-    assignmentNature: "manual",
-    moduleCode: moduleCode,
-    referenceNumber: referenceNumber,
-  });
-  const savedAssignment = await newAssignment.save();
-  return savedAssignment;
-}
-
 async function findModuleIdByCode(moduleCode) {
   try {
     const module = await Module.findOne({ moduleCode: moduleCode }).select("_id");
@@ -335,42 +307,57 @@ export const newAssignmentManual = async (req, res) => {
       wordCount,
       assignmentProgress,
       assignmentGrade,
-    } = req.body;
+      referenceNumber,
+    } = req.body;    
 
     // Retrieve moduleID and the corresponding module assignment record
     const moduleID = await findModuleIdByCode(moduleCode);
+    const student_id = await Student.findOne({ _id: studentID }).select(
+      "studentID"
+    );
+    console.log(student_id);
+    
     const module = await ModuleAssignment.findOne({ moduleID, studentID });
-
-    const createdAssignment = await createNewAssignmentManual(
-      orderID,
+    const newAssignment = new Assignment({
+      orderID: orderID === "" ? "N/A" : orderID,
+      assignmentID: `${student_id.studentID}_${referenceNumber}`,
       assignmentName,
       assignmentType,
       assignmentDeadline,
       wordCount,
       assignmentProgress,
       assignmentGrade,
-      moduleCode
-    );
-
+      assignmentFile: [], // Default to empty array
+      assignmentNature: "manual",
+      moduleCode,
+      referenceNumber,
+    });
+    console.log(newAssignment);
+    
+    const savedAssignment = await newAssignment.save();
     // Update the ModuleAssignment by pushing the new assignment's ID
     const updateResult = await ModuleAssignment.findOneAndUpdate(
       { _id: module._id },
-      { $push: { assignments: createdAssignment._id } }
+      { $push: { assignments: savedAssignment._id } }
     );
 
     if (updateResult) {
       // Construct a descriptive log message
-      const logMessage = { assignmentName,
-        assignmentID:createdAssignment._id, studentID , moduleCode};
+      const logMessage = {
+        assignmentName,
+        assignmentID: savedAssignment.assignmentID,
+        studentID,
+        moduleCode,
+      };
 
       // Log the creation event, storing the new assignment's ID as affectedID
-      await createLog({
-        req,
-        collection: "Assignment",
-        action: "create",
-        logMessage,
-        affectedID: createdAssignment._id,
-      });
+      // await createLog({
+      //   req,
+      //   collection: "Assignment",
+      //   action: "create",
+      //   actionToDisplay: "Add Student",
+      //   logMessage,
+      // });
 
       res.status(200).json({ value: "Assignment added successfully" });
     } else {
@@ -438,4 +425,53 @@ export const linkAssignmentOrderID = async (req, res) => {
     console.error("Error linking assignment and order ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+}
+
+export const duplicateAssignmentFromMain = async (moduleList, studentInfo) => {
+  // console.log(moduleList, studentInfo);
+  moduleList.map(async (moduleID) => {
+    const module = await Module.findById({_id: moduleID})
+    const createdAssingmentList = []
+    await Promise.all(
+      module.moduleAssignments.map(async (list, index) => {
+        const assignments = await Assignment.find({
+          _id: { $in: list },
+          assignmentNature: "main",
+        });
+
+        if (assignments.length > 0) {
+          const original = assignments[0];
+
+          // Create and save new assignment
+          const newAssignment = new Assignment({
+            assignmentID: `${studentInfo.studentID}_${original.referenceNumber}`,
+            assignmentName: original.assignmentName,
+            assignmentType: original.assignmentType,
+            assignmentDeadline: original.assignmentDeadline,
+            wordCount: original.wordCount,
+            assignmentProgress: "TBA",
+            assignmentGrade: "",
+            assignmentNature: "dynamic",
+            moduleCode: original.moduleCode,
+            referenceNumber: original.referenceNumber,
+          });
+
+          const savedAssignment = await newAssignment.save();
+          createdAssingmentList.push(savedAssignment._id);
+          
+          // Update the nested array in place
+          module.moduleAssignments[index].push(savedAssignment._id);
+        }
+      })
+    );
+    const newModuleAssignment = new ModuleAssignment({
+      studentID: studentInfo._id,
+      moduleID: moduleID,
+      assignments: createdAssingmentList, // Initialize with the first assignment
+    });
+    await newModuleAssignment.save();
+    await module.save();
+  })
+  
+  
 }

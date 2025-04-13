@@ -1,5 +1,6 @@
 import Student from '../models/student.models.js';
 import Degree from '../models/degree.models.js'
+import { duplicateAssignmentFromMain } from './assignment.controller.js';
 
 export async function getAllStudents(req, res) {
   try {
@@ -137,6 +138,8 @@ export const addStudentInDegree = async (req, res) => {
       isExternal,
       studentAssignment: studentAssignment || [],
     });
+    
+    duplicateAssignmentFromMain(degree.degreeModules, newStudent);
 
     const savedStudent = await newStudent.save();
 
