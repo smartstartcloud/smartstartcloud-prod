@@ -1,5 +1,6 @@
 import Student from '../models/student.models.js';
 import Degree from '../models/degree.models.js'
+import { duplicateAssignmentFromMain } from './assignment.controller.js';
 
 export async function getAllStudents(req, res) {
   try {
@@ -27,6 +28,7 @@ export async function addNewStudent(studentList, parentLink) {
             { _id: currentStudent._id }, // Find the student by studentID
             {
               studentName: studentData.studentName,
+              studentStatus: studentData.studentStatus,
               studentID: studentData.studentID,
               studentContact: studentData.studentContact,
               studentLogin: studentData.studentLogin,
@@ -50,6 +52,7 @@ export async function addNewStudent(studentList, parentLink) {
           // Create a new Student instance
           const newStudent = new Student({
             studentName: studentData.studentName,
+            studentStatus: studentData.studentStatus,
             studentID: studentData.studentID,
             studentContact: studentData.studentContact,
             studentLogin: studentData.studentLogin,
@@ -86,10 +89,11 @@ export async function addNewStudent(studentList, parentLink) {
   }
 }
 
-export const addStudentInDegree = async (req,res)=>{
-  try{
+export const addStudentInDegree = async (req, res) => {
+  try {
     const {
       degreeID,
+      studentStatus,
       studentName,
       studentID,
       studentContact,
@@ -106,50 +110,61 @@ export const addStudentInDegree = async (req,res)=>{
       isExternal,
       studentAssignment, // optional
     } = req.body;
-    
-    let currentStudent = await Student.findOne({studentID});
-    if(currentStudent){
-      return res.status(400).json({error:"Student ID already exists"});
-    }else{
-      // Create a new Student instance
-      const newStudent = new Student({
-        studentName,
-        studentID,
-        studentContact,
-        studentLogin,
-        studentPassword,
-        studentOfficePassword,
-        studentOther,
-        groupName,
-        tutorName,
-        campusLocation,
-        universityName,
-        courseName,
-        year,
-        isExternal,
-        studentAssignment: studentAssignment || [],
-      });
-    const savedStudent = await newStudent.save();
-    if(savedStudent){
-      await Degree.findOneAndUpdate({ degreeID: degreeID },{ $push: { degreeStudentList: savedStudent._id } } ).then(result => {
-        if (result.matchedCount === 0) {
-          console.log("No document found with the given _id.");
-        } else {
-          res.status(200).json({value:"Student added successfully"});
-        }
-      })
-      .catch(err => {
-        console.error("Error adding student:", err);
-      });
+
+    // 1. Check if degree exists before anything else
+    const degree = await Degree.findOne({ degreeID });
+    if (!degree) {
+      return res.status(404).json({ error: "Degree not found" });
     }
 
+    // 2. Check for existing student ID
+    const existingStudent = await Student.findOne({ studentID });
+    if (existingStudent) {
+      return res.status(400).json({ error: "Student ID already exists" });
     }
-    }catch (error) {
-      console.error("Error adding student:", error);
-      throw new Error('Failed to add student');
-    }
-  
-}
+
+    // 3. Create and save new student
+    const newStudent = new Student({
+      studentName,
+      studentStatus,
+      studentID,
+      studentContact,
+      studentLogin,
+      studentPassword,
+      studentOfficePassword,
+      studentOther,
+      groupName,
+      tutorName,
+      campusLocation,
+      universityName,
+      courseName,
+      year,
+      isExternal,
+      studentAssignment: studentAssignment || [],
+    });
+    
+    duplicateAssignmentFromMain(degree.degreeModules, newStudent);
+
+    const savedStudent = await newStudent.save();
+
+    // 4. Update degree with student ID
+    degree.degreeStudentList.push(savedStudent._id);
+    await degree.save();
+
+    // 5. Update student's metadata with degree info
+    savedStudent.metadata = {
+      goTo: degree?.metadata?.goTo || "",
+      dataId: savedStudent._id,
+    };
+    await savedStudent.save();
+
+    return res.status(200).json({ value: "Student added successfully" });
+  } catch (error) {
+    console.error("Error adding student:", error);
+    return res.status(500).json({ error: "Failed to add student" });
+  }
+};
+
 
 export const updateStudentInDegree = async (req, res) => {
   try {
@@ -157,6 +172,7 @@ export const updateStudentInDegree = async (req, res) => {
       _id, // Required for updating an existing student
       degreeID,
       studentName,
+      studentStatus,
       studentID,
       studentContact,
       studentLogin,
@@ -172,6 +188,8 @@ export const updateStudentInDegree = async (req, res) => {
       isExternal,
       studentAssignment, // Optional
     } = req.body;
+    console.log(studentStatus);
+    
 
     // Ensure _id is provided
     if (!_id) {
@@ -189,6 +207,7 @@ export const updateStudentInDegree = async (req, res) => {
     // Update only provided fields
     const updatedFields = {};
     if (studentName) updatedFields.studentName = studentName || "";
+    if (studentStatus) updatedFields.studentStatus = studentStatus || "";
     if (studentID) updatedFields.studentID = studentID || "";
     if (studentContact) updatedFields.studentContact = studentContact || "";
     if (studentLogin) updatedFields.studentLogin = studentLogin || "";

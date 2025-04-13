@@ -5,6 +5,10 @@ import {
     Alert,
     Checkbox,
     Grid,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from '@mui/material';
 import { tokens } from '../../theme';
 import MuiAlert from '@mui/material/Alert';
@@ -20,6 +24,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
     const [formLoading, setformLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [newStudent, setNewStudent] = useState({
+      studentStatus: studentData.studentStatus || "",
       studentID: studentData.studentID || "",
       studentName: studentData.studentName || "",
       studentLogin: studentData.studentLogin || "",
@@ -43,6 +48,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
       if (studentEditMode) {
         setNewStudent({
           _id: studentData._id,
+          studentStatus: studentData.studentStatus || "",
           studentID: studentData.studentID || "",
           studentName: studentData.studentName || "",
           studentLogin: studentData.studentLogin || "",
@@ -62,6 +68,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
         setIsExternalStudent(!!studentData.universityName); // If university name exists, set external student to true
       } else {
         setNewStudent({
+          studentStatus: "",
           studentID: "",
           studentName: "",
           studentLogin: "",
@@ -128,6 +135,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
             setOpen(false)
         }
         setNewStudent({
+          studentStatus: "",
           studentID: "",
           studentName: "",
           studentLogin: "",
@@ -162,6 +170,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
         setOpen(false);
       }
       setNewStudent({
+        studentStatus: studentData.studentStatus || "",
         studentID: studentData.studentID || "",
         studentName: studentData.studentName || "",
         studentLogin: studentData.studentLogin || "",
@@ -211,7 +220,33 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
             Add New Student
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={3}>
+              <FormControl fullWidth error={!!errors.studentStatus}>
+                <InputLabel id="student-status-label">
+                  Student Status
+                </InputLabel>
+                <Select
+                  labelId="student-status-label"
+                  value={newStudent.studentStatus}
+                  label="Student Status"
+                  onChange={(e) => {
+                    setNewStudent({
+                      ...newStudent,
+                      studentStatus: e.target.value,
+                    });
+                    setErrors({ ...errors, studentStatus: "" });
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value="active">ACTIVE</MenuItem>
+                  <MenuItem value="inactive">INACTIVE</MenuItem>
+                  <MenuItem value="withdrawn">WITHDRAWN</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <TextField
                 label="Student ID"
                 fullWidth

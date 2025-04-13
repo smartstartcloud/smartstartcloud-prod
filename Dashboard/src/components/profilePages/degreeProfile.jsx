@@ -292,7 +292,7 @@ const DegreeProfile = () => {
           columns={columns}
           getRowId={(row) => row.studentID}
           slots={{ toolbar: GridToolbar }}
-          pageSizeOptions={[5, 10, 20]}
+          pageSizeOptions={[5, 10, 20, 100]}
           autoHeight
           onRowClick={handleRowClick}
           sx={{ cursor: "pointer" }}
