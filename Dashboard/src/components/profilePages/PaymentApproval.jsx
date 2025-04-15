@@ -1,22 +1,17 @@
 import {
   Box,
-  Typography,
   useTheme,
-  IconButton,
   CircularProgress,
   Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
 import useDeletePayment from "../../hooks/useDeleteObjects";
 import { useLocation } from "react-router-dom";
 import PaymentApprovalTable from "../PaymentApprovalTable";
-import { enumToString, formatDate } from "../../utils/functions";
-import FileUpload from "../FileUpload";
 import FileView from "../FileView";
 import { useAuthContext } from "../../context/AuthContext";
 import { formatDateString } from "../../utils/yearFilter";
