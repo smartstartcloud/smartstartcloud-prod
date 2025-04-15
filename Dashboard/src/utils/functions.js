@@ -57,7 +57,9 @@ export const enumToString = (type, value) => {
         ? "ACTIVE"
         : value === "inactive"
         ? "INACTIVE"
-        : "WITHDRAWN";
+        : value === "withdrawn"
+        ? "WITHDRAWN"
+        : "NO STATUS";
     case "assignmentProgress":
       return value === "TBA"
         ? "To Be Announced"
