@@ -30,7 +30,7 @@ export const formatDateString = (dateString) => {
 // from degree_year return the year only "january_2025" to "2025"
 export const formatDateStringYearOnly = (dateString) => {    
     // Split the input string by underscore
-    const [month, year] = dateString.split('_');
+    const [year] = dateString.split('_');
     // Combine the formatted month and year with a space
     return year;
 }

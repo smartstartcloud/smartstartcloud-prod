@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -8,15 +8,10 @@ import {
   Typography,
   InputAdornment,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import useFetchSelectedDegreeData from "../../hooks/useFetchSelectedDegreeData";
 import useGlobalSearch from "../../hooks/useGlobalSearch";
 import GenerateDataGrid from "./GenerateDataGrid";
 
