@@ -3,7 +3,10 @@ import useApi from "./useApi";
 const useGetOrderIdList = () => {
   const api = useApi();
   const getOrderIdList = async (refNo) => {    
-    try {        
+    try {
+        if (!refNo || typeof refNo !== "string" || refNo.trim() === "") {
+          throw new Error("Invalid reference number (refNo)");
+        }
         const res = await api.get(`/api/order/orderList/${refNo}`);
         const data = await res.data;        
         if (data.error) {
@@ -24,7 +27,7 @@ const useGetOrderIdList = () => {
         }
       } else {
             console.log("Network or other error", error);
-            throw new Error("Something went wrong");
+            throw new Error(error);
       }
     }
   };
