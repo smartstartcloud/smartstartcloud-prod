@@ -57,8 +57,8 @@ const studentSchema = new mongo.Schema({
   },
   studentStatus: {
     type: String,
-    enum: ["active", "inactive", "withdrawn"], // Only these values are allowed
-    default: 'active'
+    enum: ["active", "inactive", "withdrawn", "noStatus"], // Only these values are allowed
+    default: "noStatus",
   },
   metadata: {
     type: Object,

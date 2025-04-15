@@ -126,7 +126,7 @@ export const addStudentInDegree = async (req, res) => {
     // 3. Create and save new student
     const newStudent = new Student({
       studentName,
-      studentStatus,
+      studentStatus: studentStatus == "" ? "noStatus" : studentStatus,
       studentID,
       studentContact,
       studentLogin,
