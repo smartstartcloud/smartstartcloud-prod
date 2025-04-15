@@ -308,19 +308,36 @@ export const newAssignmentManual = async (req, res) => {
       assignmentProgress,
       assignmentGrade,
       referenceNumber,
-    } = req.body;    
+    } = req.body;
 
-    // Retrieve moduleID and the corresponding module assignment record
+    // Validate moduleID
     const moduleID = await findModuleIdByCode(moduleCode);
-    const student_id = await Student.findOne({ _id: studentID }).select(
+    if (!moduleID) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+    // Validate student exists
+    const student = await Student.findOne({ _id: studentID }).select(
       "studentID"
     );
-    console.log(student_id);
-    
-    const module = await ModuleAssignment.findOne({ moduleID, studentID });
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    // Check if ModuleAssignment exists
+    let moduleAssignmentData = await ModuleAssignment.findOne({ moduleID, studentID });
+
+    // If not found, create a new one
+    if (!moduleAssignmentData) {
+      moduleAssignmentData = new ModuleAssignment({
+        studentID: student._id,
+        moduleID,
+        assignments: [],
+      });
+      await moduleAssignmentData.save();
+    }
+
     const newAssignment = new Assignment({
       orderID: orderID === "" ? "N/A" : orderID,
-      assignmentID: `${student_id.studentID}_${referenceNumber}`,
+      assignmentID: `${student.studentID}_${referenceNumber}`,
       assignmentName,
       assignmentType,
       assignmentDeadline,
@@ -332,17 +349,17 @@ export const newAssignmentManual = async (req, res) => {
       moduleCode,
       referenceNumber,
     });
-    console.log(newAssignment);
-    
+
     const savedAssignment = await newAssignment.save();
-    // Update the ModuleAssignment by pushing the new assignment's ID
+
+    // Push assignment to ModuleAssignment
     const updateResult = await ModuleAssignment.findOneAndUpdate(
-      { _id: module._id },
-      { $push: { assignments: savedAssignment._id } }
+      { _id: moduleAssignmentData._id },
+      { $push: { assignments: savedAssignment._id } },
+      { new: true }
     );
 
     if (updateResult) {
-      // Construct a descriptive log message
       const logMessage = {
         assignmentName,
         assignmentID: savedAssignment.assignmentID,

@@ -17,17 +17,19 @@ const OrderSelect = ({ control, editMode }) => {
   const [orderIds, setOrderIds] = useState([]);
   const [selectError, setSelectError] = useState(false);
 
-  useEffect(() => {
-    console.log(refNo);
+  // useEffect(() => {
+  //   console.log(refNo);
     
-  }, [refNo]);
+  // }, [refNo]);
 
   const { getOrderIdList } = useGetOrderIdList();
 
   const handleFetchOrderIds = async (e) => {    
-    try {        
+    try {
+      if (!refNo || typeof refNo !== "string" || refNo.trim() === "") {
+        throw new Error("Invalid reference number (refNo)");
+      }
       const response = await getOrderIdList(e);
-      console.log(response);
       
       setOrderIds(response.orderIDs);
       setSelectError(false); // Clear error when order IDs are fetched
