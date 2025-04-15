@@ -145,10 +145,20 @@ const StudentProfile = () => {
                         ? "success"
                         : studentStatus === "inactive"
                         ? "error"
-                        : "info"
+                        : studentStatus === "withdrawn"
+                        ? "info"
+                        : "default"
                     }
                     label={enumToString("studentStatus", studentStatus)}
-                    sx={{ fontSize: "15px"}}
+                    sx={{
+                      fontSize: "15px",
+                      ...(studentStatus !== "active" &&
+                        studentStatus !== "inactive" &&
+                        studentStatus !== "withdrawn" && {
+                          backgroundColor: "#FFF",
+                          color: "#000",
+                        }),
+                    }}
                   />
                 </Grid>
               </Grid>
