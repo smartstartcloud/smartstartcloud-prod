@@ -60,6 +60,9 @@ const TaskCard = ({
               <Typography variant="body2" color={colors.grey[900]}>
                 Withdrawn Students: {studentStatusStack?.totalWithdrawn}
               </Typography>
+              <Typography variant="body2" color={colors.grey[900]}>
+                Students with No status: {studentStatusStack?.totalNoStatus}
+              </Typography>
             </>
           )}
         </CardContent>

@@ -239,13 +239,13 @@ export const updatePaymentStatus = async (req, res) => {
   } = req.body;  
   try {
     const updateDetails = {};
-    if (paymentVerificationStatus)
+    const paymentLogDetails = {};
+    if (paymentVerificationStatus){
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
+      paymentLogDetails.paymentVerificationStatus =
+        paymentVerificationStatus;
+    }
 
-    const paymentLog = createPaymentLog({
-      newData: updateDetails,
-      statusUpdate: true,
-    });
     let approvalNoteLog = null;
     if (paymentVerificationStatus === "rejected") {
       approvalNoteLog = {
@@ -255,6 +255,14 @@ export const updatePaymentStatus = async (req, res) => {
         approvedBy,
       };
     }
+
+    paymentLogDetails.notes = approvalNote;
+    paymentLogDetails.noteBy = approvedBy;
+
+    const paymentLog = createPaymentLog({
+      newData: paymentLogDetails,
+      statusUpdate: true,
+    });
 
     // Construct the update object dynamically
     const updateFields = {
@@ -316,7 +324,9 @@ const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew
     let logString = ''
     
     if (statusUpdate) {
-      logString = `Payment status updated to ${newData.paymentVerificationStatus}.`;
+      const statusNotes = newData.notes == "" ? null : newData.notes;
+      const statusBy = newData.noteBy
+      logString = `Payment status updated to "${newData.paymentVerificationStatus}". "${statusNotes}" made by "${statusBy}"`;
     } else {
       if (isNew) {
         logString = `A payment is due for ${

@@ -1,4 +1,4 @@
-import { Box, Grid, Select, MenuItem, FormControl, InputLabel, Typography, Paper } from "@mui/material";
+import { Box, Grid, Select, MenuItem, FormControl, InputLabel, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import TaskCard from "../../components/TaskCard";
@@ -7,7 +7,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import useFetchAgentFilteredDegreeData from "../../hooks/useFetchAgentFilteredDegreeData";
 import SuperAdminCharts from "../../components/profilePages/SuperAdminCharts.jsx";
 import { extractStudentStatus, sortByProperty } from "../../utils/functions.js";
-import useFetchOrderList from "../../hooks/useFetchOrderList";
+// import useFetchOrderList from "../../hooks/useFetchOrderList";
 
 const Dashboard = () => {
   const { authUser, isSuperAdmin } = useAuthContext();
@@ -15,25 +15,32 @@ const Dashboard = () => {
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
 
-  const [studentStatusStack, setStudentStatusStack] = useState({totalActive: 0, totalInactive: 0, totalWithdrawn: 0});
+  const [studentStatusStack, setStudentStatusStack] = useState({
+    totalActive: 0,
+    totalInactive: 0,
+    totalWithdrawn: 0,
+    totalNoStatus: 0,
+  });
 
   useEffect (() => {
     if (degree && degree.length > 0){
       let totalActive = 0
       let totalInactive = 0
       let totalWithdrawn = 0
-      degree.map((individualDegree) => {
-        const { active, inactive, withdrawn } = extractStudentStatus(
-          individualDegree.degreeStudentList
-        );
+      let totalNoStatus = 0;
+      degree.forEach((individualDegree) => {
+        const { active, inactive, withdrawn, noStatus } =
+          extractStudentStatus(individualDegree.degreeStudentList);
         totalActive += active;
         totalInactive += inactive;
         totalWithdrawn += withdrawn;
+        totalNoStatus += noStatus;
       });
       setStudentStatusStack({
         totalActive,
         totalInactive,
         totalWithdrawn,
+        totalNoStatus,
       });
     }  
   }, [degree])

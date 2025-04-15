@@ -115,13 +115,14 @@ export const extractStudentStatus = (studentList) => {
   let active = 0;
   let inactive = 0;
   let withdrawn = 0;
+  let noStatus = 0;
   studentList.map((student) => {
     switch(student.studentStatus){
       case ('active') : return active ++
       case ('inactive') : return inactive ++
       case ('withdrawn') : return withdrawn ++
-      default : return active ++
+      default : return noStatus++;
     }
   })
-  return {active, inactive, withdrawn}
+  return {active, inactive, withdrawn, noStatus}
 }

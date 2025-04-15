@@ -36,8 +36,8 @@ const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
     display: "none",
   },
-  "-ms-overflow-style": "none",
-  "scrollbar-width": "none",
+  msOverflowStyle: "none", // ✅ IE/Edge -ms-overflow-style
+  scrollbarWidth: "none", // ✅ Firefox
 };
 
 const FileView = ({
@@ -65,6 +65,8 @@ const FileView = ({
     if (dataToSend) {
       setreferenceIdToPass(dataToSend.moduleAssignmentID);
       setData(dataToSend);
+      console.log(dataToSend);
+      
     }
   }, [fileList, dataToSend]);
 
@@ -216,6 +218,13 @@ const FileView = ({
                           <Box sx={{ mb: 1 }}>
                             <Typography variant="h5" color={colors.grey[200]}>
                               <strong>Employee:</strong> {data.userName}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Box>
+                            <Typography variant="h5" color={colors.grey[200]}>
+                              <strong>Payment Notes:</strong> {data.paymentNote}
                             </Typography>
                           </Box>
                         </Grid>

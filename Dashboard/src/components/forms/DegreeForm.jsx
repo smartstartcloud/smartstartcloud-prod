@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { format } from "date-fns";
 import {
     Button,
     TextField,
@@ -20,12 +17,10 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { v4 as uuidv4 } from 'uuid';
 import MuiAlert from '@mui/material/Alert';
 import { tokens } from '../../theme';
 import useSendDegreeForm from '../../hooks/useSendDegreeForm';
 import useFetchAgentList from '../../hooks/useFetchAgentList';
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AssignmentFieldForm from './AssignmentFieldForm';
 import StudentFieldForm from './StudentFieldForm';
 import { extractObjects } from '../../utils/functions';
@@ -37,12 +32,12 @@ const months = ["January", "June", "September"];
 const DegreeForm = ({editPage=false}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { degreeYear, degreeId } = useParams();
-  const [open, setOpen] = useState(false);
+  const { degreeId } = useParams();
+  // const [open, setOpen] = useState(false);
   const [formSaved, setFormSaved] = useState(false);
   const [formError, setFormError] = useState(false);
   const [monthYear, setMonthYear] = useState({ month: "", year: "" });
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const { degree } = useFetchSingleDegreeData(degreeId, editPage);
@@ -54,8 +49,6 @@ const DegreeForm = ({editPage=false}) => {
     const state = location?.state;
     editMode = state.editMode;
   }
-
-  const navigate = useNavigate();
 
   const { control, handleSubmit, watch, reset } = useForm({
     defaultValues: {
@@ -83,7 +76,7 @@ const DegreeForm = ({editPage=false}) => {
         const existingYear = degree.degreeYear.split("_")[1];
         setMonthYear({
           month: existingMonth,
-          year: existingYear,
+          year: existingYear
         });
         
         reset({
@@ -167,7 +160,6 @@ const DegreeForm = ({editPage=false}) => {
       const response = await sendDegreeForm(data, editMode);
       console.log("Form Data:", data);
       console.log('Response Data:', response);
-      // navigate(0);
 
       setFormSaved(true);
       setLoading(false);

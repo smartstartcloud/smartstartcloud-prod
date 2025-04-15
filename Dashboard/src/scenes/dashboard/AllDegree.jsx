@@ -8,28 +8,28 @@ import { extractStudentStatus, sortByProperty } from "../../utils/functions";
 
 const AllDegree = () => {
   const { degree, error, loading } = useFetchAllDegreeData();
-  const [studentStatusStack, setStudentStatusStack] = useState({totalActive: 0, totalInactive: 0, totalWithdrawn: 0});
+  // const [studentStatusStack, setStudentStatusStack] = useState({totalActive: 0, totalInactive: 0, totalWithdrawn: 0});
 
-  useEffect (() => {
-    if (degree && degree.length > 0){
-      let totalActive = 0
-      let totalInactive = 0
-      let totalWithdrawn = 0
-      degree.map((individualDegree) => {
-        const { active, inactive, withdrawn } = extractStudentStatus(
-          individualDegree.degreeStudentList
-        );
-        totalActive += active;
-        totalInactive += inactive;
-        totalWithdrawn += withdrawn;
-      });
-      setStudentStatusStack({
-        totalActive,
-        totalInactive,
-        totalWithdrawn,
-      });
-    }  
-  }, [degree])
+  // useEffect (() => {
+  //   if (degree && degree.length > 0){
+  //     let totalActive = 0
+  //     let totalInactive = 0
+  //     let totalWithdrawn = 0
+  //     degree.forEach((individualDegree) => {
+  //       const { active, inactive, withdrawn } = extractStudentStatus(
+  //         individualDegree.degreeStudentList
+  //       );
+  //       totalActive += active;
+  //       totalInactive += inactive;
+  //       totalWithdrawn += withdrawn;
+  //     });
+  //     setStudentStatusStack({
+  //       totalActive,
+  //       totalInactive,
+  //       totalWithdrawn,
+  //     });
+  //   }
+  // }, [degree])
   
   const [selectedIntake, setSelectedIntake] = useState("");
   const [selectedYear, setSelectedYear] = useState("");  
