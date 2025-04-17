@@ -6,43 +6,53 @@ import { sendNotification } from "./notification.controller.js";
 import Student from "../models/student.models.js";
 import { createLog } from "./log.controller.js";
 import ModuleAssignment from "../models/moduleAssignment.models.js";
-import { enumToString, formatDate, formatDateShort } from "../utils/functions.js";
+import {
+  enumToString,
+  formatDate,
+  formatDateShort,
+} from "../utils/functions.js";
 import File from "../models/files.model.js";
 
-export const addNewPayment = async (req, res, paymentRequiredInformation, userID, paymentDetails) => {
-  const { degreeID, assignmentID, moduleCode, studentID, moduleId } =
-    paymentRequiredInformation;
-    
-  // Find the module ID using the moduleCode
-  const module = await Module.findOne({
-    moduleCode,
-  }).select("_id moduleName moduleCode");
-  const degree = await Degree.findOne({
-    degreeID
-  }).select("degreeName degreeYear");
-  const moduleAssignment = await ModuleAssignment.findOne({
-    degreeID,
-  }).select("degreeName degreeYear");
-  const student = await Student.findById(studentID);
-
-  const newDetails = {
-    ...paymentDetails,
-    paymentVerificationStatus:
-      paymentDetails.paymentVerificationStatus === "approved"
-        ? "awaiting approval"
-        : paymentDetails.paymentVerificationStatus,
-  };
-
-  const paymentLog = createPaymentLog({
-    newData: newDetails,
-    isNew: true,
-  });
-
-  const homeLink = `/task/${degree.degreeYear}/${degreeID}`;
-  const dataId = student.studentID
-
-  
+export const addNewPayment = async (
+  req,
+  res,
+  paymentRequiredInformation,
+  userID,
+  paymentDetails
+) => {
   try {
+    const { degreeID, moduleCode, studentID } = paymentRequiredInformation;    
+    const module = await Module.findOne({ moduleCode }).select(
+      "_id moduleName moduleCode"
+    );
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    const degree = await Degree.findOne({ degreeID }).select(
+      "degreeName degreeYear"
+    );
+    if (!degree) {
+      return res.status(404).json({ error: "Degree not found" });
+    }
+
+    const student = await Student.findById(studentID);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const newDetails = {
+      ...paymentDetails,
+      paymentVerificationStatus:
+        paymentDetails.paymentVerificationStatus === "approved"
+          ? "awaiting approval"
+          : paymentDetails.paymentVerificationStatus,
+    };
+
+    const paymentLog = createPaymentLog({ newData: newDetails, isNew: true });
+    const homeLink = `/task/${degree.degreeYear}/${degreeID}`;
+    const dataId = student.studentID;
+
     const newPayment = new ModuleStudentFinance({
       userID,
       studentID,
@@ -51,60 +61,66 @@ export const addNewPayment = async (req, res, paymentRequiredInformation, userID
       degreeName: degree.degreeName,
       degreeYear: degree.degreeYear,
       moduleName: module.moduleName,
-      paymentLog: [paymentLog], // Push paymentLog directly into the document
-      ...newDetails, // Merge newDetails into the model
-      metadata: {goTo: homeLink, dataId: dataId}
+      paymentLog: [paymentLog],
+      ...newDetails,
+      metadata: { goTo: homeLink, dataId },
     });
-        
-    await newPayment.save();
+
     const moduleAssignment = await ModuleAssignment.findOne({
-      studentID: studentID,
+      studentID,
       moduleID: module._id,
-    })
-    if (moduleAssignment) {
-      moduleAssignment.modulePayment = newPayment._id;
-      await moduleAssignment.save();
+    });    
+
+    if (!moduleAssignment) {
+      return res.status(404).json({ error: "No Assignment Module Created" });
     }
 
-    if (newPayment) {
-      await sendNotification(
-        req,
-        ["admin", "finance"],
-        "alert",
-        `Payment Requires Approval for ${newPayment.degreeName} ${newPayment.degreeYear} ${newPayment.moduleName}. The paid amount is ${newPayment.paidAmount}.`,
-        { goTo: `/paymentApprovals`, paymentId: newPayment._id }
-      );
-
-      // Construct and create a log entry for the payment update
-      const logMessage = {
-        paymentID: newPayment._id,
-        studentName: student.studentName,
-        paymentLogMessage: paymentLog.logString,
-      };
-      await createLog({
-        req,
-        collection: "Payment",
-        action: "createPayment",
-        actionToDisplay: "Create Payment",
-        logMessage,
-        affectedID: newPayment._id,
-        metadata: newPayment.metadata
-      });
-
-      res.status(200).json(newPayment);
-    } else {
-      res.status(404).json({ error: "No payment Created" });
+    if (!Array.isArray(moduleAssignment.modulePayment)) {
+      moduleAssignment.modulePayment = [];
     }
+    
+    moduleAssignment.modulePayment.push(newPayment._id);
+    
+    await moduleAssignment.save();
 
+    // Fire off post-commit side-effects (these shouldn't be in the transaction)
+    await sendNotification(
+      req,
+      ["admin", "finance"],
+      "alert",
+      `Payment Requires Approval for ${newPayment.degreeName} ${newPayment.degreeYear} ${newPayment.moduleName}. The paid amount is ${newPayment.paidAmount}.`,
+      { goTo: `/paymentApprovals`, paymentId: newPayment._id }
+    );
 
+    const logMessage = {
+      paymentID: newPayment._id,
+      studentName: student.studentName,
+      paymentLogMessage: paymentLog.logString,
+    };
+
+    await newPayment.save();
+
+    await createLog({
+      req,
+      collection: "Payment",
+      action: "createPayment",
+      actionToDisplay: "Create Payment",
+      logMessage,
+      affectedID: newPayment._id,
+      metadata: newPayment.metadata,
+    });
+
+    res.status(200).json(newPayment);
   } catch (error) {
-    console.log(error);
-    return null;
+    res
+      .status(500)
+      .json({ error: "Internal server error. Payment not saved." });
   }
 };
 
 export const updatePaymentDetails = async (req, res) => {
   const {
+    _id,
     paymentPlan,
     note,
     totalPaymentDue,
@@ -123,6 +139,8 @@ export const updatePaymentDetails = async (req, res) => {
     userID,
   } = req.body;
   try {
+    const isNewPayment = req.query.new === "true";
+
     const updateDetails = {};
     if (paymentPlan) updateDetails.paymentPlan = paymentPlan;
     if (note) updateDetails.note = note;
@@ -151,7 +169,7 @@ export const updatePaymentDetails = async (req, res) => {
 
     // Find the module ID using the moduleCode
     const module = await Module.findById({
-      _id: paymentRequiredInformation.moduleId
+      _id: paymentRequiredInformation.moduleId,
     });
     if (!module) {
       return res.status(404).json({ error: "Module not found" });
@@ -159,7 +177,8 @@ export const updatePaymentDetails = async (req, res) => {
 
     // Find the module ID using the moduleCode
     const moduleAssignment = await ModuleAssignment.findOne({
-      moduleID: paymentRequiredInformation.moduleId, studentID: paymentRequiredInformation.studentID
+      moduleID: paymentRequiredInformation.moduleId,
+      studentID: paymentRequiredInformation.studentID,
     }).select("_id");
     if (!moduleAssignment) {
       return res.status(404).json({ error: "Module Assignment not found" });
@@ -167,12 +186,7 @@ export const updatePaymentDetails = async (req, res) => {
 
     updateDetails.moduleAssignmentID = moduleAssignment._id;
 
-    // Find all records in ModuleStudentFinance where studentID and moduleID match
-    const finances = await ModuleStudentFinance.findOne({
-      studentID: paymentRequiredInformation.studentID,
-      moduleID: module._id,
-    });
-    if (!finances) {
+    if (isNewPayment && !_id) {
       return addNewPayment(
         req,
         res,
@@ -181,6 +195,15 @@ export const updatePaymentDetails = async (req, res) => {
         updateDetails
       );
     }
+
+    if (!_id){
+      return res
+        .status(404)
+        .json({ error: "This is a new Entry. Cannot Update." });
+    }
+
+    // Find all records in ModuleStudentFinance where studentID and moduleID match
+    const finances = await ModuleStudentFinance.findById({ _id });
     const paymentLog = createPaymentLog({
       previousData: finances,
       newData: updateDetails,
@@ -230,20 +253,14 @@ export const updatePaymentDetails = async (req, res) => {
   }
 };
 
-export const updatePaymentStatus = async (req, res) => {  
-  const {
-    paymentVerificationStatus,
-    approvalNote,
-    approvedBy,
-    id
-  } = req.body;  
+export const updatePaymentStatus = async (req, res) => {
+  const { paymentVerificationStatus, approvalNote, approvedBy, id } = req.body;
   try {
     const updateDetails = {};
     const paymentLogDetails = {};
-    if (paymentVerificationStatus){
+    if (paymentVerificationStatus) {
       updateDetails.paymentVerificationStatus = paymentVerificationStatus;
-      paymentLogDetails.paymentVerificationStatus =
-        paymentVerificationStatus;
+      paymentLogDetails.paymentVerificationStatus = paymentVerificationStatus;
     }
 
     let approvalNoteLog = null;
@@ -308,7 +325,9 @@ export const updatePaymentStatus = async (req, res) => {
         metadata: payment.metadata,
       });
 
-      res.status(200).json({data: payment, message: 'PaymentStatus Updated Successfully'});
+      res
+        .status(200)
+        .json({ data: payment, message: "PaymentStatus Updated Successfully" });
     } else {
       res
         .status(404)
@@ -320,29 +339,35 @@ export const updatePaymentStatus = async (req, res) => {
   }
 };
 
-const createPaymentLog = ({previousData=null, newData, statusUpdate=false, isNew=false}) => {    
-    let logString = ''
-    
-    if (statusUpdate) {
-      const statusNotes = newData.notes == "" ? null : newData.notes;
-      const statusBy = newData.noteBy
-      logString = `Payment status updated to "${newData.paymentVerificationStatus}". "${statusNotes}" made by "${statusBy}"`;
-    } else {
-      if (isNew) {
-        logString = `A payment is due for ${
-          newData.totalPaymentDue
-        } GBP. ${enumToString('paymentPlan', newData.paymentPlan)}. ${newData.note}`;
-      } else {
-        logString = `A payment of ${
-          newData.paidAmount
-        } GBP was made. At ${formatDateShort(newData.totalPaymentToDate)}`;
-      }
-    }
+const createPaymentLog = ({
+  previousData = null,
+  newData,
+  statusUpdate = false,
+  isNew = false,
+}) => {
+  let logString = "";
 
-    const date = new Date().toUTCString()
-    return {date, logString}
-    
-}
+  if (statusUpdate) {
+    const statusNotes = newData.notes == "" ? null : newData.notes;
+    const statusBy = newData.noteBy;
+    logString = `Payment status updated to "${newData.paymentVerificationStatus}". "${statusNotes}" made by "${statusBy}"`;
+  } else {
+    if (isNew) {
+      logString = `A payment is due for ${
+        newData.totalPaymentDue
+      } GBP. ${enumToString("paymentPlan", newData.paymentPlan)}. ${
+        newData.note
+      }`;
+    } else {
+      logString = `A payment of ${
+        newData.paidAmount
+      } GBP was made. At ${formatDateShort(newData.totalPaymentToDate)}`;
+    }
+  }
+
+  const date = new Date().toUTCString();
+  return { date, logString };
+};
 
 export const deletePaymentDetails = async (req, res) => {
   try {

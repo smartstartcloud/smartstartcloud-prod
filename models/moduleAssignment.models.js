@@ -13,10 +13,10 @@ const moduleAssignmentSchema = new mongoose.Schema({
     ref: "Module",
     required: true,
   },
-  modulePayment: {
+  modulePayment: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "ModuleStudentFinance",
-  },
+  }],
   assignments: [
     {
       type: mongo.Schema.Types.ObjectId,

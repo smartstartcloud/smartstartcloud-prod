@@ -71,8 +71,9 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   });
 
     useEffect(() => {
-      if (paymentData) {        
+      if (paymentData) {
         setPaymentDetails({
+          _id: paymentData?._id || null,
           paymentPlan: paymentData?.paymentPlan || "",
           note: paymentData?.note || "",
           totalPaymentDue: paymentData?.totalPaymentDue || "",
@@ -121,10 +122,14 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
     // }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isNew) => {    
     setformLoading(true);
     try{
-      const response = await updatePayment(paymentDetails, paymentRequiredInformation);
+      const response = await updatePayment(
+        paymentDetails,
+        paymentRequiredInformation,
+        isNew
+      );
       setPaymentDetails({...paymentDetails, paymentLog : response.paymentLog, paymentVerificationStatus : "awaiting approval"})
       console.log("Form Data:", paymentDetails);
       console.log("Response Data:", response);
@@ -493,26 +498,56 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
             )}
           </Box>
         </Box>
-
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          disabled={formLoading}
-          sx={{
-            width: "100%",
-            backgroundColor: colors.blueAccent[500],
-            "&:hover": {
-              backgroundColor: colors.blueAccent[600],
-            },
-          }}
-        >
-          {formLoading ? (
-            <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
-          ) : (
-            "Update Payment"
-          )}
-        </Button>
-
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit(true)}
+              disabled={formLoading}
+              sx={{
+                width: "100%",
+                backgroundColor: colors.blueAccent[500],
+                "&:hover": {
+                  backgroundColor: colors.blueAccent[600],
+                },
+              }}
+            >
+              {formLoading ? (
+                <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
+              ) : (
+                "Add New Payment"
+              )}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit(false)}
+              disabled={formLoading}
+              sx={{
+                width: "100%",
+                borderColor: colors.primary?.[500] || "#defaultBorderColor",
+                borderWidth: "1px", // Ensure a border width
+                borderStyle: "solid", // Ensure the border is solid
+                backgroundColor:
+                  colors.blueAccent?.[900] || "#defaultBackground",
+                color: colors.primary?.[100] || "#defaultTextColor",
+                "&:hover": {
+                  borderColor:
+                    colors.blueAccent?.[800] || "#defaultHoverBorder",
+                  backgroundColor:
+                    colors.blueAccent?.[700] || "#defaultHoverBackground",
+                },
+              }}
+            >
+              {formLoading ? (
+                <CircularProgress size={24} sx={{ color: colors.grey[900] }} />
+              ) : (
+                "Update Payment"
+              )}
+            </Button>
+          </Grid>
+        </Grid>
         <Snackbar
           open={formSaved}
           autoHideDuration={3000}
