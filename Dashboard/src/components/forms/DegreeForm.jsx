@@ -143,6 +143,7 @@ const DegreeForm = ({editPage=false}) => {
 
   const onSubmit = async (data) => {
     const modules = {};
+    data.degreeID = data.degreeID.trim();
     data.degreeYear = `${monthYear.month.toLowerCase()}_${monthYear.year}`;
 
     data.degreeModules.forEach((module, index) => {
