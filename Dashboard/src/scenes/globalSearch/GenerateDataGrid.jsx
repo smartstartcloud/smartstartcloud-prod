@@ -3,7 +3,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { formatDateString } from "../../utils/yearFilter.js";
 import { enumToString, formatDate } from "../../utils/functions.js";
-import { format } from "date-fns";
 
 const GenerateDataGrid = ({title, data}) => {
     const theme = useTheme();

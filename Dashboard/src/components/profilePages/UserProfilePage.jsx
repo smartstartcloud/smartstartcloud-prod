@@ -20,8 +20,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { tokens } from "../../theme";
 import useSignup from "../../hooks/useSignup";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
+import { useLocation } from "react-router-dom";
 import useFetchUserInfo from "../../hooks/UseFetchUserInfo";
 import useLogout from "../../hooks/useLogout";
 
@@ -34,13 +33,13 @@ const UserProfilePage = () => {
   const [formError, setFormError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
+  // const [isEdit, setIsEdit] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const  {logout} = useLogout()
 
-  const { user, loading: dataloading, error } = useFetchUserInfo(userID);
+  const { user } = useFetchUserInfo(userID);
 
   const {
     control,

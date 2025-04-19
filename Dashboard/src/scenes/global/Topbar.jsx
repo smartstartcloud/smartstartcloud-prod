@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Button, Menu, MenuItem, Badge } from "@mui/material"
+import { Box, IconButton, Typography, Divider, useTheme, useMediaQuery, Menu, MenuItem } from "@mui/material"
 import { ColorModeContext, tokens } from '../../theme'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+// import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
 import { useAuthContext } from '../../context/AuthContext'
@@ -21,7 +21,7 @@ const Topbar = ({ logOut }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { authUser } = useAuthContext();
   const [notifications, setNotifications] = useState([]);
-  const { notificationList, loading, error} = useFetchAllNotifications(authUser?._id);
+  const { notificationList} = useFetchAllNotifications(authUser?._id);
 
   useEffect(() => {
     if (notificationList) {

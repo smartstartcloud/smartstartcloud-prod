@@ -19,6 +19,7 @@ import { tokens } from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import Papa from "papaparse";
 
 const StudentFieldForm = ({ control }) => {
   const theme = useTheme();
@@ -33,47 +34,117 @@ const StudentFieldForm = ({ control }) => {
     name: "degreeStudentList",
   });
 
+  // 1. Define a header mapping
+  const HEADER_MAP = {
+    "Student Status": "studentStatus",
+    "Student ID": "studentID",
+    "Student Name": "studentName",
+    "Student Contact": "studentContact",
+    "Student Username": "studentLogin",
+    "Student Password": "studentPassword",
+    "Office 365 Password": "studentOfficePassword",
+    "Other Information": "studentOther",
+    "Group Name": "groupName",
+    "Tutor Name": "tutorName",
+    "Campus Location": "campusLocation",
+    "Is External": "isExternal",
+    "University Name": "universityName",
+    "Course Name": "courseName",
+    "Year": "year",
+  };
+
+  // 2. Normalize headers and map data
+  const normalizeCSVData = (rawData) => {
+    return rawData.map((row) => {      
+      const normalized = {};
+      for (const [originalKey, value] of Object.entries(row)) {        
+        const mappedKey = HEADER_MAP[originalKey.trim()];
+        if (mappedKey) {
+          normalized[mappedKey] = value?.trim() || "";
+        }
+      }      
+      // Add default fallback
+      normalized.studentStatus = normalized.studentStatus || "noStatus";
+      normalized.isExternal = normalized.isExternal?.toLowerCase() === "yes";
+      return normalized;
+    });
+  };
+
+  // 3. File handler
   const handleFileChange = (event) => {
     const files = event.target.files;
     if (files && files[0]) {
-      const file = files[0];
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const csvContent = e.target.result;
-        parseCSV(csvContent);
-      };
-
-      reader.readAsText(file);
+      Papa.parse(files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {          
+          const parsed = normalizeCSVData(results.data);                    
+          populateStudentData(parsed);
+        },
+        error: function (err) {
+          console.error("CSV Parse Error:", err);
+        },
+      });
     }
   };
 
-  const parseCSV = (csvContent) => {
-    const rows = csvContent.split("\n").filter((row) => row.trim() !== "");
-    const data = rows.map((row) =>
-      row.split(",").map((cell) => cell.trim())
-    );
-    populateStudentData(data);
-  };
+  // const handleFileChange = (event) => {
+  //   const files = event.target.files;
+  //   if (files && files[0]) {
+  //     const file = files[0];
+  //     const reader = new FileReader();
+
+  //     reader.onload = (e) => {
+  //       const csvContent = e.target.result;
+  //       parseCSV(csvContent);
+  //     };
+
+  //     reader.readAsText(file);
+  //   }
+  // };
+
+  // const parseCSV = (csvContent) => {
+  //   const rows = csvContent
+  //     .split("\n")
+  //     .map((row) => row.trim())
+  //     .filter((row) => row !== "");
+
+  //   if (rows.length === 0) return;
+
+  //   const headers = rows[0].split(",").map((h) => h.trim());
+  //   const data = rows.slice(1).map((row) => {
+  //     const cells = row.split(",").map((cell) => cell.trim());
+  //     const obj = {};
+
+  //     headers.forEach((key, index) => {
+  //       obj[key] = cells[index] ?? "";
+  //     });
+
+  //     return obj;
+  //   });
+  //   console.log(data);
+
+  //   // populateStudentData(data);
+  // };
 
   const populateStudentData = (data) => {
-    const studentListToPopulate = data.slice(1);
-    for (let student of studentListToPopulate) {      
+    for (let student of data) {
       appendStudent({
-        studentID: student[0],
-        studentName: student[1],
-        studentContact: student[2],
-        studentLogin: student[3],
-        studentPassword: student[4],
-        studentOfficePassword: student[5],
-        studentOther: student[6],
-        groupName: student[7],
-        tutorName: student[8],
-        campusLocation: student[9],
-        isExternal: student[10]?.toLowerCase() === "yes",
-        universityName: student[11] || "",
-        courseName: student[12] || "",
-        year: student[13] || "",
+        studentStatus: student.studentStatus?.trim() || "",
+        studentID: student.studentID?.trim() || "",
+        studentName: student.studentName?.trim() || "",
+        studentContact: student.studentContact?.trim() || "",
+        studentLogin: student.studentLogin?.trim() || "",
+        studentPassword: student.studentPassword?.trim() || "",
+        studentOfficePassword: student.studentOfficePassword?.trim() || "",
+        studentOther: student.studentOther?.trim() || "",
+        groupName: student.groupName?.trim() || "",
+        tutorName: student.tutorName?.trim() || "",
+        campusLocation: student.campusLocation?.trim() || "",
+        isExternal: student.isExternal,
+        universityName: student.universityName?.trim() || "",
+        courseName: student.courseName?.trim() || "",
+        year: student.year?.trim() || "",
       });
     }
   };
@@ -203,7 +274,7 @@ const StudentFieldForm = ({ control }) => {
                                 labelId={`student-status-label-${index}`}
                                 label={label}
                               >
-                                <MenuItem value="">
+                                <MenuItem value="noStatus">
                                   <em>None</em>
                                 </MenuItem>
                                 <MenuItem value="active">ACTIVE</MenuItem>
@@ -211,6 +282,16 @@ const StudentFieldForm = ({ control }) => {
                                 <MenuItem value="withdrawn">WITHDRAWN</MenuItem>
                               </Select>
                             </FormControl>
+                          ) : name === "studentOther" ? (
+                            <TextField
+                              {...field}
+                              label={label}
+                              variant="outlined"
+                              fullWidth
+                              required={required}
+                              multiline
+                              rows={3}
+                            />
                           ) : (
                             <TextField
                               {...field}

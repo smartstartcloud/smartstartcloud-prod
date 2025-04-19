@@ -1,26 +1,21 @@
 import {
   Box,
-  Typography,
   useTheme,
-  IconButton,
   CircularProgress,
   Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails";
 import useSendPaymentData from "../../hooks/useSendPaymentData";
 import useDeletePayment from "../../hooks/useDeleteObjects";
 import { useLocation } from "react-router-dom";
 import PaymentApprovalTable from "../PaymentApprovalTable";
-import { enumToString, formatDate } from "../../utils/functions";
-import FileUpload from "../FileUpload";
 import FileView from "../FileView";
 import { useAuthContext } from "../../context/AuthContext";
 import { formatDateString } from "../../utils/yearFilter";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -42,7 +37,7 @@ const PaymentApproval = () => {
   const dataId = location.state?.dataId || null
   
   useEffect(() => {    
-    if (paymentData && paymentData.length > 0) {           
+    if (paymentData && paymentData.length > 0) {                 
       setBankFilter([]);
       setCashFilter([]);
       setOtherFilter([]);
@@ -60,6 +55,7 @@ const PaymentApproval = () => {
           degreeYear: item.degreeYear,
           degreeName: item.degreeName,
           moduleName: item.moduleName,
+          paymentNote: item.note,
           files: item.files,
           modulePrice: item.modulePrice ? item.modulePrice : 0,
           paidAmount: item.paidAmount ? item.paidAmount : 0,
@@ -91,6 +87,8 @@ const PaymentApproval = () => {
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
   const handleViewFile = (value) => {    
+    console.log(value);
+    
     setFileViewModalOpen(true);
     setFilesToSend(value.files);
     setDataToSend(value);
@@ -192,7 +190,14 @@ const PaymentApproval = () => {
       field: "paymentToDate",
       headerName: "Payment To Date",
       flex: 0.5,
-      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+      valueGetter: (params) => {
+        const date = new Date(params);
+        return isNaN(date) ? null : date; // Return Date object for sorting
+      },
+      valueFormatter: (params) => {
+        return format(params, "dd/MM/yyyy"); // Display as formatted string
+      },
+      sortComparator: (v1, v2) => v1 - v2, // Compare Date objects directly
     },
     // {
     //   field: "paymentMethod",
@@ -274,7 +279,14 @@ const PaymentApproval = () => {
       field: "paymentToDate",
       headerName: "Payment To Date",
       flex: 0.5,
-      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+      valueGetter: (params) => {
+        const date = new Date(params);
+        return isNaN(date) ? null : date; // Return Date object for sorting
+      },
+      valueFormatter: (params) => {
+        return format(params, "dd/MM/yyyy"); // Display as formatted string
+      },
+      sortComparator: (v1, v2) => v1 - v2, // Compare Date objects directly
     },
     // {
     //   field: "paymentMethod",
