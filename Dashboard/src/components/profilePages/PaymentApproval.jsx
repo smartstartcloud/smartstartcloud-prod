@@ -15,7 +15,7 @@ import PaymentApprovalTable from "../PaymentApprovalTable";
 import FileView from "../FileView";
 import { useAuthContext } from "../../context/AuthContext";
 import { formatDateString } from "../../utils/yearFilter";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 const PaymentApproval = () => {
   const theme = useTheme();
@@ -190,7 +190,14 @@ const PaymentApproval = () => {
       field: "paymentToDate",
       headerName: "Payment To Date",
       flex: 0.5,
-      valueGetter: (params) => format(params, "dd/MM/yyyy"),
+      valueGetter: (params) => {
+        const date = new Date(params);
+        return isNaN(date) ? null : date; // Return Date object for sorting
+      },
+      valueFormatter: (params) => {
+        return format(params, "dd/MM/yyyy"); // Display as formatted string
+      },
+      sortComparator: (v1, v2) => v1 - v2, // Compare Date objects directly
     },
     // {
     //   field: "paymentMethod",
