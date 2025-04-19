@@ -237,7 +237,7 @@ const StudentForm = ({open, setOpen, degreeID, studentData, studentEditMode=fals
                     setErrors({ ...errors, studentStatus: "" });
                   }}
                 >
-                  <MenuItem value="">
+                  <MenuItem value="noStatus">
                     <em>None</em>
                   </MenuItem>
                   <MenuItem value="active">ACTIVE</MenuItem>

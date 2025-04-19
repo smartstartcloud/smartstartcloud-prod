@@ -28,7 +28,10 @@ export async function addNewStudent(studentList, parentLink) {
             { _id: currentStudent._id }, // Find the student by studentID
             {
               studentName: studentData.studentName,
-              studentStatus: studentData.studentStatus,
+              studentStatus:
+                studentData.studentStatus == ""
+                  ? "noStatus"
+                  : studentData.studentStatus,
               studentID: studentData.studentID,
               studentContact: studentData.studentContact,
               studentLogin: studentData.studentLogin,
@@ -52,7 +55,10 @@ export async function addNewStudent(studentList, parentLink) {
           // Create a new Student instance
           const newStudent = new Student({
             studentName: studentData.studentName,
-            studentStatus: studentData.studentStatus,
+            studentStatus:
+              studentData.studentStatus == ""
+                ? "noStatus"
+                : studentData.studentStatus,
             studentID: studentData.studentID,
             studentContact: studentData.studentContact,
             studentLogin: studentData.studentLogin,
