@@ -185,7 +185,6 @@ export const updatePaymentDetails = async (req, res) => {
     }
 
     updateDetails.moduleAssignmentID = moduleAssignment._id;
-
     if (isNewPayment && !_id) {
       return addNewPayment(
         req,
@@ -388,18 +387,18 @@ export const getPaymentDetails = async (req, res) => {
   const { assignmentID, moduleCode, studentID } = req.body;
   try {
     // Find the module ID using the moduleCode
-    const module = await Module.findOne({ moduleCode });
-    if (!module) {
+    const moduleID = await Module.findOne({ moduleCode }).select("_id");
+
+    if (!moduleID) {
       return res.status(404).json({ error: "Module not found" });
     }
 
     // Find all records in ModuleStudentFinance where studentID and moduleID match
     const finances = await ModuleStudentFinance.find({
       studentID,
-      moduleID: module._id,
-    });
-
-    res.status(200).json(finances[0]);
+      moduleID,
+    });    
+    res.status(200).json(finances);
   } catch (error) {
     console.error("Error fetching finance data:", error);
     res.status(500).json({ error: "An error occurred while fetching data" });
