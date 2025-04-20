@@ -141,6 +141,7 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
       setPaymentDetails({...paymentDetails, paymentLog : response.paymentLog, paymentVerificationStatus : "awaiting approval"})
       console.log("Form Data:", paymentDetails);
       console.log("Response Data:", response);
+      paymentData[tabValue] = response
       setFormSaved(true);
       setformLoading(false);
     }catch (e) {

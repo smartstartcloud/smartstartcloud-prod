@@ -130,7 +130,6 @@ moduleStudentFinanceSchema.pre('save', async function (next) {
     // Construct a unique counter key based on role and year
     const counterKey = `fin`;
     const seq = await getNextSequence(counterKey);
-    // Format the userID as ROLE-YYYY-NNNN, e.g., ADMIN-2025-0001
     this.financeID = `${counterKey.toUpperCase()}-${seq
       .toString()
       .padStart(4, "0")}`;
