@@ -7,6 +7,7 @@ const useSendPaymentData = () => {
   const { authUser } = useAuthContext();  
   const updatePayment = async (
     {
+      _id,
       paymentPlan,
       note,
       totalPaymentDue,
@@ -22,27 +23,32 @@ const useSendPaymentData = () => {
       referredPaymentMethod,
       paymentVerificationStatus,
     },
-    paymentRequiredInformation
+    paymentRequiredInformation,
+    isNewPayment = false
   ) => {
     try {
-      const res = await api.put(`/api/module/updatePaymentData`, {
-        paymentPlan,
-        note,
-        totalPaymentDue,
-        totalPaymentToDate,
-        paymentMethod,
-        paymentAmount,
-        paymentStatus,
-        paidAmount,
-        otherPaymentMethod,
-        bankPaymentMethod,
-        bankPayeeName,
-        cashPaymentMethod,
-        referredPaymentMethod,
-        paymentRequiredInformation,
-        paymentVerificationStatus,
-        userID: authUser._id,
-      });
+      const res = await api.put(
+        `/api/module/updatePaymentData?new=${isNewPayment}`,
+        {
+          _id,
+          paymentPlan,
+          note,
+          totalPaymentDue,
+          totalPaymentToDate,
+          paymentMethod,
+          paymentAmount,
+          paymentStatus,
+          paidAmount,
+          otherPaymentMethod,
+          bankPaymentMethod,
+          bankPayeeName,
+          cashPaymentMethod,
+          referredPaymentMethod,
+          paymentRequiredInformation,
+          paymentVerificationStatus,
+          userID: authUser._id,
+        }
+      );
       const data = await res.data;
       if (data.error) {
         throw new Error(data.error);

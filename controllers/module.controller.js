@@ -70,21 +70,21 @@ export const getAssignment = async (req, res) => {
     const { studentID, moduleID } = req.params;
     
     const moduleAssignment = await ModuleAssignment.findOne({
-      moduleID: new mongoose.Types.ObjectId(moduleID),
-      studentID: new mongoose.Types.ObjectId(studentID),
+      moduleID: moduleID,
+      studentID: studentID,
     }).populate("assignments");
 
-    if (moduleAssignment) {
-      const paymentInfo = await ModuleStudentFinance.findOne({
+    if (moduleAssignment) {      
+      const paymentInfo = await ModuleStudentFinance.find({
         moduleAssignmentID: moduleAssignment._id,
-      }).select("paymentPlan");
-      if (paymentInfo) {
-        moduleAssignment.paymentPlan = paymentInfo.paymentPlan;
-      }
+      }).select("paymentPlan paidAmount paymentVerificationStatus");
+      // if (paymentInfo) {        
+      //   moduleAssignment.paymentPlan = paymentInfo;
+      // }
       // Convert moduleAssignment to a plain object before modifying
-      const assignmentData = moduleAssignment.toObject();
+      const assignmentData = moduleAssignment.toObject();      
       if (paymentInfo) {
-        assignmentData.paymentPlan = paymentInfo.paymentPlan;
+        assignmentData.paymentPlan = paymentInfo;        
       }
       res.status(200).json(assignmentData);
     } else {
