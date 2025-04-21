@@ -49,9 +49,26 @@ const StudentProfile = () => {
     const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
+    const [totalAmountPaid, setTotalAmountPaid] = useState(0)
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const formatPaymentPlan = (planArray) => {
+      setTotalAmountPaid(0);
+      const uniquePlans = [
+        ...new Set(
+          planArray.map((item) => enumToString("paymentPlan", item.paymentPlan))
+        ),
+      ];
+      const planStr = uniquePlans.join(' / ')      
+      setModuleStudentPaymentPlan(planStr);
+      planArray.forEach((payment) => {
+        if (payment.paymentVerificationStatus === "approved"){
+          setTotalAmountPaid((prev) => prev + Number(payment.paidAmount));
+        }
+      });
+    };
 
     const handleModuleClick = async (moduleId, moduleName) => {
         setSelectedModule(moduleId);
@@ -61,10 +78,10 @@ const StudentProfile = () => {
         setAssignmentList([]);
 
         try {
-            const response = await fetchAssignmentList(moduleId, _id);  
+            const response = await fetchAssignmentList(moduleId, _id);              
             setModuleStudentID(response.moduleStudentID);
             if (response.modulePaymentPlan) {
-              setModuleStudentPaymentPlan(response.modulePaymentPlan);
+              formatPaymentPlan(response.modulePaymentPlan);
             }
             if (Array.isArray(response.data)) {
                 setAssignmentList([{ moduleName, moduleId }, ...response.data]);                
@@ -313,7 +330,22 @@ const StudentProfile = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
-                        {enumToString("paymentPlan", moduleStudentPaymentPlan)}
+                        {moduleStudentPaymentPlan}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Total Amount Paid in this Module:
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6" color={colors.grey[100]}>
+                        {totalAmountPaid}
                       </Typography>
                     </Grid>
                   </Grid>

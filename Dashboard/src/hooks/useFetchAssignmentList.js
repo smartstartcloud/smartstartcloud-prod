@@ -4,11 +4,10 @@ const useFetchAssignmentList = () => {
     const api = useApi()
     const fetchAssignmentList = async (moduleID, studentID) => {        
         try {
-            const res = await api.get(`/api/module/getAssignment/${moduleID}/${studentID}`)
-
-            const data = await res.data.assignments;
+            const res = await api.get(`/api/module/getAssignment/${moduleID}/${studentID}`)                        
+            const data = res.data.assignments;
             const moduleStudentID = res.data._id;        
-            const modulePaymentPlan = res.data.paymentPlan;
+            const modulePaymentPlan = res.data.paymentPlan;            
             if (data.error) {
                 throw new Error(data.error);
             }

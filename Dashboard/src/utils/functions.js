@@ -81,7 +81,9 @@ export const enumToString = (type, value) => {
         ? "Whole year plan"
         : value === "installment"
         ? "Whole year - 2 instalment plan"
-        : "Individual plan";
+        : value === "individual"
+        ? "Individual plan"
+        : "No Plan"
     case "otherPaymentMethod":
       return value === "cash"
         ? "CASH"
