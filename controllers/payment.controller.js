@@ -263,14 +263,12 @@ export const updatePaymentStatus = async (req, res) => {
     }
 
     let approvalNoteLog = null;
-    if (paymentVerificationStatus === "rejected") {
-      approvalNoteLog = {
-        date: new Date().toUTCString(),
-        approvalStatus: paymentVerificationStatus,
-        approvalNote,
-        approvedBy,
-      };
-    }
+    approvalNoteLog = {
+      date: new Date().toUTCString(),
+      approvalStatus: paymentVerificationStatus,
+      approvalNote,
+      approvedBy,
+    };
 
     paymentLogDetails.notes = approvalNote;
     paymentLogDetails.noteBy = approvedBy;
