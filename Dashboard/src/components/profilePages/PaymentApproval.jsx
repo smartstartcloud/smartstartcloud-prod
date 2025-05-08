@@ -86,9 +86,7 @@ const PaymentApproval = () => {
   }, [paymentData]);
 
   // Handle row click to navigate to the student page using degreeYear, degreeId, and studentId
-  const handleViewFile = (value) => {    
-    console.log(value);
-    
+  const handleViewFile = (value) => {        
     setFileViewModalOpen(true);
     setFilesToSend(value.files);
     setDataToSend(value);

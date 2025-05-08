@@ -95,6 +95,7 @@ const FileUpload = ({
     formData.append("referenceCollection", referenceCollection);
     if (isPayment){
       formData.append("paymentFlag", true);
+      formData.append("parentID", parentID);
     }
     if (isOrder){      
       formData.append("orderID", orderID);

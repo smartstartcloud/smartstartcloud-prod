@@ -23,7 +23,7 @@ const SuperAdminCharts = () => {
   const [filteredClickedPaymentList, setfilteredClickedPaymentList] = useState({});
   const [chartData, setChartData] = useState([]);
   const [paymentDetailsData, setPaymentDetailsData] = useState({});
-  const { paymentData, error, loading } = useAllGetPaymentDetails("approved");
+  const { paymentData, error, loading } = useAllGetPaymentDetails();
 
   const [openSelectedIntake, setOpenSelectedIntake] = useState(false);
   const [selectedIntake, setSelectedIntake] = useState("");
@@ -38,7 +38,7 @@ const SuperAdminCharts = () => {
       const [month, year] = formattedDate.split(" ");
       setSelectedYear(year);
       setSelectedIntake(month);
-      if (filteredYearList.length > 0) {
+      if (filteredYearList.length > 0) {        
         handlePaymentCardClick(filteredYearList[0].data);
       }
     }
@@ -230,8 +230,10 @@ const SuperAdminCharts = () => {
               <Grid
                 item
                 xs={12}
-                sm={4}
+                sm={12}
+                lg={6}
                 key={index}
+                sx={{display: 'flex', justifyContent: 'center'}}
                 onClick={() => handlePaymentCardClick(data)}
               >
                 <Box display="flex" flexDirection="column" gap={2}>
