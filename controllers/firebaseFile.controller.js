@@ -29,6 +29,7 @@ export const fileUpload = async (req, res) => {
       uploadedByUserName,
       writerFlag,
       paymentFlag,
+      parentID,
       fileName,
       fileType,
       fileUrl,
@@ -51,6 +52,7 @@ export const fileUpload = async (req, res) => {
       fileUrl,
       ...(writerFlag && { writerFlag }),
       ...(paymentFlag && { paymentFlag }),
+      ...(paymentFlag && { parentID }),
     });
 
     // Create a log entry for the file upload
@@ -88,29 +90,35 @@ export const fileUpload = async (req, res) => {
         { new: true } // Return updated document
       );
       newFile.metadata = module.metadata
-    } else if (referenceCollection === "ModuleAssignment") {
+    } else if (referenceCollection === "ModuleStudentFinance") {
+      console.log("ashche ekhane", parentID);
+
       const moduleAssignment = await ModuleAssignment.findByIdAndUpdate(
-        { _id: referenceID }, // Find the Module document by its ID
+        { _id: parentID }, // Find the Module document by its ID
         { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
         { new: true } // Return updated document
       );
       if (moduleAssignment) {
         newFile.metadata = moduleAssignment.metadata;
-
-        // Find all finance records where moduleAssignmentID matches referenceID
-        const financeRecords = await ModuleStudentFinance.find({
-          moduleAssignmentID: referenceID,
-        });
-        // Update each finance record by adding the new file ID to fileList
-        await Promise.all(
-          financeRecords.map(async (finance) => {
-            await ModuleStudentFinance.findByIdAndUpdate(
-              finance._id,
-              { $push: { fileList: newFile._id } },
-              { new: true }
-            );
-          })
+        const payment = await ModuleStudentFinance.findByIdAndUpdate(
+          { _id: referenceID }, // Find the Module document by its ID
+          { $push: { fileList: newFile._id } }, // Push new file ID into "assignmentFile" array
+          { new: true } // Return updated document
         );
+        // // Find all finance records where moduleAssignmentID matches referenceID
+        // const financeRecords = await ModuleStudentFinance.find({
+        //   moduleAssignmentID: referenceID,
+        // });
+        // // Update each finance record by adding the new file ID to fileList
+        // await Promise.all(
+        //   financeRecords.map(async (finance) => {
+        //     await ModuleStudentFinance.findByIdAndUpdate(
+        //       finance._id,
+        //       { $push: { fileList: newFile._id } },
+        //       { new: true }
+        //     );
+        //   })
+        // );
       }
     }
     await newFile.save();
@@ -291,7 +299,9 @@ export const listFiles = async (req, res) => {
 // Controller to list all files by order ID
 export const listFilesByReferenceID = async (req, res) => {
   try {
-    const { referenceID, isOrder, orderID, parentID } = req.body;            
+    const { referenceID, isOrder, orderID, parentID } = req.body;     
+    console.log(req.body);
+           
     let files;
     if (isOrder) {
       files = await File.find(

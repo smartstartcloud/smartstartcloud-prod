@@ -64,9 +64,7 @@ const FileView = ({
     }
     if (dataToSend) {
       setreferenceIdToPass(dataToSend.moduleAssignmentID);
-      setData(dataToSend);
-      console.log(dataToSend);
-      
+      setData(dataToSend);      
     }
   }, [fileList, dataToSend]);
 

@@ -50,6 +50,16 @@ const PaymentCard = ({id='', name, data, type}) => {
       )
     : 0;
 
+  const totalRejectedPriceTemp = Array.isArray(data)
+    ? data.reduce(
+        (sum, item) =>
+          item.paymentVerificationStatus === "rejected"
+            ? sum + Number(item.paidAmount || 0)
+            : sum,
+        0
+      )
+    : 0;
+
   const totalPriceDueTemp = Array.isArray(data)
     ? data.reduce((sum, item) => sum + Number(item.totalPaymentDue || 0), 0)
     : 0;   
@@ -106,12 +116,28 @@ const PaymentCard = ({id='', name, data, type}) => {
                     {totalApprovedPriceTemp}
                   </TableCell>
                 </TableRow>
-                <TableRow>
+                {/* <TableRow>
                   <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
                     Due Amount
                   </TableCell>
                   <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.redAccent[400] }}>
                     {totalPriceDueTemp}
+                  </TableCell>
+                </TableRow> */}
+                <TableRow>
+                  <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
+                    Waiting to be Approved Amount
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.redAccent[400] }}>
+                    {totalWaitingApprovalPriceTemp}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ fontSize: "0.8rem", fontWeight: "bold", color: colors.grey[50] }}>
+                    Rejected Amount
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9rem", fontWeight: "bold", color: colors.redAccent[400] }}>
+                    {totalRejectedPriceTemp}
                   </TableCell>
                 </TableRow>
                 <TableRow>

@@ -42,7 +42,7 @@ import PaymentFormSingle from './PaymentFormSingle';
 
 const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {     
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);    
+  const colors = tokens(theme.palette.mode);      
   
   const [formSaved, setFormSaved] = useState(false);
   const [formError, setFormError] = useState(false);
@@ -51,6 +51,8 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
 
   const [referenceIdToPass, setreferenceIdToPass] = useState("");
+  const [parentReferenceIdToPass, setparentReferenceIdToPass] = useState("");
+  const [referenceDisplayToPass, setReferenceDisplayToPass] = useState("");
   const [tabValue, setTabValue] = useState("new");
   
   const { paymentData, loading, error } = useGetPaymentDetails(paymentRequiredInformation);
@@ -75,9 +77,10 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
   });
 
     useEffect(() => {
-      if (paymentData) {        
+      if (paymentData) {                
         setPaymentDetails({
           _id: paymentData[tabValue]?._id || null,
+          financeID: paymentData[tabValue]?.financeID || null,
           paymentPlan: paymentData[tabValue]?.paymentPlan || "",
           note: paymentData[tabValue]?.note || "",
           totalPaymentDue: paymentData[tabValue]?.totalPaymentDue || "",
@@ -90,12 +93,15 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
           bankPaymentMethod: paymentData[tabValue]?.bankPaymentMethod || "",
           bankPayeeName: paymentData[tabValue]?.bankPayeeName || "",
           cashPaymentMethod: paymentData[tabValue]?.cashPaymentMethod || "",
-          referredPaymentMethod: paymentData[tabValue]?.referredPaymentMethod || "",
+          referredPaymentMethod:
+            paymentData[tabValue]?.referredPaymentMethod || "",
           paymentLog: paymentData[tabValue]?.paymentLog || [],
           paymentVerificationStatus:
             paymentData[tabValue]?.paymentVerificationStatus || "",
-        });
-        setreferenceIdToPass(paymentData[tabValue]?.moduleAssignmentID);
+        });           
+        setparentReferenceIdToPass(paymentData[tabValue]?.moduleAssignmentID);   
+        setreferenceIdToPass(paymentData[tabValue]?._id);
+        setReferenceDisplayToPass(paymentData[tabValue]?.financeID);
       }
     }, [paymentData, tabValue]);
 
@@ -309,11 +315,13 @@ const PaymentForm = ({ open, setOpen, paymentRequiredInformation }) => {
         </Snackbar>
         {fileUploadModalOpen && (
           <FileUpload
-            setOpen={setOpen}
+            setOpen={setFileUploadModalOpen}
             open={open}
             referenceID={referenceIdToPass}
-            referenceCollection={"ModuleAssignment"}
+            referenceCollection={"ModuleStudentFinance"}
+            referenceDisplay={referenceDisplayToPass}
             isPayment={true}
+            parentID={parentReferenceIdToPass}
           />
         )}
       </Box>
