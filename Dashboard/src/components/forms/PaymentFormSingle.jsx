@@ -32,18 +32,21 @@ import {
   Chip,
 } from "@mui/material";
 import { tokens } from "../../theme";
-import useGetPaymentDetails from "../../hooks/useGetPaymentDetails";
-import useSendPaymentData from "../../hooks/useSendPaymentData";
 import { enumToString, formatDate } from "../../utils/functions";
-import FileUpload from "../FileUpload";
 
 const PaymentFormSingle = ({
   paymentDetails,
   handleChange,
   setFileUploadModalOpen,
-}) => {
+}) => {  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [isApproved, setIsApproved] = useState(false)
+
+  useEffect(() => {
+    setIsApproved(() => paymentDetails.paymentVerificationStatus === "approved");
+  }, [paymentDetails]);
+
   return (
     <Box display="flex" py={2}>
       <Box flexGrow={3}>
@@ -64,6 +67,7 @@ const PaymentFormSingle = ({
                 fullWidth
                 required
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               >
                 <MenuItem value="year">Whole year plan</MenuItem>
                 <MenuItem value="installment">
@@ -80,6 +84,7 @@ const PaymentFormSingle = ({
               value={paymentDetails.note}
               onChange={(e) => handleChange("note", e.target.value)}
               sx={{ mb: 2 }}
+              disabled={isApproved}
             />
           </Grid>
         </Grid>
@@ -93,6 +98,7 @@ const PaymentFormSingle = ({
               onChange={(e) => handleChange("paymentAmount", e.target.value)}
               sx={{ mb: 2 }}
               inputProps={{ min: 0 }} // Optional: Prevents negative values
+              disabled={isApproved}
             />
           </Grid>
 
@@ -105,6 +111,7 @@ const PaymentFormSingle = ({
               onChange={(e) => handleChange("paidAmount", e.target.value)}
               sx={{ mb: 2 }}
               inputProps={{ min: 0 }} // Optional: Prevents negative values
+              disabled={isApproved}
             />
           </Grid>
         </Grid>
@@ -117,6 +124,7 @@ const PaymentFormSingle = ({
               value={paymentDetails.totalPaymentDue}
               onChange={(e) => handleChange("totalPaymentDue", e.target.value)}
               sx={{ mb: 2 }}
+              disabled={isApproved}
             />
           </Grid>
           <Grid item xs={6}>
@@ -132,6 +140,7 @@ const PaymentFormSingle = ({
                 fullWidth
                 required
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               >
                 <MenuItem value="NP">OUTSTANDING</MenuItem>
                 <MenuItem value="PP">PARTIALLY PAID</MenuItem>
@@ -145,6 +154,7 @@ const PaymentFormSingle = ({
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 sx={{ width: "100%", mb: 2 }}
+                disabled={isApproved}
                 label="Total Payment to Date"
                 format="dd/MM/yyyy" // Custom date format
                 value={
@@ -203,6 +213,7 @@ const PaymentFormSingle = ({
                 value={paymentDetails.paymentMethod}
                 onChange={(e) => handleChange("paymentMethod", e.target.value)}
                 fullWidth
+                disabled={isApproved}
               >
                 <MenuItem value="cash">Cash</MenuItem>
                 <MenuItem value="bank">Bank</MenuItem>
@@ -221,6 +232,7 @@ const PaymentFormSingle = ({
                   handleChange("bankPaymentMethod", e.target.value)
                 }
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               />
             )}
             {paymentDetails.paymentMethod === "cash" && (
@@ -232,6 +244,7 @@ const PaymentFormSingle = ({
                   handleChange("cashPaymentMethod", e.target.value)
                 }
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               />
             )}
             {paymentDetails.paymentMethod === "referral" && (
@@ -243,6 +256,7 @@ const PaymentFormSingle = ({
                   handleChange("referredPaymentMethod", e.target.value)
                 }
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               />
             )}
             {paymentDetails.paymentMethod === "other" && (
@@ -254,6 +268,7 @@ const PaymentFormSingle = ({
                   handleChange("otherPaymentMethod", e.target.value)
                 }
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               />
             )}
           </Grid>
@@ -267,6 +282,7 @@ const PaymentFormSingle = ({
                 value={paymentDetails.bankPayeeName}
                 onChange={(e) => handleChange("bankPayeeName", e.target.value)}
                 sx={{ mb: 2 }}
+                disabled={isApproved}
               />
             </Grid>
           </Grid>

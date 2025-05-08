@@ -345,7 +345,7 @@ const createPaymentLog = ({
   let logString = "";
 
   if (statusUpdate) {
-    const statusNotes = newData.notes == "" ? null : newData.notes;
+    const statusNotes = newData.notes == "" ? "No notes were" : newData.notes;
     const statusBy = newData.noteBy;
     logString = `Payment status updated to "${newData.paymentVerificationStatus}". "${statusNotes}" made by "${statusBy}"`;
   } else {
