@@ -41,7 +41,7 @@ const FileUpload = ({
   referenceDisplay='',
   isModule=false,
   viewOnly = false
-}) => {
+}) => {  
   const theme = useTheme();
   const [files, setFiles] = useState([]);
   const [existingFiles, setExistingFiles] = useState([]);
@@ -103,7 +103,7 @@ const FileUpload = ({
       formData.append("fileCategory", "assignment");
       formData.append("writerFlag", true);
     }
-    try {
+    try {      
       const response = await uploadFiles(formData, setProgress);
       setUploadStatus((prevStatus) => ({
         ...prevStatus,

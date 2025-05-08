@@ -54,7 +54,9 @@ const FileView = ({
   const { downloadFiles } = useUploadFiles();
   const [data, setData] = useState({})
   const [note, setNote] = useState("");
-  const [referenceIdToPass, setreferenceIdToPass] = useState("");
+  const [referenceIdToPass, setReferenceIdToPass] = useState("");
+  const [parentReferenceIdToPass, setParentReferenceIdToPass] = useState("");
+  const [referenceDisplayToPass, setReferenceDisplayToPass] = useState("");
   const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
 
   useEffect(() => {    
@@ -63,13 +65,19 @@ const FileView = ({
       setFiles(fileList);
     }
     if (dataToSend) {
-      setreferenceIdToPass(dataToSend.moduleAssignmentID);
-      setData(dataToSend);      
+      console.log(dataToSend);
+      
+      setData(dataToSend);     
+      setParentReferenceIdToPass(dataToSend.moduleAssignmentID);
+      setReferenceIdToPass(dataToSend.id);
+      setReferenceDisplayToPass(dataToSend.financeID); 
     }
   }, [fileList, dataToSend]);
 
   useEffect(() => {
-    if (data) {
+    if (data) {    
+      console.log(data);
+      
     }
   }, [data]);
 
@@ -422,8 +430,10 @@ const FileView = ({
             setOpen={setFileUploadModalOpen}
             open={fileUploadModalOpen}
             referenceID={referenceIdToPass}
-            referenceCollection={"ModuleAssignment"}
+            referenceCollection={"ModuleStudentFinance"}
+            referenceDisplay={referenceDisplayToPass}
             isPayment={true}
+            parentID={parentReferenceIdToPass}
           />
         )}
       </Container>
