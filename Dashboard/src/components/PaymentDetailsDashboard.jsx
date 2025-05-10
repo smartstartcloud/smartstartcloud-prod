@@ -25,15 +25,36 @@ const PaymentDetailsDashboard = ({data, type}) => {
         studentName: item.studentID?.studentName,
         moduleName: item.moduleName,
         modulePrice: item.modulePrice || 0,
-        paidAmount: item.paidAmount || 0,
+        // paidAmount: item.paidAmount || 0,
+        approvedAmount:
+          item.paymentVerificationStatus === "approved"
+            ? parseInt(item.paidAmount)
+            : 0,
+        awaitingAmount:
+          item.paymentVerificationStatus === "awaiting approval"
+            ? parseInt(item.paidAmount)
+            : 0,
+        rejectedAmount:
+          item.paymentVerificationStatus === "rejected"
+            ? parseInt(item.paidAmount)
+            : 0,
         paymentDue: item.totalPaymentDue || 0,
         paymentToDate: item.totalPaymentToDate,
         paymentVerificationStatus: item.paymentVerificationStatus,
         metadata: item.metadata,
       }));
+      
       // Calculate totals
-      const totalPaidAmount = formattedData.reduce(
-        (sum, row) => sum + Number(row.paidAmount),
+      const totalApprovedAmount = formattedData.reduce(
+        (sum, row) => sum + Number(row.approvedAmount),
+        0
+      );
+      const totalawaitingAmount = formattedData.reduce(
+        (sum, row) => sum + Number(row.awaitingAmount),
+        0
+      );
+      const totalRejectedAmount = formattedData.reduce(
+        (sum, row) => sum + Number(row.rejectedAmount),
         0
       );
       const totalDueAmount = formattedData.reduce(
@@ -51,7 +72,9 @@ const PaymentDetailsDashboard = ({data, type}) => {
         financeID: `Total in`,
         degreeID: `${dataMonth} ${dataYear}`,
         // modulePrice: totalModulePrice,
-        paidAmount: totalPaidAmount, // Total Paid Amount
+        approvedAmount: totalApprovedAmount, // Total Paid Amount
+        awaitingAmount: totalawaitingAmount, // Total Paid Amount
+        rejectedAmount: totalRejectedAmount, // Total Paid Amount
         paymentDue: totalDueAmount, // Total Due Amount
       };
       setTableData([...formattedData, totalRow]);
@@ -74,12 +97,14 @@ const PaymentDetailsDashboard = ({data, type}) => {
     { field: "financeID", headerName: "Payment ID", flex: 0.5 },
     { field: "degreeID", headerName: "Degree ID", flex: 0.5 },
     { field: "degreeName", headerName: "Degree Name", flex: 0.5 },
-    { field: "paidAmount", headerName: "Approved Amount", flex: 0.5 },
-    { field: "studentID", headerName: "sID", flex: 0.25 },
+    { field: "approvedAmount", headerName: "Approved Amount", flex: 0.5 },
+    { field: "awaitingAmount", headerName: "Awaiting Amount", flex: 0.5 },
+    { field: "rejectedAmount", headerName: "Rejected Amount", flex: 0.5 },
+    // { field: "studentID", headerName: "sID", flex: 0.25 },
     { field: "studentName", headerName: "Student Name", flex: 0.5 },
     { field: "moduleName", headerName: "Module Name", flex: 0.5 },
     { field: "modulePrice", headerName: "Module Price", flex: 0.5 },
-    { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
+    // { field: "paymentDue", headerName: "Payment Due", flex: 0.5 },
     {
       field: "paymentToDate",
       headerName: "Payment To Date",
@@ -94,29 +119,27 @@ const PaymentDetailsDashboard = ({data, type}) => {
       headerName: "Verification Status",
       flex: 0.75,
       renderCell: (params) => {
-        if (!params.row.paymentVerificationStatus) 
+        if (!params.row.paymentVerificationStatus)
+          return <Typography></Typography>;
+        //
+        else {
           return (
-            <Typography></Typography>
-          ); //
-          else {
-            return (
-              <Button
-                variant={
-                  params.row.paymentVerificationStatus !== "approved"
-                    ? "outlined"
-                    : "contained"
-                }
-                color={
-                  params.row.paymentVerificationStatus !== "approved"
-                    ? "error"
-                    : "success"
-                }
-              >
-                {params.row.paymentVerificationStatus}
-              </Button>
-            );
-          }
-          
+            <Button
+              variant={
+                params.row.paymentVerificationStatus !== "approved"
+                  ? "outlined"
+                  : "contained"
+              }
+              color={
+                params.row.paymentVerificationStatus !== "approved"
+                  ? "error"
+                  : "success"
+              }
+            >
+              {params.row.paymentVerificationStatus}
+            </Button>
+          );
+        }
       },
     },
   ];
@@ -227,7 +250,7 @@ const PaymentDetailsDashboard = ({data, type}) => {
                 initialState={{
                   pagination: {
                     paginationModel: {
-                      pageSize: 5,
+                      pageSize: 10,
                       page: 0, // Initial page index
                     },
                   },
