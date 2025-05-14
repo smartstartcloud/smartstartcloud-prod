@@ -69,7 +69,7 @@ export const addNewPayment = async (
     const moduleAssignment = await ModuleAssignment.findOne({
       studentID,
       moduleID: module._id,
-    });    
+    });        
 
     if (!moduleAssignment) {
       return res.status(404).json({ error: "No Assignment Module Created" });
@@ -109,12 +109,11 @@ export const addNewPayment = async (
       affectedID: newPayment._id,
       metadata: newPayment.metadata,
     });
-    ddd
     res.status(200).json(newPayment);
   } catch (error) {    
       res.status(500).json({
         message: error.message || 'Internal Server Error',
-        stack: error.stack, // optional, only include in development
+        // stack: error.stack, // optional, only include in development
       });
   }
 };

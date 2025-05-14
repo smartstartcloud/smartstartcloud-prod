@@ -55,11 +55,10 @@ const useSendPaymentData = () => {
       }
       return data;
     } catch (error) {
-      console.log(error);
       
       if (error.response) {
         if (error.response.status === 500) {
-          console.log(error.response.data.stack);
+          // console.log(error.response.data.stack);
           throw new Error(error.response.data.message);
         }
       } else {
