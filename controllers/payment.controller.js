@@ -114,7 +114,7 @@ export const addNewPayment = async (
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error. Payment not saved." });
+      .json({ error: "An error occurred while creating payment", error });
   }
 };
 
