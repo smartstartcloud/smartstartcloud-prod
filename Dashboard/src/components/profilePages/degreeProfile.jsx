@@ -104,6 +104,9 @@ const DegreeProfile = () => {
   };
 
   const handleDelete = async (data) => {
+    
+    if (!window.confirm("Are you sure you want to delete this Student?"))
+      return;
     try{
       const response = await deleteStudent(data._id,degree.degreeID)
       console.log("Response Data:", response);
@@ -114,10 +117,12 @@ const DegreeProfile = () => {
   };
 
   const handleDegreeDelete = async () => {
-    try {      
+    if (!window.confirm("Are you sure you want to delete this Degree?"))
+      return;
+    try {
       const response = await deleteDegree(degree.degreeID);
       console.log("Degree deleted:", response);
-      navigate("/allDegrees"); 
+      navigate("/allDegrees");
     } catch (e) {
       console.log("Error deleting degree: ", e.message);
     }
