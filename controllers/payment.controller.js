@@ -109,12 +109,13 @@ export const addNewPayment = async (
       affectedID: newPayment._id,
       metadata: newPayment.metadata,
     });
-
+    ddd
     res.status(200).json(newPayment);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating payment", error });
+  } catch (error) {    
+      res.status(500).json({
+        message: error.message || 'Internal Server Error',
+        stack: error.stack, // optional, only include in development
+      });
   }
 };
 
