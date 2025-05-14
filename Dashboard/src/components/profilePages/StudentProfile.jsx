@@ -9,6 +9,7 @@ import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { enumToString } from '../../utils/functions';
+import useFetchPaymentWithDegree from '../../hooks/useFetchPaymentWithDegree';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -16,10 +17,11 @@ const StudentProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const location = useLocation();
-    const { studentId } = useParams();
+    const { studentId, degreeId } = useParams();    
     
     const { student, loading, error } = useFetchSingleStudentData(studentId);    
     const { fetchAssignmentList } = useFetchAssignmentList();
+    const { fetchPaymentWithDegree } = useFetchPaymentWithDegree();
 
     const {
       _id,
@@ -49,13 +51,16 @@ const StudentProfile = () => {
     const [listLoading, setListLoading] = useState(false);
     const [listError, setListError] = useState(false);
     const [listErrorMessage, setListErrorMessage] = useState('');
+    const [allModuleAmountPaid, setAllModuleAmountPaid] = useState(0);
     const [totalAmountPaid, setTotalAmountPaid] = useState(0)
+    const [totalAmountDue, setTotalAmountDue] = useState(0);
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const formatPaymentPlan = (planArray) => {
       setTotalAmountPaid(0);
+      setTotalAmountDue(0);
       const uniquePlans = [
         ...new Set(
           planArray.map((item) => enumToString("paymentPlan", item.paymentPlan))
@@ -65,7 +70,10 @@ const StudentProfile = () => {
       setModuleStudentPaymentPlan(planStr);
       planArray.forEach((payment) => {
         if (payment.paymentVerificationStatus === "approved"){
-          setTotalAmountPaid((prev) => prev + Number(payment.paidAmount));
+          setTotalAmountPaid((prev) => prev + Number(payment.paidAmount ?? 0));
+          setTotalAmountDue(
+            (prev) => prev + Number(payment.totalPaymentDue ?? 0)
+          );
         }
       });
     };
@@ -80,7 +88,7 @@ const StudentProfile = () => {
         try {
             const response = await fetchAssignmentList(moduleId, _id);              
             setModuleStudentID(response.moduleStudentID);
-            if (response.modulePaymentPlan) {
+            if (response.modulePaymentPlan) {              
               formatPaymentPlan(response.modulePaymentPlan);
             }
             if (Array.isArray(response.data)) {
@@ -96,9 +104,28 @@ const StudentProfile = () => {
         }
     };
 
+    const handlePaymentDataOnLoad = async (degreeID, studentID) => {
+      try {
+        const response = await fetchPaymentWithDegree(degreeID, studentID);
+        if (response) {
+          const totalModuleDatas = response
+          setAllModuleAmountPaid(0);
+          totalModuleDatas.forEach((payment) => {
+            setAllModuleAmountPaid(
+              (prev) => prev + Number(payment.paidAmount ?? 0)
+            );
+          });
+        }
+      } catch (e) {
+        setListError(true);
+        setListErrorMessage(e);
+      }
+    }
+
     useEffect(() => {              
         if (degreeModules.length > 0 && student) {
             handleModuleClick(degreeModules[0]._id, degreeModules[0].moduleName);
+            handlePaymentDataOnLoad(degreeId, _id);
         }
     }, [degreeModules, student]);
 
@@ -346,6 +373,36 @@ const StudentProfile = () => {
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
                         {totalAmountPaid}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Total Amount Due in this Module:
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6" color={colors.grey[100]}>
+                        {totalAmountDue}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        color={colors.grey[100]}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Total Paid For The Year:
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6" color={colors.grey[100]}>
+                        {allModuleAmountPaid}
                       </Typography>
                     </Grid>
                   </Grid>

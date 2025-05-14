@@ -77,7 +77,9 @@ export const getAssignment = async (req, res) => {
     if (moduleAssignment) {      
       const paymentInfo = await ModuleStudentFinance.find({
         moduleAssignmentID: moduleAssignment._id,
-      }).select("paymentPlan paidAmount paymentVerificationStatus");
+      }).select(
+        "paymentPlan paidAmount paymentVerificationStatus totalPaymentDue"
+      );
       // if (paymentInfo) {        
       //   moduleAssignment.paymentPlan = paymentInfo;
       // }
