@@ -55,13 +55,11 @@ const useSendPaymentData = () => {
       }
       return data;
     } catch (error) {
+      
       if (error.response) {
         if (error.response.status === 500) {
-          console.log("Error: Internal Server Error");
-          throw new Error("Internal Server Error");
-        } else {
-          console.log("Error: ", error.response.data.error);
-          throw new Error(error.response.data.error); // Re-throw any other error
+          // console.log(error.response.data.stack);
+          throw new Error(error.response.data.message);
         }
       } else {
         console.log("Network or other error", error);
