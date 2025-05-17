@@ -29,17 +29,14 @@ const DegreeProfile = () => {
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
   const location = useLocation();
-  const dataId = location.state?.dataId || null  
+  const dataId = location.state?.dataId || null    
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
   
-
   useEffect(() => {
     if (degree){
-      const nextDeadline = extractAssignmentPriority(degreeModules);
-      console.log(nextDeadline);
-      
-      setNextDeadlineData(nextDeadline);
+      const nextDeadline = extractAssignmentPriority(degreeModules);      
+      setNextDeadlineData(nextDeadline);      
     }
   }, [degree])
 
@@ -335,12 +332,25 @@ const DegreeProfile = () => {
         <DataGrid
           rows={studentList}
           columns={columns}
-          getRowId={(row) => row.studentID}
+          getRowId={(row) => row._id}
           slots={{ toolbar: GridToolbar }}
+          // initialState={{
+          //   pagination: { paginationModel: { pageSize: 1 } },
+          // }}
           pageSizeOptions={[5, 10, 20, 100]}
           autoHeight
           onRowClick={handleRowClick}
-          sx={{ cursor: "pointer" }}
+          sx={{
+            cursor: "pointer",
+            "& .Mui-selected": {
+              background:
+                "linear-gradient(90deg,rgba(255, 0, 0, .3) 0%, rgba(255, 255, 255, 1) 100%); !important", // light red
+            },
+            "& .Mui-selected:hover": {
+              background:
+                "linear-gradient(90deg,rgba(255, 0, 0, .5) 0%, rgba(255, 255, 255, 1) 100%); !important",
+            },
+          }}
           rowSelectionModel={dataId ? [dataId] : []} // Pre-selects the passed row ID
         />
         <Button
