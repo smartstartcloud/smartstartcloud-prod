@@ -12,6 +12,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteObjects from '../../hooks/useDeleteObjects';
 import DetailsBarChart from '../DetailsBarChart.jsx';
+import { extractAssignmentPriority } from '../../utils/functions.js';
 
 
 
@@ -23,24 +24,26 @@ const DegreeProfile = () => {
   const [open, setOpen] = useState(false);
   const [studentEditMode, setStudentEditMode] = useState(false);
   const [studentData, setStudentData] = useState({});
+  const [nextDeadlineData, setNextDeadlineData] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
   const location = useLocation();
-  const dataId = location.state?.dataId || null  
+  const dataId = location.state?.dataId || null    
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
-
-  // useEffect(() => {
-  //   if (degree){
-  //     console.log(degree.moduleDetailsList);   
-  //   }
-  // }, [degree])
+  
+  useEffect(() => {
+    if (degree){
+      const nextDeadline = extractAssignmentPriority(degreeModules);      
+      setNextDeadlineData(nextDeadline);      
+    }
+  }, [degree])
 
   const studentList = [...degreeStudentList];
 
   const columns = [
-    { field: "studentID", headerName: "Student ID", flex: 0.5 },
+    { field: "studentID", headerName: "--- Cloud Student ID", flex: 0.5 },
     { field: "studentName", headerName: "Name", flex: 1 },
     { field: "studentLogin", headerName: "Username", flex: 1 },
     { field: "studentPassword", headerName: "Password", flex: 1 },
@@ -104,6 +107,9 @@ const DegreeProfile = () => {
   };
 
   const handleDelete = async (data) => {
+    
+    if (!window.confirm("Are you sure you want to delete this Student?"))
+      return;
     try{
       const response = await deleteStudent(data._id,degree.degreeID)
       console.log("Response Data:", response);
@@ -114,10 +120,12 @@ const DegreeProfile = () => {
   };
 
   const handleDegreeDelete = async () => {
-    try {      
+    if (!window.confirm("Are you sure you want to delete this Degree?"))
+      return;
+    try {
       const response = await deleteDegree(degree.degreeID);
       console.log("Degree deleted:", response);
-      navigate("/allDegrees"); 
+      navigate("/allDegrees");
     } catch (e) {
       console.log("Error deleting degree: ", e.message);
     }
@@ -186,6 +194,40 @@ const DegreeProfile = () => {
                 <Typography variant="h5" color={colors.grey[200]}>
                   <strong>Agent Enlisted:</strong>{" "}
                   {`${degreeAgent?.firstName} ${degreeAgent?.lastName}`}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="h5" color={colors.grey[200]}>
+                  <strong>Active Module:</strong> {nextDeadlineData?.moduleName}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="h5" color={colors.grey[200]}>
+                  <strong>Active Assignment:</strong>{" "}
+                  {nextDeadlineData?.assignmentName}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography
+                  variant="h5"
+                  color={
+                    nextDeadlineData.color === "red"
+                      ? colors.redAccent[500]
+                      : colors.grey[200]
+                  }
+                  sx={{
+                    textShadow:
+                      nextDeadlineData.color === "red"
+                        ? "1px 1px 5px white"
+                        : "none",
+                  }}
+                >
+                  <strong>Next Deadline:</strong>{" "}
+                  {nextDeadlineData.color === "red" ? (
+                    <strong>{nextDeadlineData?.deadline}</strong>
+                  ) : (
+                    nextDeadlineData?.deadline
+                  )}
                 </Typography>
               </Box>
             </Grid>
@@ -290,12 +332,25 @@ const DegreeProfile = () => {
         <DataGrid
           rows={studentList}
           columns={columns}
-          getRowId={(row) => row.studentID}
+          getRowId={(row) => row._id}
           slots={{ toolbar: GridToolbar }}
+          // initialState={{
+          //   pagination: { paginationModel: { pageSize: 1 } },
+          // }}
           pageSizeOptions={[5, 10, 20, 100]}
           autoHeight
           onRowClick={handleRowClick}
-          sx={{ cursor: "pointer" }}
+          sx={{
+            cursor: "pointer",
+            "& .Mui-selected": {
+              background:
+                "linear-gradient(90deg,rgba(255, 0, 0, .3) 0%, rgba(255, 255, 255, 1) 100%); !important", // light red
+            },
+            "& .Mui-selected:hover": {
+              background:
+                "linear-gradient(90deg,rgba(255, 0, 0, .5) 0%, rgba(255, 255, 255, 1) 100%); !important",
+            },
+          }}
           rowSelectionModel={dataId ? [dataId] : []} // Pre-selects the passed row ID
         />
         <Button
