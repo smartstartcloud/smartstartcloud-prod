@@ -12,6 +12,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteObjects from '../../hooks/useDeleteObjects';
 import DetailsBarChart from '../DetailsBarChart.jsx';
+import { extractAssignmentPriority } from '../../utils/functions.js';
 
 
 
@@ -23,6 +24,7 @@ const DegreeProfile = () => {
   const [open, setOpen] = useState(false);
   const [studentEditMode, setStudentEditMode] = useState(false);
   const [studentData, setStudentData] = useState({});
+  const [nextDeadlineData, setNextDeadlineData] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
@@ -30,12 +32,16 @@ const DegreeProfile = () => {
   const dataId = location.state?.dataId || null  
 
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
+  
 
-  // useEffect(() => {
-  //   if (degree){
-  //     console.log(degree.moduleDetailsList);   
-  //   }
-  // }, [degree])
+  useEffect(() => {
+    if (degree){
+      const nextDeadline = extractAssignmentPriority(degreeModules);
+      console.log(nextDeadline);
+      
+      setNextDeadlineData(nextDeadline);
+    }
+  }, [degree])
 
   const studentList = [...degreeStudentList];
 
@@ -191,6 +197,40 @@ const DegreeProfile = () => {
                 <Typography variant="h5" color={colors.grey[200]}>
                   <strong>Agent Enlisted:</strong>{" "}
                   {`${degreeAgent?.firstName} ${degreeAgent?.lastName}`}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="h5" color={colors.grey[200]}>
+                  <strong>Active Module:</strong> {nextDeadlineData?.moduleName}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="h5" color={colors.grey[200]}>
+                  <strong>Active Assignment:</strong>{" "}
+                  {nextDeadlineData?.assignmentName}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography
+                  variant="h5"
+                  color={
+                    nextDeadlineData.color === "red"
+                      ? colors.redAccent[500]
+                      : colors.grey[200]
+                  }
+                  sx={{
+                    textShadow:
+                      nextDeadlineData.color === "red"
+                        ? "1px 1px 5px white"
+                        : "none",
+                  }}
+                >
+                  <strong>Next Deadline:</strong>{" "}
+                  {nextDeadlineData.color === "red" ? (
+                    <strong>{nextDeadlineData?.deadline}</strong>
+                  ) : (
+                    nextDeadlineData?.deadline
+                  )}
                 </Typography>
               </Box>
             </Grid>
