@@ -40,7 +40,7 @@ const DegreeProfile = () => {
   const studentList = [...degreeStudentList];
 
   const columns = [
-    { field: "studentID", headerName: "Student ID", flex: 0.5 },
+    { field: "studentID", headerName: "--- Cloud Student ID", flex: 0.5 },
     { field: "studentName", headerName: "Name", flex: 1 },
     { field: "studentLogin", headerName: "Username", flex: 1 },
     { field: "studentPassword", headerName: "Password", flex: 1 },

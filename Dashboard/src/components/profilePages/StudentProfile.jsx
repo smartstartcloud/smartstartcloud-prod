@@ -216,7 +216,7 @@ const StudentProfile = () => {
                         color={colors.grey[100]}
                         sx={{ fontWeight: "bold" }}
                       >
-                        Student ID:
+                        --- Cloud Student ID:
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
