@@ -1,3 +1,5 @@
+import { format, parse } from "date-fns";
+
 export function extractObjects(nestedArray) {
   return nestedArray
     .flat()
@@ -46,10 +48,10 @@ export const sortByProperty = (array, property, order = "asc") => {
     if (aValue > bValue) return order === "asc" ? 1 : -1;
     return 0;
   });
-}
+};
 
 // Converts enum values to their corresponding string representations.
-export const enumToString = (type, value) => {  
+export const enumToString = (type, value) => {
   if (!value) return "No value";
   switch (type) {
     case "studentStatus":
@@ -83,7 +85,7 @@ export const enumToString = (type, value) => {
         ? "Whole year - 2 instalment plan"
         : value === "individual"
         ? "Individual plan"
-        : "No Plan"
+        : "No Plan";
     case "otherPaymentMethod":
       return value === "cash"
         ? "CASH"
@@ -119,12 +121,56 @@ export const extractStudentStatus = (studentList) => {
   let withdrawn = 0;
   let noStatus = 0;
   studentList.map((student) => {
-    switch(student.studentStatus){
-      case ('active') : return active ++
-      case ('inactive') : return inactive ++
-      case ('withdrawn') : return withdrawn ++
-      default : return noStatus++;
+    switch (student.studentStatus) {
+      case "active":
+        return active++;
+      case "inactive":
+        return inactive++;
+      case "withdrawn":
+        return withdrawn++;
+      default:
+        return noStatus++;
     }
-  })
-  return {active, inactive, withdrawn, noStatus}
+  });
+  return { active, inactive, withdrawn, noStatus };
+};
+
+export const extractAssignmentPriority = (degreeModule) => {
+  const priorityList = [];
+  degreeModule.forEach((module) => {
+    const moduleName = module.moduleName;
+    const assignmentList = module.moduleAssignments;
+    assignmentList.forEach((assignment) => {
+      const assignmentName = assignment[0].assignmentName;
+      // const deadline = format(assignment[0].assignmentDeadline, "dd/MM/yyyy");
+      const deadline = assignment[0].assignmentDeadline;
+      priorityList.push({ moduleName, assignmentName, deadline });
+    });
+  });
+  const nextAssignment = getNextUpcomingAssignment(priorityList);
+  nextAssignment.deadline = format(
+    nextAssignment.deadline,
+    "dd/MM/yyyy"
+  );
+  return nextAssignment;
+};
+
+function getNextUpcomingAssignment(assignments) {
+  const now = new Date();
+
+  const upcoming = assignments
+    .map((item) => {
+      const deadlineDate = new Date(item.deadline);
+      const diffInDays = (deadlineDate - now) / (1000 * 60 * 60 * 24); // ms → days
+
+      return {
+        ...item,
+        deadlineDate,
+        color: diffInDays <= 7 ? "red" : "default",
+      };
+    })
+    .filter((item) => item.deadlineDate >= now)
+    .sort((a, b) => a.deadlineDate - b.deadlineDate);
+
+  return upcoming.length > 0 ? upcoming[0] : null;
 }

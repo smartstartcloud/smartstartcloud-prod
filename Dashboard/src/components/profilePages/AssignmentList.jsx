@@ -59,6 +59,8 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
   const navigate = useNavigate(); 
 
   const handleDeleteAssignment = async (assignment) => {
+    if (!window.confirm("Are you sure you want to delete this Assignment?"))
+      return;
     try{
       const response = await deleteAssignment(assignment._id)
       console.log("Response Data:", response);

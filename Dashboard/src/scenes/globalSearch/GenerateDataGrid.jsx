@@ -3,10 +3,21 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { formatDateString } from "../../utils/yearFilter.js";
 import { enumToString, formatDate } from "../../utils/functions.js";
+import { useNavigate } from "react-router-dom";
 
 const GenerateDataGrid = ({title, data}) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const navigate = useNavigate();
+
+    const handleRowClick = (row) => {
+      if (row.metadata){
+        console.log(row.metadata);
+        const { goTo, dataId } = row.metadata;
+        navigate(goTo, { state: { dataId } });
+      }
+    }
+    
     // Helper function to generate columns dynamically based on data keys
     const generateColumns = (dataArray) => {
       if (!dataArray || dataArray.length === 0) return [];
@@ -53,44 +64,45 @@ const GenerateDataGrid = ({title, data}) => {
     const columns = generateColumns(data);
 
     return (
-        <Box mb={4}>
+      <Box mb={4}>
         <Typography variant="h5" gutterBottom>
-            {title}
+          {title}
         </Typography>
         <DataGrid
-            sx={{
+          sx={{
             "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: colors.blueAccent[200],
-                color: colors.black,
-                fontSize: "16px",
+              backgroundColor: colors.blueAccent[200],
+              color: colors.black,
+              fontSize: "16px",
             },
             "& .MuiDataGrid-row": {
-                backgroundColor: colors.grey[50],
-                color: colors.black,
-                cursor: "pointer",
-                "&:hover": {
+              backgroundColor: colors.grey[50],
+              color: colors.black,
+              cursor: "pointer",
+              "&:hover": {
                 backgroundColor: colors.blueAccent[50],
                 transform: "scale(1.01)",
                 transition: "transform 0.2s",
-                },
+              },
             },
-            }}
-            rows={data}
-            columns={columns}
-            getRowId={(row) => row._id || row.id || Math.random()}
-            autoHeight
-            slots={{ toolbar: GridToolbar }}
-            initialState={{
+          }}
+          rows={data}
+          columns={columns}
+          getRowId={(row) => row._id || row.id || Math.random()}
+          autoHeight
+          slots={{ toolbar: GridToolbar }}
+          initialState={{
             pagination: {
-                paginationModel: {
+              paginationModel: {
                 pageSize: 10,
                 page: 0, // Initial page index
-                },
+              },
             },
-            }}
-            pageSizeOptions={[10, 20, 50, 100]}
+          }}
+          pageSizeOptions={[10, 20, 50, 100]}
+          onRowClick={(params) => handleRowClick(params.row)}
         />
-        </Box>
+      </Box>
     );
 }
 

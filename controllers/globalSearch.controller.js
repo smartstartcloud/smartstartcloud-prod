@@ -12,7 +12,6 @@ const buildSearchQuery = (model, searchQuery) => {
   const regex = new RegExp(searchQuery, "i");
   const excludeArray = [
     "_id",
-    "metadata",
     "assignmentNature",
     "referenceCollection",
     "fileCategory",
@@ -27,7 +26,7 @@ const buildSearchQuery = (model, searchQuery) => {
 
   // Remove excluded fields from final list
   stringFields = stringFields.filter((key) => !excludeArray.includes(key));
-  console.log(stringFields);
+  // console.log(stringFields);
   
   // Build an array of OR conditions for each string field
   const conditions = stringFields.map((field) => ({ [field]: regex }));
@@ -71,7 +70,7 @@ export const globalSearch = async (req, res) => {
     const studentQuery = buildSearchQuery(Student, query);
     const students = await Student.find(studentQuery.query).select(
       studentQuery.select
-    );
+    );    
 
     // Orders
     const orderQuery = buildSearchQuery(Order, query);

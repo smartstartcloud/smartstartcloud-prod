@@ -189,7 +189,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align="left">Student ID</TableCell>
+                <TableCell align="left">--- Cloud Student ID</TableCell>
                 <TableCell align="left">Student Name</TableCell>
                 <TableCell align="left">Assignment Name</TableCell>
                 <TableCell align="left">Assignment Type</TableCell>
