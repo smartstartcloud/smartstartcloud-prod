@@ -146,10 +146,10 @@ export const updateDegree = async (req, res) => {
 
 
 export const getAllDegree = async (req,res)=>{  
-  try {
+  try {    
     let fillAgentDegree=[];
     const degrees = await Degree.find({})
-      .populate('degreeStudentList');      
+      // .populate('degreeStudentList');      
       await Promise.all( degrees.map(async (x)=>{        
         const Agent = await User.find({_id:[x.degreeAgent]});
         if (Agent.length === 0) {
