@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link"; // MUI-styled link
 import { useForm, Controller } from 'react-hook-form';
-import {Button, TextField, Typography, Box, Snackbar, CircularProgress, Alert, Grid, Select, MenuItem, useTheme, IconButton, InputAdornment, useMediaQuery} from '@mui/material';
+import {Button, TextField, Typography, Box, Snackbar, CircularProgress, Alert, Grid, useTheme, IconButton, InputAdornment, useMediaQuery} from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
@@ -37,7 +37,7 @@ const LoginForm = () => {
         setFormError(false);
     };
 
-    const { control, handleSubmit, getValues, setError, clearErrors, formState: { errors, touchedFields } } = useForm({
+    const { control, handleSubmit, setError, clearErrors, formState: { errors, touchedFields } } = useForm({
         defaultValues: {
             userName: "",
             password: "",

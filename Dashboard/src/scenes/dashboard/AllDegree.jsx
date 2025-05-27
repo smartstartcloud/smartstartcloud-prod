@@ -1,10 +1,10 @@
 import { Box, Grid, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "../../components/Header";
 import useFetchAllDegreeData from "../../hooks/useFetchAllDegreeData";
 import TaskCard from "../../components/TaskCard";
 import { yearFilter } from "../../utils/yearFilter";
-import { extractStudentStatus, sortByProperty } from "../../utils/functions";
+import { sortByProperty } from "../../utils/functions";
 
 const AllDegree = () => {
   const { degree, error, loading } = useFetchAllDegreeData();

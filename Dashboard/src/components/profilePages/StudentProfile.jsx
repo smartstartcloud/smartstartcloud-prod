@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Divider, Chip,} from '@mui/material';
+import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Chip,} from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';

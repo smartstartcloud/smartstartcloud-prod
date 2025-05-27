@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 
 export function extractObjects(nestedArray) {
   return nestedArray

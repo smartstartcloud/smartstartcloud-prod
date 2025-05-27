@@ -1,11 +1,10 @@
 import {
     Box,
-    Typography,
     useTheme,
     IconButton,
     CircularProgress,
   } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -58,9 +57,9 @@ import useDeleteObjects from "../../hooks/useDeleteObjects";
       console.log(params.row);
     };
   
-    const handleEdit = (data) => {
-      console.log(data);
-    };
+    // const handleEdit = (data) => {
+    //   console.log(data);
+    // };
   
     const handleDelete = async (data) => {
       console.log(data);

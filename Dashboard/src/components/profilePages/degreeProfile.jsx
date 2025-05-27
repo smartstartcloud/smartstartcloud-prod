@@ -25,7 +25,7 @@ const DegreeProfile = () => {
   const [studentEditMode, setStudentEditMode] = useState(false);
   const [studentData, setStudentData] = useState({});
   const [nextDeadlineData, setNextDeadlineData] = useState({});
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  // const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
   const location = useLocation();

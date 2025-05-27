@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../context/AuthContext";
 import { useTokenContext } from '../context/TokenContext';
 import axios from 'axios';
-import { switchBackendURL } from '../utils/connections';
 
 const useLogout = () => {
   const { setAuthUser } = useAuthContext(); // To update the authenticated user state
