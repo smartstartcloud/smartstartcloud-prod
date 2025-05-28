@@ -147,11 +147,10 @@ export const extractAssignmentPriority = (degreeModule) => {
       priorityList.push({ moduleName, assignmentName, deadline });
     });
   });
-  const nextAssignment = getNextUpcomingAssignment(priorityList);
-  nextAssignment.deadline = format(
-    nextAssignment.deadline,
-    "dd/MM/yyyy"
-  );
+  const nextAssignment = getNextUpcomingAssignment(priorityList);  
+  if (nextAssignment !== null){
+    nextAssignment.deadline = format(nextAssignment.deadline, "dd/MM/yyyy");
+  }
   return nextAssignment;
 };
 
