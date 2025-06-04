@@ -122,8 +122,8 @@ const useDeleteObjects = () => {
       } catch (error) {
         if (error.response) {
           if (error.response.status === 500) {
-            console.log("Error: Internal Server Error");
-            throw new Error("Internal Server Error");
+            console.log(error.response.data);
+            throw new Error(error.response.data.message);
           }
         } else {
           console.log("Network or other error", error);

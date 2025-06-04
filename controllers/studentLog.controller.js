@@ -6,7 +6,7 @@ export const addNewStudentLog = async ({
   userID,
   userName,
   action,
-  involvedData = {},
+  involvedData = {type: "", typeDate: ""},
   metadata = {},
 }) => {
   try {
@@ -25,8 +25,8 @@ export const addNewStudentLog = async ({
       affectedStudentID: studentData._id,
       affectedStudentDisplayID: studentData.studentID,
       action,
-      actionToDisplay: actionTypes[action],
-      message: actionTypes[action],
+      type: actionTypes[action].type,
+      message: actionTypes[action].message,
       involvedData,
       metadata,
     });
@@ -45,7 +45,7 @@ export const addNewStudentLog = async ({
       `Student log ${newLog.logID} created and added to student ${studentData.studentID}`
     );
     return newLog;
-  } catch (error) {
+  } catch (error) {    
     console.error("Failed to create and attach student log:", error.message);
     throw error;
   }
@@ -67,7 +67,9 @@ export const getLogsByStudentID = async (req, res) => {
     }
 
     // Get logs associated with this student ObjectId
-    const logs = await StudentLog.find({ affectedStudentID: student._id })
+    const logs = await StudentLog.find({ affectedStudentID: student._id }).sort(
+      { timestamp: -1 }
+    );
 
     res.status(200).json({ studentID, logs });
   } catch (error) {
@@ -78,13 +80,42 @@ export const getLogsByStudentID = async (req, res) => {
 
 
 const actionTypes = {
-  newStudentDynamic: "Student Created Dynamically.",
-  updateStudentDynamic: "Student is Updated Dynamically",
-  newStudentManual: "Student Created Manually.",
-  updateStudentManual: "Student is Updated Manually",
-  newAssignmentDynamic: "Assignment Created Dynamically.",
-  newAssignmentManual: "Assignment Created Manually.",
-  updateAssignmentDynamic: "Assignment Updated Dynamically.",
-  updateAssignmentManual: "Assignment Updated Manually.",
-  deleteAssignment: "Assignment Deleted Successfully.",
+  newStudentDynamic: {
+    message: "Student Created Dynamically.",
+    type: "student",
+  },
+  updateStudentDynamic: {
+    message: "Student is Updated Dynamically",
+    type: "student",
+  },
+  newStudentManual: { message: "Student Created Manually.", type: "student" },
+  updateStudentManual: {
+    message: "Student is Updated Manually",
+    type: "student",
+  },
+
+  newAssignmentDynamic: {
+    message: "Assignment Created Dynamically.",
+    type: "assignment",
+  },
+  newAssignmentManual: {
+    message: "Assignment Created Manually.",
+    type: "assignment",
+  },
+  updateAssignmentDynamic: {
+    message: "Assignment Updated Dynamically.",
+    type: "assignment",
+  },
+  updateAssignmentManual: {
+    message: "Assignment Updated Manually.",
+    type: "assignment",
+  },
+  deleteAssignment: {
+    message: "Assignment Deleted Successfully.",
+    type: "assignment",
+  },
+
+  newPayment: { message: "New Payment Added.", type: "payment" },
+  updatePayment: { message: "Payment Updated", type: "payment" },
+  deletePayment: { message: "Delete Payment", type: "payment" },
 };

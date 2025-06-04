@@ -1,5 +1,6 @@
-import { Box, Card, CardContent, CircularProgress, colors, Container, IconButton, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, colors, Container, IconButton, Modal, Typography, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { tokens } from '../theme';
 import CloseIcon from "@mui/icons-material/Close";
 import Timeline from "@mui/lab/Timeline";
@@ -17,6 +18,10 @@ import FastfoodIcon from "@mui/icons-material/Fastfood";
 import AddIcon from "@mui/icons-material/Add";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import RemoveIcon from "@mui/icons-material/Remove";
+import CurrencyPoundIcon from "@mui/icons-material/CurrencyPound";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import { isAfter, isBefore, isSameDay } from "date-fns";
 
 const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
@@ -36,27 +41,132 @@ const StudentHistory = ({
     const { logs: logData, loading, error } = useFetchStudentAllLogs(studentId); 
     const [studentIDLog, setStudentIDLog] = useState(null);
     const [logs, setLogs] = useState([]);
+    const [filteredLogs, setFilteredLogs] = useState([]);
+    const [dateFilter, setDateFilter] = useState({ from: null, to: null });
+    const [typeFilter, setTypeFilter] = useState("all");
 
     const actionTypeTheme = {
-      newStudentDynamic: { icon: <AddIcon />, color: "add" },
-      updateStudentDynamic: { icon: <UpgradeIcon />, color: "update" },
-      newStudentManual: { icon: <AddIcon />, color: "add" },
-      updateStudentManual: { icon: <UpgradeIcon />, color: "update" },
-      newAssignmentDynamic: { icon: <AddIcon />, color: "add" },
-      newAssignmentManual: { icon: <AddIcon />, color: "add" },
-      updateAssignmentDynamic: { icon: <UpgradeIcon />, color: "update" },
-      updateAssignmentManual: { icon: <UpgradeIcon />, color: "update" },
-      deleteAssignment: { icon: <RemoveIcon />, color: "delete" },
+      newStudentDynamic: {
+        icon: <AddIcon />,
+        color: "add",
+        type: "Student",
+        typeData: "studentID",
+      },
+      updateStudentDynamic: {
+        icon: <UpgradeIcon />,
+        color: "update",
+        type: "Student",
+        typeData: "studentID",
+      },
+      newStudentManual: {
+        icon: <AddIcon />,
+        color: "add",
+        type: "Student",
+        typeData: "studentID",
+      },
+      updateStudentManual: {
+        icon: <UpgradeIcon />,
+        color: "update",
+        type: "Student",
+        typeData: "studentID",
+      },
+      newAssignmentDynamic: {
+        icon: <AddIcon />,
+        color: "add",
+        type: "Assignment",
+        typeData: "assignmentName",
+      },
+      newAssignmentManual: {
+        icon: <AddIcon />,
+        color: "add",
+        type: "Assignment",
+        typeData: "assignmentName",
+      },
+      updateAssignmentDynamic: {
+        icon: <UpgradeIcon />,
+        color: "update",
+        type: "Assignment",
+        typeData: "assignmentName",
+      },
+      updateAssignmentManual: {
+        icon: <UpgradeIcon />,
+        color: "update",
+        type: "Assignment",
+        typeData: "assignmentName",
+      },
+      deleteAssignment: {
+        icon: <RemoveIcon />,
+        color: "delete",
+        type: "Assignment",
+        typeData: "assignmentName",
+      },
+      newPayment: {
+        icon: <CurrencyPoundIcon />,
+        color: "add",
+        type: "Payment",
+        typeData: "financeID",
+      },
+      updatePayment: {
+        icon: <UpgradeIcon />,
+        color: "update",
+        type: "Payment",
+        typeData: "financeID",
+      },
+      deletePayment: {
+        icon: <RemoveIcon />,
+        color: "delete",
+        type: "Payment",
+        typeData: "financeID",
+      },
     };
+    
+
+    const handleResetFilterDate = () => {
+      setDateFilter({ from: null, to: null })
+      setTypeFilter("all");
+    }
+
+    const handleDateFilterChange = (key, value) => {
+      setDateFilter((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const handleChange = (event) => {
+      setTypeFilter(event.target.value);
+    };
+
+    const filterLogFunction = (logData) => {
+      const filteredRows = logData.filter((singleLog) => {
+        const logDate = new Date(singleLog.timestamp);
+        const from = dateFilter.from;
+        const to = dateFilter.to;
+
+        // Date range filter
+        if (from && isBefore(logDate, from) && !isSameDay(logDate, from))
+          return false;
+        if (to && isAfter(logDate, to) && !isSameDay(logDate, to)) return false;
+
+        // Type filter
+        const logType = singleLog.type; // e.g., "student"        
+        if (typeFilter !== "all" && logType !== typeFilter.toLowerCase())
+          return false;
+
+        return true;
+      });
+
+      return filteredRows;
+    };
+
+    useEffect(() => {
+      setFilteredLogs(filterLogFunction(logs));
+    }, [dateFilter, typeFilter]);
 
     useEffect(() => {
       if (logData) {
         const { studentID, logs } = logData;
         setStudentIDLog(studentID);
         setLogs(logs);
-      }
-      console.log(logs);
-      
+        setFilteredLogs(filterLogFunction(logs));
+      }      
     }, [logData]);
 
     
@@ -112,32 +222,91 @@ const StudentHistory = ({
               <Typography variant="h3" component="span">
                 History of {studentIDLog}
               </Typography>
-              <Timeline
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Box sx={{ ml: 2, display: "flex", gap: 2, my: 2 }}>
+                  <DatePicker
+                    label="From"
+                    format="dd/MM/yyyy" // Custom date format
+                    value={dateFilter.from ?? null} // explicitly fallback to null
+                    onChange={(newValue) =>
+                      handleDateFilterChange("from", newValue)
+                    }
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                  <DatePicker
+                    label="To"
+                    format="dd/MM/yyyy" // Custom date format
+                    value={dateFilter.to ?? null}
+                    onChange={(newValue) =>
+                      handleDateFilterChange("to", newValue)
+                    }
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                  <Button
+                    sx={{
+                      width: "300px",
+                      backgroundColor: colors.greenAccent[500],
+                      color: colors.grey[100],
+                      "&:hover": { backgroundColor: colors.greenAccent[400] },
+                    }}
+                    onClick={handleResetFilterDate}
+                  >
+                    Reset
+                  </Button>
+                </Box>
+              </LocalizationProvider>
+              <FormControl
                 sx={{
-                  [`& .${timelineOppositeContentClasses.root}`]: {
-                    flex: 0.2,
-                  },
+                  ml: 2,
+                  display: "flex",
+                  gap: 2,
+                  my: 2,
+                  maxWidth: "20%",
                 }}
               >
-                {logs && logs.length > 0 ? (
-                  logs.map((log, index) => (
+                <InputLabel id="type-select-label">Type</InputLabel>
+                <Select
+                  labelId="type-select-label"
+                  id="type-select"
+                  value={typeFilter}
+                  label="Type"
+                  onChange={handleChange}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="assignment">Assignment</MenuItem>
+                  <MenuItem value="student">Student</MenuItem>
+                  <MenuItem value="payment">Payment</MenuItem>
+                </Select>
+              </FormControl>
+              <Timeline>
+                {filteredLogs && filteredLogs.length > 0 ? (
+                  filteredLogs.map((log, index) => (
                     <TimelineItem key={log._id}>
                       <TimelineOppositeContent
                         sx={{
                           m: "auto 0",
                         }}
-                        align="right"
-                        variant="body2"
-                        color={colors.blueAccent[400]}
+                        variant="h6"
+                        fontWeight="bold"
+                        color={colors.blueAccent[600]}
                       >
-                        {format(log.timestamp, "hh:mm:ss dd/MM/yyyy ")}
+                        {format(log.timestamp, "dd/MM/yyyy ")}
                       </TimelineOppositeContent>
                       <TimelineSeparator>
                         <TimelineConnector />
-                        <TimelineDot variant="outlined">
-                          {actionTypeTheme[log.action]?.icon || (
-                            <FastfoodIcon />
-                          )}
+                        <TimelineDot
+                          variant="outlined"
+                          color={
+                            actionTypeTheme[log.action]?.color === "add"
+                              ? "success"
+                              : actionTypeTheme[log.action]?.color === "update"
+                              ? "info"
+                              : actionTypeTheme[log.action]?.color === "delete"
+                              ? "error"
+                              : "grey"
+                          }
+                        >
+                          {actionTypeTheme[log.action]?.icon || ""}
                         </TimelineDot>
                         <TimelineConnector />
                         {/* {index !== logs.length - 1 ? <TimelineConnector /> : ""} */}
@@ -151,7 +320,18 @@ const StudentHistory = ({
                         <Typography variant="h6" component="span">
                           {log.message}
                         </Typography>
-                        <Typography>Because you need strength</Typography>
+                        <Typography>
+                          {
+                            log.involvedData?.typeData[
+                              actionTypeTheme[log.action].typeData
+                            ]
+                          }
+                        </Typography>
+                        <Typography variant="caption">
+                          {log.userName}
+                          {" | "}
+                          {format(log.timestamp, "hh:mm")}
+                        </Typography>
                       </TimelineContent>
                     </TimelineItem>
                   ))
@@ -161,7 +341,7 @@ const StudentHistory = ({
                     color={colors.grey[100]}
                     sx={{ fontWeight: "bold", mb: 2 }}
                   >
-                    No logs for this Student.
+                    No logs for this Student in this Range.
                   </Typography>
                 )}
               </Timeline>

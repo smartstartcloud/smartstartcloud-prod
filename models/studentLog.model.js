@@ -35,7 +35,7 @@ const studentLogSchema = new mongo.Schema({
     type: mongo.Schema.Types.Mixed,
     required: true,
   },
-  actionToDisplay: {
+  type: {
     type: String,
   },
   message: {

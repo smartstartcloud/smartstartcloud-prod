@@ -12,16 +12,19 @@ import {
   formatDateShort,
 } from "../utils/functions.js";
 import File from "../models/files.model.js";
+import { addNewStudentLog } from "./studentLog.controller.js";
+import { extractToken } from "../utils/generateToken.js";
 
 export const addNewPayment = async (
   req,
   res,
   paymentRequiredInformation,
   userID,
-  paymentDetails
+  paymentDetails,
+  userDetails
 ) => {
   try {
-    const { degreeID, moduleCode, studentID } = paymentRequiredInformation;    
+    const { degreeID, moduleCode, studentID } = paymentRequiredInformation;
     const module = await Module.findOne({ moduleCode }).select(
       "_id moduleName moduleCode"
     );
@@ -69,7 +72,7 @@ export const addNewPayment = async (
     const moduleAssignment = await ModuleAssignment.findOne({
       studentID,
       moduleID: module._id,
-    });        
+    });
 
     if (!moduleAssignment) {
       return res.status(404).json({ error: "No Assignment Module Created" });
@@ -78,9 +81,9 @@ export const addNewPayment = async (
     if (!Array.isArray(moduleAssignment.modulePayment)) {
       moduleAssignment.modulePayment = [];
     }
-    
+
     moduleAssignment.modulePayment.push(newPayment._id);
-    
+
     await moduleAssignment.save();
 
     // Fire off post-commit side-effects (these shouldn't be in the transaction)
@@ -100,6 +103,21 @@ export const addNewPayment = async (
 
     await newPayment.save();
 
+    await addNewStudentLog({
+      studentData: {
+        _id: student._id,
+        studentID: student.studentID,
+        studentName: student.studentName,
+      },
+      userID: userDetails.userID,
+      userName: userDetails.userName,
+      action: "newPayment",
+      involvedData: {
+        type: "Payment",
+        typeData: newPayment,
+      },
+    });
+
     await createLog({
       req,
       collection: "Payment",
@@ -110,11 +128,11 @@ export const addNewPayment = async (
       metadata: newPayment.metadata,
     });
     res.status(200).json(newPayment);
-  } catch (error) {    
-      res.status(500).json({
-        message: error.message || 'Internal Server Error',
-        // stack: error.stack, // optional, only include in development
-      });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Internal Server Error",
+      // stack: error.stack, // optional, only include in development
+    });
   }
 };
 
@@ -138,6 +156,15 @@ export const updatePaymentDetails = async (req, res) => {
     paymentVerificationStatus,
     userID,
   } = req.body;
+
+  const testToken = req.headers.cookie;
+  const { userId } = extractToken(testToken);
+  const user = await User.findById(userId, "firstName lastName userName");
+  const userDetails = { userID: userId, userName: "" };
+  if (user) {
+    userDetails.userName = user.userName;
+  }
+
   try {
     const isNewPayment = req.query.new === "true";
 
@@ -191,7 +218,8 @@ export const updatePaymentDetails = async (req, res) => {
         res,
         paymentRequiredInformation,
         userID,
-        updateDetails
+        updateDetails,
+        userDetails
       );
     }
 
@@ -223,6 +251,21 @@ export const updatePaymentDetails = async (req, res) => {
         { goTo: `/paymentApprovals`, paymentId: payment._id }
       );
       const student = await Student.findById(payment.studentID);
+
+      await addNewStudentLog({
+        studentData: {
+          _id: student._id,
+          studentID: student.studentID,
+          studentName: student.studentName,
+        },
+        userID: userDetails.userID,
+        userName: userDetails.userName,
+        action: "updatePayment",
+        involvedData: {
+          type: "Payment",
+          typeData: payment,
+        },
+      });
 
       // Construct and create a log entry for the payment update
       const logMessage = {
@@ -369,15 +412,49 @@ const createPaymentLog = ({
 export const deletePaymentDetails = async (req, res) => {
   try {
     const { paymentID } = req.params;
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user) {
+      userDetails.userName = user.userName;
+    }
     console.log("Attempting to delete payment:", paymentID);
-    const deleted = await ModuleStudentFinance.findByIdAndDelete(paymentID);
-    if (!deleted) {
-      return res.status(404).json({ message: "Payment not found" });
+    const financeEntry = await ModuleStudentFinance.findById(
+      paymentID,
+      "studentID"
+    );    
+    if (!financeEntry) {
+      throw new Error("Payment entry not found");
     }
 
+    const student = await Student.findById(financeEntry.studentID);
+
+    const deleted = await ModuleStudentFinance.findByIdAndDelete(paymentID);
+    
+    if (!deleted) {      
+      return res.status(404).json({ message: "Payment not found" });
+    }    
+    const newLog = await addNewStudentLog({
+      studentData: {
+        _id: student._id,
+        studentID: student.studentID,
+        studentName: student.studentName,
+      },
+      userID: userDetails.userID,
+      userName: userDetails.userName,
+      action: "deletePayment",
+      involvedData: {
+        type: "Payment",
+        typeData: deleted,
+      },
+    });
+
     res.status(200).json({ message: "Payment deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting payment", error });
+  } catch (error) { 
+    console.log(error);
+       
+    res.status(500).json({ message: "Error deleting payment"});
   }
 };
 
