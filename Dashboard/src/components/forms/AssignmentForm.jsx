@@ -11,7 +11,7 @@ import useSendAssignmentData from '../../hooks/useSendAssignmentData';
 import MuiAlert from '@mui/material/Alert';
 import OrderSelect from '../OrderSelect';
 
-const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMode}) => {
+const AssignmentForm = ({student_id, degreeModulesData, assignmentData, editMode}) => {
   
  const theme = useTheme();
  const colors = tokens(theme.palette.mode);
@@ -19,10 +19,9 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
  const [formError, setFormError] = useState(false);
  const [formErrorMessage, setFormErrorMessage] = useState('');
  const [formLoading, setformLoading] = useState(false);
-
  
  const navigate = useNavigate(); 
-
+ 
  const { sendAssignment } = useSendAssignmentData() 
 
  const {
@@ -34,7 +33,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
    formState: { errors, touchedFields },
  } = useForm({
    defaultValues: {
-     studentID: studentData,
+     studentID: student_id,
      moduleCode: "",
      orderID: "",
      assignmentName: "",
@@ -48,11 +47,11 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
  });
 
     useEffect(() => {    
-        if (studentData && studentData) {
+        if (student_id) {
             if (editMode) {
                 reset({
                   assignmentID: assignmentData?._id || "", // Adding assignmentID when editMode is true
-                  studentID: studentData,
+                  studentID: student_id,
                   moduleCode: assignmentData?.moduleCode || "",
                   orderID: assignmentData?.orderID || "",
                   assignmentName: assignmentData?.assignmentName || "",
@@ -65,7 +64,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 });
             } else {              
                 reset({
-                  studentID: studentData,
+                  studentID: student_id,
                   moduleCode: "",
                   orderID: "",
                   assignmentName: "",
@@ -78,11 +77,11 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 });
             }
         }
-    }, [studentData, reset, editMode]);
+    }, [student_id, reset, editMode]);
 
     const onSubmitAssignment = async (data) => {
         setformLoading(true);
-        try{          
+        try{
           const response = await sendAssignment(data, editMode)
           console.log("Form Data:", data);
           console.log("Response Data:", response);
@@ -169,7 +168,7 @@ const AssignmentForm = ({studentData, degreeModulesData, assignmentData, editMod
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    value={studentData}
+                    value={student_id}
                     disabled
                     label="Student ID"
                     variant="outlined"

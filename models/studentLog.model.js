@@ -8,9 +8,9 @@ const studentLogSchema = new mongo.Schema({
     type: String,
     unique: true,
   },
-  user: {
+  userID: {
     type: mongo.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "users",
     required: true,
   },
   userName: {

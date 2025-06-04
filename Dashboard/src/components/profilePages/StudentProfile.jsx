@@ -12,6 +12,8 @@ import Slide from '@mui/material/Slide';
 import { enumToString } from '../../utils/functions';
 import useFetchPaymentWithDegree from '../../hooks/useFetchPaymentWithDegree';
 import StudentHistory from '../StudentHistory';
+import SubjectIcon from "@mui/icons-material/Subject";
+import useFetchStudentAllLogs from '../../hooks/useFetchStudentAllLogs';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -21,8 +23,8 @@ const StudentProfile = () => {
     const location = useLocation();
     const { studentId, degreeId } = useParams();  
     
-    const [historyModalOpen, setHistoryModalOpen] = useState(true)
-    const { student, loading, error } = useFetchSingleStudentData(studentId);    
+    const [historyModalOpen, setHistoryModalOpen] = useState(false)
+    const { student, loading, error } = useFetchSingleStudentData(studentId);        
     const { fetchAssignmentList } = useFetchAssignmentList();
     const { fetchPaymentWithDegree } = useFetchPaymentWithDegree();
 
@@ -598,7 +600,7 @@ const StudentProfile = () => {
             </Box>
           )}
         </Box>
-        <StudentHistory open={historyModalOpen} setOpen={setHistoryModalOpen} />
+        <StudentHistory studentId={studentId} open={historyModalOpen} setOpen={setHistoryModalOpen} />
 
         <Dialog
           open={open}

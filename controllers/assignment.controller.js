@@ -4,6 +4,7 @@ import ModuleAssignment from "../models/moduleAssignment.models.js";
 import Order from "../models/order.models.js";
 import Student from "../models/student.models.js";
 import User from "../models/user.models.js";
+import { extractToken } from "../utils/generateToken.js";
 import { createLog } from "./log.controller.js";
 import { addNewPayment } from "./payment.controller.js";
 import { addNewStudentLog } from "./studentLog.controller.js";
@@ -37,30 +38,54 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                 { new: true }
               );
               assignmentIDs.push(updateAssignment._id); // Collect each saved ID
-
+              
               let dynamicAssignmentList =
                 await Assignment.find({
                   referenceNumber:assignmentData.referenceNumber, // Match by referenceNumber
                   assignmentNature: "dynamic", // Match only if assignmentNature is "dynamic"
                 });
               await Promise.all(
-                dynamicAssignmentList.map(async (assignment)=> {
-                  const updateStudentAssignment =
-                    await Assignment.findByIdAndUpdate(
-                      { _id: assignment._id },
-                      {
-                        assignmentName: assignmentData.assignmentName,
-                        assignmentType: assignmentData.assignmentType,
-                        assignmentDeadline: assignmentData.assignmentDeadline,
-                        wordCount: assignmentData.wordCount,
-                        referenceNumber: assignmentData.referenceNumber,
-                      },
-                      { new: true }
-                    );
-                  assignmentIDs.push(updateStudentAssignment._id); // Collect each saved ID
-                }
+                  dynamicAssignmentList.map(
+                    async (assignment)=> {
+                      const updateStudentAssignment =
+                        await Assignment.findByIdAndUpdate(
+                          { _id: assignment._id },
+                          {
+                            assignmentName: assignmentData.assignmentName,
+                            assignmentType: assignmentData.assignmentType,
+                            assignmentDeadline: assignmentData.assignmentDeadline,
+                            wordCount: assignmentData.wordCount,
+                            referenceNumber: assignmentData.referenceNumber,
+                          },
+                          { new: true }
+                        );
+                      assignmentIDs.push(updateStudentAssignment._id); // Collect each saved ID
+                    }
+                  )
+              )              
+              await Promise.all(
+                studentList.map(async(student_id) => {
+                  const student = await Student.findById(
+                    student_id,
+                    "studentID studentName"
+                  );
+                  await addNewStudentLog({
+                    studentData: {
+                      _id: student._id,
+                      studentID: student.studentID,
+                      studentName: student.studentName,
+                    },
+                    userID,
+                    userName,
+                    action: "updateAssignmentDynamic",
+                    involvedData: {
+                      type: "Assignment",
+                      typeData: updateAssignment,
+                    },
+                  });
+                  
+                })
               )
-            )
               
             } else {
               // Store main assignments
@@ -255,8 +280,15 @@ export const updateModuleStudentAssignment = async (moduleCode, studentID, assig
 // - Logs the update action using createLog
 export const updateAssignment = async (req, res) => {
   try {
-    const { assignmentID } = req.params;
-    
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user) {
+      userDetails.userName = user.userName;
+    }
+
+    const { assignmentID } = req.params;    
     const {
       moduleCode,
       orderID,
@@ -269,8 +301,9 @@ export const updateAssignment = async (req, res) => {
       assignmentFile,
       referenceNumber,
       assignmentNature,
+      studentID: student_id, // aliasing here
     } = req.body;    
-
+    
     // Update only the fields that are provided in the request body
     const updatedFields = {};
 
@@ -293,9 +326,34 @@ export const updateAssignment = async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    if (assignment) {            
+    if (assignment) {
+      // Ensure student exists
+      const student = await Student.findOne({ _id: student_id }).select(
+        "studentID studentName"
+      );
+      if (!student) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+      // Optionally log creation here (currently commented out)
+      if (student) {
+        await addNewStudentLog({
+          studentData: {
+            _id: student._id,
+            studentID: student.studentID,
+            studentName: student.studentName,
+          },
+          userID: userDetails.userID,
+          userName: userDetails.userName,
+          action: "updateAssignmentManual",
+          involvedData: { type: "Assignment", typeData: updatedFields },
+        });
+      }
+
       // Construct the log message
-      const logMessage = {assignmentName: assignment.assignmentName, assignmentID : assignment.assignmentID};
+      const logMessage = {
+        assignmentName: assignment.assignmentName,
+        assignmentID: assignment.assignmentID,
+      };
       // Create the log entry using the modified createLog helper
       await createLog({
         req,
@@ -441,6 +499,13 @@ export const newAssignmentManual = async (req, res) => {
 // ==================
 export const deleteAssignment = async (req, res) => {
   const { assignmentID } = req.params;
+  const testToken = req.headers.cookie;
+  const { userId } = extractToken(testToken);
+  const user = await User.findById(userId, "firstName lastName userName");
+  const userDetails = { userID: userId, userName: "" };
+  if (user) {
+    userDetails.userName = user.userName;
+  }
 
   try {
     // Delete the assignment by ID
@@ -448,6 +513,33 @@ export const deleteAssignment = async (req, res) => {
     if (!deletedAssignment) {
       return res.status(404).json({ error: "Assignment not found" });
     }
+
+    // First, find the documents that are going to be updated
+    const updatedAssignments = await ModuleAssignment.find(
+      {assignments: assignmentID}, "studentID"
+    );
+    await Promise.all(
+      updatedAssignments.map(async (assignmentData) => {
+        const student = await Student.findById(
+          assignmentData.studentID,
+          "studentID studentName"
+        );
+        await addNewStudentLog({
+          studentData: {
+            _id: student._id,
+            studentID: student.studentID,
+            studentName: student.studentName,
+          },
+          userID: userDetails.userID,
+          userName: userDetails.userName,
+          action: "deleteAssignment",
+          involvedData: {
+            type: "Assignment",
+            typeData: deletedAssignment,
+          },
+        });
+      })
+    );
 
     // Remove the deleted assignment from any ModuleAssignment lists
     await ModuleAssignment.updateMany(
@@ -458,7 +550,7 @@ export const deleteAssignment = async (req, res) => {
     // Log the delete operation
     const logMessage = {
       assignmentID: deletedAssignment.assignmentID,
-      assignmentName: deletedAssignment.assignment
+      assignmentName: deletedAssignment.assignment,
     };
     await createLog({
       req,
@@ -518,7 +610,7 @@ export const linkAssignmentOrderID = async (req, res) => {
 // - Creates dynamic copies linked to the student
 // - Saves updated ModuleAssignment
 // ==================
-export const duplicateAssignmentFromMain = async (moduleList, studentInfo) => {
+export const duplicateAssignmentFromMain = async (moduleList, studentInfo, userDetails) => {
   moduleList.map(async (moduleID) => {
     const module = await Module.findById({ _id: moduleID });
     const createdAssingmentList = [];
@@ -547,6 +639,21 @@ export const duplicateAssignmentFromMain = async (moduleList, studentInfo) => {
             moduleCode: original.moduleCode,
             referenceNumber: original.referenceNumber,
           });
+
+          // Optionally log creation here (currently commented out)
+          if (studentInfo) {
+            await addNewStudentLog({
+              studentData: {
+                _id: studentInfo._id,
+                studentID: studentInfo.studentID,
+                studentName: studentInfo.studentName,
+              },
+              userID: userDetails.userID,
+              userName: userDetails.userName,
+              action: "newAssignmentDynamic",
+              involvedData: { type: "Assignment", typeData: newAssignment },
+            });
+          }
 
           const savedAssignment = await newAssignment.save();
           createdAssingmentList.push(savedAssignment._id);

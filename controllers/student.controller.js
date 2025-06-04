@@ -3,6 +3,7 @@ import Degree from '../models/degree.models.js'
 import { duplicateAssignmentFromMain } from './assignment.controller.js';
 import { addNewStudentLog } from './studentLog.controller.js';
 import User from '../models/user.models.js';
+import { extractToken } from '../utils/generateToken.js';
 
 export async function getAllStudents(req, res) {
   try {
@@ -180,7 +181,7 @@ export const addStudentInDegree = async (req, res) => {
       studentAssignment: studentAssignment || [],
     });
     
-    duplicateAssignmentFromMain(degree.degreeModules, newStudent);
+    duplicateAssignmentFromMain(degree.degreeModules, newStudent, userDetails);
 
     const savedStudent = await newStudent.save();
 
