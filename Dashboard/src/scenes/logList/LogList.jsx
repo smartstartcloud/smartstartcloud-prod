@@ -1,16 +1,14 @@
 import {
   Box,
-  Typography,
   useTheme,
   IconButton,
   CircularProgress,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllActionLogs from "../../hooks/useFetchAllActionLogs";
 import { formatDate } from "../../utils/functions";
 import useDeleteObjects from "../../hooks/useDeleteObjects";

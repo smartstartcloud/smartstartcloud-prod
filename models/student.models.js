@@ -60,6 +60,12 @@ const studentSchema = new mongo.Schema({
     enum: ["active", "inactive", "withdrawn", "noStatus"], // Only these values are allowed
     default: "noStatus",
   },
+  studentLog: [
+    {
+      type: mongo.Schema.Types.ObjectId,
+      ref: "StudentLog",
+    },
+  ],
   metadata: {
     type: Object,
     default: {},

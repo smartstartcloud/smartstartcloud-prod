@@ -1,42 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { format } from "date-fns";
 import MuiAlert from "@mui/material/Alert";
 import {
   Box,
   CircularProgress,
-  Typography,
   useTheme,
   Button,
   Modal,
   Snackbar,
   IconButton,
   Alert,
-  TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   Grid,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
   Tabs,
   Tab,
 } from "@mui/material";
 import { tokens } from '../../theme';
 import useGetPaymentDetails from '../../hooks/useGetPaymentDetails';
 import useSendPaymentData from '../../hooks/useSendPaymentData';
-import { enumToString, formatDate } from '../../utils/functions';
+// import { enumToString, formatDate } from '../../utils/functions';
 import FileUpload from '../FileUpload';
 import PaymentFormSingle from './PaymentFormSingle';
 

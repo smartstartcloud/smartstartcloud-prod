@@ -1,5 +1,5 @@
 import { Box, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAllGetPaymentDetails from "../../hooks/useGetAllPaymentDetails.js";
 import { tokens } from "../../theme.js";
 import PaymentCard from "../PaymentCard.jsx";
@@ -21,8 +21,8 @@ const SuperAdminCharts = () => {
   const [filteredYearList, setFilteredYearList] = useState([]);
   const [clickedPaymentList, setClickedPaymentList] = useState([]);
   const [filteredClickedPaymentList, setfilteredClickedPaymentList] = useState({});
-  const [chartData, setChartData] = useState([]);
-  const [paymentDetailsData, setPaymentDetailsData] = useState({});
+  // const [chartData, setChartData] = useState([]);
+  // const [paymentDetailsData, setPaymentDetailsData] = useState({});
   const { paymentData, error, loading } = useAllGetPaymentDetails();
 
   const [openSelectedIntake, setOpenSelectedIntake] = useState(false);
@@ -101,7 +101,7 @@ const SuperAdminCharts = () => {
         return acc;
       }, []);
       setGroupedData(groupedData);
-      setChartData([]);
+      // setChartData([]);
       // barChartData(groupedData);
     }
   };
@@ -133,7 +133,7 @@ const SuperAdminCharts = () => {
     setFilteredYearList(filtered);
     setOpenSelectedIntake(false);
     setClickedPaymentList([]);
-    setPaymentDetailsData({});
+    // setPaymentDetailsData({});
     setfilteredClickedPaymentList({});
   }, [yearList, selectedYear]); // Dependencies to re-run the effect
 

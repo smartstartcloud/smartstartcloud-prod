@@ -25,7 +25,7 @@ const DegreeProfile = () => {
   const [studentEditMode, setStudentEditMode] = useState(false);
   const [studentData, setStudentData] = useState({});
   const [nextDeadlineData, setNextDeadlineData] = useState({});
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  // const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { deleteStudent, deleteDegree } = useDeleteObjects();
   const navigate = useNavigate(); 
   const location = useLocation();
@@ -34,8 +34,8 @@ const DegreeProfile = () => {
   const {degreeName,degreeAgent,degreeStudentList = [],degreeModules} = degree || {};
   
   useEffect(() => {
-    if (degree){
-      const nextDeadline = extractAssignmentPriority(degreeModules);      
+    if (degree){      
+      const nextDeadline = extractAssignmentPriority(degreeModules);            
       setNextDeadlineData(nextDeadline);      
     }
   }, [degree])
@@ -211,19 +211,19 @@ const DegreeProfile = () => {
                 <Typography
                   variant="h5"
                   color={
-                    nextDeadlineData.color === "red"
+                    nextDeadlineData?.color === "red"
                       ? colors.redAccent[500]
                       : colors.grey[200]
                   }
                   sx={{
                     textShadow:
-                      nextDeadlineData.color === "red"
+                      nextDeadlineData?.color === "red"
                         ? "1px 1px 5px white"
                         : "none",
                   }}
                 >
                   <strong>Next Deadline:</strong>{" "}
-                  {nextDeadlineData.color === "red" ? (
+                  {nextDeadlineData?.color === "red" ? (
                     <strong>{nextDeadlineData?.deadline}</strong>
                   ) : (
                     nextDeadlineData?.deadline

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import useFetchSingleStudentData from '../../hooks/useFetchSingleStudentData';
-import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Divider, Chip,} from '@mui/material';
+import {Box,Button,Card,CardContent,CircularProgress,Grid,Typography,Dialog,useTheme,DialogTitle,DialogContent,IconButton, Chip,} from '@mui/material';
 import { tokens } from '../../theme';
 import AssignmentForm from '../forms/AssignmentForm';
 import AssignmentList from './AssignmentList';
 import useFetchAssignmentList from '../../hooks/useFetchAssignmentList';
 import CloseIcon from '@mui/icons-material/Close';
+import HistoryIcon from "@mui/icons-material/History";
 import Slide from '@mui/material/Slide';
 import { enumToString } from '../../utils/functions';
 import useFetchPaymentWithDegree from '../../hooks/useFetchPaymentWithDegree';
+import StudentHistory from '../StudentHistory';
+import SubjectIcon from "@mui/icons-material/Subject";
+import useFetchStudentAllLogs from '../../hooks/useFetchStudentAllLogs';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -17,9 +21,10 @@ const StudentProfile = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const location = useLocation();
-    const { studentId, degreeId } = useParams();    
+    const { studentId, degreeId } = useParams();  
     
-    const { student, loading, error } = useFetchSingleStudentData(studentId);    
+    const [historyModalOpen, setHistoryModalOpen] = useState(false)
+    const { student, loading, error } = useFetchSingleStudentData(studentId);        
     const { fetchAssignmentList } = useFetchAssignmentList();
     const { fetchPaymentWithDegree } = useFetchPaymentWithDegree();
 
@@ -181,7 +186,26 @@ const StudentProfile = () => {
                   display="flex"
                   justifyContent="flex-end"
                   textAlign="right"
+                  alignItems="center"
+                  gap="10px"
                 >
+                  <IconButton
+                    sx={{
+                      color: theme.palette.grey[700],
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: "50%",
+                      padding: "10px",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      "&:hover": {
+                        backgroundColor: theme.palette.background.default,
+
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",
+                      },
+                    }}
+                    onClick={() => setHistoryModalOpen(true)}
+                  >
+                    <HistoryIcon />
+                  </IconButton>
                   <Chip
                     variant="filled"
                     color={
@@ -576,6 +600,7 @@ const StudentProfile = () => {
             </Box>
           )}
         </Box>
+        <StudentHistory studentId={studentId} open={historyModalOpen} setOpen={setHistoryModalOpen} />
 
         <Dialog
           open={open}

@@ -11,7 +11,6 @@ import {
   Select,
   Grid,
   Button,
-  TextField,
 } from "@mui/material";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
 import useSendAssignmentData from "../hooks/useSendAssignmentData";
@@ -30,7 +29,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
   const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [orderConnectModuleOpen, setOrderConnectModuleOpen] = useState(false);
   const [assignmentList, setAssignmentList] = useState({});
-  const [referenceNumberToPass, setReferenceNumberToPass] = useState('')
+  // const [referenceNumberToPass, setReferenceNumberToPass] = useState('')
 
   // Function to fetch Order IDs for a given moduleCode
   const fetchOrderIdList = async (referenceNumber) => {
