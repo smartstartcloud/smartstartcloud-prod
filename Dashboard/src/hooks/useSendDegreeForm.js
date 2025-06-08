@@ -1,6 +1,3 @@
-import axios from 'axios'
-import React from 'react'
-// import { api } from '../utils/axiosInstance';
 import useApi from './useApi';
 
 const useSendDegreeForm = () => {

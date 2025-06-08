@@ -8,6 +8,7 @@ import { addNewModule } from './module.controller.js'; // Import newAssignment
 import ModuleAssignment from '../models/moduleAssignment.models.js';
 import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 import { createLog } from './log.controller.js';
+import { extractToken } from '../utils/generateToken.js';
 
 export const newDegree = async (req, res) => {
   try {
@@ -26,17 +27,30 @@ export const newDegree = async (req, res) => {
     const homeLink = `/task/${degreeYear}/${degreeID}`;
     const dataId = ''
     const degreeDetailsForPayment = { degreeID };
+
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user) {
+      userDetails.userName = user.userName;
+    }
+
     if (currentDegree){
       const error = new Error("Degree ID already exists");
       error.code = 11000; // Set the error code
       throw error; // Throw the error object
     } else {
-      const populatedStudentList = await addNewStudent(degreeStudentList, homeLink);
+      const populatedStudentList = await addNewStudent(
+        degreeStudentList,
+        homeLink,
+        userDetails
+      );
       const populatedModules = await addNewModule(
         degreeModules,
         populatedStudentList,
-        degreeDetailsForPayment,
-        homeLink
+        homeLink,
+        userDetails
       );
 
       // Step 1: Create Degree
@@ -96,11 +110,20 @@ export const updateDegree = async (req, res) => {
       _id: degree_id,
     });
 
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user){      
+      userDetails.userName = user.userName
+    }    
     if (currentDegree) {
-      const populatedStudentList = await addNewStudent(degreeStudentList);
+      const populatedStudentList = await addNewStudent(degreeStudentList, null, userDetails);
       const populatedModules = await addNewModule(
         degreeModules,
-        populatedStudentList
+        populatedStudentList,
+        null,
+        userDetails
       );
 
       let updatedDegree = await Degree.findOneAndUpdate(

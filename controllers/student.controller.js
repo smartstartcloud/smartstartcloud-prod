@@ -1,6 +1,9 @@
 import Student from '../models/student.models.js';
 import Degree from '../models/degree.models.js'
 import { duplicateAssignmentFromMain } from './assignment.controller.js';
+import { addNewStudentLog } from './studentLog.controller.js';
+import User from '../models/user.models.js';
+import { extractToken } from '../utils/generateToken.js';
 
 export async function getAllStudents(req, res) {
   try {
@@ -13,7 +16,8 @@ export async function getAllStudents(req, res) {
   }
 }
 // Function to add new students and return their MongoDB ObjectIDs
-export async function addNewStudent(studentList, parentLink) {
+export async function addNewStudent(studentList, parentLink=null, userDetails) {
+  const {userID, userName} = userDetails;  
   try {
     // Use Promise.all to save all students concurrently
     const addedStudentIDs = await Promise.all(
@@ -48,7 +52,18 @@ export async function addNewStudent(studentList, parentLink) {
               studentAssignment: studentData.studentAssignment || [],
             },
             { new: true } // Return the updated document
-          );
+          );          
+          addNewStudentLog({
+            studentData: {
+              _id: updatedStudent._id,
+              studentID: updatedStudent.studentID,
+              studentName: updatedStudent.studentName,
+            },
+            userID,
+            userName,
+            action: "updateStudentDynamic",
+          });
+
           return updatedStudent._id;
         } else {
           const homeLink = parentLink;
@@ -74,7 +89,16 @@ export async function addNewStudent(studentList, parentLink) {
             isExternal: studentData.isExternal,
             studentAssignment: studentData.studentAssignment || [],
           });
-
+          addNewStudentLog({
+            studentData: {
+              _id: newStudent._id,
+              studentID: newStudent.studentID,
+              studentName: newStudent.studentName,
+            },
+            userID,
+            userName,
+            action: "newStudentDynamic",
+          });
           // Save the student to the database and return the saved student's ObjectID
           const savedStudent = await newStudent.save();
           // Update metadata with _id and save again
@@ -97,6 +121,14 @@ export async function addNewStudent(studentList, parentLink) {
 
 export const addStudentInDegree = async (req, res) => {
   try {
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user) {
+      userDetails.userName = user.userName;
+    }
+
     const {
       degreeID,
       studentStatus,
@@ -149,13 +181,24 @@ export const addStudentInDegree = async (req, res) => {
       studentAssignment: studentAssignment || [],
     });
     
-    duplicateAssignmentFromMain(degree.degreeModules, newStudent);
+    duplicateAssignmentFromMain(degree.degreeModules, newStudent, userDetails);
 
     const savedStudent = await newStudent.save();
 
     // 4. Update degree with student ID
     degree.degreeStudentList.push(savedStudent._id);
     await degree.save();
+
+    addNewStudentLog({
+      studentData: {
+        _id: newStudent._id,
+        studentID: newStudent.studentID,
+        studentName: newStudent.studentName,
+      },
+      userID: userDetails.userID,
+      userName: userDetails.userName,
+      action: "newStudentManual",
+    });
 
     // 5. Update student's metadata with degree info
     savedStudent.metadata = {
@@ -174,6 +217,14 @@ export const addStudentInDegree = async (req, res) => {
 
 export const updateStudentInDegree = async (req, res) => {
   try {
+    const testToken = req.headers.cookie;
+    const { userId } = extractToken(testToken);
+    const user = await User.findById(userId, "firstName lastName userName");
+    const userDetails = { userID: userId, userName: "" };
+    if (user) {
+      userDetails.userName = user.userName;
+    }
+
     const {
       _id, // Required for updating an existing student
       degreeID,
@@ -248,6 +299,17 @@ export const updateStudentInDegree = async (req, res) => {
         { $addToSet: { degreeStudentList: updatedStudent._id } } // Prevents duplicates
       );
     }
+
+    addNewStudentLog({
+      studentData: {
+        _id: updatedStudent._id,
+        studentID: updatedStudent.studentID,
+        studentName: updatedStudent.studentName,
+      },
+      userID: userDetails.userID,
+      userName: userDetails.userName,
+      action: "updateStudentManual",
+    });
 
     res
       .status(200)

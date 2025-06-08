@@ -69,7 +69,7 @@ const DegreeForm = ({editPage=false}) => {
   });
 
   useEffect(() => {
-    if (editPage, degree) {
+    if (editPage && degree) {
       if (editMode) {
         const existingMonthYear = degree.degreeYear.split("_")[0];
         const existingMonth = existingMonthYear.charAt(0).toUpperCase() + existingMonthYear.slice(1);

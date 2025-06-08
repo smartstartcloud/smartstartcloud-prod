@@ -6,8 +6,13 @@ import Degree from '../models/degree.models.js';
 import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 
 // New helper function to add the assignment to the Module model
-export const addNewModule = async(moduleList, studentList, degreeDetailsForPayment, parentLink) =>  {
-  try {
+export const addNewModule = async (
+  moduleList,
+  studentList,
+  parentLink,
+  userDetails
+) => {
+  try {    
     // Use Promise.all to save all Module concurrently
     const addedModuleIDs = await Promise.all(
       moduleList.map(async (moduleData) => {
@@ -24,14 +29,14 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
               moduleAssignments: await newAssignmentDynamic(
                 moduleData.assignmentList,
                 studentList,
-                moduleData.moduleCode
+                moduleData.moduleCode,
+                userDetails
               ),
             },
             { new: true } // Return the updated document
           );
           return updatedModule._id;
-        }
-        else {
+        } else {
           const newModule = new Module({
             moduleName: moduleData.moduleName,
             moduleCode: moduleData.moduleCode,
@@ -39,14 +44,18 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
               moduleData.assignmentList,
               studentList,
               moduleData.moduleCode,
+              userDetails
             ),
           });
           const savedModule = await newModule.save();
-          // Update metadata with _id and save again          
+          // Update metadata with _id and save again
           const homeLink = `${parentLink}/module/`;
-          savedModule.metadata = { goTo: `${homeLink}${savedModule.moduleCode}`, dataId: savedModule._id };
+          savedModule.metadata = {
+            goTo: `${homeLink}${savedModule.moduleCode}`,
+            dataId: savedModule._id,
+          };
           await savedModule.save();
-          
+
           await createNewModuleStudentAssignment(
             savedModule._id,
             studentList,
@@ -56,13 +65,13 @@ export const addNewModule = async(moduleList, studentList, degreeDetailsForPayme
           return savedModule._id;
         }
       })
-    );    
+    );
     return addedModuleIDs; // Return the array of added student IDs
   } catch (error) {
     console.error("Error adding Modules:", error);
     throw new Error("Failed to add Modules");
   }
-}
+};
 
 
 export const getAssignment = async (req, res) => {

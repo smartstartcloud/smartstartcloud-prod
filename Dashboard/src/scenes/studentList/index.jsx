@@ -2,15 +2,14 @@ import {
   Box,
   Typography,
   useTheme,
-  IconButton,
   CircularProgress,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+// import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+// import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useFetchAllStudentData from "../../hooks/useFetchAllStudentData";
 
 const StudentList = () => {
@@ -18,7 +17,7 @@ const StudentList = () => {
   const colors = tokens(theme.palette.mode);
   const { student: studentList, loading, error } = useFetchAllStudentData();
   const [currentAvailableID, setCurrentAvailableID] = useState();
-  const [availableIdList, setAvailableIdList] = useState([]);
+  // const [availableIdList, setAvailableIdList] = useState([]);
 
   // useEffect(() => {
   //   if (studentList){
@@ -71,13 +70,13 @@ const StudentList = () => {
     console.log(params.row);
   };
 
-  const handleEdit = (data) => {
-    console.log(data);
-  };
+  // const handleEdit = (data) => {
+  //   console.log(data);
+  // };
 
-  const handleDelete = async (data) => {
-    console.log(data);
-  };
+  // const handleDelete = async (data) => {
+  //   console.log(data);
+  // };
 
   if (loading) {
     return (

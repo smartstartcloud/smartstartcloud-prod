@@ -18,7 +18,7 @@ const Topbar = ({ logOut }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // const [isCollapsed, setIsCollapsed] = useState(false);
   const { authUser } = useAuthContext();
   const [notifications, setNotifications] = useState([]);
   const { notificationList} = useFetchAllNotifications(authUser?._id);
@@ -42,9 +42,9 @@ const Topbar = ({ logOut }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Automatically collapse the sidebar for mobile
-  useEffect(() => {
-    setIsCollapsed(isMobile);
-  }, [isMobile]);
+  // useEffect(() => {
+  //   setIsCollapsed(isMobile);
+  // }, [isMobile]);
   return (
     <Box display="flex" flexDirection="column">
       <Box display="flex" justifyContent="space-between" p={2}>

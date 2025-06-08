@@ -1,4 +1,3 @@
-import React from "react";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import useApi from "./useApi";
 import useGetUserInfo from "./useGetUserInfo";

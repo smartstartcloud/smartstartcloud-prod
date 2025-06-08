@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useState } from 'react'
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar"
 import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
@@ -10,7 +10,6 @@ import  HomeOutlinedIcon  from '@mui/icons-material/HomeOutlined'
 import  PersonOutlinedIcon  from '@mui/icons-material/PersonOutlined'
 import  HelpOutlinedIcon  from '@mui/icons-material/HelpOutlined'
 import  MenuOutlinedIcon  from '@mui/icons-material/MenuOutlined'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import ListIcon from "@mui/icons-material/List";
