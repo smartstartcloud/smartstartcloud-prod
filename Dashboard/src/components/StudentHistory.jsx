@@ -323,9 +323,8 @@ const StudentHistory = ({
                         </Typography>
                         <Typography>
                           {
-                            log.involvedData?.typeData[
-                              actionTypeTheme[log.action].typeData
-                            ]
+                            actionTypeTheme[log.action]?.typeData &&
+                            log.involvedData?.typeData?.[actionTypeTheme[log.action].typeData]
                           }
                         </Typography>
                         <Typography variant="caption">
