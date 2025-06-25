@@ -162,11 +162,12 @@ const StudentHistory = ({
 
     useEffect(() => {
       if (logData) {
-        const { studentID, logs } = logData;
+        const studentID = logData?.studentID ?? "Unknown Student";
+        const logs = logData?.logs ?? [];
         setStudentIDLog(studentID);
         setLogs(logs);
         setFilteredLogs(filterLogFunction(logs));
-      }      
+      }
     }, [logData]);
 
     
