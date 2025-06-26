@@ -39,6 +39,19 @@ export const fileUpload = async (req, res) => {
       return res.status(400).json({ error: "File URL is required" });
     }
 
+    let studentID = null;
+
+    if (referenceCollection === "Assignment") {
+      const assignment = await Assignment.findById(referenceID);
+      studentID = assignment?.studentID;
+    } else if (referenceCollection === "ModuleStudentFinance") {
+      const finance = await ModuleStudentFinance.findById(referenceID);
+      studentID = finance?.studentID;
+    } else if (referenceCollection === "ModuleAssignment") {
+      const moduleAssignment = await ModuleAssignment.findById(referenceID);
+      studentID = moduleAssignment?.studentID;
+    }
+
     // Save the file data to MongoDB
     const newFile = new File({
       referenceID,
@@ -67,6 +80,7 @@ export const fileUpload = async (req, res) => {
       actionToDisplay: `Uploaded file "${fileName}"`,
       isFile: true,
       userID: uploadedByUserID,
+      studentID,
       involvedData: {
         typeData: {
           fileName,
@@ -148,6 +162,19 @@ export const fileDownload = async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
+    let studentID = null;
+
+    if (file.referenceCollection === "Assignment") {
+      const assignment = await Assignment.findById(file.referenceID);
+      studentID = assignment?.studentID;
+    } else if (file.referenceCollection === "ModuleStudentFinance") {
+      const finance = await ModuleStudentFinance.findById(file.referenceID);
+      studentID = finance?.studentID;
+    } else if (file.referenceCollection === "ModuleAssignment") {
+      const moduleAssignment = await ModuleAssignment.findById(file.referenceID);
+      studentID = moduleAssignment?.studentID;
+    }
+
     // Log the file download action before streaming
     const logMessage = `File "${file.fileName}" (ID: ${file._id}) was downloaded.`;
     await createLog({
@@ -159,6 +186,7 @@ export const fileDownload = async (req, res) => {
       affectedID: file._id,
       actionToDisplay: `Downloaded file "${file.fileName}"`,
       isFile: true,
+      studentID,
       involvedData: {
         typeData: {
           fileName: file.fileName,
@@ -278,14 +306,38 @@ export const fileDelete = async (req, res) => {
     }
 
     // Step 4: Log the deletion event
-    const logMessage = `File "${deletedFile.fileName}" (ID: ${deletedFile.fileID}) was deleted.`;
+    // Lookup studentID from the reference collection
+    let studentID = null;
+    if (deletedFile.referenceCollection === "Assignment") {
+      const assignment = await Assignment.findById(deletedFile.referenceID);
+      studentID = assignment?.studentID;
+    } else if (deletedFile.referenceCollection === "ModuleStudentFinance") {
+      const finance = await ModuleStudentFinance.findById(deletedFile.referenceID);
+      studentID = finance?.studentID;
+    } else if (deletedFile.referenceCollection === "ModuleAssignment") {
+      const moduleAssignment = await ModuleAssignment.findById(deletedFile.referenceID);
+      studentID = moduleAssignment?.studentID;
+    }
+    const logMessage = `File "${deletedFile.fileName}" (ID: ${deletedFile._id}) was deleted.`;
     await createLog({
       req,
       collection: "File",
       action: "delete",
-      actionToDisplay: "File Deleted",
+      type: "file",
+      isFile: true,
       logMessage,
       affectedID: deletedFile._id,
+      actionToDisplay: "File Deleted",
+      studentID,
+      involvedData: {
+        typeData: {
+          fileName: deletedFile.fileName,
+          fileType: deletedFile.fileType,
+          fileUrl: deletedFile.fileUrl,
+          status: "Deleted",
+          deletedAt: new Date().toISOString(),
+        }
+      }
     });
 
     res.status(200).json({

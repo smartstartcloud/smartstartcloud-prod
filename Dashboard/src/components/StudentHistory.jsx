@@ -354,7 +354,17 @@ const StudentHistory = ({
                           <Box mt={1}>
                             {log.involvedData?.typeData?.fileName && (
                               <Typography variant="body1" fontWeight="bold">
-                                {log.action === "fileUpload" ? "Uploaded" : "Downloaded"}: {log.involvedData.typeData.fileName}
+                                {log.action === "fileUpload"
+                                  ? "Uploaded"
+                                  : log.action === "fileDownload"
+                                  ? "Downloaded"
+                                  : "Deleted"
+                                }: {log.involvedData.typeData.fileName}
+                              </Typography>
+                            )}
+                            {log.action === "delete" && log.involvedData?.typeData?.deletedAt && (
+                              <Typography variant="body2" color="textSecondary">
+                                Deleted At: {format(new Date(log.involvedData.typeData.deletedAt), "dd/MM/yyyy HH:mm:ss")}
                               </Typography>
                             )}
                           </Box>
