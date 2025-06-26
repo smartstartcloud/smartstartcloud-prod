@@ -95,24 +95,29 @@ export const fileUpload = async (req, res) => {
     });
     await newFile.save();
     // Add new student log after saving file and creating log
-    await addNewStudentLog({
-      studentData: {
-        _id: studentID,
-        studentID,
-        studentName: "",
-      },
-      userID: uploadedByUserID,
-      userName: uploadedByUserName || "Unknown",
-      action: "fileUpload",
-      involvedData: {
-        typeData: {
-          fileName,
-          fileType,
-          fileUrl,
-          status: "Uploaded",
+    console.log("Creating student log for upload", { studentID, fileName });
+    try {
+      await addNewStudentLog({
+        studentData: {
+          _id: studentID,
+          studentID,
+          studentName: "",
         },
-      },
-    });
+        userID: uploadedByUserID,
+        userName: uploadedByUserName || "Unknown",
+        action: "fileUpload",
+        involvedData: {
+          typeData: {
+            fileName,
+            fileType,
+            fileUrl,
+            status: "Uploaded",
+          },
+        },
+      });
+    } catch (err) {
+      console.error("Error saving fileUpload to studentLogs:", err.message);
+    }
 
     if (referenceCollection === "Assignment") {
       if (writerFlag) {
@@ -219,24 +224,29 @@ export const fileDownload = async (req, res) => {
       }
     });
     // Add new student log after logging download
-    await addNewStudentLog({
-      studentData: {
-        _id: studentID,
-        studentID,
-        studentName: "",
-      },
-      userID: req.userId,
-      userName: req.userName || "Unknown",
-      action: "fileDownload",
-      involvedData: {
-        typeData: {
-          fileName: file.fileName,
-          fileType: file.fileType,
-          fileUrl: file.fileUrl,
-          status: "Downloaded",
+    console.log("Creating student log for download", { studentID, file: file?.fileName });
+    try {
+      await addNewStudentLog({
+        studentData: {
+          _id: studentID,
+          studentID,
+          studentName: "",
         },
-      },
-    });
+        userID: req.userId,
+        userName: req.userName || "Unknown",
+        action: "fileDownload",
+        involvedData: {
+          typeData: {
+            fileName: file.fileName,
+            fileType: file.fileType,
+            fileUrl: file.fileUrl,
+            status: "Downloaded",
+          },
+        },
+      });
+    } catch (err) {
+      console.error("Error saving fileDownload to studentLogs:", err.message);
+    }
 
     // Fetch the file from Firebase using axios
     const firebaseResponse = await axios.get(file.fileUrl, {
@@ -381,25 +391,30 @@ export const fileDelete = async (req, res) => {
       }
     });
     // Add new student log after logging deletion
-    await addNewStudentLog({
-      studentData: {
-        _id: studentID,
-        studentID,
-        studentName: "",
-      },
-      userID: req.userId,
-      userName: req.userName || "Unknown",
-      action: "delete",
-      involvedData: {
-        typeData: {
-          fileName: deletedFile.fileName,
-          fileType: deletedFile.fileType,
-          fileUrl: deletedFile.fileUrl,
-          status: "Deleted",
-          deletedAt: new Date().toISOString(),
+    console.log("Creating student log for deletion", { studentID, file: deletedFile?.fileName });
+    try {
+      await addNewStudentLog({
+        studentData: {
+          _id: studentID,
+          studentID,
+          studentName: "",
         },
-      },
-    });
+        userID: req.userId,
+        userName: req.userName || "Unknown",
+        action: "delete",
+        involvedData: {
+          typeData: {
+            fileName: deletedFile.fileName,
+            fileType: deletedFile.fileType,
+            fileUrl: deletedFile.fileUrl,
+            status: "Deleted",
+            deletedAt: new Date().toISOString(),
+          },
+        },
+      });
+    } catch (err) {
+      console.error("Error saving fileDelete to studentLogs:", err.message);
+    }
 
     res.status(200).json({
       success: true,
