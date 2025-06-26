@@ -345,21 +345,6 @@ const StudentHistory = ({
                             ))}
                           </Box>
                         )}
-                        {/* Display timestamp and user role if present after student update changedFields */}
-                        {log.type === "student" && log.action?.startsWith("update") && (
-                          <>
-                            {log.involvedData?.timestamp && (
-                              <Typography variant="body2" color="textSecondary">
-                                Timestamp: {format(new Date(log.involvedData.timestamp), "dd/MM/yyyy HH:mm:ss")}
-                              </Typography>
-                            )}
-                            {log.involvedData?.userRole && (
-                              <Typography variant="body2" color="textSecondary">
-                                Role: {log.involvedData.userRole}
-                              </Typography>
-                            )}
-                          </>
-                        )}
                         {log.type === "payment" && log.involvedData?.typeData?.paidAmount && (
                           <Typography fontWeight="bold">
                             Amount: {log.involvedData.typeData.paidAmount}
