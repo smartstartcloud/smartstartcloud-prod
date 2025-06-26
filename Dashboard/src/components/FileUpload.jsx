@@ -144,7 +144,7 @@ const FileUpload = ({
 
   const handleDelete = async (file) => {
     try {
-      const response = await deleteFiles(file._id);
+      const response = await deleteFiles(file._id, studentId);
       setExistingFilteredFiles((prevFiles) =>
         prevFiles.filter((prevFile) => prevFile._id !== file._id))
       console.log(response.message);

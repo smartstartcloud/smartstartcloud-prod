@@ -123,9 +123,9 @@ const useUploadFiles = () => {
     }
   };
 
-  const deleteFiles = async (fileID) => {
+  const deleteFiles = async (fileID, studentID=null) => {
     try {
-      const res = await api.delete(`/api/files/delete/${fileID}`);
+      const res = await api.delete(`/api/files/delete/${studentID}/${fileID}`);
       const data = await res.data;
       
       if (data.error) {
