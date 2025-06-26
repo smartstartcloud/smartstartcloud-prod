@@ -336,12 +336,36 @@ const StudentHistory = ({
                         <Typography variant="h6" component="span">
                           {log.message}
                         </Typography>
+                        {log.type === "student" && log.action?.startsWith("update") && log.involvedData?.changedFields && (
+                          <Box mt={1}>
+                            {Object.entries(log.involvedData.changedFields).map(([field, value]) => (
+                              <Typography key={field} variant="body2">
+                                {field.charAt(0).toUpperCase() + field.slice(1)}: {value}
+                              </Typography>
+                            ))}
+                          </Box>
+                        )}
+                        {/* Display timestamp and user role if present after student update changedFields */}
+                        {log.type === "student" && log.action?.startsWith("update") && (
+                          <>
+                            {log.involvedData?.timestamp && (
+                              <Typography variant="body2" color="textSecondary">
+                                Timestamp: {format(new Date(log.involvedData.timestamp), "dd/MM/yyyy HH:mm:ss")}
+                              </Typography>
+                            )}
+                            {log.involvedData?.userRole && (
+                              <Typography variant="body2" color="textSecondary">
+                                Role: {log.involvedData.userRole}
+                              </Typography>
+                            )}
+                          </>
+                        )}
                         {log.type === "payment" && log.involvedData?.typeData?.paidAmount && (
                           <Typography fontWeight="bold">
                             Amount: {log.involvedData.typeData.paidAmount}
                           </Typography>
                         )}
-                        {(log.action === "fileUpload" || log.action === "fileDownload") && (
+                        {log.type === "file" && (
                           <>
                             {log.involvedData?.typeData?.fileName && (
                               <Typography fontWeight="bold">
