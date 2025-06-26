@@ -38,6 +38,9 @@ export const fileUpload = async (req, res) => {
       fileUrl,
     } = req.body;    
 
+    console.log("📦 Upload received with referenceCollection:", referenceCollection, "and referenceID:", referenceID);
+    console.log("Full req.body:", req.body);
+
     if (!fileUrl) {
       return res.status(400).json({ error: "File URL is required" });
     }
