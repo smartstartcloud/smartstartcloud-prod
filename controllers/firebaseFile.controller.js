@@ -60,7 +60,7 @@ export const fileUpload = async (req, res) => {
     await createLog({
       req,
       collection: "File",
-      action: "upload",
+      action: "fileUpload",
       logMessage,
       affectedID: newFile._id,
       actionToDisplay: `Uploaded file "${fileName}"`,
@@ -152,7 +152,7 @@ export const fileDownload = async (req, res) => {
     await createLog({
       req,
       collection: "File",
-      action: "download",
+      action: "fileDownload",
       logMessage,
       affectedID: file._id,
       actionToDisplay: `Downloaded file "${file.fileName}"`,

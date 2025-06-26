@@ -291,6 +291,7 @@ const StudentHistory = ({
                   <MenuItem value="assignment">Assignment</MenuItem>
                   <MenuItem value="student">Student</MenuItem>
                   <MenuItem value="payment">Payment</MenuItem>
+                  <MenuItem value="file">File</MenuItem>
                 </Select>
               </FormControl>
               <Timeline>
@@ -340,15 +341,19 @@ const StudentHistory = ({
                             Amount: {log.involvedData.typeData.paidAmount}
                           </Typography>
                         )}
-                        {(log.action === "fileUpload" || log.action === "fileDownload") && log.involvedData?.typeData?.fileName && (
-                          <Typography fontWeight="bold">
-                            File: {log.involvedData.typeData.fileName}
-                          </Typography>
-                        )}
-                        {log.involvedData?.typeData?.status && (
-                          <Typography fontStyle="italic">
-                            Status: {log.involvedData.typeData.status}
-                          </Typography>
+                        {(log.action === "fileUpload" || log.action === "fileDownload") && (
+                          <>
+                            {log.involvedData?.typeData?.fileName && (
+                              <Typography fontWeight="bold">
+                                File: {log.involvedData.typeData.fileName}
+                              </Typography>
+                            )}
+                            {log.involvedData?.typeData?.status && (
+                              <Typography fontStyle="italic">
+                                Status: {log.involvedData.typeData.status}
+                              </Typography>
+                            )}
+                          </>
                         )}
                         <Typography>
                           {
