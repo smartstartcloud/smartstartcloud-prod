@@ -55,6 +55,9 @@ export const fileUpload = async (req, res) => {
       studentID = moduleAssignment?.studentID;
     }
     console.log(">>> resolved studentID:", studentID);
+    if (!studentID) {
+      console.log("No student ID found for", referenceCollection, referenceID);
+    }
 
     // Save the file data to MongoDB
     const newFile = new File({
@@ -97,6 +100,8 @@ export const fileUpload = async (req, res) => {
     await newFile.save();
     // Add new student log after saving file and creating log
     console.log("Creating student log for upload", { studentID, fileName });
+    // TEMPORARY: to verify logging works
+    studentID = studentID || "test123";
     try {
       console.log(">>> addNewStudentLog called with:", {
         studentData: {
