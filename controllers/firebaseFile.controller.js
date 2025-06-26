@@ -18,12 +18,14 @@ import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 
 // Import addNewStudentLog if not already imported
 import { addNewStudentLog } from "./studentLog.controller.js";
+import Student from "../models/student.models.js";
 
 const storage = getStorage(app);
 
 export const fileUpload = async (req, res) => {  
   try {
     const {
+      studentID,
       referenceID,
       referenceCollection,
       orderID,
@@ -36,30 +38,13 @@ export const fileUpload = async (req, res) => {
       fileName,
       fileType,
       fileUrl,
-    } = req.body;    
-
-    console.log("📦 Upload received with referenceCollection:", referenceCollection, "and referenceID:", referenceID);
-    console.log("Full req.body:", req.body);
+    } = req.body;
+    
+    // console.log("📦 Upload received with referenceCollection:", referenceCollection, "and referenceID:", referenceID);
+    // console.log("Full req.body:", req.body);
 
     if (!fileUrl) {
       return res.status(400).json({ error: "File URL is required" });
-    }
-
-    let studentID = null;
-
-    if (referenceCollection === "Assignment") {
-      const assignment = await Assignment.findById(referenceID);
-      studentID = assignment?.studentID;
-    } else if (referenceCollection === "ModuleStudentFinance") {
-      const finance = await ModuleStudentFinance.findById(referenceID);
-      studentID = finance?.studentID;
-    } else if (referenceCollection === "ModuleAssignment") {
-      const moduleAssignment = await ModuleAssignment.findById(referenceID);
-      studentID = moduleAssignment?.studentID;
-    }
-    console.log(">>> resolved studentID:", studentID);
-    if (!studentID) {
-      console.log("No student ID found for", referenceCollection, referenceID);
     }
 
     // Save the file data to MongoDB
@@ -90,46 +75,19 @@ export const fileUpload = async (req, res) => {
       actionToDisplay: `Uploaded file "${fileName}"`,
       isFile: true,
       userID: uploadedByUserID,
-      studentID,
-      involvedData: {
-        typeData: {
-          fileName,
-          fileType,
-          fileUrl,
-          status: "Uploaded"
-        }
-      }
     });
     await newFile.save();
     // Add new student log after saving file and creating log
     console.log("Creating student log for upload", { studentID, fileName });
     // TEMPORARY: to verify logging works
-    studentID = studentID || "test123";
-    try {
-      console.log(">>> addNewStudentLog called with:", {
-        studentData: {
-          _id: studentID,
-          studentID,
-          studentName: "",
-        },
-        userID: uploadedByUserID,
-        userName: uploadedByUserName || "Unknown",
-        action: "fileUpload",
-        involvedData: {
-          typeData: {
-            fileName,
-            fileType,
-            fileUrl,
-            status: "Uploaded",
-          },
-        },
-      });
+    const student = await Student.findOne({studentID}).select('studentName');
 
+    try {
       await addNewStudentLog({
         studentData: {
-          _id: studentID,
-          studentID,
-          studentName: "",
+          _id: student._id,
+          studentID: studentID,
+          studentName: student.studentName,
         },
         userID: uploadedByUserID,
         userName: uploadedByUserName || "Unknown",
