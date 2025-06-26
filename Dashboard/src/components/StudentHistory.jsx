@@ -321,6 +321,11 @@ const StudentHistory = ({
                         <Typography variant="h6" component="span">
                           {log.message}
                         </Typography>
+                        {log.type === "payment" && log.involvedData?.typeData?.paidAmount && (
+                          <Typography fontWeight="bold">
+                            Amount: {log.involvedData.typeData.paidAmount}
+                          </Typography>
+                        )}
                         <Typography>
                           {
                             actionTypeTheme[log.action]?.typeData &&
