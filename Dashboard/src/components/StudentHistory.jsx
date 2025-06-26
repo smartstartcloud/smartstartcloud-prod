@@ -132,6 +132,12 @@ const StudentHistory = ({
         type: "File",
         typeData: "fileName",
       },
+      delete: {
+        icon: <RemoveIcon />,
+        color: "delete",
+        type: "File",
+        typeData: "fileName",
+      },
     };
     
 
