@@ -351,18 +351,13 @@ const StudentHistory = ({
                           </Typography>
                         )}
                         {log.type === "file" && (
-                          <>
+                          <Box mt={1}>
                             {log.involvedData?.typeData?.fileName && (
-                              <Typography fontWeight="bold">
-                                File: {log.involvedData.typeData.fileName}
+                              <Typography variant="body1" fontWeight="bold">
+                                {log.action === "fileUpload" ? "Uploaded" : "Downloaded"}: {log.involvedData.typeData.fileName}
                               </Typography>
                             )}
-                            {log.involvedData?.typeData?.status && (
-                              <Typography fontStyle="italic">
-                                Status: {log.involvedData.typeData.status}
-                              </Typography>
-                            )}
-                          </>
+                          </Box>
                         )}
                         <Typography>
                           {
