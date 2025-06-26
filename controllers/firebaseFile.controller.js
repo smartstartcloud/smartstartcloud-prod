@@ -66,6 +66,14 @@ export const fileUpload = async (req, res) => {
       actionToDisplay: `Uploaded file "${fileName}"`,
       isFile: true,
       userID: uploadedByUserID,
+      involvedData: {
+        typeData: {
+          fileName,
+          fileType,
+          fileUrl,
+          status: "Uploaded"
+        }
+      }
     });
     await newFile.save();
 
@@ -140,16 +148,24 @@ export const fileDownload = async (req, res) => {
     }
 
     // Log the file download action before streaming
-    const logMessage = `File "${file.fileName}" (ID: ${
-      file._id
-    }) was downloaded.`;
-    // await createLog({
-    //   req,
-    //   collection: "File",
-    //   action: "download",
-    //   logMessage,
-    //   affectedID: file._id,
-    // });
+    const logMessage = `File "${file.fileName}" (ID: ${file._id}) was downloaded.`;
+    await createLog({
+      req,
+      collection: "File",
+      action: "download",
+      logMessage,
+      affectedID: file._id,
+      actionToDisplay: `Downloaded file "${file.fileName}"`,
+      isFile: true,
+      involvedData: {
+        typeData: {
+          fileName: file.fileName,
+          fileType: file.fileType,
+          fileUrl: file.fileUrl,
+          status: "Downloaded"
+        }
+      }
+    });
 
     // Fetch the file from Firebase using axios
     const firebaseResponse = await axios.get(file.fileUrl, {

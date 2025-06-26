@@ -19,6 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CurrencyPoundIcon from "@mui/icons-material/CurrencyPound";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DownloadIcon from "@mui/icons-material/Download";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { isAfter, isBefore, isSameDay } from "date-fns";
@@ -117,6 +119,18 @@ const StudentHistory = ({
         color: "delete",
         type: "Payment",
         typeData: "financeID",
+      },
+      fileUpload: {
+        icon: <UploadFileIcon />,
+        color: "add",
+        type: "File",
+        typeData: "fileName",
+      },
+      fileDownload: {
+        icon: <DownloadIcon />,
+        color: "info",
+        type: "File",
+        typeData: "fileName",
       },
     };
     
@@ -324,6 +338,16 @@ const StudentHistory = ({
                         {log.type === "payment" && log.involvedData?.typeData?.paidAmount && (
                           <Typography fontWeight="bold">
                             Amount: {log.involvedData.typeData.paidAmount}
+                          </Typography>
+                        )}
+                        {(log.action === "fileUpload" || log.action === "fileDownload") && log.involvedData?.typeData?.fileName && (
+                          <Typography fontWeight="bold">
+                            File: {log.involvedData.typeData.fileName}
+                          </Typography>
+                        )}
+                        {log.involvedData?.typeData?.status && (
+                          <Typography fontStyle="italic">
+                            Status: {log.involvedData.typeData.status}
                           </Typography>
                         )}
                         <Typography>
