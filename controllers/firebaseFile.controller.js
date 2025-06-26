@@ -16,6 +16,9 @@ import ModuleAssignment from "../models/moduleAssignment.models.js";
 import Order from "../models/order.models.js";
 import ModuleStudentFinance from "../models/moduleStudentFinance.models.js";
 
+// Import addNewStudentLog if not already imported
+import { addNewStudentLog } from "./studentLog.controller.js";
+
 const storage = getStorage(app);
 
 export const fileUpload = async (req, res) => {  
@@ -91,6 +94,25 @@ export const fileUpload = async (req, res) => {
       }
     });
     await newFile.save();
+    // Add new student log after saving file and creating log
+    await addNewStudentLog({
+      studentData: {
+        _id: studentID,
+        studentID,
+        studentName: "",
+      },
+      userID: uploadedByUserID,
+      userName: uploadedByUserName || "Unknown",
+      action: "fileUpload",
+      involvedData: {
+        typeData: {
+          fileName,
+          fileType,
+          fileUrl,
+          status: "Uploaded",
+        },
+      },
+    });
 
     if (referenceCollection === "Assignment") {
       if (writerFlag) {
@@ -195,6 +217,25 @@ export const fileDownload = async (req, res) => {
           status: "Downloaded"
         }
       }
+    });
+    // Add new student log after logging download
+    await addNewStudentLog({
+      studentData: {
+        _id: studentID,
+        studentID,
+        studentName: "",
+      },
+      userID: req.userId,
+      userName: req.userName || "Unknown",
+      action: "fileDownload",
+      involvedData: {
+        typeData: {
+          fileName: file.fileName,
+          fileType: file.fileType,
+          fileUrl: file.fileUrl,
+          status: "Downloaded",
+        },
+      },
     });
 
     // Fetch the file from Firebase using axios
@@ -338,6 +379,26 @@ export const fileDelete = async (req, res) => {
           deletedAt: new Date().toISOString(),
         }
       }
+    });
+    // Add new student log after logging deletion
+    await addNewStudentLog({
+      studentData: {
+        _id: studentID,
+        studentID,
+        studentName: "",
+      },
+      userID: req.userId,
+      userName: req.userName || "Unknown",
+      action: "delete",
+      involvedData: {
+        typeData: {
+          fileName: deletedFile.fileName,
+          fileType: deletedFile.fileType,
+          fileUrl: deletedFile.fileUrl,
+          status: "Deleted",
+          deletedAt: new Date().toISOString(),
+        },
+      },
     });
 
     res.status(200).json({
