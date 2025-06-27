@@ -46,8 +46,6 @@ const StudentHistory = ({
     const [filteredLogs, setFilteredLogs] = useState([]);
     const [dateFilter, setDateFilter] = useState({ from: null, to: null });
     const [typeFilter, setTypeFilter] = useState("all");
-    console.log(logData);
-    
 
     const actionTypeTheme = {
       newStudentDynamic: {
