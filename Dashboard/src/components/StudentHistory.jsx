@@ -46,6 +46,8 @@ const StudentHistory = ({
     const [filteredLogs, setFilteredLogs] = useState([]);
     const [dateFilter, setDateFilter] = useState({ from: null, to: null });
     const [typeFilter, setTypeFilter] = useState("all");
+    console.log(logData);
+    
 
     const actionTypeTheme = {
       newStudentDynamic: {
@@ -132,7 +134,7 @@ const StudentHistory = ({
         type: "File",
         typeData: "fileName",
       },
-      delete: {
+      fileDelete: {
         icon: <RemoveIcon />,
         color: "delete",
         type: "File",
@@ -366,11 +368,6 @@ const StudentHistory = ({
                                   ? "Downloaded"
                                   : "Deleted"
                                 }: {log.involvedData.typeData.fileName}
-                              </Typography>
-                            )}
-                            {log.action === "delete" && log.involvedData?.typeData?.deletedAt && (
-                              <Typography variant="body2" color="textSecondary">
-                                Deleted At: {format(new Date(log.involvedData.typeData.deletedAt), "dd/MM/yyyy HH:mm:ss")}
                               </Typography>
                             )}
                           </Box>

@@ -6,7 +6,7 @@ export const addNewStudentLog = async ({
   userID,
   userName,
   action,
-  involvedData = {type: "", typeDate: ""},
+  involvedData = {type: "", typeData: ""},
   metadata = {},
 }) => {
   try {

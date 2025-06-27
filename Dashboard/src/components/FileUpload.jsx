@@ -134,8 +134,8 @@ const FileUpload = ({
     }
   };
 
-  const handleDownload = async (file) => {
-    downloadFiles(file, true);
+  const handleDownload = async (file) => {    
+    downloadFiles(file, true, studentId);
   };
 
   const handleView = async (file) => {

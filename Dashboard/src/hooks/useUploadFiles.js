@@ -72,10 +72,11 @@ const useUploadFiles = () => {
   };
 
   // ✅ Updated downloadFiles using useApi
-  const downloadFiles = async (file, download) => {
+  const downloadFiles = async (file, download, studentID=null) => {
+    
     try {
       const response = await api.get(
-        `/api/files/fileDownload/${file._id}?download=${download}`,
+        `/api/files/fileDownload/${file._id}?studentID=${studentID}`,
         {
           responseType: "blob", // Important for file downloads
         }
