@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Container, Typography, Box, Card, CardContent, IconButton, TableContainer,
   Table, TableHead, TableCell, TableRow, TableBody, Grid, TextField, useTheme, Modal,
@@ -53,6 +53,7 @@ const FileUpload = ({
   const [uploadTimeline, setUploadTimeline] = useState([]);
   const { uploadFiles, downloadFiles, deleteFiles } = useUploadFiles();
   const { fileList } = useFetchFileList(referenceID, isOrder, orderID, parentID);
+  const { studentId } = useParams();
   
   const { control } = useForm({});
   useEffect(() => {
@@ -90,6 +91,7 @@ const FileUpload = ({
   const handleUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
+    if(studentId) formData.append("studentID", studentId);
     formData.append("referenceID", referenceID);
     formData.append("fileCategory", category);
     formData.append("referenceCollection", referenceCollection);
@@ -132,8 +134,8 @@ const FileUpload = ({
     }
   };
 
-  const handleDownload = async (file) => {
-    downloadFiles(file, true);
+  const handleDownload = async (file) => {    
+    downloadFiles(file, true, studentId);
   };
 
   const handleView = async (file) => {
@@ -142,7 +144,7 @@ const FileUpload = ({
 
   const handleDelete = async (file) => {
     try {
-      const response = await deleteFiles(file._id);
+      const response = await deleteFiles(file._id, studentId);
       setExistingFilteredFiles((prevFiles) =>
         prevFiles.filter((prevFile) => prevFile._id !== file._id))
       console.log(response.message);

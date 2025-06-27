@@ -20,7 +20,7 @@ router.get("/fileDownload/:fileID", fileDownload);
 router.post("/list/singleFile/getList", listFilesByReferenceID);
 
 // Route to delete a file by ID
-router.delete("/delete/:id", fileDelete);
+router.delete("/delete/:studentID/:id", fileDelete);
 
 // Route to list all files
 router.get("/list", listFiles);

@@ -72,10 +72,11 @@ const useUploadFiles = () => {
   };
 
   // ✅ Updated downloadFiles using useApi
-  const downloadFiles = async (file, download) => {
+  const downloadFiles = async (file, download, studentID=null) => {
+    
     try {
       const response = await api.get(
-        `/api/files/fileDownload/${file._id}?download=${download}`,
+        `/api/files/fileDownload/${file._id}?studentID=${studentID}`,
         {
           responseType: "blob", // Important for file downloads
         }
@@ -123,9 +124,9 @@ const useUploadFiles = () => {
     }
   };
 
-  const deleteFiles = async (fileID) => {
+  const deleteFiles = async (fileID, studentID=null) => {
     try {
-      const res = await api.delete(`/api/files/delete/${fileID}`);
+      const res = await api.delete(`/api/files/delete/${studentID}/${fileID}`);
       const data = await res.data;
       
       if (data.error) {
