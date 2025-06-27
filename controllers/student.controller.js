@@ -123,7 +123,7 @@ export const addStudentInDegree = async (req, res) => {
   try {
     const testToken = req.headers.cookie;
     const { userId } = extractToken(testToken);
-    const user = await User.findById(userId, "firstName lastName userName");
+    const user = await User.findById(userId, "firstName lastName userName role");
     const userDetails = { userID: userId, userName: "" };
     if (user) {
       userDetails.userName = user.userName;
@@ -281,6 +281,16 @@ export const updateStudentInDegree = async (req, res) => {
     if (isExternal !== undefined) updatedFields.isExternal = isExternal;
     if (studentAssignment) updatedFields.studentAssignment = studentAssignment || "";
 
+    const changedFields = {};
+
+    for (const [key, newValue] of Object.entries(updatedFields)) {
+      const oldValue = currentStudent[key];
+
+      if (oldValue !== newValue) {
+        changedFields[key] = `${oldValue ?? ""} → ${newValue}`;
+      }
+    }
+
     // Update student in the database
     const updatedStudent = await Student.findByIdAndUpdate(
       _id,
@@ -309,6 +319,11 @@ export const updateStudentInDegree = async (req, res) => {
       userID: userDetails.userID,
       userName: userDetails.userName,
       action: "updateStudentManual",
+      involvedData: {
+        changedFields,
+        timestamp: new Date().toISOString(),
+        userRole: user?.role || "unknown",
+      },
     });
 
     res

@@ -6,7 +6,7 @@ export const addNewStudentLog = async ({
   userID,
   userName,
   action,
-  involvedData = {type: "", typeDate: ""},
+  involvedData = {type: "", typeData: ""},
   metadata = {},
 }) => {
   try {
@@ -118,4 +118,17 @@ const actionTypes = {
   newPayment: { message: "New Payment Added.", type: "payment" },
   updatePayment: { message: "Payment Updated", type: "payment" },
   deletePayment: { message: "Delete Payment", type: "payment" },
+
+  fileUpload: {
+    message: "File Uploaded.",
+    type: "file",
+  },
+  fileDownload: {
+    message: "File Downloaded.",
+    type: "file",
+  },
+  fileDelete: {
+    message: "File Deleted.",
+    type: "file",
+  },
 };

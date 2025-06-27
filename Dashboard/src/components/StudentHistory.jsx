@@ -19,6 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CurrencyPoundIcon from "@mui/icons-material/CurrencyPound";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DownloadIcon from "@mui/icons-material/Download";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { isAfter, isBefore, isSameDay } from "date-fns";
@@ -44,6 +46,8 @@ const StudentHistory = ({
     const [filteredLogs, setFilteredLogs] = useState([]);
     const [dateFilter, setDateFilter] = useState({ from: null, to: null });
     const [typeFilter, setTypeFilter] = useState("all");
+    console.log(logData);
+    
 
     const actionTypeTheme = {
       newStudentDynamic: {
@@ -118,6 +122,24 @@ const StudentHistory = ({
         type: "Payment",
         typeData: "financeID",
       },
+      fileUpload: {
+        icon: <UploadFileIcon />,
+        color: "add",
+        type: "File",
+        typeData: "fileName",
+      },
+      fileDownload: {
+        icon: <DownloadIcon />,
+        color: "info",
+        type: "File",
+        typeData: "fileName",
+      },
+      fileDelete: {
+        icon: <RemoveIcon />,
+        color: "delete",
+        type: "File",
+        typeData: "fileName",
+      },
     };
     
 
@@ -162,11 +184,12 @@ const StudentHistory = ({
 
     useEffect(() => {
       if (logData) {
-        const { studentID, logs } = logData;
+        const studentID = logData?.studentID ?? "Unknown Student";
+        const logs = logData?.logs ?? [];
         setStudentIDLog(studentID);
         setLogs(logs);
         setFilteredLogs(filterLogFunction(logs));
-      }      
+      }
     }, [logData]);
 
     
@@ -276,6 +299,7 @@ const StudentHistory = ({
                   <MenuItem value="assignment">Assignment</MenuItem>
                   <MenuItem value="student">Student</MenuItem>
                   <MenuItem value="payment">Payment</MenuItem>
+                  <MenuItem value="file">File</MenuItem>
                 </Select>
               </FormControl>
               <Timeline>
@@ -320,11 +344,38 @@ const StudentHistory = ({
                         <Typography variant="h6" component="span">
                           {log.message}
                         </Typography>
+                        {log.type === "student" && log.action?.startsWith("update") && log.involvedData?.changedFields && (
+                          <Box mt={1}>
+                            {Object.entries(log.involvedData.changedFields).map(([field, value]) => (
+                              <Typography key={field} variant="body2">
+                                {field.charAt(0).toUpperCase() + field.slice(1)}: {value}
+                              </Typography>
+                            ))}
+                          </Box>
+                        )}
+                        {log.type === "payment" && log.involvedData?.typeData?.paidAmount && (
+                          <Typography fontWeight="bold">
+                            Amount: {log.involvedData.typeData.paidAmount}
+                          </Typography>
+                        )}
+                        {log.type === "file" && (
+                          <Box mt={1}>
+                            {log.involvedData?.typeData?.fileName && (
+                              <Typography variant="body1" fontWeight="bold">
+                                {log.action === "fileUpload"
+                                  ? "Uploaded"
+                                  : log.action === "fileDownload"
+                                  ? "Downloaded"
+                                  : "Deleted"
+                                }: {log.involvedData.typeData.fileName}
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
                         <Typography>
                           {
-                            log.involvedData?.typeData[
-                              actionTypeTheme[log.action].typeData
-                            ]
+                            actionTypeTheme[log.action]?.typeData &&
+                            log.involvedData?.typeData?.[actionTypeTheme[log.action].typeData]
                           }
                         </Typography>
                         <Typography variant="caption">
