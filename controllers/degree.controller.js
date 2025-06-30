@@ -71,15 +71,19 @@ export const newDegree = async (req, res) => {
       const logMessage = { degreeName, degreeYear };
 
       // Create the log entry using the updated createLog signature
-      await createLog({
-        req,
-        collection: "Degree",
-        action: "create",
-        actionToDisplay: "Create Degree",
-        logMessage,
-        affectedID: newDegree._id,
-        metadata: newDegree.metadata,
-      });
+      try {
+        await createLog({
+          req,
+          collection: "Degree",
+          action: "create",
+          actionToDisplay: "Create Degree",
+          logMessage,
+          affectedID: newDegree._id,
+          metadata: newDegree.metadata,
+        });
+      } catch (logError) {
+        console.error("Log creation failed (create):", logError.message);
+      }
 
       res.status(200).json(newDegree);
     }
@@ -142,15 +146,19 @@ export const updateDegree = async (req, res) => {
       // Construct the log message
       const logMessage = {degreeName, degreeYear};
       // Create the log entry (user details will be extracted inside createLog)
-      await createLog({
-        req,
-        collection: "Degree",
-        action: "update",
-        actionToDisplay: "Update Degree",
-        logMessage,
-        affectedID: degree_id,
-        metadata: updatedDegree.metadata,
-      });
+      try {
+        await createLog({
+          req,
+          collection: "Degree",
+          action: "update",
+          actionToDisplay: "Update Degree",
+          logMessage,
+          affectedID: degree_id,
+          metadata: updatedDegree.metadata,
+        });
+      } catch (logError) {
+        console.error("Log creation failed (update):", logError.message);
+      }
 
       res.status(200).json(updatedDegree);
     } else {
@@ -451,13 +459,17 @@ export const deleteDegree = async (req,res)=>{
       degreeName: deletedDegree.degreeName,
       degreeYear: deletedDegree.degreeYear,
     };
-    await createLog({
-      req,
-      collection: "Degree",
-      actionToDisplay: "Delete Degree",
-      action: "delete",
-      logMessage,
-    });
+    try {
+      await createLog({
+        req,
+        collection: "Degree",
+        actionToDisplay: "Delete Degree",
+        action: "delete",
+        logMessage,
+      });
+    } catch (logError) {
+      console.error("Log creation failed (delete):", logError.message);
+    }
 
     res.status(200).json({ degreeID });
   } catch (error) {
@@ -503,14 +515,18 @@ export const deleteStudentFromDegree = async (req,res)=>{
       degreeName: degree.degreeName,
       degreeYear: degree.degreeYear,
     };
-    await createLog({
-      req,
-      collection: "Degree",
-      action: "delete",
-      actionToDisplay: "Delete Student from Degree",
-      logMessage,
-      metadata: degree.metadata,
-    });
+    try {
+      await createLog({
+        req,
+        collection: "Degree",
+        action: "delete",
+        actionToDisplay: "Delete Student from Degree",
+        logMessage,
+        metadata: degree.metadata,
+      });
+    } catch (logError) {
+      console.error("Log creation failed (delete student):", logError.message);
+    }
 
     res.status(200).json({ studentID });
   } catch (error) {
