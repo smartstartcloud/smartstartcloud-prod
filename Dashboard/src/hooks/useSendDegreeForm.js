@@ -50,7 +50,7 @@ const useSendDegreeForm = () => {
                     throw new Error(data?.error || "Internal Server Error");
                 } else {
                     console.log("Error: ", data?.error);
-                    throw new Error(data?.error || "Internal Server Error"); // Re-throw any other error
+                    throw new Error(data || "Internal Server Error"); // Re-throw any other error
                 }
             } else {
                 console.log("Network or other error", error);
