@@ -93,7 +93,7 @@ export const newDegree = async (req, res) => {
       res.status(409).json({ error: "Degree ID already exists" });
     } else {
       console.error("Error in newDegree:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: error });
     }
   }
 };
