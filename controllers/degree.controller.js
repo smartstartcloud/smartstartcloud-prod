@@ -19,84 +19,79 @@ export const newDegree = async (req, res) => {
       degreeAgent,
       degreeStudentList,
       degreeModules,
-    } = req.body; // Expect assignmentData in the request body
+    } = req.body;
 
-    let currentDegree = await Degree.findOne({
-      degreeID: degreeID,
-    });
+    let currentDegree = await Degree.findOne({ degreeID });
+    if (currentDegree) {
+      return res.status(409).json({ error: "Degree ID already exists" });
+    }
+
     const homeLink = `/task/${degreeYear}/${degreeID}`;
-    const dataId = ''
-    const degreeDetailsForPayment = { degreeID };
-
+    const dataId = "";
     const testToken = req.headers.cookie;
     const { userId } = extractToken(testToken);
     const user = await User.findById(userId, "firstName lastName userName");
-    const userDetails = { userID: userId, userName: "" };
-    if (user) {
-      userDetails.userName = user.userName;
-    }
+    const userDetails = { userID: userId, userName: user?.userName || "" };
 
-    if (currentDegree){
-      const error = new Error("Degree ID already exists");
-      error.code = 11000; // Set the error code
-      throw error; // Throw the error object
-    } else {
-      const populatedStudentList = await addNewStudent(
-        degreeStudentList,
-        homeLink,
-        userDetails
-      );
-      const populatedModules = await addNewModule(
-        degreeModules,
-        populatedStudentList,
-        homeLink,
-        userDetails
-      );
+    // Step 1: Save minimal degree record first
+    const newDegree = new Degree({
+      degreeID,
+      degreeName,
+      degreeYear,
+      degreeAgent,
+      degreeStudentList: [],
+      degreeModules: [],
+      metadata: { goTo: homeLink, dataId },
+    });
+    await newDegree.save();
 
-      // Step 1: Create Degree
-      const newDegree = new Degree({
-        degreeID,
-        degreeName,
-        degreeYear,
-        degreeAgent,
-        degreeStudentList: populatedStudentList,
-        degreeModules: populatedModules,
-        metadata: {goTo: homeLink, dataId: dataId}
-      });
-      // console.log(newDegree);
+    // Step 2: Respond quickly
+    res.status(202).json({
+      message: "Degree creation in progress",
+      degreeID: newDegree._id,
+    });
 
-      await newDegree.save();
-
-      // Construct a human-readable log message
-      const logMessage = { degreeName, degreeYear };
-
-      // Create the log entry using the updated createLog signature
+    // Step 3: Continue processing in the background
+    setImmediate(async () => {
       try {
+        const populatedStudentList = await addNewStudent(
+          degreeStudentList,
+          homeLink,
+          userDetails
+        );
+
+        const populatedModules = await addNewModule(
+          degreeModules,
+          populatedStudentList,
+          homeLink,
+          userDetails
+        );
+
+        newDegree.degreeStudentList = populatedStudentList;
+        newDegree.degreeModules = populatedModules;
+        await newDegree.save();
+
         await createLog({
           req,
           collection: "Degree",
           action: "create",
           actionToDisplay: "Create Degree",
-          logMessage,
+          logMessage: { degreeName, degreeYear },
           affectedID: newDegree._id,
           metadata: newDegree.metadata,
         });
-      } catch (logError) {
-        console.error("Log creation failed (create):", logError.message);
-      }
 
-      res.status(200).json(newDegree);
-    }
-    
+        console.log(`Degree ${degreeID} creation complete`);
+      } catch (bgErr) {
+        console.error("Background processing failed:", bgErr.message);
+      }
+    });
   } catch (error) {
-    if (error.code === 11000) {
-      res.status(409).json({ error: "Degree ID already exists" });
-    } else {
-      console.error("Error in newDegree:", error);
-      res.status(500).json({ error: error });
-    }
+    console.error("Error in newDegree:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const updateDegree = async (req, res) => {
   try {
