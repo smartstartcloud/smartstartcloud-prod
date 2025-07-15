@@ -153,9 +153,12 @@ const PaymentFormSingle = ({
                     ? new Date(paymentDetails.totalPaymentToDate)
                     : null
                 } // Ensure the value is a Date object
-                onChange={(newValue) =>
-                  handleChange("totalPaymentToDate", newValue || null)
-                }
+                onChange={(newValue) => {
+                  handleChange(
+                    "totalPaymentToDate",
+                    newValue.toISOString() || null
+                  );
+                }}
                 slotProps={{
                   textField: { fullWidth: true, variant: "outlined" },
                 }}
