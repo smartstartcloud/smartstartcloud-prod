@@ -627,7 +627,7 @@ const StudentProfile = () => {
           <DialogContent sx={{ padding: 0 }}>
             <Box sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
               <AssignmentForm
-                studentData={student._id}
+                student_id={student._id}
                 degreeModulesData={degreeModules}
                 editMode={false}
               />
