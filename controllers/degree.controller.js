@@ -83,7 +83,7 @@ export const newDegree = async (req, res) => {
 
         console.log(`Degree ${degreeID} creation complete`);
       } catch (bgErr) {
-        console.error("Background processing failed:", bgErr.message);
+        console.error("Background Degree processing failed:", bgErr.message);
       }
     });
   } catch (error) {
@@ -103,45 +103,55 @@ export const updateDegree = async (req, res) => {
       degreeAgent,
       degreeStudentList,
       degreeModules,
-    } = req.body; // Expect assignmentData in the request body
+    } = req.body;
 
-    let currentDegree = await Degree.findOne({
-      _id: degree_id,
-    });
+    let currentDegree = await Degree.findOne({ _id: degree_id });
+    if (!currentDegree) {
+      return res
+        .status(404)
+        .json({ error: "No degree found with the specified ID" });
+    }
 
     const testToken = req.headers.cookie;
     const { userId } = extractToken(testToken);
     const user = await User.findById(userId, "firstName lastName userName");
-    const userDetails = { userID: userId, userName: "" };
-    if (user){      
-      userDetails.userName = user.userName
-    }    
-    if (currentDegree) {
-      const populatedStudentList = await addNewStudent(degreeStudentList, null, userDetails);
-      const populatedModules = await addNewModule(
-        degreeModules,
-        populatedStudentList,
-        null,
-        userDetails
-      );
+    const userDetails = { userID: userId, userName: user?.userName || "" };
 
-      let updatedDegree = await Degree.findOneAndUpdate(
-        { _id: degree_id },
-        {
-          degreeID,
-          degreeName,
-          degreeYear,
-          degreeAgent,
-          degreeStudentList: populatedStudentList,
-          degreeModules: populatedModules,
-        },
-        { new: true } // Return the updated document
-      );
+    // Step 1: Respond quickly
+    res.status(202).json({
+      message: "Degree update in progress",
+      degreeID: degree_id,
+    });
 
-      // Construct the log message
-      const logMessage = {degreeName, degreeYear};
-      // Create the log entry (user details will be extracted inside createLog)
+    // Step 2: Background update
+    setImmediate(async () => {
       try {
+        const populatedStudentList = await addNewStudent(
+          degreeStudentList,
+          null,
+          userDetails
+        );
+        const populatedModules = await addNewModule(
+          degreeModules,
+          populatedStudentList,
+          null,
+          userDetails
+        );
+
+        const updatedDegree = await Degree.findOneAndUpdate(
+          { _id: degree_id },
+          {
+            degreeID,
+            degreeName,
+            degreeYear,
+            degreeAgent,
+            degreeStudentList: populatedStudentList,
+            degreeModules: populatedModules,
+          },
+          { new: true }
+        );
+
+        const logMessage = { degreeName, degreeYear };
         await createLog({
           req,
           collection: "Degree",
@@ -151,22 +161,15 @@ export const updateDegree = async (req, res) => {
           affectedID: degree_id,
           metadata: updatedDegree.metadata,
         });
-      } catch (logError) {
-        console.error("Log creation failed (update):", logError.message);
-      }
 
-      res.status(200).json(updatedDegree);
-    } else {
-      res.status(404).json({ error: "No degree found with the specified ID" });
-    }
-    
+        console.log(`Degree ${degreeID} updated successfully`);
+      } catch (bgErr) {
+        console.error("Background update failed:", bgErr.message);
+      }
+    });
   } catch (error) {
-    if (error.code === 11000) {
-      res.status(409).json({ error: "Degree ID already exists" });
-    } else {
-      console.error("Error in newDegree:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+    console.error("Error in updateDegree:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -253,8 +256,6 @@ const getAssignmentSum = async (moduleList, studentList) => {
     console.error("Error fetching assignments: ", error);
   }
 };
-
-
 
 export const getDegreeByID = async (req,res)=>{
   const {degreeID} = req.params
@@ -352,7 +353,6 @@ const getAssignmentDetailsList = async (moduleList, studentList) => {
   }
 };
 
-
 export const getDegreeByAgent = async (req,res)=>{
   const {degreeAgent} = req.params
   
@@ -392,84 +392,108 @@ export const getStudentByID = async (req,res)=>{
 export const deleteDegree = async (req,res)=>{
   try {
     const { degreeID } = req.params;
-    // Find and delete the degree
-    const deletedDegree = await Degree.findOneAndDelete({ degreeID: degreeID });
-
+    // Check if degree exists before continuing
+    const deletedDegree = await Degree.findOne({ degreeID: degreeID });
     if (!deletedDegree) {
-      console.log("No degree found with the provided degreeID.");
-      return;
+      return res
+        .status(404)
+        .json({ error: "No degree found with the provided degreeID." });
     }
+    
+    // Respond immediately to the client
+    res.status(202).json({
+      message: "Degree deletion in progress",
+      degreeID,
+    });
+    
+    // Continue deletion in background
+    setImmediate(async () => {
+      try {
+        // Actually delete the degree now
+        await Degree.findOneAndDelete({ degreeID });
 
-    // Delete associated modules
-    await Promise.all(
-      deletedDegree.degreeModules.map(async (moduleID) => {
-        const module = await Module.findOneAndDelete({ _id: moduleID });
-
-        if (!module) {
-          console.log(`No module found with ID ${moduleID}`);
-          return;
-        }
-
-        // Delete associated ModuleAssignments
-        const allMixSchema = await ModuleAssignment.find({
-          moduleID: module._id,
-        });
-
+        // Delete associated modules
         await Promise.all(
-          allMixSchema.map(async (allMix) => {
-            // Delete associated payment data
-            if (allMix.modulePayment) {
-              await ModuleStudentFinance.findOneAndDelete({
-                _id: allMix.modulePayment,
-              });
+          deletedDegree.degreeModules.map(async (moduleID) => {
+            const module = await Module.findOneAndDelete({ _id: moduleID });
+            
+            if (!module) {
+              console.log(`No module found with ID ${moduleID}`);
+              return;
             }
+            console.log("Module Deleted from degree - ", moduleID);
+            const allMixSchema = await ModuleAssignment.find({
+              moduleID: module._id,
+            });
 
-            // Delete the ModuleAssignment
-            await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
-          })
-        );
-
-        // Delete the assignments associated with the module
-        await Promise.all(
-          module.moduleAssignments.map(async (moduleAssignmentsIDArr) => {
             await Promise.all(
-              moduleAssignmentsIDArr.map(async (id) => {
-                await Assignment.findOneAndDelete({ _id: id });
+              allMixSchema.map(async (allMix) => {
+                // Delete associated payment data
+                if (allMix.modulePayment) {
+                  await ModuleStudentFinance.findOneAndDelete({
+                    _id: allMix.modulePayment,
+                  });
+                  console.log(
+                    "ModuleStudentFinance Deleted from degree - ",
+                    allMix.modulePayment
+                  );
+                }
+
+                await ModuleAssignment.findOneAndDelete({ _id: allMix._id });
+                console.log(
+                  "ModuleAssignment Deleted from degree - ",
+                  allMix._id
+                );
+              })
+            );
+
+            // Delete the assignments associated with the module
+            await Promise.all(
+              module.moduleAssignments.map(async (moduleAssignmentsIDArr) => {
+                await Promise.all(
+                  moduleAssignmentsIDArr.map(async (id) => {
+                    await Assignment.findOneAndDelete({ _id: id });
+                    console.log("assignment Deleted from degree - ", id);
+                  })
+                );
               })
             );
           })
         );
-      })
-    );
 
-    // Delete associated students
-    await Promise.all(
-      deletedDegree.degreeStudentList.map(async (studentID) => {
-        const student = await Student.findOneAndDelete({ _id: studentID });
-      })
-    );
+        // Delete associated students
+        await Promise.all(
+          deletedDegree.degreeStudentList.map(async (studentID) => {
+            await Student.findOneAndDelete({ _id: studentID });
+            console.log("student Deleted from degree - ", studentID)
+          })
+        );
 
-    // Log the deletion action
-    const logMessage = {
-      degreeName: deletedDegree.degreeName,
-      degreeYear: deletedDegree.degreeYear,
-    };
-    try {
-      await createLog({
-        req,
-        collection: "Degree",
-        actionToDisplay: "Delete Degree",
-        action: "delete",
-        logMessage,
-      });
-    } catch (logError) {
-      console.error("Log creation failed (delete):", logError.message);
-    }
+        // Log the deletion
+        const logMessage = {
+          degreeName: deletedDegree.degreeName,
+          degreeYear: deletedDegree.degreeYear,
+        };
+        try {
+          await createLog({
+            req,
+            collection: "Degree",
+            actionToDisplay: "Delete Degree",
+            action: "delete",
+            logMessage,
+          });
+        } catch (logError) {
+          console.error("Log creation failed (delete):", logError.message);
+        }
 
-    res.status(200).json({ degreeID });
+        console.log(`Degree ${degreeID} deleted successfully`);
+      } catch (bgErr) {
+        console.error("Background degree deletion failed:", bgErr.message);
+      }
+    });
   } catch (error) {
     console.error("Error deleting Degree:", error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 

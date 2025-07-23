@@ -1,0 +1,55 @@
+[2025-07-22T19:43:35.895Z] [LOG] Listening on port 8080
+[2025-07-22T19:43:36.939Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:43:36.942Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:43:36.979Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:43:43.549Z] [LOG] Listening on port 8080
+[2025-07-22T19:43:44.340Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:43:44.349Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:43:44.354Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:44:25.994Z] [LOG] Student log STUDENTLOG--0350 created and added to student CS001
+[2025-07-22T19:44:25.996Z] [LOG] Student log STUDENTLOG--0348 created and added to student 12345
+[2025-07-22T19:44:25.996Z] [LOG] Student log STUDENTLOG--0349 created and added to student CS002
+[2025-07-22T19:44:26.458Z] [LOG] Student log STUDENTLOG--0351 created and added to student CS002
+[2025-07-22T19:44:26.460Z] [LOG] Student log STUDENTLOG--0353 created and added to student 12345
+[2025-07-22T19:44:26.462Z] [LOG] Student log STUDENTLOG--0352 created and added to student CS001
+[2025-07-22T19:44:26.874Z] [LOG] Student log STUDENTLOG--0355 created and added to student 12345
+[2025-07-22T19:44:26.875Z] [LOG] Student log STUDENTLOG--0354 created and added to student CS002
+[2025-07-22T19:44:26.879Z] [LOG] Student log STUDENTLOG--0356 created and added to student CS001
+[2025-07-22T19:44:27.269Z] [LOG] Degree BBA001 updated successfully
+[2025-07-22T19:44:43.814Z] [LOG] Listening on port 8080
+[2025-07-22T19:44:44.832Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:44:44.930Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:44:44.951Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:44:48.291Z] [LOG] Student log STUDENTLOG--0358 created and added to student CS002
+[2025-07-22T19:44:48.293Z] [LOG] Student log STUDENTLOG--0357 created and added to student 12345
+[2025-07-22T19:44:48.293Z] [LOG] Student log STUDENTLOG--0359 created and added to student CS001
+[2025-07-22T19:44:48.766Z] [LOG] Student log STUDENTLOG--0362 created and added to student CS001
+[2025-07-22T19:44:48.767Z] [LOG] Student log STUDENTLOG--0361 created and added to student CS002
+[2025-07-22T19:44:48.767Z] [LOG] Student log STUDENTLOG--0360 created and added to student 12345
+[2025-07-22T19:44:49.153Z] [LOG] Student log STUDENTLOG--0363 created and added to student CS001
+[2025-07-22T19:44:49.155Z] [LOG] Student log STUDENTLOG--0364 created and added to student 12345
+[2025-07-22T19:44:49.155Z] [LOG] Student log STUDENTLOG--0365 created and added to student CS002
+[2025-07-22T19:44:49.542Z] [LOG] Degree BBA001 updated successfully
+[2025-07-22T19:45:04.032Z] [LOG] Listening on port 8080
+[2025-07-22T19:45:04.823Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:45:04.828Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:45:04.830Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:46:07.301Z] [LOG] Listening on port 8080
+[2025-07-22T19:46:08.121Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:46:08.125Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:46:08.128Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:51:21.459Z] [LOG] ✅ Express app initialized
+[2025-07-22T19:51:21.462Z] [LOG] Listening on port 8080
+[2025-07-22T19:51:22.262Z] [LOG] MongoDB connected on FILE
+[2025-07-22T19:51:22.291Z] [LOG] MongoDB connected on AUTH
+[2025-07-22T19:51:22.292Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-22T19:52:16.678Z] [LOG] Student log STUDENTLOG--0366 created and added to student CS002
+[2025-07-22T19:52:16.680Z] [LOG] Student log STUDENTLOG--0368 created and added to student CS001
+[2025-07-22T19:52:16.682Z] [LOG] Student log STUDENTLOG--0367 created and added to student 12345
+[2025-07-22T19:52:17.147Z] [LOG] Student log STUDENTLOG--0371 created and added to student 12345
+[2025-07-22T19:52:17.147Z] [LOG] Student log STUDENTLOG--0370 created and added to student CS002
+[2025-07-22T19:52:17.149Z] [LOG] Student log STUDENTLOG--0369 created and added to student CS001
+[2025-07-22T19:52:17.541Z] [LOG] Student log STUDENTLOG--0372 created and added to student CS001
+[2025-07-22T19:52:17.544Z] [LOG] Student log STUDENTLOG--0373 created and added to student 12345
+[2025-07-22T19:52:17.548Z] [LOG] Student log STUDENTLOG--0374 created and added to student CS002
+[2025-07-22T19:52:17.945Z] [LOG] Degree BBA001 updated successfully
