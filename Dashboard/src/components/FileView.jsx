@@ -60,13 +60,12 @@ const FileView = ({
   const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
 
   useEffect(() => {    
-    
-    if (fileList) {      
-      setFiles(fileList);
+    const filteredList = fileList.filter((item) => item != null);
+    if (filteredList && filteredList.length > 0) {
+      setFiles(filteredList);
     }
     if (dataToSend) {
       console.log(dataToSend);
-      
       setData(dataToSend);     
       setParentReferenceIdToPass(dataToSend.moduleAssignmentID);
       setReferenceIdToPass(dataToSend.id);
