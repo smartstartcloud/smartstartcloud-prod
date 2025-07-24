@@ -297,7 +297,7 @@ const DegreeProfile = () => {
               transform: "translateX(50%)",
             }}
           >
-            {!isSuperAdmin && (
+            {isSuperAdmin && (
               <IconButton
                 onClick={handleDegreeDelete}
                 sx={{
