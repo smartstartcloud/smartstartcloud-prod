@@ -2,10 +2,10 @@ import useApi from './useApi';
 
 const useSendDegreeForm = () => {
     const api = useApi()
-    var res;
 
     const sendDegreeForm = async({_id=null, degreeID, degreeYear, degreeName, degreeAgent, degreeStudentList, degreeModules}, editMode=null) => {        
         try {
+            let res;
             if (editMode) {
                 res = await api.put(
                   `/api/degree/updateDegree/${_id}`,
@@ -34,22 +34,23 @@ const useSendDegreeForm = () => {
                 headers: {"Content-Type": "application/json"}
             })}
 
-            const data = await res.data;
+            const data = res.data;
             if (data.error) {
                 throw new Error(data.error);
             }
             return data
         } catch (error) {
             if (error.response) {
-                if (error.response.status === 409) {
+                const { status, data } = error.response;
+                if (status === 409) {
                     console.log("Error: Degree ID already exists");
                     throw new Error("Degree ID already exists");
-                } else if (error.response.status === 500) {
+                } else if (status === 500) {
                     console.log("Error: Internal Server Error");
-                    throw new Error("Internal Server Error");
+                    throw new Error(data?.error || "Internal Server Error");
                 } else {
-                    console.log("Error: ", error.response.data.error);
-                    throw new Error(error.response.data.error); // Re-throw any other error
+                    console.log("Error: ", data?.error);
+                    throw new Error(data || "Internal Server Error"); // Re-throw any other error
                 }
             } else {
                 console.log("Network or other error", error);
