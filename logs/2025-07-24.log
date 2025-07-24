@@ -1,0 +1,75 @@
+[2025-07-24T19:03:57.988Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:03:57.991Z] [LOG] Listening on port 3000
+[2025-07-24T19:03:59.307Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:03:59.313Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:03:59.330Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:05:02.461Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:05:02.464Z] [LOG] Listening on port 3000
+[2025-07-24T19:05:03.686Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:05:03.740Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:05:03.759Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:08:57.575Z] [LOG] Creating student log for upload [object Object]
+[2025-07-24T19:08:57.915Z] [LOG] Student log STUDENTLOG--0375 created and added to student CS001
+[2025-07-24T19:08:57.916Z] [LOG] ashche ekhane 68402548e0fa2fbb759b2042
+[2025-07-24T19:09:20.319Z] [LOG] File "heroPdf.png" deleted from Firebase
+[2025-07-24T19:09:20.999Z] [LOG] Student log STUDENTLOG--0376 created and added to student CS001
+[2025-07-24T19:11:49.963Z] [LOG] Creating student log for upload [object Object]
+[2025-07-24T19:11:50.302Z] [LOG] Student log STUDENTLOG--0377 created and added to student CS001
+[2025-07-24T19:11:50.302Z] [LOG] ashche ekhane 68402548e0fa2fbb759b2042
+[2025-07-24T19:14:50.904Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:14:50.908Z] [LOG] Listening on port 3000
+[2025-07-24T19:14:51.921Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:14:51.959Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:14:52.098Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:15:19.720Z] [LOG] [object Object]
+[2025-07-24T19:15:24.120Z] [LOG] [object Object]
+[2025-07-24T19:15:35.588Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:15:35.591Z] [LOG] Listening on port 3000
+[2025-07-24T19:15:36.437Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:15:36.440Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:15:36.443Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:15:36.595Z] [LOG] CS001 6882857506cc2de5009ac9ee
+[2025-07-24T19:16:23.669Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:16:23.673Z] [LOG] Listening on port 3000
+[2025-07-24T19:16:24.660Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:16:24.666Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:16:24.748Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:16:25.940Z] [LOG] {
+  _id: new ObjectId('6882857506cc2de5009ac9ee'),
+  fileName: 'heroPdf.png',
+  fileType: 'image/png',
+  referenceID: new ObjectId('6840b2254fa98ea0a1718b54'),
+  referenceCollection: 'ModuleStudentFinance',
+  fileUrl: 'https://firebasestorage.googleapis.com/v0/b/smartsmartcloudfile.appspot.com/o/uploads%2FheroPdf.png?alt=media&token=aecda185-e30a-42f1-983e-586fa1ab0648',
+  fileCategory: 'payment',
+  writerFlag: false,
+  paymentFlag: true,
+  uploadedByUserID: new ObjectId('678d32e9b613519b370dba91'),
+  uploadedByUserName: 'Admin ',
+  createdAt: 2025-07-24T19:11:49.793Z,
+  updatedAt: 2025-07-24T19:11:50.471Z,
+  fileID: 'FILE-MODULESTUDENTFINANCE-PAYMENT-G-0002',
+  __v: 0,
+  metadata: {
+    goTo: '/task/january_2025/BBA001',
+    parentDataId: new ObjectId('684024fe13dce32de11e7724'),
+    dataId: new ObjectId('68402548e0fa2fbb759b203b')
+  }
+}
+[2025-07-24T19:18:20.262Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:18:20.266Z] [LOG] Listening on port 3000
+[2025-07-24T19:18:21.305Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:18:21.345Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:18:21.358Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:18:29.691Z] [LOG] ✅ Express app initialized
+[2025-07-24T19:18:29.695Z] [LOG] Listening on port 3000
+[2025-07-24T19:18:30.524Z] [LOG] MongoDB connected on AUTH
+[2025-07-24T19:18:30.528Z] [LOG] MongoDB connected on INFORMATION
+[2025-07-24T19:18:30.537Z] [LOG] MongoDB connected on FILE
+[2025-07-24T19:18:33.591Z] [LOG] File "heroPdf.png" deleted from Firebase
+[2025-07-24T19:18:34.341Z] [LOG] Student log STUDENTLOG--0378 created and added to student CS001
+[2025-07-24T19:20:18.117Z] [LOG] Creating student log for upload [object Object]
+[2025-07-24T19:20:18.463Z] [LOG] Student log STUDENTLOG--0379 created and added to student 12345
+[2025-07-24T19:20:18.463Z] [LOG] ashche ekhane 6876aaaf7c7c257b334c2aab
+[2025-07-24T19:20:44.128Z] [LOG] File "heroPdf.png" deleted from Firebase
+[2025-07-24T19:20:44.936Z] [LOG] Student log STUDENTLOG--0380 created and added to student 12345
