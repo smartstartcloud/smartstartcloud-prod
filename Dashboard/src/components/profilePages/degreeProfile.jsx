@@ -13,12 +13,15 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import useDeleteObjects from '../../hooks/useDeleteObjects';
 import DetailsBarChart from '../DetailsBarChart.jsx';
 import { extractAssignmentPriority } from '../../utils/functions.js';
+import { useAuthContext } from '../../context/AuthContext.jsx';
 
 
 
 const DegreeProfile = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { isSuperAdmin } = useAuthContext();
+  
   const { degreeYear, degreeId } = useParams();
   const { degree, loading, error } = useFetchSingleDegreeData(degreeId);
   const [open, setOpen] = useState(false);
@@ -168,6 +171,8 @@ const DegreeProfile = () => {
           "&:hover": {
             boxShadow: 12,
           },
+          position: "relative",
+          overflow: "visible",
         }}
       >
         <CardContent>
@@ -281,42 +286,60 @@ const DegreeProfile = () => {
               </Box>
             </Grid>
           </Grid>
-          <IconButton
-            onClick={handleDegreeDelete}
+          <Box
             sx={{
               position: "absolute",
-              top: 119,
-              right: 123,
-              backgroundColor: colors.redAccent[500],
-              color: colors.grey[100],
-              "&:hover": {
-                backgroundColor: colors.redAccent[600],
-                transform: "scale(1.1)",
-                transition: "transform 0.2s",
-              },
-              boxShadow: 3,
+              top: 40,
+              right: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              transform: "translateX(50%)",
             }}
           >
-            <DeleteOutlineOutlinedIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => handleDegreeEdit(degree, true)}
-            sx={{
-              position: "absolute",
-              top: 180,
-              right: 123,
-              backgroundColor: colors.greenAccent[500],
-              color: colors.grey[100],
-              "&:hover": {
-                backgroundColor: colors.greenAccent[600],
-                transform: "scale(1.1)",
-                transition: "transform 0.2s",
-              },
-              boxShadow: 3,
-            }}
-          >
-            <EditOutlinedIcon />
-          </IconButton>
+            {isSuperAdmin && (
+              <IconButton
+                onClick={handleDegreeDelete}
+                sx={{
+                  // position: "absolute",
+                  // top: 119,
+                  // right: 123,
+                  borderRadius: "100%",
+                  border: "white 3px solid",
+                  backgroundColor: colors.redAccent[500],
+                  color: colors.grey[100],
+                  "&:hover": {
+                    backgroundColor: colors.redAccent[600],
+                    transform: "scale(1.1)",
+                    transition: "transform 0.2s",
+                  },
+                  boxShadow: 3,
+                }}
+              >
+                <DeleteOutlineOutlinedIcon />
+              </IconButton>
+            )}
+            <IconButton
+              onClick={() => handleDegreeEdit(degree, true)}
+              sx={{
+                // position: "absolute",
+                // top: 0,
+                // right: 0,
+                borderRadius: "100%",
+                border: "white 3px solid",
+                backgroundColor: colors.greenAccent[500],
+                color: colors.grey[100],
+                "&:hover": {
+                  backgroundColor: colors.greenAccent[600],
+                  transform: "scale(1.1)",
+                  transition: "transform 0.2s",
+                },
+                boxShadow: 3,
+              }}
+            >
+              <EditOutlinedIcon />
+            </IconButton>
+          </Box>
         </CardContent>
       </Card>
 

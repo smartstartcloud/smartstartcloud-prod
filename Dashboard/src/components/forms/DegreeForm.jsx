@@ -350,8 +350,8 @@ const DegreeForm = ({editPage=false}) => {
         >
           Please use this{" "}
           <a
-            href="../../static/templates/student_bulk_template.xlsx"
-            download="student_bulk_template.xlsx"
+            href="../../static/templates/student-upload-bulk-csv.csv"
+            download="student-upload-bulk-csv.csv"
           >
             template
           </a>{" "}

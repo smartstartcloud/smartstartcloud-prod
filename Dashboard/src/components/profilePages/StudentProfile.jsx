@@ -396,7 +396,8 @@ const StudentProfile = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
-                        {totalAmountPaid}
+                        {totalAmountPaid}{" "}
+                        {totalAmountPaid > 0 ? "(APPROVED)" : ""}
                       </Typography>
                     </Grid>
 
@@ -411,7 +412,8 @@ const StudentProfile = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
-                        {totalAmountDue}
+                        {totalAmountDue}{" "}
+                        {totalAmountDue > 0 ? "(APPROVED)" : ""}
                       </Typography>
                     </Grid>
 
@@ -426,7 +428,8 @@ const StudentProfile = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="h6" color={colors.grey[100]}>
-                        {allModuleAmountPaid}
+                        {allModuleAmountPaid}{" "}
+                        {allModuleAmountPaid > 0 ? "(APPROVED)" : ""}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -600,7 +603,11 @@ const StudentProfile = () => {
             </Box>
           )}
         </Box>
-        <StudentHistory studentId={studentId} open={historyModalOpen} setOpen={setHistoryModalOpen} />
+        <StudentHistory
+          studentId={studentId}
+          open={historyModalOpen}
+          setOpen={setHistoryModalOpen}
+        />
 
         <Dialog
           open={open}
@@ -627,7 +634,7 @@ const StudentProfile = () => {
           <DialogContent sx={{ padding: 0 }}>
             <Box sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
               <AssignmentForm
-                studentData={student._id}
+                student_id={student._id}
                 degreeModulesData={degreeModules}
                 editMode={false}
               />

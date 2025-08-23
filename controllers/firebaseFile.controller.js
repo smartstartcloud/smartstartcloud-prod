@@ -252,7 +252,7 @@ export const fileDelete = async (req, res) => {
     if (!fileId) {
       return res.status(400).json({ message: "File ID not provided." });
     }
-
+    
     const token = req.headers.cookie;
     const { userId } = extractToken(token);
     const user = await User.findById(userId, "userName");
@@ -319,6 +319,12 @@ export const fileDelete = async (req, res) => {
         break;
       case "ModuleAssignment":
         await ModuleAssignment.updateMany({ fileList: fileId }, updateQuery);
+        await ModuleStudentFinance.updateMany(
+          { fileList: fileId },
+          updateQuery
+        );
+        break;
+      case "ModuleStudentFinance":
         await ModuleStudentFinance.updateMany(
           { fileList: fileId },
           updateQuery
