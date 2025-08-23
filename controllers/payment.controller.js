@@ -460,9 +460,10 @@ export const deletePaymentDetails = async (req, res) => {
 
 export const getPaymentDetails = async (req, res) => {
   const { assignmentID, moduleCode, studentID } = req.body;
+  
   try {
     // Find the module ID using the moduleCode
-    const moduleID = await Module.findOne({ moduleCode }).select("_id");
+    const moduleID = await Module.findOne({ moduleCode }).select("_id");    
 
     if (!moduleID) {
       return res.status(404).json({ error: "Module not found" });

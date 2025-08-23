@@ -103,7 +103,7 @@ export const updateDegree = async (req, res) => {
       degreeAgent,
       degreeStudentList,
       degreeModules,
-    } = req.body;
+    } = req.body;    
 
     let currentDegree = await Degree.findOne({ _id: degree_id });
     if (!currentDegree) {

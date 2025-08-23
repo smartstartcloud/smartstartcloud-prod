@@ -11,11 +11,11 @@ export const addNewModule = async (
   studentList,
   parentLink,
   userDetails
-) => {
+) => {  
   try {    
     // Use Promise.all to save all Module concurrently
     const addedModuleIDs = await Promise.all(
-      moduleList.map(async (moduleData) => {
+      moduleList.map(async (moduleData) => {        
         // Finding the current Module in database to see if the ID already exists in database;
         let currentModule = await Module.findOne({
           _id: moduleData._id,
