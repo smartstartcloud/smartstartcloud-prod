@@ -1,4 +1,4 @@
-import "./utils/logger.js"; // Import before anything else
+// import "./utils/logger.js"; // Import before anything else
 import dotenv from "./utils/env.js";
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
@@ -17,7 +17,7 @@ import logRoutes from "./routes/log.routes.js";
 
 // Initialize express app
 const app = express();
-console.log("✅ Express app initialized");
+// console.log("✅ Express app initialized");
 
 
 const isDevelopment = process.env.NODE_ENV === "development";
