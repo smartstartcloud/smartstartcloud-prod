@@ -54,7 +54,7 @@ const AssignmentList = ({ list, degreeModules, student, moduleStudentID }) => {
   const handleEditAssignment = (assignment) => {
     setCurrentAssignment(assignment);    
     setOpenDialog(true);
-  };  
+  };    
   
   const navigate = useNavigate(); 
 

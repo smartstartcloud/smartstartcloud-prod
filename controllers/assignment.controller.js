@@ -13,7 +13,7 @@ import { addNewStudentLog } from "./studentLog.controller.js";
 // - Updates existing assignments (main + dynamic) based on reference number
 // - Creates new main + student assignments if not existing
 // - Updates module-student-assignment relationship
-export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode, userDetails) => {          
+export const newAssignmentDynamic = async (assignmentList, studentList, moduleCode, userDetails) => {            
     try {      
       const { userID, userName } = userDetails;  
       // Use Promise.all to save all Assignment concurrently
@@ -21,13 +21,18 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
           assignmentList.map(async (assignmentData) => {
             
             const assignmentIDs = [];
+
             let currentAssignment = await Assignment.findOne({
               _id: assignmentData._id
             })
-            if (currentAssignment){
+            if (currentAssignment){   
+              let updatedModuleCode = currentAssignment.moduleCode;
+              let previousReferenceNumber = currentAssignment.referenceNumber;
+              if (currentAssignment.moduleCode !== moduleCode) updatedModuleCode = moduleCode;
               const updateAssignment = await Assignment.findByIdAndUpdate(
                 { _id: assignmentData._id },
                 {
+                  moduleCode: updatedModuleCode,
                   assignmentName: assignmentData.assignmentName,
                   assignmentType: assignmentData.assignmentType,
                   assignmentDeadline: assignmentData.assignmentDeadline,
@@ -39,11 +44,10 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
               );
               assignmentIDs.push(updateAssignment._id); // Collect each saved ID
               
-              let dynamicAssignmentList =
-                await Assignment.find({
-                  referenceNumber:assignmentData.referenceNumber, // Match by referenceNumber
-                  assignmentNature: "dynamic", // Match only if assignmentNature is "dynamic"
-                });
+              let dynamicAssignmentList = await Assignment.find({
+                referenceNumber: previousReferenceNumber, // Match by referenceNumber
+                assignmentNature: "dynamic", // Match only if assignmentNature is "dynamic"
+              });              
               await Promise.all(
                   dynamicAssignmentList.map(
                     async (assignment)=> {
@@ -51,9 +55,11 @@ export const newAssignmentDynamic = async (assignmentList, studentList, moduleCo
                         await Assignment.findByIdAndUpdate(
                           { _id: assignment._id },
                           {
+                            moduleCode: updatedModuleCode,
                             assignmentName: assignmentData.assignmentName,
                             assignmentType: assignmentData.assignmentType,
-                            assignmentDeadline: assignmentData.assignmentDeadline,
+                            assignmentDeadline:
+                              assignmentData.assignmentDeadline,
                             wordCount: assignmentData.wordCount,
                             referenceNumber: assignmentData.referenceNumber,
                           },
