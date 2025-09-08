@@ -154,6 +154,20 @@ const PaymentFormSingle = ({
                     : null
                 } // Ensure the value is a Date object
                 onChange={(newValue) => {
+                  // Current time
+                  // comment out if you want to keep time at 00:00:00 (before enabling backup)
+                  const now = new Date();
+                  // Merge picked date with current hours/minutes/seconds
+                  newValue.setHours(
+                    now.getHours(),
+                    now.getMinutes(),
+                    now.getSeconds(),
+                    now.getMilliseconds()
+                  );
+                  // Backup Optional: If you need to adjust timezone differences
+                  // // ➕ Add 7 hours
+                  // newValue.setHours(newValue.getHours() + 7);
+                  console.log(newValue, newValue.toISOString());
                   handleChange(
                     "totalPaymentToDate",
                     newValue.toISOString() || null
