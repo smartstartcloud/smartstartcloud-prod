@@ -45,17 +45,17 @@ const PortalIndex = () => {
 
   const onSubmit = async (data) => {
 
-    // setLoading(true);
+    setLoading(true);
     try {
         const response = await sendOrderList(data);
         console.log("Form Data:", data);
         console.log("Response Data:", response);
-    //   setFormSaved(true);
-    //   setLoading(false);
+      setFormSaved(true);
+      setLoading(false);
     } catch (e) {
-    //   setFormError(true);
-    //   setLoading(false);
-    //   setErrorMessage(e.message);
+      setFormError(true);
+      setLoading(false);
+      setErrorMessage(e.message);
       console.log("Error submitting form: ", e.message);
     }
   };

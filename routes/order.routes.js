@@ -1,5 +1,5 @@
 import express from 'express';
-import { newOrder, getAllOrders, uploadFile, getAllOrderList } from '../controllers/order.controller.js';
+import { newOrder, getAllOrders, getAllOrderList, deleteOrderById } from '../controllers/order.controller.js';
 
 const router = express.Router();
 
@@ -13,6 +13,9 @@ router.get('/all', getAllOrders);
 router.get("/orderList/:refNo", getAllOrderList);
 
 // Route to upload a file under a specific orderID
-router.post('/:orderID/upload', uploadFile);
+// router.post('/:orderID/upload', uploadFile);
+
+// Route to delete an order by ID
+router.delete("/:orderID", deleteOrderById);
 
 export default router;

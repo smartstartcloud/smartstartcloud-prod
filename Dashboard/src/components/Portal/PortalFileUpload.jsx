@@ -11,6 +11,7 @@ import { Controller, useForm } from "react-hook-form";
 import useUploadFiles from "../../hooks/useUploadFiles";
 import CloseIcon from "@mui/icons-material/Close";
 import useFetchOrderFileList from "../../hooks/useFetchOrderFileList";
+import CircularProgressWithLabel from "../CircularProgressWithLabel";
 
 const customScrollbarStyles = {
   "&::-webkit-scrollbar": {
@@ -23,6 +24,7 @@ const customScrollbarStyles = {
 const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
   const [files, setFiles] = useState([]);
   const [orderID, setOrderID] = useState(orderIDPass);
+  const [progress, setProgress] = useState(0);
   const [activeDisplayCategory, setActiveDisplayCategory] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [existingFiles, setExistingFiles] = useState([]);
@@ -61,7 +63,7 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
     formData.append("writerFlag", true);
     
     try {      
-      const response = await uploadFiles(formData);
+      const response = await uploadFiles(formData, setProgress);
       console.log("Response Data:", response.file);
       setExistingFilteredFiles((prevFiles) => [...prevFiles, response.file]);
       setUploadSuccess(true);
@@ -192,7 +194,14 @@ const PortalFileUpload = ({orderIDPass, close, main=false, isModule=false}) => {
                           color="primary"
                           onClick={() => handleUpload(file)}
                         >
-                          <CloudUploadIcon />
+                          {Number(progress) > 0 &&
+                          Number(progress) < 100 ? (
+                            <CircularProgressWithLabel
+                              value={Number(progress)}
+                            />
+                          ) : (
+                            <CloudUploadIcon />
+                          )}
                         </IconButton>
                       ) : (
                         <IconButton color="primary">

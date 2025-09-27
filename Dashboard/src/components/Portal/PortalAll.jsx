@@ -2,15 +2,19 @@ import { Box, Button, CircularProgress, Grid, IconButton, InputAdornment, List, 
 import React, { useState } from 'react'
 import Header from '../Header';
 import useFetchOrderList from '../../hooks/useFetchOrderList';
+import useDeleteObjects from "../../hooks/useDeleteObjects";
 import { tokens } from '../../theme';
 import OrderCard from './OrderCard';
 import PortalFileUpload from './PortalFileUpload';
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from 'react-router-dom';
 
 
 const PortalAll = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const { deleteOrder } = useDeleteObjects();
 
   const [refNo, setRefNo] = useState(null); // Used to re-trigger fetch
   const { orderList, loading, error } = useFetchOrderList(refNo);
@@ -23,13 +27,33 @@ const PortalAll = () => {
   const [suggestions, setSuggestions] = useState([]);
 
   const [searchTermByRef, setSearchTermByRef] = useState("");
-  // const [isSearching, setIsSearching] = useState(false);
-  // const [searchResult, setSearchResult] = useState([]);
-  // const [suggestions, setSuggestions] = useState([]);
+
+  const navigate = useNavigate();
 
   const handleIDClick = (orderID) => {
     setOpen(true);
     setOrderIDPass(orderID);
+  };
+
+  const handleOrderIdDelete = async (e, order) => {
+    e.stopPropagation()
+    const confirmed = window.confirm(
+      "Are you sure you want to delete Order ID: " + order.orderID + "?"
+    );
+
+    if (confirmed) {
+      console.log("✅ Deleted Order ID:", order);
+      // 👉 call your delete API or logic here
+      try{
+      const response = await deleteOrder(order._id);
+      console.log("Response Data:", response);
+      navigate(0);
+    }catch (e) {
+        console.log("Error submitting form: ", e.message)
+    }
+    } else {
+      console.log("❌ Delete canceled for:", order);
+    }
   };
 
   const handleSearch = () => {
@@ -121,13 +145,13 @@ const PortalAll = () => {
       <Box>
         {open && (
           <Grid container spacing={3} mb={3} justifyContent="center">
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} lg={6}>
               <PortalFileUpload orderIDPass={orderIDPass} close={setOpen} />
             </Grid>
           </Grid>
         )}
         <Grid container spacing={3} mb={3} justifyContent="center">
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} lg={3}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <Box display="flex" width="100%" gap={2} alignItems="center">
                 <TextField
@@ -181,7 +205,7 @@ const PortalAll = () => {
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} lg={3}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <Box display="flex" width="100%" gap={2} alignItems="center">
                 <TextField
@@ -212,27 +236,6 @@ const PortalAll = () => {
                   </Button>
                 )}
               </Box>
-
-              {/* {suggestions.length > 0 && (
-                  <Paper
-                    elevation={3}
-                    sx={{ width: "100%", maxWidth: "600px", mt: 1 }}
-                  >
-                    <List>
-                      {suggestions.map((suggestion) => (
-                        <ListItem
-                          button
-                          key={suggestion.orderID}
-                          onClick={() =>
-                            handleSuggestionClick(suggestion.orderID)
-                          }
-                        >
-                          <ListItemText primary={suggestion.orderID} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Paper>
-                )} */}
             </Box>
           </Grid>
         </Grid>
@@ -244,14 +247,15 @@ const PortalAll = () => {
             </Typography>
           </Box>
         )}
-        <Grid container spacing={3} mb={3} justifyContent="left" sx={{pb: 2}}>
+        <Grid container spacing={3} mb={3} justifyContent="left" sx={{ pb: 2 }}>
           {displayList &&
             displayList.map((order) => (
-              <Grid item xs={12} sm={6} md={4} key={order._id}>
+              <Grid item xs={12} sm={6} md={4} mt={2} key={order._id}>
                 <OrderCard
-                  orderID={order.orderID}
+                  orderDetails={order}
                   referenceNumber={order.referenceNumber}
                   handleIDClick={handleIDClick}
+                  handleOrderIdDelete={handleOrderIdDelete}
                 />
               </Grid>
             ))}
