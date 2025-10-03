@@ -184,8 +184,8 @@ export const getAllOrderList = async (req, res) => {
     // Retrieve all order IDs associated with the provided reference number
     const orders = await Order.find(
       { referenceNumber: refNo },
-      "orderID" // Only retrieve the orderID field
-    );
+      "orderID linkStatus" // Only retrieve the orderID field
+    );    
 
     // // If no orders are found for the provided reference number, send a 404 response
     // if (orders.length === 0) {
@@ -195,8 +195,8 @@ export const getAllOrderList = async (req, res) => {
     // }
 
     // Return a list of order IDs in an array
-    const orderIDs = orders.map((order) => order.orderID);
-    res.status(200).json({ referenceNumber: refNo, orderIDs });
+    // const orderIDs = orders.map((order) => order.orderID);
+    res.status(200).json({ referenceNumber: refNo, orders });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });

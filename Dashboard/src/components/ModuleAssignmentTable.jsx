@@ -11,6 +11,7 @@ import {
   Select,
   Grid,
   Button,
+  useTheme,
 } from "@mui/material";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
 import useSendAssignmentData from "../hooks/useSendAssignmentData";
@@ -18,8 +19,12 @@ import EditableTextField from "./EditableTextField";
 import EditableTextFieldDynamic from "./EditableTextFieldDynamic";
 import OrderAssignmentLink from "./OrderAssignmentLink";
 import { format } from "date-fns";
+import { tokens } from "../theme";
 
 const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   const { getOrderIdList } = useGetOrderIdList();
   const [orderIdLists, setOrderIdLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [tableStatus, setTablestatus] = useState("orderID");
@@ -29,17 +34,17 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
   const [assignmentpaymentAmountLists, setAssignmentpaymentAmountLists] = useState({}); // Object to store Order IDs for each moduleCode
   const [orderConnectModuleOpen, setOrderConnectModuleOpen] = useState(false);
   const [assignmentList, setAssignmentList] = useState({});
-  // const [referenceNumberToPass, setReferenceNumberToPass] = useState('')
-
+  
   // Function to fetch Order IDs for a given moduleCode
   const fetchOrderIdList = async (referenceNumber) => {
     if (!referenceNumber) return;
     try {
-      const data = await getOrderIdList(referenceNumber); // Call the API
-      setOrderIdLists((prev) => ({
+      const data = await getOrderIdList(referenceNumber); // Call the API                        
+      setOrderIdLists((prev) => {
+        return ({
         ...prev,
-        [referenceNumber]: data.orderIDs, // Store the result in the state, keyed by moduleCode
-      }));
+        [referenceNumber]: data.orders, // Store the result in the state, keyed by moduleCode
+      })});
     } catch (error) {
       console.error("Error fetching order list:", error);
     }
@@ -54,10 +59,15 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
   }
 
   useEffect(() => {
+    if (assignmentReference) {
+      fetchOrderIdList(assignmentReference);
+    }
+  }, [assignmentReference]);
+
+  useEffect(() => {
     setAssignmentList({})
     studentData.forEach((student) => {
       student.assignmentList.forEach((assignment) => {
-        fetchOrderIdList(assignment.referenceNumber);
         fetchAssignmentList(assignment.referenceNumber, assignment);
       });
     });
@@ -96,10 +106,61 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
         newValue: newValue,
         tStatus: tableStatus,
       });
-      console.log(
-        `Assignment ID: ${assignmentId}, Selected Value: ${newValue}`
-      );
-      console.log("Response Data:", response);
+      // console.log(
+      //   `Assignment ID: ${assignmentId}, Selected Value: ${newValue}`
+      // );
+      // console.log("Response Data:", response);
+      // console.log("Current orderIdLists:", orderIdLists);
+      // console.log(tableStatus, response, response.success);
+      
+      if (tableStatus === "orderID" && response) {
+        setOrderIdLists((prev) => {
+          const list = Array.isArray(prev[assignmentReference])
+            ? prev[assignmentReference]
+            : [];
+          const nextVal = (newValue ?? "").toString().trim(); // treat null/undefined as ""
+          const prevOrderID = response?.previousOrderID || "";
+          const newOrderID = response?.newOrder?.orderID || nextVal;
+
+          let updated = list;
+
+          if (nextVal === "") {            
+            // CLEAR CASE: unmark only the previously linked order if we know it; otherwise leave as-is
+            updated = list.map((o) => 
+              prevOrderID && o.orderID === prevOrderID
+              ? { ...o, linkStatus: false }
+              : o
+            );
+            console.log('updated', updated, list);
+            
+          } else {
+            // ASSIGN/REASSIGN CASE:
+            updated = list.map((o) => {
+              if (o.orderID === newOrderID) return { ...o, linkStatus: true }; // mark new
+              if (prevOrderID && o.orderID === prevOrderID)
+                return { ...o, linkStatus: false }; // unmark old
+              return o;
+            });
+
+            // If the chosen orderID isn't in the local list, append it so UI reflects backend truth
+            if (!updated.some((o) => o.orderID === newOrderID)) {
+              updated = [
+                ...updated,
+                {
+                  orderID: newOrderID,
+                  // include any fields your UI expects for an order row:
+                  referenceNumber: assignmentReference,
+                  linkStatus: true,
+                },
+              ];
+            }
+          }
+
+          const nextState = { ...prev, [assignmentReference]: updated };
+          console.log("Updated orderIdLists:", nextState);
+          return nextState;
+        });
+      }
     } catch (e) {
       console.log("Error submitting orderID: ", e.message);
     }
@@ -156,7 +217,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
           Grade
         </Button>
       </Grid>
-      {tableStatus === "orderID" ? (
+      {/* {tableStatus === "orderID" ? (
         <Grid
           item
           xs={12}
@@ -173,7 +234,7 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
             Order Connect
           </Button>
         </Grid>
-      ) : null}
+      ) : null} */}
       {orderConnectModuleOpen && (
         <Grid item xs={12}>
           <OrderAssignmentLink
@@ -278,9 +339,10 @@ const ModuleAssignmentTable = ({studentData, assignmentReference}) => {
                                 orderIdLists[
                                   row.assignmentList[0].referenceNumber
                                 ] || []
-                              ).map((orderId) => (
-                                <MenuItem key={orderId} value={orderId}>
-                                  {orderId}
+                              ).map((order) => (
+                                <MenuItem key={order._id} value={order.orderID} disabled={order.linkStatus}
+                                 sx={{backgroundColor: order.linkStatus ? colors.redAccent[700] : ''}}>
+                                  {order.orderID}
                                 </MenuItem>
                               ))}
                             </Select>

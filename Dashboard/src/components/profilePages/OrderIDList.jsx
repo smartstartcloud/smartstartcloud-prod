@@ -7,13 +7,21 @@ import SearchIcon from "@mui/icons-material/Search";
 import OrderCard from "../Portal/OrderCard";
 import { FileUpload } from "@mui/icons-material";
 import PortalFileUpload from "../Portal/PortalFileUpload";
+import useDeleteObjects from "../../hooks/useDeleteObjects";
+import { useNavigate } from "react-router-dom";
 
 const OrderIDList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const { deleteOrder } = useDeleteObjects();
+
+  const navigate = useNavigate();
+
   const [refNo, setRefNo] = useState(null); // Used to re-trigger fetch
   const { orderList, loading, error } = useFetchOrderList(refNo);
+  console.log(orderList);
+  
   const [open, setOpen] = useState(false);
   const [orderIDPass, setOrderIDPass] = useState("");
 
@@ -34,6 +42,27 @@ const OrderIDList = () => {
   const handleIDClick = (orderID) => {
     setOpen(true);
     setOrderIDPass(orderID);
+  };
+
+  const handleOrderIdDelete = async (e, order) => {
+    e.stopPropagation();
+    const confirmed = window.confirm(
+      "Are you sure you want to delete Order ID: " + order.orderID + "?"
+    );
+
+    if (confirmed) {
+      console.log("✅ Deleted Order ID:", order);
+      // 👉 call your delete API or logic here
+      try {
+        const response = await deleteOrder(order._id);
+        console.log("Response Data:", response);
+        navigate(0);
+      } catch (e) {
+        console.log("Error submitting form: ", e.message);
+      }
+    } else {
+      console.log("❌ Delete canceled for:", order);
+    }
   };
 
   const handleSearch = () => {
@@ -124,24 +153,24 @@ const OrderIDList = () => {
       <Box>
         {/* Beautifully Styled Order Box */}
         <Paper
-            elevation={6}
-            sx={{
-              padding: "20px",
-              textAlign: "center",
-              backgroundColor: "#1976D2",
-              color: "white",
-              borderRadius: "12px",
-              maxWidth: "300px",
-              margin: "20px auto",
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              Total Orders Placed
-            </Typography>
-            <Typography variant="h3" fontWeight="bold" mt={1}>
-              {orderIDLength}
-            </Typography>
-          </Paper>
+          elevation={6}
+          sx={{
+            padding: "20px",
+            textAlign: "center",
+            backgroundColor: "#1976D2",
+            color: "white",
+            borderRadius: "12px",
+            maxWidth: "300px",
+            margin: "20px auto",
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            Total Orders Placed
+          </Typography>
+          <Typography variant="h3" fontWeight="bold" mt={1}>
+            {orderIDLength}
+          </Typography>
+        </Paper>
       </Box>
       <Box>
         {open && (
@@ -257,9 +286,10 @@ const OrderIDList = () => {
             displayList.map((order) => (
               <Grid item xs={12} sm={6} md={4} key={order._id}>
                 <OrderCard
-                  orderID={order.orderID}
+                  orderDetails={order}
                   referenceNumber={order.referenceNumber}
                   handleIDClick={handleIDClick}
+                  handleOrderIdDelete={handleOrderIdDelete}
                 />
               </Grid>
             ))}

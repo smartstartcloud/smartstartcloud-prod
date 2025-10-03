@@ -2,7 +2,7 @@ import express from "express"
 import {getAssignment, getModuleAssignmentData, getModuleData} from '../controllers/module.controller.js'
 const router = express.Router();
 import {authenticate} from '../middlewares/protect.js'
-import { deleteAssignment, linkAssignmentOrderID, newAssignmentManual, updateAssignment } from "../controllers/assignment.controller.js";
+import { deleteAssignment, linkAssignmentOrderID, newAssignmentManual, updateAssignment, upsertAssignmentOrder } from "../controllers/assignment.controller.js";
 import { getPaymentDetails, getPaymentDetailsAll, updatePaymentDetails, updatePaymentStatus, deletePaymentDetails, getPaymentDetailsWithDegree } from "../controllers/payment.controller.js";
 
 router.use(authenticate);
@@ -11,6 +11,7 @@ router.get("/getModuleData/:degreeID/:moduleID", getModuleData);
 router.get("/getModuleAssignmentData/:studentID/:moduleID", getModuleAssignmentData);
 
 router.post("/newAssignment",newAssignmentManual);
+router.put("/updateAssignmentOrderID/:assignmentID", upsertAssignmentOrder);
 router.put("/updateAssignment/:assignmentID", updateAssignment);
 router.get("/getAssignment/:moduleID/:studentID",getAssignment);
 router.delete('/deleteAssignment/:assignmentID', deleteAssignment)

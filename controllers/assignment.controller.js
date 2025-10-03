@@ -281,6 +281,111 @@ export const updateModuleStudentAssignment = async (moduleCode, studentID, assig
 
 }
 
+export const upsertAssignmentOrder = async (req, res) => {
+  try {
+    const { assignmentID } = req.params;
+    const rawOrderID = req.body?.orderID;
+    const incomingOrderID =
+      typeof rawOrderID === "string" ? rawOrderID.trim() : rawOrderID || "";
+
+    // 1) Load assignment
+    const assignment = await Assignment.findById(assignmentID);
+    if (!assignment) {
+      return res.status(404).json({ error: "Assignment not found." });
+    }
+
+    const { referenceNumber } = assignment;
+    if (!referenceNumber) {
+      return res
+        .status(400)
+        .json({ error: "Assignment is missing referenceNumber." });
+    }
+
+    const currentOrderID = assignment.orderID || "";
+    const hadExistingOrder = !!currentOrderID;
+
+    // Helper: deactivate a specific order by orderID + referenceNumber
+    const deactivateOrderIfExists = async (oid) => {
+      if (!oid) return null;
+      const existing = await Order.findOne({
+        orderID: oid,
+        referenceNumber,
+      });
+      if (!existing) return null;
+
+      existing.linkStatus = false;
+      existing.assignmentConnected = undefined;
+      await existing.save();
+      return existing;
+    };
+
+    // CASE A: incoming orderID is blank => clear existing
+    if (incomingOrderID === "") {
+      await deactivateOrderIfExists(currentOrderID);
+
+      assignment.orderID = "";
+      await assignment.save();
+
+      return res.status(200).json({
+        message: "Order link cleared from assignment.",
+        assignmentID: assignment._id,
+        previousOrderID: currentOrderID || null,
+      });
+    }
+
+    // CASE B: incoming orderID is not blank
+    if (hadExistingOrder) {
+      await deactivateOrderIfExists(currentOrderID);
+    }
+
+    // Activate new orderID (upsert if needed)
+    const updatedOrder = await Order.findOneAndUpdate(
+      { orderID: incomingOrderID, referenceNumber },
+      {
+        $set: {
+          linkStatus: true,
+          assignmentConnected: assignment._id,
+        },
+        $setOnInsert: {
+          orderID: incomingOrderID,
+          referenceNumber,
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    // Update assignment
+    assignment.orderID = incomingOrderID;
+    await assignment.save();
+
+    return res.status(200).json({
+      message: hadExistingOrder
+        ? "Order re-assigned successfully."
+        : "Order assigned successfully.",
+      assignmentID: assignment._id,
+      newOrder: {
+        _id: updatedOrder._id,
+        orderID: updatedOrder.orderID,
+        referenceNumber: updatedOrder.referenceNumber,
+        linkStatus: updatedOrder.linkStatus,
+        assignmentConnected: updatedOrder.assignmentConnected,
+      },
+      previousOrderID: hadExistingOrder ? currentOrderID : null,
+    });
+  } catch (err) {
+    if (err?.code === 11000) {
+      return res.status(409).json({
+        error: "Duplicate (orderID, referenceNumber) detected.",
+        details: err?.keyValue || null,
+      });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "Internal error.", details: err?.message });
+  }
+};
+
 // Updates an assignment's fields using request body
 // - Only updates fields that are provided
 // - Logs the update action using createLog
@@ -308,7 +413,9 @@ export const updateAssignment = async (req, res) => {
       referenceNumber,
       assignmentNature,
       studentID: student_id, // aliasing here
-    } = req.body;    
+    } = req.body;
+
+    console.log(req.body);
     
     // Update only the fields that are provided in the request body
     const updatedFields = {};
@@ -580,6 +687,7 @@ export const deleteAssignment = async (req, res) => {
 // ==================
 export const linkAssignmentOrderID = async (req, res) => {
   const { assignmentOrderPairs } = req.body;
+  log("assignmentOrderPairs", assignmentOrderPairs);
 
   // Filter out incomplete entries
   const filteredAssignmentOrderPairs = assignmentOrderPairs.filter(item => item.assignmentID && item.orderID);

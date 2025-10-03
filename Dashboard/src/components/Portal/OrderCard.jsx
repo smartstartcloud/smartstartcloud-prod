@@ -12,6 +12,7 @@ const OrderCard = ({
 }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  
 
   return (
     <Card
@@ -41,42 +42,46 @@ const OrderCard = ({
     >
       <CardActionArea>
         <CardContent>
-          <IconButton
-            onClick={(e) => handleOrderIdDelete(e, orderDetails)}
-            sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              borderRadius: "100%",
-              border: "white 1px solid",
-              backgroundColor: colors.redAccent[500],
-              color: colors.grey[100],
-              transform: "translate(50%, -50%)",
-              "&:hover": {
-                backgroundColor: colors.redAccent[600],
-                transform: "translate(50%, -50%) scale(1.1)",
-                transition: "transform 0.2s",
-              },
-              boxShadow: 3,
-              padding: "4px",
-            }}
-          >
-            <DeleteOutlineIcon />
-          </IconButton>
-          {orderDetails.linkStatus && <LinkIcon
-            sx={{
-              fontSize: 32,
-              color: "#000",
-              position: "absolute",
-              top: 0,
-              left: "50%",
-              border: "2px solid black",
-              borderRadius: "100%",
-              backgroundColor: "white",
-              transform: "translate(0%, -50%)",
-              padding: "0px 2px",
-            }}
-          />}
+          {!orderDetails.linkStatus && (
+            <IconButton
+              onClick={(e) => handleOrderIdDelete(e, orderDetails)}
+              sx={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                borderRadius: "100%",
+                border: "white 1px solid",
+                backgroundColor: colors.redAccent[500],
+                color: colors.grey[100],
+                transform: "translate(50%, -50%)",
+                "&:hover": {
+                  backgroundColor: colors.redAccent[600],
+                  transform: "translate(50%, -50%) scale(1.1)",
+                  transition: "transform 0.2s",
+                },
+                boxShadow: 3,
+                padding: "4px",
+              }}
+            >
+              <DeleteOutlineIcon />
+            </IconButton>
+          )}
+          {orderDetails.linkStatus && (
+            <LinkIcon
+              sx={{
+                fontSize: 32,
+                color: "#000",
+                position: "absolute",
+                top: 0,
+                left: "50%",
+                border: "2px solid black",
+                borderRadius: "100%",
+                backgroundColor: "white",
+                transform: "translate(0%, -50%)",
+                padding: "0px 2px",
+              }}
+            />
+          )}
           <Box
             display="flex"
             justifyContent="space-between"

@@ -79,9 +79,12 @@ const useSendAssignmentData = () => {
       
       try {
         if (tStatus === "orderID") {
-          res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
-            orderID: newValue,
-          });
+          res = await api.put(
+            `/api/module/updateAssignmentOrderID/${assignmentID}`,
+            {
+              orderID: newValue,
+            }
+          );
         } else if (tStatus === "progress") {
           res = await api.put(`/api/module/updateAssignment/${assignmentID}`, {
             assignmentProgress: newValue,
