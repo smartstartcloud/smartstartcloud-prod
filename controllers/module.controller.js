@@ -107,93 +107,95 @@ export const getAssignment = async (req, res) => {
   }
 };
 
-export const getModuleData = async (req, res) => {
-  try {
-    const { degreeID, moduleID } = req.params;
+// export const getModuleData = async (req, res) => {
+//   try {
+//     const { degreeID, moduleID } = req.params;
 
-    // Step 1: Retrieve the module details by moduleID
-    const module = await Module.findById(moduleID).populate({
-      path: "moduleAssignments",
-      model: "Assignment", // Specify the model explicitly if needed
-      match: { assignmentNature: "main" }, // Filter for assignments with assignmentNature: "main"
-      select: "assignmentName assignmentType referenceNumber assignmentDeadline",
-    });
-    if (!module) {
-      res
-        .status(404)
-        .json({ error: "No module found for the provided student and module" });
-    }    
-    const { moduleName, moduleCode, moduleAssignments } = module;
-    // Step 2: Retrieve the student list for the given degree
-    const degree = await Degree.findOne({ degreeID }).populate("degreeStudentList");
-    if (!degree) {
-      return { success: false, error: "Degree not found" };
-    }
+//     // Step 1: Retrieve the module details by moduleID
+//     const module = await Module.findById(moduleID).populate({
+//       path: "moduleAssignments",
+//       model: "Assignment", // Specify the model explicitly if needed
+//       match: { assignmentNature: "main" }, // Filter for assignments with assignmentNature: "main"
+//       select: "assignmentName assignmentType referenceNumber assignmentDeadline",
+//     });
+//     if (!module) {
+//       res
+//         .status(404)
+//         .json({ error: "No module found for the provided student and module" });
+//     }    
+//     const { moduleName, moduleCode, moduleAssignments } = module;
+//     // Step 2: Retrieve the student list for the given degree
+//     const degree = await Degree.findOne({ degreeID }).populate("degreeStudentList");
+//     if (!degree) {
+//       return { success: false, error: "Degree not found" };
+//     }
 
-    const studentList = degree.degreeStudentList || [];
+//     const studentList = degree.degreeStudentList || [];
     
-    const populatedStudentList = [];
+//     const populatedStudentList = [];
 
-    // Step 3: Iterate over each student in the list
-    for (let i = 0; i < studentList.length; i++) {
-      const student = studentList[i];            
-      const tempStudent = {
-        id: student.studentID,
-        name: student.studentName,
-        assignmentList: [],
-      };
+//     // Step 3: Iterate over each student in the list
+//     for (let i = 0; i < studentList.length; i++) {
+//       const student = studentList[i];            
+//       const tempStudent = {
+//         id: student.studentID,
+//         name: student.studentName,
+//         assignmentList: [],
+//       };
 
-      // Step 4: Fetch assignments for each student for the specified module
-      const assignmentResult = await getAssignmentForModule(student._id, moduleID);      
+//       // Step 4: Fetch assignments for each student for the specified module
+//       const assignmentResult = await getAssignmentForModule(student._id, moduleID);      
 
-      if (assignmentResult.success) {
-        tempStudent.assignmentList = assignmentResult.assignments;        
-      } else {
-        console.log(`No assignments found for student ${student._id} in module ${moduleID}`);
-      }
+//       if (assignmentResult.success) {
+//         tempStudent.assignmentList = assignmentResult.assignments;        
+//       } else {
+//         console.log(`No assignments found for student ${student._id} in module ${moduleID}`);
+//       }
 
-      // Step 5: Add the temp student object to the populated student list
-      populatedStudentList.push(tempStudent);
-    }    
-     // Step 6: Send JSON response with module details and populated student list
-     res.status(200).json({
-       moduleName,
-       moduleCode,
-       moduleData: populatedStudentList,
-       moduleAssignments,
-     });
-  } catch (error) {
-    console.error("Error in getAssignmentNew:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+//       // Step 5: Add the temp student object to the populated student list
+//       populatedStudentList.push(tempStudent);
+//     }    
+//      // Step 6: Send JSON response with module details and populated student list
+//      res.status(200).json({
+//        moduleName,
+//        moduleCode,
+//        moduleData: populatedStudentList,
+//        moduleAssignments,
+//      });
+//   } catch (error) {
+//     console.error("Error in getAssignmentNew:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
-export const getAssignmentForModule = async (studentID, moduleID) => {
-  try {
-    // Find the module assignment by moduleID and studentID
-    const moduleAssignment = await ModuleAssignment.findOne({
-      moduleID: new mongoose.Types.ObjectId(moduleID),
-      studentID: new mongoose.Types.ObjectId(studentID),
-    }).populate({
-      path: "assignments",
-      select:
-        "-assignmentFile -assignmentNature",
-    });
+// export const getAssignmentForModule = async (studentID, moduleID) => {
+//   try {
+//     // Find the module assignment by moduleID and studentID
+//     const moduleAssignment = await ModuleAssignment.findOne({
+//       moduleID: new mongoose.Types.ObjectId(moduleID),
+//       studentID: new mongoose.Types.ObjectId(studentID),
+//     }).populate({
+//       path: "assignments",
+//       select:
+//         "-assignmentFile -assignmentNature",
+//     });
     
 
-    if (moduleAssignment) {
-      // Extract assignments list to return to the caller
-      const assignmentsList = moduleAssignment.assignments || [];
+//     if (moduleAssignment) {
+//       // Extract assignments list to return to the caller
+//       const assignmentsList = moduleAssignment.assignments || [];
       
-      return { success: true, assignments: assignmentsList };
-    } else {
-      return { success: false, error: "No module found for the provided student and module" };
-    }
-  } catch (error) {
-    console.error("Error fetching assignment:", error);
-    return { success: false, error: "Internal Server Error" };
-  }
-};
+//       return { success: true, assignments: assignmentsList };
+//     } else {
+//       return { success: false, error: "No module found for the provided student and module" };
+//     }
+//   } catch (error) {
+//     console.error("Error fetching assignment:", error);
+//     return { success: false, error: "Internal Server Error" };
+//   }
+// };
+
+
 
 export const getModuleAssignmentData = async (req, res) => {
   const { studentID, moduleID } = req.params;  
@@ -214,5 +216,126 @@ export const getModuleAssignmentData = async (req, res) => {
   }
   
 }
+
+// New Code to fetch module data along with student assignments /////////////
+
+export const getModuleData = async (req, res) => {
+  try {
+    const { degreeID, moduleID } = req.params;
+
+    // 1) Module + "main" assignments (one query)
+    const moduleDoc = await Module.findById(moduleID)
+      .select("moduleName moduleCode") // only what you need
+      .populate({
+        path: "moduleAssignments",
+        model: "Assignment",
+        match: { assignmentNature: "main" },
+        select:
+          "assignmentName assignmentType referenceNumber assignmentDeadline",
+        options: { lean: true },
+      })
+      .lean();
+
+    if (!moduleDoc) {
+      return res
+        .status(404)
+        .json({ error: "No module found for the provided student and module" });
+    }
+
+    const { moduleName, moduleCode, moduleAssignments } = moduleDoc;
+
+    // 2) Degree + student list (one query)
+    const degree = await Degree.findOne({ degreeID })
+      .select("degreeStudentList")
+      .populate({
+        path: "degreeStudentList",
+        select: "studentID studentName", // keep it slim
+        options: { lean: true },
+      })
+      .lean();
+
+    if (!degree) {
+      return res.status(404).json({ error: "Degree not found" });
+    }
+
+    const studentList = degree.degreeStudentList || [];
+    const studentIds = studentList.map((s) => s._id);
+
+    if (studentIds.length === 0) {
+      // No students — short-circuit
+      return res.status(200).json({
+        moduleName,
+        moduleCode,
+        moduleData: [],
+        moduleAssignments,
+      });
+    }
+
+    // 3) Fetch ALL ModuleAssignment docs in one go
+    const moduleAssignmentsByStudent = await ModuleAssignment.find({
+      moduleID: new mongoose.Types.ObjectId(moduleID),
+      studentID: { $in: studentIds },
+    })
+      .select("studentID assignments")
+      .populate({
+        path: "assignments",
+        select: "-assignmentFile -assignmentNature", // exclude heavy fields
+        options: { lean: true },
+      })
+      .lean();
+
+    // Build a lookup map: studentID(string) -> assignments[]
+    const maMap = new Map();
+    for (const ma of moduleAssignmentsByStudent) {
+      maMap.set(String(ma.studentID), ma.assignments || []);
+    }
+
+    // 4) Assemble response list without extra DB calls
+    const populatedStudentList = studentList.map((student) => ({
+      id: student.studentID,
+      name: student.studentName,
+      assignmentList: maMap.get(String(student._id)) || [],
+    }));
+
+    // 5) Respond
+    return res.status(200).json({
+      moduleName,
+      moduleCode,
+      moduleData: populatedStudentList,
+      moduleAssignments,
+    });
+  } catch (error) {
+    console.error("Error in getModuleData:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// If you still want a reusable helper, keep it—but avoid per-student loops
+export const getAssignmentForModule = async (studentID, moduleID) => {
+  try {
+    const moduleAssignment = await ModuleAssignment.findOne({
+      moduleID: new mongoose.Types.ObjectId(moduleID),
+      studentID: new mongoose.Types.ObjectId(studentID),
+    })
+      .select("assignments")
+      .populate({
+        path: "assignments",
+        select: "-assignmentFile -assignmentNature",
+        options: { lean: true },
+      })
+      .lean();
+
+    if (!moduleAssignment) {
+      return {
+        success: false,
+        error: "No module found for the provided student and module",
+      };
+    }
+    return { success: true, assignments: moduleAssignment.assignments || [] };
+  } catch (error) {
+    console.error("Error fetching assignment:", error);
+    return { success: false, error: "Internal Server Error" };
+  }
+};
 
 

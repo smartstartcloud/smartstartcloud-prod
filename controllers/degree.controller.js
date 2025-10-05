@@ -9,6 +9,7 @@ import ModuleAssignment from '../models/moduleAssignment.models.js';
 import ModuleStudentFinance from '../models/moduleStudentFinance.models.js';
 import { createLog } from './log.controller.js';
 import { extractToken } from '../utils/generateToken.js';
+import mongoose from 'mongoose';
 
 export const newDegree = async (req, res) => {
   try {
@@ -174,27 +175,76 @@ export const updateDegree = async (req, res) => {
 };
 
 
+// export const getAllDegree = async (req,res)=>{  
+//   try {    
+//     let fillAgentDegree=[];
+//     const degrees = await Degree.find({})
+//       // .populate('degreeStudentList');      
+//       await Promise.all( degrees.map(async (x)=>{        
+//         const Agent = await User.find({_id:[x.degreeAgent]});
+//         if (Agent.length === 0) {
+//             // console.log(`Agent with ID ${x.degreeAgent} not found.`);
+//             return; // Skip this degree if no agent is found
+//         }
+//         const degreeObject = x.toObject();
+//         degreeObject.degreeAgent = {
+//             "_id": Agent[0]._id,
+//             "firstName": Agent[0].firstName,
+//             "lastName": Agent[0].lastName
+//         };
+//         fillAgentDegree.push(degreeObject);
+//       })
+//     )    
+//     res.status(200).json(fillAgentDegree);
+//   } catch (error) {
+//     console.error("Error fetching degrees:", error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// }
+
+// New faster code to get All Degrees with agent details
 export const getAllDegree = async (req,res)=>{  
-  try {    
-    let fillAgentDegree=[];
+  try {
+    // 1) Fetch degrees (lean + projection)
     const degrees = await Degree.find({})
-      // .populate('degreeStudentList');      
-      await Promise.all( degrees.map(async (x)=>{        
-        const Agent = await User.find({_id:[x.degreeAgent]});
-        if (Agent.length === 0) {
-            // console.log(`Agent with ID ${x.degreeAgent} not found.`);
-            return; // Skip this degree if no agent is found
-        }
-        const degreeObject = x.toObject();
-        degreeObject.degreeAgent = {
-            "_id": Agent[0]._id,
-            "firstName": Agent[0].firstName,
-            "lastName": Agent[0].lastName
-        };
-        fillAgentDegree.push(degreeObject);
-      })
-    )    
-    res.status(200).json(fillAgentDegree);
+      .lean();
+
+    if (degrees.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // 2) Collect unique agent IDs (skip null/undefined)
+    const agentIds = [
+      ...new Set(
+        degrees
+          .map((d) => d.degreeAgent)
+          .filter(Boolean)
+          .map(String)
+      ),
+    ].map((id) => new mongoose.Types.ObjectId(id));
+
+    // 3) Fetch all agents from the OTHER DB in one go
+    const agents = agentIds.length
+      ? await User.find({ _id: { $in: agentIds } })
+          .select("firstName lastName")
+          .lean()
+      : [];
+
+    // Build a lookup map for quick merge
+    const agentMap = new Map(agents.map((a) => [String(a._id), a]));
+
+    // 4) Merge in memory, keep a consistent shape
+    const result = degrees.map((d) => {
+      const a = d.degreeAgent ? agentMap.get(String(d.degreeAgent)) : null;
+      return {
+        ...d,
+        degreeAgent: a
+          ? { _id: a._id, firstName: a.firstName, lastName: a.lastName }
+          : null,
+      };
+    });    
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Error fetching degrees:", error);
     res.status(500).json({ error: 'Internal Server Error' });
