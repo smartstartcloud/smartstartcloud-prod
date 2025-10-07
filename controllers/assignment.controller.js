@@ -439,6 +439,53 @@ export const updateAssignment = async (req, res) => {
       { new: true } // Return the updated document
     );
 
+    if (orderID) {
+      const rawOrderID = orderID;
+      const incomingOrderID =
+        typeof rawOrderID === "string" ? rawOrderID.trim() : rawOrderID || "";
+      const currentOrderID = assignment.orderID || "";
+      const hadExistingOrder = !!currentOrderID;
+      // Helper: deactivate a specific order by orderID + referenceNumber
+      const deactivateOrderIfExists = async (oid) => {
+        if (!oid) return null;
+        const existing = await Order.findOne({
+          orderID: oid,
+          referenceNumber,
+        });
+        if (!existing) return null;
+
+        existing.linkStatus = false;
+        existing.assignmentConnected = undefined;
+        await existing.save();
+        return existing;
+      };
+
+      // CASE B: incoming orderID is not blank
+      if (hadExistingOrder) {
+        await deactivateOrderIfExists(currentOrderID);
+      }
+
+      // Activate new orderID (upsert if needed)
+      await Order.findOneAndUpdate(
+        { orderID: incomingOrderID, referenceNumber },
+        {
+          $set: {
+            linkStatus: true,
+            assignmentConnected: assignment._id,
+          },
+          $setOnInsert: {
+            orderID: incomingOrderID,
+            referenceNumber,
+          },
+        },
+        { new: true, upsert: true }
+      );
+
+      // Update assignment
+      assignment.orderID = incomingOrderID;
+      await assignment.save();
+    }
+
     if (assignment) {
       // Ensure student exists
       const student = await Student.findOne({ _id: student_id }).select(

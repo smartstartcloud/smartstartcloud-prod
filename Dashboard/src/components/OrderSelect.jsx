@@ -8,15 +8,19 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
+  useTheme,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import useGetOrderIdList from "../hooks/useGetOrderIdList";
+import { tokens } from "../theme";
 
 const OrderSelect = ({ control, editMode }) => {  
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [refNo, setRefNo] = useState("");  
-  const [orderIds, setOrderIds] = useState([]);
+  const [orderIdDetails, setOrderIdDetails] = useState([]);
   const [selectError, setSelectError] = useState(false);
-
+ 
   // useEffect(() => {
   //   console.log(refNo);
     
@@ -24,21 +28,24 @@ const OrderSelect = ({ control, editMode }) => {
 
   const { getOrderIdList } = useGetOrderIdList();
 
-  const handleFetchOrderIds = async (e) => {    
+  const handleFetchOrderIds = async (e) => {   
+    console.log("e", e);
+     
     try {
-      if (!refNo || typeof refNo !== "string" || refNo.trim() === "") {
+      if (!e || typeof e !== "string" || e.trim() === "") {
         throw new Error("Invalid reference number (refNo)");
       }
+      setRefNo(e)
       const response = await getOrderIdList(e);
       
-      setOrderIds(response.orderIDs);
+      setOrderIdDetails(response.orders);
       setSelectError(false); // Clear error when order IDs are fetched
     } catch (error) {
       console.error("Error fetching order IDs:", error);
     }
   };
 
-  const handleSelectClick = () => {
+  const handleSelectClick = () => {    
     if (!refNo) {
       setSelectError(true);
     }
@@ -71,19 +78,6 @@ const OrderSelect = ({ control, editMode }) => {
               />
             )}
           />
-          {/* <TextField
-          name="referenceNumber"
-            label="Reference Number"
-            variant="outlined"
-            fullWidth
-            value={refNo}
-            onBlur={handleFetchOrderIds} 
-            onChange={(e) => {
-              setRefNo(e.target.value);
-              setSelectError(false); // Clear error on reference number change
-            }}
-            sx={{ mb: 2 }}
-          /> */}
         </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
@@ -103,17 +97,18 @@ const OrderSelect = ({ control, editMode }) => {
                   variant="outlined"
                   fullWidth
                   displayEmpty
-                  disabled={orderIds.length === 0} // Disable when no refNo
+                  disabled={orderIdDetails.length === 0} // Disable when no refNo
                   onClick={handleSelectClick} // Show error when clicked without refNo
                 >
-                  {orderIds.length === 0 ? (
+                  {orderIdDetails.length === 0 ? (
                     <MenuItem value="" disabled>
                       
                     </MenuItem>
                   ) : (
-                    orderIds.map((orderID, index) => (
-                      <MenuItem key={index} value={orderID}>
-                        {orderID}
+                    orderIdDetails.map((order) => (
+                      <MenuItem key={order._id} value={order.orderID} disabled={order.linkStatus}
+                        sx={{backgroundColor: order.linkStatus ? colors.redAccent[700] : ''}}>
+                        {order.orderID}
                       </MenuItem>
                     ))
                   )}
